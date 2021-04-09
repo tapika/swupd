@@ -1,8 +1,9 @@
 language: csharp
+dist: bionic
 mono:
   - 5.20.1
 install:
-  - sudo apt-get install mono-devel
+  - sudo apt-get install mono-devel ca-certificates
   - nuget restore src/chocolatey.sln
 before_script:
   - chmod +x build.sh
