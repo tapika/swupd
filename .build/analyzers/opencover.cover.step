@@ -77,20 +77,7 @@
   <target name="opencover" if="${platform::is-windows() and file::exists(app.codecoverage) and file::exists(app.test.console) and dlls.test != ''}">
     <echo level="Warning" message="Attempting to run OpenCover. Creating file at ${file.codecoverage_results} and logging at ${file.opencover_log}." />
 
-    <exec program="regsvr32.exe"
-      verbose="true"
-      if="${platform::is-windows()}">
-      <arg value="/s" />
-      <arg value="/n" />
-      <arg value="/i:user" />
-      <arg>
-        <path>
-          <pathelement file="${path::get-directory-name(app.codecoverage)}${path.separator}x64${path.separator}OpenCover.Profiler.dll" />
-        </path>
-      </arg>
-    </exec>
-
-    <echo level="Warning" message="Running ${app.codecoverage} -target:'${app.test.console}' -targetdir:'${dirs.build.code}' -targetargs:'${dll.names}' -filter:'${codecoverage.filters}' -output:'${dirs.codecoverage_results}${path.separator}${file.codecoverage_results}' -log:All -skipautoprops -register:administrator" />
+    <echo level="Warning" message="Running ${app.codecoverage} -target:'${app.test.console}' -targetdir:'${dirs.build.code}' -targetargs:'${dll.names}' -filter:'${codecoverage.filters}' -output:'${dirs.codecoverage_results}${path.separator}${file.codecoverage_results}' -log:All -skipautoprops" />
     <exec program="${app.codecoverage}"
           workingdir="${dirs.build.code}"
           failonerror="${fail.build.on.error}"
@@ -103,6 +90,7 @@
       <arg value='-output:"${dirs.codecoverage_results}${path.separator}${file.codecoverage_results}"' />
       <arg value='-log:All' />
       <arg value='-skipautoprops' />
+      <arg value='-register:administrator' />
     </exec>
     <exec program="mono"
           workingdir="${dirs.build.code}"
@@ -117,6 +105,7 @@
       <arg value='-output:"${dirs.codecoverage_results}${path.separator}${file.codecoverage_results}"' />
       <arg value='-log:All' />
       <arg value='-skipautoprops' />
+      <arg value='-register:administrator' />
     </exec>
   </target>
 
