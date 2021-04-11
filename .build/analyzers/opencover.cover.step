@@ -90,7 +90,7 @@
       </arg>
     </exec>
 
-    <echo level="Warning" message="Running ${app.codecoverage} -target:'${app.test.console}' -targetdir:'${dirs.build.code}' -targetargs:'${dll.names}' -filter:'${codecoverage.filters}' -output:'${dirs.codecoverage_results}${path.separator}${file.codecoverage_results}' -log:All -skipautoprops" />
+    <echo level="Warning" message="Running ${app.codecoverage} -target:'${app.test.console}' -targetdir:'${dirs.build.code}' -targetargs:'${dll.names}' -filter:'${codecoverage.filters}' -output:'${dirs.codecoverage_results}${path.separator}${file.codecoverage_results}' -log:All -skipautoprops -register:administrator" />
     <exec program="${app.codecoverage}"
           workingdir="${dirs.build.code}"
           failonerror="${fail.build.on.error}"
