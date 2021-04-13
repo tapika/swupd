@@ -26,5 +26,4 @@ using System.Security;
 [assembly: AssemblyTrademarkAttribute("chocolatey - Chocolatey Software, Inc.")]
 [assembly: AssemblyCopyrightAttribute("Copyright © 2017 - 2020 Chocolatey Software, Inc. Copyright © 2011 - 2017, RealDi" +
     "mensions Software, LLC - All Rights Reserved.")]
-[assembly: AssemblyKeyFileAttribute("C:\\Prototyping\\swupd\\chocolatey.snk")]
 
