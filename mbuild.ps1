@@ -82,16 +82,21 @@ foreach ($operationToAdd in $addoperations.Split(";,"))
     }
 }
 
-if($verbose)
-{
-    "Will perform following operations: $operationsToPerform"
-}
-
 $packageOutputFolder = [System.IO.Path]::Combine($scriptDir, 'build_output')
 
 if( $operationsToPerform.Contains("build") )
 {
     $operationsToPerform = ,"nuget" + $operationsToPerform
+}
+
+if( $operationsToPerform.Contains("all") )
+{
+    $operationsToPerform = @('nuget', 'build', 'test')
+}
+
+if($verbose)
+{
+    "Will perform following operations: $operationsToPerform"
 }
 
 $sln = 'src\chocolatey.sln'
@@ -117,6 +122,18 @@ foreach ($operation in $operationsToPerform)
         {
             $cmdArgs += '--no-incremental'
         }
+    }
+
+    if($operation -eq 'test')
+    {
+        $cmd = [System.IO.Path]::Combine($scriptDir, 'src\packages\NUnit.Runners.2.6.4\tools\nunit-console.exe')
+        $dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests\bin\$configuration\chocolatey.tests.dll")
+        $outDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
+        $out = [System.IO.Path]::Combine($outDir, 'test-results.xml')
+        
+        if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
+
+        $cmdArgs = @( $dll, "/xml=$out", '/nologo', '/framework=net-4.0', '/exclude="Database,Integration,Slow,NotWorking,Ignore,database,integration,slow,notworking,ignore"' )
     }
 
     if($operation -eq 'pack')

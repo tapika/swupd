@@ -10,7 +10,7 @@ environment:
   COVERALLS_REPO_TOKEN:
     secure: 1Y/tjLblhKMe36sE7aN00styLDKTluqpo3f9RRPiWhWDpKrglPMiuLH4f4pwPnd4
 build_script:
-- ps: ./mbuild.ps1 'nuget,build,pack'
+- ps: ./mbuild.ps1 'all'
 test: off
 artifacts:
 - path: build_output\build_artifacts\compile\msbuild-net-4.0-results.xml
