@@ -91,7 +91,7 @@ if( $operationsToPerform.Contains("build") )
 
 if( $operationsToPerform.Contains("all") )
 {
-    $operationsToPerform = @('nuget', 'build', 'test')
+    $operationsToPerform = @('nuget', 'build', 'coverage', 'coveragehtml')
 }
 
 if($verbose)
@@ -99,7 +99,14 @@ if($verbose)
     "Will perform following operations: $operationsToPerform"
 }
 
+$nunitConsole = [System.IO.Path]::Combine($scriptDir, 'src\packages\NUnit.Runners.2.6.4\tools\nunit-console.exe')
+$chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests\bin\$configuration")
+$chocolateyTestsDll = [System.IO.Path]::Combine($chocolateyTestsDir, 'chocolatey.tests.dll')
+$chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration\chocolatey.tests.integration.dll")
 $sln = 'src\chocolatey.sln'
+$coverageOutDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\codecoverage')
+$coverageXml = [System.IO.Path]::Combine($coverageOutDir, 'coverage.xml')
+
 foreach ($operation in $operationsToPerform)
 {
     "- $operation"
@@ -124,16 +131,48 @@ foreach ($operation in $operationsToPerform)
         }
     }
 
-    if($operation -eq 'test')
+    if($operation -eq 'test1')
     {
-        $cmd = [System.IO.Path]::Combine($scriptDir, 'src\packages\NUnit.Runners.2.6.4\tools\nunit-console.exe')
-        $dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests\bin\$configuration\chocolatey.tests.dll")
+        $cmd = $nunitConsole
+        $dll = $chocolateyTestsDll
         $outDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
         $out = [System.IO.Path]::Combine($outDir, 'test-results.xml')
         
         if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
 
         $cmdArgs = @( $dll, "/xml=$out", '/nologo', '/framework=net-4.0', '/exclude="Database,Integration,Slow,NotWorking,Ignore,database,integration,slow,notworking,ignore"' )
+    }
+
+    if($operation -eq 'coverage')
+    {
+        $cmd = [System.IO.Path]::Combine($scriptDir, 'lib\OpenCover\OpenCover.Console.exe')
+        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyTestsDir"" ", "-targetargs:"" chocolatey.tests.dll """)
+        $filters = '+[chocolatey*]*'
+        $filters = "$filters -[chocolatey*test*]*"
+        $filters = "$filters -[chocolatey]*adapters.*"
+        $filters = "$filters -[chocolatey]*infrastructure.app.configuration.*Setting*"
+        $filters = "$filters -[chocolatey]*app.configuration.*Configuration"
+        $filters = "$filters -[chocolatey]*app.domain.*"
+        $filters = "$filters -[chocolatey]*app.messages.*"
+        $filters = "$filters -[chocolatey]*.registration.*"
+        $filters = "$filters -[chocolatey]*app.templates.*"
+        $filters = "$filters -[chocolatey]*commandline.Option*"
+        $filters = "$filters -[chocolatey]*licensing.*"
+        $filters = "$filters -[chocolatey]*infrastructure.results.*"
+        $cmdArgs = $cmdArgs + "-filter:""$filters"""
+        if ((test-path $coverageOutDir) -eq $false) { New-Item -Type Directory -Path $coverageOutDir | out-null }
+        $cmdArgs = $cmdArgs + "-output:""$coverageXml"""
+        $cmdArgs = $cmdArgs + '-log:All'
+        $cmdArgs = $cmdArgs + '-skipautoprops'
+        $cmdArgs = $cmdArgs + '-register:administrator'
+    }
+
+    if($operation -eq 'coveragehtml')
+    {
+        $cmd = [System.IO.Path]::Combine($scriptDir, 'lib\ReportGenerator\ReportGenerator.exe')
+        $outDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\codecoverage\Html')
+        if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
+        $cmdArgs = @( """$coverageXml""",  """$outDir""", 'HtmlSummary')
     }
 
     if($operation -eq 'pack')
