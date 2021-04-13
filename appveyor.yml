@@ -9,7 +9,8 @@ environment:
   COVERALLS_REPO_TOKEN:
     secure: 1Y/tjLblhKMe36sE7aN00styLDKTluqpo3f9RRPiWhWDpKrglPMiuLH4f4pwPnd4
 build_script:
-- build.bat -v
+- ps: ./build.ps1 'nuget,build,pack'
+#- build.bat -v
 test:
   categories:
     except:
@@ -37,7 +38,7 @@ notifications:
 - provider: Email
   to:
   - chocolatey-build-status@googlegroups.com
-  subject: AppVeyor - choco Build Notification
+  subject: AppVeyor - swupd Build Notification
   on_build_success: false
   on_build_failure: true
   on_build_status_changed: true
