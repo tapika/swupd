@@ -9,7 +9,7 @@ environment:
   COVERALLS_REPO_TOKEN:
     secure: 1Y/tjLblhKMe36sE7aN00styLDKTluqpo3f9RRPiWhWDpKrglPMiuLH4f4pwPnd4
 build_script:
-- ps: ./build.ps1 'nuget,build,pack'
+- ps: ./mbuild.ps1 'nuget,build,pack'
 #- build.bat -v
 test:
   categories:
