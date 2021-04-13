@@ -113,7 +113,7 @@ $sln = 'src\chocolatey.sln'
 $coverageOutDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\codecoverage')
 $coverageXml = [System.IO.Path]::Combine($coverageOutDir, 'coverage.xml')
 $testResultsXmlDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
-$testResultsXml = [System.IO.Path]::Combine($outDir, 'test-results.xml')
+$testResultsXml = [System.IO.Path]::Combine($testResultsXmlDir, 'test-results.xml')
 
 foreach ($operation in $operationsToPerform)
 {
