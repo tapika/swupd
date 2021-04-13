@@ -145,8 +145,12 @@ foreach ($operation in $operationsToPerform)
 
     if($operation -eq 'coverage')
     {
+        $outDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
+        if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
+        $out = [System.IO.Path]::Combine($outDir, 'test-results.xml')
+
         $cmd = [System.IO.Path]::Combine($scriptDir, 'lib\OpenCover\OpenCover.Console.exe')
-        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyTestsDir"" ", "-targetargs:"" chocolatey.tests.dll """)
+        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyTestsDir"" ", "-targetargs:"" chocolatey.tests.dll /xml=$out """)
         $filters = '+[chocolatey*]*'
         $filters = "$filters -[chocolatey*test*]*"
         $filters = "$filters -[chocolatey]*adapters.*"
