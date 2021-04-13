@@ -130,6 +130,12 @@ foreach ($operation in $operationsToPerform)
         if($dontexecute -ne $true)
         {
             & "$cmd" $cmdArgs
+
+            if ($LASTEXITCODE -ne 0)
+            {
+                "Command failed: Exit code: $LASTEXITCODE ('$cmd $cmdArgs')"
+                return
+            }
         }
     }
 }
