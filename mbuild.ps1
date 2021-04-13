@@ -134,7 +134,7 @@ foreach ($operation in $operationsToPerform)
             if ($LASTEXITCODE -ne 0)
             {
                 "Command failed: Exit code: $LASTEXITCODE ('$cmd $cmdArgs')"
-                return
+                exit $LASTEXITCODE
             }
         }
     }
