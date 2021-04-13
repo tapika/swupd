@@ -187,7 +187,7 @@ foreach ($operation in $operationsToPerform)
     if($operation -eq 'coverageupload')
     {
         $wc = New-Object 'System.Net.WebClient'
-        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", $testResultsXml)
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", New-Object System.Uri($testResultsXml) )
     }
 
     if($operation -eq 'pack')
