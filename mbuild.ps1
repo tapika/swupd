@@ -30,7 +30,8 @@ param (
 
 $ErrorActionPreference = "Stop"
 $scriptDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-if( $env:APPVEYOR -eq 'true' )
+$isBuildMachine = $env:APPVEYOR -eq 'true'
+if( $isBuildMachine )
 {
     $verbose = $true
 }
@@ -94,6 +95,11 @@ if( $operationsToPerform.Contains("all") )
     $operationsToPerform = @('nuget', 'build', 'coverage', 'coveragehtml')
 }
 
+if( $operationsToPerform.Contains("coverage") -and $isBuildMachine )
+{
+    $operationsToPerform = $operationsToPerform + 'coverageupload'
+}
+
 if($verbose)
 {
     "Will perform following operations: $operationsToPerform"
@@ -106,6 +112,8 @@ $chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tes
 $sln = 'src\chocolatey.sln'
 $coverageOutDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\codecoverage')
 $coverageXml = [System.IO.Path]::Combine($coverageOutDir, 'coverage.xml')
+$testResultsXmlDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
+$testResultsXml = [System.IO.Path]::Combine($outDir, 'test-results.xml')
 
 foreach ($operation in $operationsToPerform)
 {
@@ -145,12 +153,9 @@ foreach ($operation in $operationsToPerform)
 
     if($operation -eq 'coverage')
     {
-        $outDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
-        if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
-        $out = [System.IO.Path]::Combine($outDir, 'test-results.xml')
-
+        if ((test-path $testResultsXmlDir) -eq $false) { New-Item -Type Directory -Path $testResultsXmlDir | out-null }
         $cmd = [System.IO.Path]::Combine($scriptDir, 'lib\OpenCover\OpenCover.Console.exe')
-        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyTestsDir"" ", "-targetargs:"" chocolatey.tests.dll /xml=$out """)
+        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyTestsDir"" ", "-targetargs:"" chocolatey.tests.dll /xml=$testResultsXml """)
         $filters = '+[chocolatey*]*'
         $filters = "$filters -[chocolatey*test*]*"
         $filters = "$filters -[chocolatey]*adapters.*"
@@ -177,6 +182,12 @@ foreach ($operation in $operationsToPerform)
         $outDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\codecoverage\Html')
         if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
         $cmdArgs = @( """$coverageXml""",  """$outDir""", 'HtmlSummary')
+    }
+
+    if($operation -eq 'coverageupload')
+    {
+        $wc = New-Object 'System.Net.WebClient'
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", $testResultsXml)
     }
 
     if($operation -eq 'pack')
