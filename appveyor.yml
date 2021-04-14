@@ -8,7 +8,7 @@ nuget:
   disable_publish_on_pr: true
 environment:
   COVERALLS_REPO_TOKEN:
-    secure: 1Y/tjLblhKMe36sE7aN00styLDKTluqpo3f9RRPiWhWDpKrglPMiuLH4f4pwPnd4
+    secure: d6F50k7PJzvlxqsN7sIZOb1T8jzkYbdgm1jZQG6hwWLcDTnfTVhp2J+T5xktn6/p
 build_script:
 - ps: ./mbuild.ps1 'all'
 test: off

@@ -97,7 +97,7 @@ if( $operationsToPerform.Contains("all") )
 
 if( $operationsToPerform.Contains("coverage") -and $isBuildMachine )
 {
-    $operationsToPerform = $operationsToPerform + 'coverageupload'
+    $operationsToPerform = $operationsToPerform + 'testresultupload', 'coverageupload'
 }
 
 if($verbose)
@@ -184,10 +184,25 @@ foreach ($operation in $operationsToPerform)
         $cmdArgs = @( """$coverageXml""",  """$outDir""", 'HtmlSummary')
     }
 
-    if($operation -eq 'coverageupload')
+    if($operation -eq 'testresultupload')
     {
         $wc = New-Object 'System.Net.WebClient'
         $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsXml) )
+        continue
+    }
+
+    if($operation -eq 'coverageupload')
+    {
+        if($env:COVERALLS_REPO_TOKEN -eq $null)
+        {
+            "COVERALLS_REPO_TOKEN environment variable not set, not uploading coverage report"
+            continue
+        }
+    
+        #$cmd = [System.IO.Path]::Combine($scriptDir, 'src\packages\coveralls.io.1.4.2\tools\coveralls.net.exe')
+        $cmd = [System.IO.Path]::Combine($scriptDir, 'src\packages\coveralls.io.1.1.86\tools\coveralls.net.exe')
+        #$cmdArgs = @( '--opencover', """$coverageXml""", '-r', $env:COVERALLS_REPO_TOKEN)
+        $cmdArgs = @( '--opencover', """$coverageXml""")
     }
 
     if($operation -eq 'pack')
