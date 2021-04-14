@@ -51,8 +51,8 @@
           <exclude name="${dirs.build.code}/_PublishedApplications/**" />
           <exclude name="${dirs.build.code}/**/*Database*dll" />
           <exclude name="${dirs.build.code}/**/*database*dll" />
-          <!-- <exclude name="${dirs.build.code}/**/*.Integration*dll" /> -->
-          <!-- <exclude name="${dirs.build.code}/**/*.integration*dll" /> -->
+          <exclude name="${dirs.build.code}/**/*.Integration*dll" />
+          <exclude name="${dirs.build.code}/**/*.integration*dll" />
           <exclude name="${dirs.build.code}/**/TestFu.dll" />
           <include name="${dirs.build.code}/**/*Test*dll" />
           <include name="${dirs.build.code}/**/*test*dll" />
