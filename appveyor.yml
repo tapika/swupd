@@ -7,7 +7,7 @@ nuget:
   disable_publish_on_pr: true
 environment:
   COVERALLS_REPO_TOKEN:
-    secure: d6F50k7PJzvlxqsN7sIZOb1T8jzkYbdgm1jZQG6hwWLcDTnfTVhp2J+T5xktn6/p
+    secure: 2HaukGxepJGCR69mwx4u14VaR6p/q6Qdy1+PJmqHoEWGzbI5EfV+s4BaLWAZSk0j
 build_script:
 - build.bat -v
 test:
