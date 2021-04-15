@@ -92,7 +92,13 @@ if( $operationsToPerform.Contains("build") )
 
 if( $operationsToPerform.Contains("all") )
 {
-    $operationsToPerform = @('nuget', 'build', 'coverage', 'coveragehtml')
+    $operationsToPerform = @(
+        'nuget', 'build', 
+        # Comment for faster testing
+        'integration', 
+        'coverage', 
+        'coveragehtml'
+    )
 }
 
 if( $operationsToPerform.Contains("coverage") -and $isBuildMachine )
@@ -106,7 +112,7 @@ if($verbose)
 }
 
 $nunitConsole = [System.IO.Path]::Combine($scriptDir, 'src\packages\NUnit.Runners.2.6.4\tools\nunit-console.exe')
-$chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests\bin\$configuration")
+$chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration")
 $chocolateyTestsDll = [System.IO.Path]::Combine($chocolateyTestsDir, 'chocolatey.tests.dll')
 $chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration\chocolatey.tests.integration.dll")
 $sln = 'src\chocolatey.sln'
@@ -115,12 +121,20 @@ $coverageXml = [System.IO.Path]::Combine($coverageOutDir, 'coverage.xml')
 $testResultsXmlDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
 $testResultsXml = [System.IO.Path]::Combine($testResultsXmlDir, 'test-results.xml')
 
+$dlls2test = @( 'chocolatey.tests.dll' )
+
 foreach ($operation in $operationsToPerform)
 {
     "- $operation"
 
     $cmdArgs = @( )
     $cmd = 'dotnet'
+
+    if($operation -eq 'integration')
+    {
+        $dlls2test = $dlls2test + 'chocolatey.tests.integration.dll'
+        continue
+    }
 
     if($operation -eq 'nuget')
     {
@@ -155,7 +169,8 @@ foreach ($operation in $operationsToPerform)
     {
         if ((test-path $testResultsXmlDir) -eq $false) { New-Item -Type Directory -Path $testResultsXmlDir | out-null }
         $cmd = [System.IO.Path]::Combine($scriptDir, 'lib\OpenCover\OpenCover.Console.exe')
-        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyTestsDir"" ", "-targetargs:"" chocolatey.tests.dll /xml=$testResultsXml """)
+        $dlls = ($dlls2test -join " ")
+        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyTestsDir"" ", "-targetargs:"" $dlls /xml=$testResultsXml """)
         $filters = '+[chocolatey*]*'
         $filters = "$filters -[chocolatey*test*]*"
         $filters = "$filters -[chocolatey]*adapters.*"
@@ -199,9 +214,7 @@ foreach ($operation in $operationsToPerform)
             continue
         }
     
-        #$cmd = [System.IO.Path]::Combine($scriptDir, 'src\packages\coveralls.io.1.4.2\tools\coveralls.net.exe')
         $cmd = [System.IO.Path]::Combine($scriptDir, 'src\packages\coveralls.io.1.1.86\tools\coveralls.net.exe')
-        #$cmdArgs = @( '--opencover', """$coverageXml""", '-r', $env:COVERALLS_REPO_TOKEN)
         $cmdArgs = @( '--opencover', """$coverageXml""")
     }
 
