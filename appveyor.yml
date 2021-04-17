@@ -14,7 +14,7 @@ environment:
   COVERALLS_REPO_TOKEN:
     secure: 2HaukGxepJGCR69mwx4u14VaR6p/q6Qdy1+PJmqHoEWGzbI5EfV+s4BaLWAZSk0j
 build_script:
-- ps: ./mbuild.ps1 'all'
+- ps: ./build.ps1 'all'
 test: off
 artifacts:
 - path: build_output\build_artifacts\nunit\index.html
