@@ -1,0 +1,41 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <PropertyGroup>
+    <!-- 
+        Try to extract TargetFramework name from solution name itself, e.g. 'chocolatey_netcoreapp3.1.sln' => 'netcoreapp3.1'
+
+        Normally developer is intrested in compiling one TargetFramework at the time, not all of them necessarily
+    -->
+    <MyTargetFramework>$([System.Text.RegularExpressions.Regex]::Replace('$(SolutionName)', '.*?(_|$)(.*)$', '${2}'))</MyTargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MyTargetFramework)' == ''">
+    <MyTargetFramework>net40</MyTargetFramework>
+  </PropertyGroup>
+
+  <!--<Target Name="DisplayMessages" BeforeTargets="Build">
+      <Message Text="MyTargetFramework: $(MyTargetFramework)" Importance="high" />
+  </Target>-->
+  
+  <PropertyGroup>
+    <!--<TargetFramework>net472</TargetFramework>-->
+    <TargetFramework>$(MyTargetFramework)</TargetFramework>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <!-- Save temporary files in here -->  
+    <IntermediateOutputPath>$(SolutionDir)obj\$(TargetFramework)-$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)chocolatey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <!-- .net framework specific defines -->
+  <PropertyGroup>
+    <DefineConstants Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">$(DefineConstants);NETFRAMEWORK</DefineConstants>
+    <DefineConstants Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">$(DefineConstants);NETCORE</DefineConstants>
+  </PropertyGroup>
+</Project>
+
