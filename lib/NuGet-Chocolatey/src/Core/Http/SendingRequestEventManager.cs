@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+#if NETFRAMEWORK
 using System.Windows;
+#endif
 
 namespace NuGet
 {
+#if NETFRAMEWORK
     // Implement weak event pattern. Read more here:
     // http://msdn.microsoft.com/en-us/library/aa970850(v=vs.100).aspx
     public class SendingRequestEventManager : WeakEventManager
@@ -64,4 +67,6 @@ namespace NuGet
             base.DeliverEvent(sender, e);
         }
     }
+#endif
+
 }

@@ -126,9 +126,14 @@ namespace NuGet
 
         public IEnumerable<T> ExecuteBatch<T>(DataServiceRequest request)
         {
+#if NETFRAMEWORK
             return _context.ExecuteBatch(request)
                            .Cast<QueryOperationResponse>()
                            .SelectMany(o => o.Cast<T>());
+#else
+            throw new Exception("not ported");
+#endif
+
         }
 
         public Uri GetReadStreamUri(object entity)

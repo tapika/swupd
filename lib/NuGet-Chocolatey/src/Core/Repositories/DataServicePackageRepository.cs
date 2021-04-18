@@ -20,8 +20,10 @@ namespace NuGet
         ICultureAwareRepository, 
         IOperationAwareRepository,
         IPackageLookup,
-        ILatestPackageLookup,
-        IWeakEventListener
+        ILatestPackageLookup
+#if NETFRAMEWORK
+        ,IWeakEventListener
+#endif
     {
         private const string FindPackagesByIdSvcMethod = "FindPackagesById";
         private const string PackageServiceEntitySetName = "Packages";
@@ -68,7 +70,9 @@ namespace NuGet
             else
             {
                 // weak event pattern            
+#if NETFRAMEWORK
                 SendingRequestEventManager.AddListener(_packageDownloader, this);
+#endif
             }
         }
 
@@ -464,6 +468,7 @@ namespace NuGet
             return value.ToString().ToLowerInvariant();
         }
 
+#if NETFRAMEWORK
         public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
         {
             if (managerType == typeof(SendingRequestEventManager))
@@ -476,5 +481,6 @@ namespace NuGet
                 return false;
             } 
         }
+#endif
     }
 }

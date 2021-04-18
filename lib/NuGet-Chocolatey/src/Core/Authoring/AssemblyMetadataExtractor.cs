@@ -8,6 +8,7 @@ using NuGet.Runtime;
 
 namespace NuGet
 {
+#if NETFRAMEWORK
     public static class AssemblyMetadataExtractor
     {
         public static AssemblyMetadata GetMetadata(string assemblyPath)
@@ -121,4 +122,5 @@ namespace NuGet
             }
         }
     }
+#endif
 }

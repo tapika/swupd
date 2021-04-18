@@ -5,6 +5,7 @@ using System.Data.Services.Client;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using NuGet.Resources;
 
@@ -93,6 +94,7 @@ namespace NuGet
 
         private IEnumerable<T> GetAll()
         {
+#if NETFRAMEWORK
             IEnumerable results = Execute(_query.Execute);
 
             DataServiceQueryContinuation continuation;
@@ -114,6 +116,18 @@ namespace NuGet
                 }
 
             } while (continuation != null);
+#else
+            DataServiceQuery<T> query = (DataServiceQuery<T>)_query;
+            TaskFactory<IEnumerable<T>> taskFactory = new TaskFactory<IEnumerable<T>>();
+            IEnumerable results = taskFactory.FromAsync(query.BeginExecute(null, null), iar => query.EndExecute(iar)).GetAwaiter().GetResult().ToList();
+            lock (_context)
+            {
+                foreach (T item in results)
+                {
+                    yield return item;
+                }
+            }
+#endif
         }
 
         private Expression GetInnerExpression(Expression expression)
