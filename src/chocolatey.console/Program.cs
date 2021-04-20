@@ -57,7 +57,10 @@ namespace chocolatey.console
                 Log4NetAppenderConfiguration.configure(loggingLocation, excludeLoggerNames: ChocolateyLoggers.Trace.to_string());
                 Bootstrap.initialize();
                 Bootstrap.startup();
-                var license = License.validate_license();
+                ChocolateyLicense license = null;
+#if NETFRAMEWORK
+                license = License.validate_license();
+#endif
                 var container = SimpleInjectorContainer.Container;
 
                 "LogFileOnly".Log().Info(() => "".PadRight(60, '='));
