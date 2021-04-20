@@ -25,6 +25,7 @@
 
   <PropertyGroup>
     <ApplicationIcon>..\..\docs\logo\chocolatey.ico</ApplicationIcon>
+    <AssemblyName>choco</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
