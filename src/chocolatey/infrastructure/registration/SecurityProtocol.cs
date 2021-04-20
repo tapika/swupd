@@ -28,6 +28,7 @@ namespace chocolatey.infrastructure.registration
 
         public static void set_protocol(ChocolateyConfiguration config, bool provideWarning)
         {
+#if NETFRAMEWORK
             try
             {
                 // We can't address the protocols directly when built with .NET 
@@ -55,6 +56,7 @@ Choco prefers to use TLS v1.2 if it is available, but this client is
  For more information you should visit https://www.howsmyssl.com/");
                 }
             }
+#endif
 
             try
             {

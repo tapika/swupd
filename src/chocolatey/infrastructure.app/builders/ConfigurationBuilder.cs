@@ -73,14 +73,20 @@ namespace chocolatey.infrastructure.app.builders
             var xmlService = container.GetInstance<IXmlService>();
             var configFileSettings = get_config_file_settings(fileSystem, xmlService);
             // must be done prior to setting the file configuration
-            add_or_remove_licensed_source(license, configFileSettings);
+            if (license != null)
+            { 
+                add_or_remove_licensed_source(license, configFileSettings);
+            }
             set_file_configuration(config, configFileSettings, fileSystem, notifyWarnLoggingAction);
             ConfigurationOptions.reset_options();
             set_global_options(args, config, container);
             set_environment_options(config);
             EnvironmentSettings.set_environment_variables(config);
             // must be done last for overrides
-            set_licensed_options(config, license, configFileSettings);
+            if (license != null)
+            {
+                set_licensed_options(config, license, configFileSettings);
+            }
             // save all changes if there are any
             set_config_file_settings(configFileSettings, xmlService, config);
             set_hash_provider(config, container);

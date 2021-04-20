@@ -126,7 +126,11 @@ namespace chocolatey
             Log4NetAppenderConfiguration.configure(null, excludeLoggerNames: ChocolateyLoggers.Trace.to_string());
             Bootstrap.initialize();
             Log.InitializeWith(new AggregateLog(new List<ILog>() { new Log4NetLog(), _logSinkLogger }));
+#if NETFRAMEWORK
             _license = License.validate_license();
+#else
+            _license = null;
+#endif
             _container = SimpleInjectorContainer.Container;
         }
 

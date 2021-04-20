@@ -24,39 +24,39 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public struct HashCode
+public struct HashCodeHelper
 {
     private readonly int value;
 
-    private HashCode(int value)
+    private HashCodeHelper(int value)
     {
         this.value = value;
     }
 
-    public static implicit operator int(HashCode hashCode)
+    public static implicit operator int(HashCodeHelper hashCode)
     {
         return hashCode.value;
     }
 
-    public static HashCode Of<T>(T item)
+    public static HashCodeHelper Of<T>(T item)
     {
-        return new HashCode(GetHashCode(item));
+        return new HashCodeHelper(GetHashCode(item));
     }
 
-    public HashCode And<T>(T item)
+    public HashCodeHelper And<T>(T item)
     {
-        return new HashCode(CombineHashCodes(this.value, GetHashCode(item)));
+        return new HashCodeHelper(CombineHashCodes(this.value, GetHashCode(item)));
     }
 
-    public HashCode AndEach<T>(IEnumerable<T> items)
+    public HashCodeHelper AndEach<T>(IEnumerable<T> items)
     {
         if (items == null)
         {
-            return new HashCode(this.value);
+            return new HashCodeHelper(this.value);
         }
 
         var hashCode = items.Any() ? items.Select(GetHashCode).Aggregate(CombineHashCodes) : 0;
-        return new HashCode(CombineHashCodes(this.value, hashCode));
+        return new HashCodeHelper(CombineHashCodes(this.value, hashCode));
     }
 
     private static int CombineHashCodes(int h1, int h2)

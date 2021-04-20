@@ -32,6 +32,11 @@ namespace chocolatey.infrastructure.filesystem
     using tolerance;
     using Assembly = adapters.Assembly;
     using Environment = adapters.Environment;
+#if NETFRAMEWORK
+    using System_IO = Alphaleonis.Win32.Filesystem;
+#else
+    using System_IO = System.IO;
+#endif
 
     /// <summary>
     ///   Implementation of IFileSystem for Dot Net
@@ -106,7 +111,7 @@ namespace chocolatey.infrastructure.filesystem
             }
             catch (IOException)
             {
-                return Alphaleonis.Win32.Filesystem.Path.GetFullPath(path);
+                return System_IO.Path.GetFullPath(path);
             }
         }
 
@@ -210,7 +215,7 @@ namespace chocolatey.infrastructure.filesystem
             }
             catch (IOException)
             {
-                return Alphaleonis.Win32.Filesystem.File.Exists(filePath);
+                return System_IO.File.Exists(filePath);
             }
         }
 
@@ -239,14 +244,14 @@ namespace chocolatey.infrastructure.filesystem
             {
                 if (!string.IsNullOrWhiteSpace(filePath) && filePath.Length >= MAX_PATH_FILE)
                 {
-                    return new Alphaleonis.Win32.Filesystem.FileInfo(filePath);
+                    return new System_IO.FileInfo(filePath);
                 }
 
                 return new FileInfo(filePath);
             }
             catch (IOException)
             {
-                return new Alphaleonis.Win32.Filesystem.FileInfo(filePath);
+                return new System_IO.FileInfo(filePath);
             }
         }
 
@@ -347,7 +352,7 @@ namespace chocolatey.infrastructure.filesystem
                     }
                     catch (IOException)
                     {
-                        Alphaleonis.Win32.Filesystem.File.Move(filePath, newFilePath);
+                        System_IO.File.Move(filePath, newFilePath);
                     }
                 });
             //Thread.Sleep(10);
@@ -367,7 +372,7 @@ namespace chocolatey.infrastructure.filesystem
                     }
                     catch (IOException)
                     {
-                        Alphaleonis.Win32.Filesystem.File.Copy(sourceFilePath, destinationFilePath, overwriteExisting);
+                        System_IO.File.Copy(sourceFilePath, destinationFilePath, overwriteExisting);
                     }
                 });
         }
@@ -446,7 +451,7 @@ namespace chocolatey.infrastructure.filesystem
                     }
                     catch (IOException)
                     {
-                        Alphaleonis.Win32.Filesystem.File.Replace(sourceFilePath, destinationFilePath, backupFilePath);
+                        System_IO.File.Replace(sourceFilePath, destinationFilePath, backupFilePath);
                     }
                 });
         }
@@ -482,7 +487,7 @@ namespace chocolatey.infrastructure.filesystem
                         }
                         catch (IOException)
                         {
-                            Alphaleonis.Win32.Filesystem.File.Delete(filePath);
+                            System_IO.File.Delete(filePath);
                         }
                     });
             }
@@ -501,7 +506,7 @@ namespace chocolatey.infrastructure.filesystem
             }
             catch (IOException)
             {
-                return Alphaleonis.Win32.Filesystem.File.ReadAllText(filePath, get_file_encoding(filePath));
+                return System_IO.File.ReadAllText(filePath, get_file_encoding(filePath));
             }
         }
 
@@ -591,7 +596,7 @@ namespace chocolatey.infrastructure.filesystem
             }
             catch (IOException)
             {
-                return Alphaleonis.Win32.Filesystem.Path.GetDirectoryName(filePath);
+                return System_IO.Path.GetDirectoryName(filePath);
             }
         }
 
@@ -601,14 +606,14 @@ namespace chocolatey.infrastructure.filesystem
             {
                 if (!string.IsNullOrWhiteSpace(directoryPath) && directoryPath.Length >= MAX_PATH_DIRECTORY)
                 {
-                    return new Alphaleonis.Win32.Filesystem.DirectoryInfo(directoryPath);
+                    return new System_IO.DirectoryInfo(directoryPath);
                 }
 
                 return new DirectoryInfo(directoryPath);
             }
             catch (IOException)
             {
-                return new Alphaleonis.Win32.Filesystem.DirectoryInfo(directoryPath);
+                return new System_IO.DirectoryInfo(directoryPath);
             }
         }
 
@@ -618,14 +623,14 @@ namespace chocolatey.infrastructure.filesystem
             {
                 if (!string.IsNullOrWhiteSpace(filePath) && filePath.Length >= MAX_PATH_FILE)
                 {
-                    return new Alphaleonis.Win32.Filesystem.DirectoryInfo(filePath).Parent;
+                    return new System_IO.DirectoryInfo(filePath).Parent;
                 }
 
                 return new DirectoryInfo(filePath).Parent;
             }
             catch (IOException)
             {
-                return new Alphaleonis.Win32.Filesystem.DirectoryInfo(filePath).Parent;
+                return new System_IO.DirectoryInfo(filePath).Parent;
             }
         }
 
@@ -641,7 +646,7 @@ namespace chocolatey.infrastructure.filesystem
                     }
                     catch (IOException)
                     {
-                        Alphaleonis.Win32.Filesystem.Directory.CreateDirectory(directoryPath);
+                        System_IO.Directory.CreateDirectory(directoryPath);
                     }
                 });
         }
@@ -663,7 +668,7 @@ namespace chocolatey.infrastructure.filesystem
                         }
                         catch (IOException)
                         {
-                            Alphaleonis.Win32.Filesystem.Directory.Move(directoryPath, newDirectoryPath);
+                            System_IO.Directory.Move(directoryPath, newDirectoryPath);
                         }
                     });
             }
@@ -766,7 +771,7 @@ namespace chocolatey.infrastructure.filesystem
                     }
                     catch (IOException)
                     {
-                        Alphaleonis.Win32.Filesystem.Directory.Delete(directoryPath, recursive);
+                        System_IO.Directory.Delete(directoryPath, recursive);
                     }
                 }, isSilent: isSilent);
         }

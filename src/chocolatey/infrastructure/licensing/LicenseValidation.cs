@@ -14,6 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if NETFRAMEWORK
+
 namespace chocolatey.infrastructure.licensing
 {
     using System;
@@ -149,3 +151,5 @@ namespace chocolatey.infrastructure.licensing
         }
     }
 }
+
+#endif

@@ -84,7 +84,7 @@ namespace chocolatey.infrastructure.app.configuration
 
         public override int GetHashCode()
         {
-            return HashCode
+            return HashCodeHelper
                 .Of(Id)
                 .And(Value)
                 .And(Disabled)

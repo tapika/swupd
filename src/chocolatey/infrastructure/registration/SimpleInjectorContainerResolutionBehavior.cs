@@ -49,6 +49,7 @@ namespace chocolatey.infrastructure.registration
         ///   The <see cref="T:System.Reflection.ConstructorInfo" />.
         /// </returns>
         /// <exception cref="T:SimpleInjector.ActivationException">Thrown when no suitable constructor could be found.</exception>
+#if NETFRAMEWORK
         public ConstructorInfo GetConstructor(Type serviceType, Type implementationType)
         {
             if (serviceType.IsAssignableFrom(implementationType))
@@ -66,5 +67,21 @@ namespace chocolatey.infrastructure.registration
             // fall back to the container's default behavior.
             return _originalBehavior.GetConstructor(serviceType, implementationType);
         }
+#else
+        public ConstructorInfo TryGetConstructor(Type implementationType, out string errorMessage)
+        {
+            errorMessage = "";
+            var longestConstructor = (from constructor in implementationType.GetConstructors()
+                                      orderby constructor.GetParameters().Count() descending
+                                      select constructor).Take(1);
+
+            if (longestConstructor.Any())
+            {
+                return longestConstructor.First();
+            }
+
+            return _originalBehavior.TryGetConstructor(implementationType, out errorMessage);
+        }
+#endif
     }
 }

@@ -58,6 +58,7 @@ namespace chocolatey.infrastructure.cryptography
                 case CryptoHashProviderType.Md5:
                     hashAlgorithm = new HashAlgorithm(MD5.Create());
                     break;
+#if NETFRAMEWORK
                 case CryptoHashProviderType.Sha1:
                     hashAlgorithm = new HashAlgorithm(fipsOnly ? new SHA1Cng() : SHA1.Create());
                     break;
@@ -67,6 +68,19 @@ namespace chocolatey.infrastructure.cryptography
                 case CryptoHashProviderType.Sha512:
                     hashAlgorithm = new HashAlgorithm(fipsOnly ? new SHA512Cng() : SHA512.Create());
                     break;
+#else
+                // On .net core there does not exists SHA1Cng/SHA256Cng/SHA512Cng - there exists SHA1Managed alternative
+                // but it's not clear whether they map one to one. Maybe some obsolete .NET Framework feature ?
+                case CryptoHashProviderType.Sha1:
+                    hashAlgorithm = new HashAlgorithm(SHA1.Create());
+                    break;
+                case CryptoHashProviderType.Sha256:
+                    hashAlgorithm = new HashAlgorithm(SHA256.Create());
+                    break;
+                case CryptoHashProviderType.Sha512:
+                    hashAlgorithm = new HashAlgorithm(SHA512.Create());
+                    break;
+#endif
             }
 
             return hashAlgorithm;
