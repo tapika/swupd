@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(SolutionDir)\ProjectsCommon.props" Link="ProjectsCommon.props" />
+    <None Include="$(ProjectDir)..\..\..\..\ProjectsCommon.props" Link="ProjectsCommon.props" />
   </ItemGroup>
 
   <ItemGroup>
