@@ -97,10 +97,17 @@ namespace chocolatey.console
 
                 if (config.RegularOutput)
                 {
+                    string licenseType = "";
+
+                    if (license != null && license.is_licensed_version())
+                    {
+                        licenseType = license.LicenseType.ToString();
+                    } 
+
 #if DEBUG
-                    "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0} v{1}{2} (DEBUG BUILD)".format_with(ApplicationParameters.Name, config.Information.ChocolateyProductVersion, license.is_licensed_version() ? " {0}".format_with(license.LicenseType) : string.Empty));
+                    "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0} v{1}{2} (DEBUG BUILD)".format_with(ApplicationParameters.Name, config.Information.ChocolateyProductVersion, licenseType));
 #else
-                    "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0} v{1}{2}".format_with(ApplicationParameters.Name, config.Information.ChocolateyProductVersion, license.is_licensed_version() ? " {0}".format_with(license.LicenseType) : string.Empty));
+                    "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0} v{1}{2}".format_with(ApplicationParameters.Name, config.Information.ChocolateyProductVersion, licenseType));
 #endif
                     if (args.Length == 0)
                     {
