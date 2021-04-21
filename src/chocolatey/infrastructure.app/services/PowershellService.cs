@@ -59,7 +59,7 @@ namespace chocolatey.infrastructure.app.services
         /// </summary>
         /// <param name="fileSystem">The file system.</param>
         /// <param name="customImports">The custom imports. This should be everything you need minus the &amp; to start and the ending semi-colon.</param>
-        public PowershellService(IFileSystem fileSystem, CustomString customImports)
+        protected PowershellService(IFileSystem fileSystem, CustomString customImports)
         {
             _fileSystem = fileSystem;
             _customImports = customImports;
