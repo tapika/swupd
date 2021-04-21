@@ -113,6 +113,7 @@ if($verbose)
 
 $nunitConsole = [System.IO.Path]::Combine($scriptDir, 'src\packages\NUnit.Runners.2.6.4\tools\nunit-console.exe')
 $chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\net40-$configuration")
+$chocolateyIntegrationTestsDir = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration")
 $chocolateyTestsDll = [System.IO.Path]::Combine($chocolateyTestsDir, 'chocolatey.tests.dll')
 $chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration\chocolatey.tests.integration.dll")
 #$chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\bin\net40-$configuration\chocolatey.tests.integration.dll")
@@ -171,7 +172,7 @@ foreach ($operation in $operationsToPerform)
         if ((test-path $testResultsXmlDir) -eq $false) { New-Item -Type Directory -Path $testResultsXmlDir | out-null }
         $cmd = [System.IO.Path]::Combine($scriptDir, 'lib\OpenCover\OpenCover.Console.exe')
         $dlls = ($dlls2test -join " ")
-        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyTestsDir"" ", "-targetargs:"" $dlls /xml=$testResultsXml """)
+        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyIntegrationTestsDir"" ", "-targetargs:"" $dlls /xml=$testResultsXml """)
         $filters = '+[chocolatey*]*'
         $filters = "$filters -[chocolatey*test*]*"
         $filters = "$filters -[chocolatey]*adapters.*"
