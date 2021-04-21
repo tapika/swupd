@@ -274,10 +274,10 @@ namespace chocolatey.console
 
         private static void pause_execution_if_debug()
         {
-#if DEBUG
-            Console.WriteLine("Press enter to continue...");
-            Console.ReadKey();
-#endif
+//#if DEBUG
+//            Console.WriteLine("Press enter to continue...");
+//            Console.ReadKey();
+//#endif
         }
     }
 }
