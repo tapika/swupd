@@ -1,149 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5C4C60F0-47B1-498E-ABF7-D315E1A94BC9}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>chocolatey.tests</RootNamespace>
-    <AssemblyName>chocolatey.tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <Platforms>AnyCPU</Platforms>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NoResources|AnyCPU'">
-    <OutputPath>bin\NoResources\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseOfficial|AnyCPU'">
-    <OutputPath>bin\ReleaseOfficial\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+
+  <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
+
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-client\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
-    </Reference>
-    <Reference Include="Moq">
-      <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Should, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Should.1.1.12.0\lib\Should.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <None Include="$(ProjectDir)..\..\ProjectsCommon.props" Link="ProjectsCommon.props" />
   </ItemGroup>
+
+  <!-- .net framework specific references -->
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
+    <PackageReference Include="Moq" Version="4.2.1402.2112" />
+    <PackageReference Include="NUnit" Version="2.6.4" />
+    <PackageReference Include="Should" Version="1.1.12" />
+    <PackageReference Include="StrongNamer" Version="0.2.5" />
+    <PackageReference Include="TinySpec.NUnit" Version="0.9.5" />
+  </ItemGroup>
+
+  <!-- .net core specific references -->
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
+    <PackageReference Include="StrongNamer" Version="0.2.5" />
+    <PackageReference Include="TinySpec.NUnit" Version="0.9.5" />
+    <PackageReference Include="Moq" Version="4.8.0" />
+    <PackageReference Include="NUnit" Version="3.13.1" />
+    <PackageReference Include="Should-DotNetStandard" Version="1.0.0" />
+  </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="infrastructure.app\attributes\CommandForAttributeSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyApiKeyCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyConfigCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyFeatureCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyInfoCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyInstallCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyListCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyNewCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyOutdatedCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyPackCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyPinCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyPushCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateySourceCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyUninstallCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyUnpackSelfCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\commands\ChocolateyUpgradeCommandSpecs.cs" />
-    <Compile Include="infrastructure.app\configuration\ConfigurationOptionsSpec.cs" />
-    <Compile Include="infrastructure.app\nuget\NugetCommonSpecs.cs" />
-    <Compile Include="infrastructure.app\services\AutomaticUninstallerServiceSpecs.cs" />
-    <Compile Include="infrastructure.app\services\FilesServiceSpecs.cs" />
-    <Compile Include="infrastructure.app\services\NugetServiceSpecs.cs" />
-    <Compile Include="infrastructure.app\services\RegistryServiceSpecs.cs" />
-    <Compile Include="infrastructure.app\services\TemplateServiceSpecs.cs" />
-    <Compile Include="infrastructure\commands\ExternalCommandArgsBuilderSpecs.cs" />
-    <Compile Include="infrastructure\commandline\InteractivePromptSpecs.cs" />
-    <Compile Include="infrastructure\commands\CommandExecutorSpecs.cs" />
-    <Compile Include="infrastructure\commands\PowershellExecutorSpecs.cs" />
-    <Compile Include="infrastructure\configuration\ConfigSpecs.cs" />
-    <Compile Include="infrastructure\cryptography\CrytpoHashProviderSpecs.cs" />
-    <Compile Include="infrastructure\events\context\FakeEvent.cs" />
-    <Compile Include="infrastructure\events\context\FakeSubscriber.cs" />
-    <Compile Include="infrastructure\events\EventSubscriptionManagerSpecs.cs" />
-    <Compile Include="infrastructure\filesystem\DotNetFileSystemSpecs.cs" />
-    <Compile Include="infrastructure\guards\EnsureSpecs.cs" />
-    <Compile Include="infrastructure\information\VersionInformationSpecs.cs" />
-    <Compile Include="infrastructure\platforms\PlatformSpecs.cs" />
-    <Compile Include="infrastructure\tokens\TokenReplacerSpecs.cs" />
-    <Compile Include="infrastructure\tolerance\FaultToleranceSpecs.cs" />
-    <Compile Include="MockLogger.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TinySpec.cs" />
+    <ProjectReference Include="..\..\lib\NuGet-Chocolatey\src\Core\Core.csproj" />
+    <ProjectReference Include="..\chocolatey.console\chocolatey.console.csproj" />
+    <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\lib\NuGet-Chocolatey\src\Core\Core.csproj">
-      <Project>{f879f274-efa0-4157-8404-33a19b4e6aec}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\chocolatey\chocolatey.csproj">
-      <Project>{5563DC61-35FD-4FAB-B331-9AE1FDB23F80}</Project>
-      <Name>chocolatey</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\chocolatey.console\chocolatey.console.csproj">
-      <Project>{E24E3386-244F-4404-9E6E-5B53818EA903}</Project>
-      <Name>chocolatey.console</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <Import Project="..\props\log4net.props" />
 </Project>

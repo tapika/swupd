@@ -1,0 +1,13 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- .net framework specific references -->
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
+    <PackageReference Include="log4net" Version="2.0.3" />
+  </ItemGroup>
+
+  <!-- .net core specific references -->
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
+    <PackageReference Include="log4net" Version="2.0.12" />
+  </ItemGroup>
+
+</Project>

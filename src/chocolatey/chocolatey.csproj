@@ -17,7 +17,6 @@
   <!-- .net framework specific references -->
   <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
     <PackageReference Include="AlphaFS" Version="2.1.3" />
-    <PackageReference Include="log4net" Version="2.0.3" />
     <PackageReference Include="Microsoft.Web.Xdt" Version="2.1.1" />
     <PackageReference Include="PublishedApplications" Version="2.4.0" />
     <PackageReference Include="SimpleInjector" Version="2.5.0" />
@@ -28,12 +27,13 @@
 
   <!-- .net core specific references -->
   <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
-    <PackageReference Include="log4net" Version="2.0.12" />
     <PackageReference Include="Microsoft.Web.Xdt" Version="3.1.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="SimpleInjector" Version="5.2.1" />
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
   </ItemGroup>
+
+  <Import Project="..\props\log4net.props"/>
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\NuGet-Chocolatey\src\Core\Core.csproj" />

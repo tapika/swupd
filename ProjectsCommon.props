@@ -25,6 +25,8 @@
   <PropertyGroup>
     <!-- Save temporary files in here -->  
     <IntermediateOutputPath>$(SolutionDir)obj\$(TargetFramework)-$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
+    <OutputPath>$(SolutionDir)bin\$(TargetFramework)-$(Configuration)</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>

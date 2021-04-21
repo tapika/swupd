@@ -112,9 +112,10 @@ if($verbose)
 }
 
 $nunitConsole = [System.IO.Path]::Combine($scriptDir, 'src\packages\NUnit.Runners.2.6.4\tools\nunit-console.exe')
-$chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration")
+$chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\net40-$configuration")
 $chocolateyTestsDll = [System.IO.Path]::Combine($chocolateyTestsDir, 'chocolatey.tests.dll')
 $chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration\chocolatey.tests.integration.dll")
+#$chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\bin\net40-$configuration\chocolatey.tests.integration.dll")
 $sln = 'src\chocolatey.sln'
 $coverageOutDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\codecoverage')
 $coverageXml = [System.IO.Path]::Combine($coverageOutDir, 'coverage.xml')
