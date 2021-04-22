@@ -17,15 +17,15 @@ build_script:
 - ps: ./build.ps1 'all'
 test: off
 artifacts:
-- path: build_output\build_artifacts\nunit\index.html
-  name: NUnitResults.html
+#- path: build_output\build_artifacts\nunit\index.html
+#  name: NUnitResults.html
 - path: build_output\build_artifacts\codecoverage\Html\index.htm
   name: OpenCoverResults.htm
-- path: code_drop\build_artifacts\ilmerge\ilmerge.log
-  name: ILMerge.log
-- path: code_drop\build_artifacts\ilmerge\ilmergedll.log
-  name: ILMergeDLL.log
-- path: code_drop\nuget\*.nupkg
+#- path: code_drop\build_artifacts\ilmerge\ilmerge.log
+#  name: ILMerge.log
+#- path: code_drop\build_artifacts\ilmerge\ilmergedll.log
+#  name: ILMergeDLL.log
+#- path: code_drop\nuget\*.nupkg
 notifications:
 - provider: Email
   to:
