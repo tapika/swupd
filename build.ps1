@@ -113,10 +113,11 @@ if($verbose)
 
 $nunitConsole = [System.IO.Path]::Combine($scriptDir, 'src\packages\NUnit.Runners.2.6.4\tools\nunit-console.exe')
 $chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\net40-$configuration")
-$chocolateyIntegrationTestsDir = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration")
+#$chocolateyIntegrationTestsDir = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration")
+$chocolateyIntegrationTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\net40-$configuration")
 $chocolateyTestsDll = [System.IO.Path]::Combine($chocolateyTestsDir, 'chocolatey.tests.dll')
-$chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration\chocolatey.tests.integration.dll")
-#$chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\bin\net40-$configuration\chocolatey.tests.integration.dll")
+#$chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration\chocolatey.tests.integration.dll")
+$chocolateyTests2Dll = [System.IO.Path]::Combine($chocolateyIntegrationTestsDir, 'chocolatey.tests.integration.dll')
 $sln = 'src\chocolatey.sln'
 $coverageOutDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\codecoverage')
 $coverageXml = [System.IO.Path]::Combine($coverageOutDir, 'coverage.xml')
@@ -161,6 +162,18 @@ foreach ($operation in $operationsToPerform)
         $dll = $chocolateyTestsDll
         $outDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
         $out = [System.IO.Path]::Combine($outDir, 'test-results.xml')
+        
+        if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
+
+        $cmdArgs = @( $dll, "/xml=$out", '/nologo', '/framework=net-4.0', '/exclude="Database,Integration,Slow,NotWorking,Ignore,database,integration,slow,notworking,ignore"' )
+    }
+
+    if($operation -eq 'test2')
+    {
+        $cmd = $nunitConsole
+        $dll = $chocolateyTests2Dll
+        $outDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
+        $out = [System.IO.Path]::Combine($outDir, 'test-results-2.xml')
         
         if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
 
