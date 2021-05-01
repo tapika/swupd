@@ -35,8 +35,7 @@ namespace chocolatey.infrastructure.logging
         public static void TraceAll(string loggerName)
         {
             var log = LogManager.GetLogger(loggerName);
-            var log2 = loggerName.Log();
-
+            ILog log2 = loggerName.Log();
             log.Fatal("- Printing using logger '" + loggerName + "'");log2.Fatal("- Printing using logger '" + loggerName + "'");
             Console.WriteLine();
             log.Trace("trace 1");log2.Trace("trace 1");
@@ -46,6 +45,23 @@ namespace chocolatey.infrastructure.logging
             log.Error("error 5");log2.Error("error 5");
             log.Fatal("fatal 6");log2.Fatal("fatal 6");
         }
+
+        public static void TraceAll2<T>(T t)
+        {
+            Type logType = t.GetType();
+            string loggerName = logType.FullName;
+            var log = LogManager.GetLogger(loggerName);
+            ILog log2 = t.Log();
+            log.Fatal("- Printing using logger '" + loggerName + "'"); log2.Fatal("- Printing using logger '" + loggerName + "'");
+            Console.WriteLine();
+            log.Trace("trace 1"); log2.Trace("trace 1");
+            log.Debug("debug 2 "); log2.Debug("debug 2 ");
+            log.Info("info 3"); log2.Info("info 3");
+            log.Warn("warn 4"); log2.Warn("warn 4");
+            log.Error("error 5"); log2.Error("error 5");
+            log.Fatal("fatal 6"); log2.Fatal("fatal 6");
+        }
+
 
         //const string fileLogPatternLayout = @"${date:format=yyyy-MM-dd HH\:mm\:ss,fff} ${processid} [${uppercase:${level:padding=-5:alignmentOnTruncation=left}}] - ${message}";
         const string fileLogPatternLayout = @"${processid} [${uppercase:${level:padding=-5:alignmentOnTruncation=left}}] - ${message}";
@@ -57,15 +73,47 @@ namespace chocolatey.infrastructure.logging
         ;
 
 
+
+
+
+        static string outputDirectory;
+
         public static void configure(string outputDirectory = null)
+        {
+            LogService.outputDirectory = outputDirectory;
+            string path = Path.Combine(ApplicationParameters.InstallLocation, "nlog.config");
+
+            // Create initial configuration just so it would be easy to modify, and also watch from file system.
+            if (!File.Exists(path))
+            {
+                File.WriteAllText(path, 
+@"<nlog throwExceptions='true' autoReload='true'>
+  <targets>
+    <target name='console' type='coloredConsole' />
+  </targets>
+  <rules>
+     <!-- <logger name='namespace.classname' writeTo='console' /> -->
+   </rules>
+</nlog>
+");
+            }
+
+            var conf = new XmlLoggingConfiguration(path, LogManager.LogFactory);
+            LogManager.ConfigurationReloaded += LogManager_ConfigurationReloaded;
+
+            bool clearLogFile = true;
+            //bool clearLogFile = ApplicationParameters.LogsAppendToFile;
+            reconfigure(clearLogFile, conf);
+            //Console.WriteLine("press any key...");
+            //Console.ReadLine();
+        }
+
+        static void reconfigure(bool clearLogFile, LoggingConfiguration conf)
         {
             string logFile11 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingFile);
             string logFile12 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingSummaryFile);
             string logFile21 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingFile + "_2");
             string logFile22 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingSummaryFile + "_2");
-
-            bool clearLogFile = true;
-            //bool clearLogFile = ApplicationParameters.LogsAppendToFile;
 
             if (clearLogFile && File.Exists(logFile11)) { File.Delete(logFile11); }
             if (clearLogFile && File.Exists(logFile12)) { File.Delete(logFile12); }
@@ -75,7 +123,6 @@ namespace chocolatey.infrastructure.logging
             Log4NetAppenderConfiguration.configure(outputDirectory, ChocolateyLoggers.Trace.to_string());
             const string consoleLoggerName = "console";
 
-            var conf = new LoggingConfiguration();
             var consoletarget = new ColoredConsoleTarget() { Layout = "${message}", Name = consoleLoggerName };
 
             var list = (List<ConsoleRowHighlightingRule>) consoletarget.RowHighlightingRules;
@@ -114,7 +161,28 @@ namespace chocolatey.infrastructure.logging
                 new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andTraceConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
             });
 
-            conf.AddTarget(consoletarget);
+            var targets = conf.AllTargets;
+            var targetNames = targets.Select(x => x.Name).ToList();
+            Action<Target> replaceOrAddTarget = (Target t) =>
+            {
+                conf.AddTarget(t);
+
+                if (targetNames.Contains(t.Name))
+                {
+                    foreach (var rule in conf.LoggingRules.ToArray())
+                    {
+                        var targets2 = rule.Targets;
+                        var existingRule = targets2.Where(x => x.Name == t.Name).FirstOrDefault();
+                        if (existingRule != null)
+                        {
+                            targets2.Remove(existingRule);
+                            targets2.Add(t);
+                        }
+                    }
+                }
+            };
+
+            replaceOrAddTarget(consoletarget);
             //Trace, Debug are excluded
             conf.AddRule(LogLevel.Info, LogLevel.Fatal,consoletarget, normalConsoleLoggerName);
             conf.AddRule(LogLevel.Info, LogLevel.Fatal,consoletarget, highlightedConsoleLoggerName);
@@ -160,18 +228,42 @@ namespace chocolatey.infrastructure.logging
                 conf.AddTarget(filetarget2);
             }
 
+
             conf.AddRule(LogLevel.Trace, LogLevel.Fatal, filetarget1, DisabledName(traceConsoleLoggerName));
             conf.AddTarget(filetarget1);
             conf.AddRule(LogLevel.Trace, LogLevel.Fatal, filetarget2, DisabledName(traceConsoleLoggerName));
             conf.AddTarget(filetarget2);
 
-            // Uncomment if you suspect that something does not work correctly.
-            //NLog.LogManager.ThrowConfigExceptions = true;
             LogManager.Configuration = conf;
+            LogManager.ReconfigExistingLoggers();
+
             console = LogManager.GetLogger(normalConsoleLoggerName);
             consoleHighlight = LogManager.GetLogger(highlightedConsoleLoggerName);
             consoleDebug = LogManager.GetLogger(debugConsoleLoggerName);
             consoleTrace = LogManager.GetLogger(traceConsoleLoggerName);
+        }
+
+        /// <summary>
+        /// Called when nlog.config gets saved on disk
+        /// </summary>
+        private static void LogManager_ConfigurationReloaded(object sender, LoggingConfigurationReloadedEventArgs e)
+        {
+            if (!e.Succeeded)
+            {
+                var exc = (NLogConfigurationException)e.Exception;
+
+                Console.WriteLine(exc.Message + ":");
+                Console.WriteLine("    " + exc.InnerException.Message);
+                return;
+            }
+
+            reconfigure(false, LogManager.Configuration);
+            Console.WriteLine("- logger configuration file reloaded");
+            // Cannot be modified programmatically at the moment (unless re-inherit from XmlLoggingConfiguration and override Initialize/autoReloadDefault)
+            if (!((XmlLoggingConfiguration)LogManager.Configuration).AutoReload)
+            {
+                Console.WriteLine("Warning: Autoreload disabled");
+            }
         }
 
 
@@ -306,11 +398,12 @@ namespace chocolatey.infrastructure.logging
                 console.Fatal(s); "chocolatey".Log().Fatal(s);
                 adjustLogLevels(debug, verbose, trace);
 
-                TraceAll(normalConsoleLoggerName);
-                TraceAll(highlightedConsoleLoggerName);
-                TraceAll(debugConsoleLoggerName);
-                TraceAll(traceConsoleLoggerName);
+                //TraceAll(normalConsoleLoggerName);
+                //TraceAll(highlightedConsoleLoggerName);
+                //TraceAll(debugConsoleLoggerName);
+                //TraceAll(traceConsoleLoggerName);
                 //TraceAll("Unknown");
+                TraceAll2(new LogService());
             }
 
             Environment.Exit(2);
