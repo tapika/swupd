@@ -1,0 +1,15 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <NLogIntegrateByPackage>true</NLogIntegrateByPackage>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(NLogIntegrateByPackage)' == 'true' ">
+    <PackageReference Include="NLog" Version="4.7.9" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(NLogIntegrateByPackage)' != 'true' ">
+    <ProjectReference Include="..\..\..\..\PrototypingQuick\NLog\src\NLog\NLog.csproj" />
+  </ItemGroup>
+
+</Project>

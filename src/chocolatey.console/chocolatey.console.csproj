@@ -12,6 +12,8 @@
     <None Include="$(ProjectDir)..\..\ProjectsCommon.props" Link="ProjectsCommon.props" />
   </ItemGroup>
 
+  <Import Project="..\props\nlog.props" />
+
   <ItemGroup>
     <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
     <ProjectReference Include="..\chocolatey.resources\chocolatey.resources.csproj" />

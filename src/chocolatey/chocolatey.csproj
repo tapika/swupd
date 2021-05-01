@@ -37,11 +37,8 @@
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NLog" Version="4.7.9" />
-  </ItemGroup>
-  
-  <Import Project="..\props\log4net.props"/>
+  <Import Project="..\props\log4net.props" />
+  <Import Project="..\props\nlog.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\NuGet-Chocolatey\src\Core\Core.csproj" />
