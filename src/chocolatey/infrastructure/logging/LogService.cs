@@ -20,6 +20,7 @@ namespace chocolatey.infrastructure.logging
 
         // Internal implementation names, don't use outside
         //const string normalConsoleLoggerName = "console";
+        const string consoleTargetName = "console";
         const string normalConsoleLoggerName = "chocolatey";
         const string highlightedConsoleLoggerName = "Important";
         const string debugConsoleLoggerName = "Verbose";
@@ -86,13 +87,16 @@ namespace chocolatey.infrastructure.logging
             // Create initial configuration just so it would be easy to modify, and also watch from file system.
             if (!File.Exists(path))
             {
-                File.WriteAllText(path, 
+                File.WriteAllText(path,
 @"<nlog throwExceptions='true' autoReload='true'>
   <targets>
     <target name='console' type='coloredConsole' />
   </targets>
   <rules>
-     <!-- <logger name='namespace.classname' writeTo='console' /> -->
+     <!-- log first, and then discard the rest (so chocolatey* would not log it)
+    <logger name='<class name>' minlevel='Error' writeTo='console' final=""true"" />
+    <logger name='<class name>' final=""true"" />
+    -->
    </rules>
 </nlog>
 ");
@@ -102,11 +106,16 @@ namespace chocolatey.infrastructure.logging
             LogManager.ConfigurationReloaded += LogManager_ConfigurationReloaded;
 
             bool clearLogFile = true;
+            userConfiguredRules = conf.LoggingRules.Count;
             //bool clearLogFile = ApplicationParameters.LogsAppendToFile;
             reconfigure(clearLogFile, conf);
             //Console.WriteLine("press any key...");
             //Console.ReadLine();
         }
+
+        static Dictionary<string, LogLevel> defaultLogLevel;
+        static int userConfiguredRules = 0;
+
 
         static void reconfigure(bool clearLogFile, LoggingConfiguration conf)
         {
@@ -121,24 +130,26 @@ namespace chocolatey.infrastructure.logging
             if (clearLogFile && File.Exists(logFile22)) { File.Delete(logFile22); }
 
             Log4NetAppenderConfiguration.configure(outputDirectory, ChocolateyLoggers.Trace.to_string());
-            const string consoleLoggerName = "console";
+            const string console2LoggerName = "console2";
 
-            var consoletarget = new ColoredConsoleTarget() { Layout = "${message}", Name = consoleLoggerName };
+            var consoletarget = new ColoredConsoleTarget() { Layout = "${message}", Name = consoleTargetName };
+            var consoletarget2 = new ColoredConsoleTarget() { Layout = "${message}", Name = console2LoggerName };
 
-            var list = (List<ConsoleRowHighlightingRule>) consoletarget.RowHighlightingRules;
-            string andNormalConsole = " and equals(logger, '" + normalConsoleLoggerName + "')";
             string andHighlightConsole = " and equals(logger, '" + highlightedConsoleLoggerName + "')";
             string andDebugConsole = " and equals(logger, '" + debugConsoleLoggerName + "')";
             string andTraceConsole = " and equals(logger, '" + traceConsoleLoggerName + "')";
-            list.AddRange(new[] {
-                // Originally copied from NLog, search from DefaultConsoleRowHighlightingRules
-                new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andNormalConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
-                new ConsoleRowHighlightingRule("level == LogLevel.Error" + andNormalConsole, ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
-                new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andNormalConsole, ConsoleOutputColor.Yellow, ConsoleOutputColor.NoChange),
-                new ConsoleRowHighlightingRule("level == LogLevel.Info" + andNormalConsole, ConsoleOutputColor.Gray, ConsoleOutputColor.Black),
-                new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andNormalConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-                new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andNormalConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
 
+            ((List<ConsoleRowHighlightingRule>)consoletarget.RowHighlightingRules).AddRange(new[] {
+                new ConsoleRowHighlightingRule("level == LogLevel.Fatal", ConsoleOutputColor.White, ConsoleOutputColor.Red),
+                new ConsoleRowHighlightingRule("level == LogLevel.Error", ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
+                new ConsoleRowHighlightingRule("level == LogLevel.Warn", ConsoleOutputColor.Yellow, ConsoleOutputColor.NoChange),
+                new ConsoleRowHighlightingRule("level == LogLevel.Info", ConsoleOutputColor.Gray, ConsoleOutputColor.Black),
+                new ConsoleRowHighlightingRule("level == LogLevel.Debug", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                new ConsoleRowHighlightingRule("level == LogLevel.Trace", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+            });
+
+            ((List<ConsoleRowHighlightingRule>)consoletarget2.RowHighlightingRules).AddRange(new[] {
+                // Originally copied from NLog, search from DefaultConsoleRowHighlightingRules
                 new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andHighlightConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
                 new ConsoleRowHighlightingRule("level == LogLevel.Error" + andHighlightConsole, ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
                 new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andHighlightConsole, ConsoleOutputColor.Magenta, ConsoleOutputColor.NoChange),
@@ -182,13 +193,35 @@ namespace chocolatey.infrastructure.logging
                 }
             };
 
+            defaultLogLevel = new Dictionary<string, LogLevel>();
+
             replaceOrAddTarget(consoletarget);
+            replaceOrAddTarget(consoletarget2);
+
+            Action<LogLevel, Target, string> addRule = (LogLevel minLogLevel, Target t, string name) =>
+            {
+                defaultLogLevel.Add(name, minLogLevel);
+                conf.AddRule(minLogLevel, LogLevel.Fatal, t, name);
+            };
+
+            foreach (var rule in conf.LoggingRules)
+            {
+                foreach(var ll in LogLevel.AllLevels)
+                {
+                    if (rule.IsLoggingEnabledForLevel(ll) && !defaultLogLevel.ContainsKey(rule.LoggerNamePattern))
+                    {
+                        defaultLogLevel.Add(rule.LoggerNamePattern, ll);
+                        break;
+                    }
+                }
+            }
+
             //Trace, Debug are excluded
-            conf.AddRule(LogLevel.Info, LogLevel.Fatal,consoletarget, normalConsoleLoggerName);
-            conf.AddRule(LogLevel.Info, LogLevel.Fatal,consoletarget, highlightedConsoleLoggerName);
+            addRule(LogLevel.Info, consoletarget, normalConsoleLoggerName + "*");
+            addRule(LogLevel.Info, consoletarget2, highlightedConsoleLoggerName);
             //only Error and Fatal
-            conf.AddRule(LogLevel.Error, LogLevel.Fatal,consoletarget, debugConsoleLoggerName);
-            conf.AddRule(LogLevel.Fatal, LogLevel.Fatal,consoletarget, traceConsoleLoggerName);
+            conf.AddRule(LogLevel.Error, LogLevel.Fatal, consoletarget2, debugConsoleLoggerName);
+            conf.AddRule(LogLevel.Fatal, LogLevel.Fatal, consoletarget2, traceConsoleLoggerName);
 
             var filetarget1 = new FileTarget
             {
@@ -214,7 +247,7 @@ namespace chocolatey.infrastructure.logging
 
             var layerNameLevelList = new List<(string, LogLevel)>
             {
-                (normalConsoleLoggerName, LogLevel.Debug),
+                (normalConsoleLoggerName + "*", LogLevel.Debug),
                 (highlightedConsoleLoggerName, LogLevel.Debug),
                 (debugConsoleLoggerName, LogLevel.Debug),
             };
@@ -230,9 +263,9 @@ namespace chocolatey.infrastructure.logging
 
 
             conf.AddRule(LogLevel.Trace, LogLevel.Fatal, filetarget1, DisabledName(traceConsoleLoggerName));
-            conf.AddTarget(filetarget1);
+            replaceOrAddTarget(filetarget1);
             conf.AddRule(LogLevel.Trace, LogLevel.Fatal, filetarget2, DisabledName(traceConsoleLoggerName));
-            conf.AddTarget(filetarget2);
+            replaceOrAddTarget(filetarget2);
 
             LogManager.Configuration = conf;
             LogManager.ReconfigExistingLoggers();
@@ -279,58 +312,109 @@ namespace chocolatey.infrastructure.logging
             Log4NetAppenderConfiguration.set_verbose_logger_when_verbose(verbose, debug, verboseAppenderName);
             Log4NetAppenderConfiguration.set_trace_logger_when_trace(trace, traceAppenderName);
 
-            LogLevel minLogLevelConsole = null;
             LogLevel minLogLevelDebug = null;
 
             if (trace)
+            { 
+                minLogLevelDebug = LogLevel.Trace;
+            } else
             {
-                minLogLevelDebug = minLogLevelConsole = LogLevel.Trace;
-            }
-            else {
-                minLogLevelConsole = LogLevel.Info;
-
                 if (verbose)
-                { 
-                    minLogLevelConsole = LogLevel.Debug;
-                }
-
-                if (debug)
                 {
-                    minLogLevelConsole = LogLevel.Debug;
-                    minLogLevelDebug = LogLevel.Debug;
+                    if (debug)
+                    {
+                        minLogLevelDebug = LogLevel.Debug;
+                    }
+                    else
+                    {
+                        minLogLevelDebug = LogLevel.Info;
+                    }
                 }
                 else
-                { 
-                    minLogLevelDebug = LogLevel.Info;
+                {
+                    minLogLevelDebug = LogLevel.Error;
                 }
             }
 
             var conf = LogManager.Configuration;
-            foreach (var rule in conf.LoggingRules.ToList())
+            var rulesList = conf.LoggingRules.ToList();
+            for(int i = 0; i < rulesList.Count; i++)
             {
+                var rule = rulesList[i];
+                LogLevel loglevel = null;
+
+                if (rule.Targets.Count == 0)
+                {
+                    continue;
+                }
+
                 var target = rule.Targets.First();
                 var name = target.Name;
+                bool moreDetails = name == fileLoggerName;
+
+                LogLevel minLogLevelConsole = null;
+
+                if (trace)
+                {
+                    minLogLevelConsole = (moreDetails) ? LogLevel.Trace: LogLevel.Info;
+                }
+                else
+                {
+                    minLogLevelConsole = LogLevel.Info;
+
+                    if (verbose)
+                    {
+                        minLogLevelConsole = LogLevel.Debug;
+                    }
+
+                    if (debug)
+                    {
+                        minLogLevelConsole = LogLevel.Debug;
+                    }
+                }
+
+                if (defaultLogLevel.ContainsKey(rule.LoggerNamePattern) && !(debug || trace || verbose))
+                {
+                    loglevel = defaultLogLevel[rule.LoggerNamePattern];
+                }
+                else {
+                    loglevel = minLogLevelConsole;
+                }
 
                 if (name == fileLoggerName || name == fileSummaryLoggerName)
                 {
                     LogLevel minLogLevelFile;
-                    bool moreDetails = name == fileLoggerName;
-                    if (trace)
+                    bool useDefLogLevel = defaultLogLevel.ContainsKey(rule.LoggerNamePattern);
+
+                    if (useDefLogLevel)
                     {
-                        if (moreDetails)
+                        if (debug || trace || verbose)
                         {
-                            minLogLevelFile = LogLevel.Trace;
+                            useDefLogLevel = !moreDetails;
+                        }
+                    }
+
+                    if (useDefLogLevel)
+                    {
+                        minLogLevelFile = defaultLogLevel[rule.LoggerNamePattern];
+                    }
+                    else {
+                        if (trace)
+                        {
+                            if (moreDetails)
+                            {
+                                minLogLevelFile = LogLevel.Trace;
+                            }
+                            else
+                            {
+                                minLogLevelFile = LogLevel.Info;
+                            }
                         }
                         else
                         {
-                            minLogLevelFile = LogLevel.Info;
+                            minLogLevelFile = (name == fileSummaryLoggerName) ? LogLevel.Info : LogLevel.Debug;
                         }
                     }
-                    else
-                    { 
-                        minLogLevelFile = (name == fileSummaryLoggerName) ? LogLevel.Info: LogLevel.Debug;
-                    }
-
                     FileTarget filetarget = ((FileTarget)target);
                     if (trace)
                     {
@@ -357,28 +441,36 @@ namespace chocolatey.infrastructure.logging
                         }
                     }
 
-                    conf.AddRule(minLogLevelFile, LogLevel.Fatal, rule.Targets.First(), rule.LoggerNamePattern);
-                    conf.LoggingRules.Remove(rule);
+                    //if (i <= userConfiguredRules)
+                    //{
+                    //    continue;
+                    //}
+                    
+                    rule.SetLoggingLevels(minLogLevelFile, LogLevel.Fatal);
                     continue;
                 }
 
-                if (rule.LoggerNamePattern == normalConsoleLoggerName ||
-                    rule.LoggerNamePattern == highlightedConsoleLoggerName)
+                if (rule.LoggerNamePattern == highlightedConsoleLoggerName)
                 {
-                    conf.AddRule(minLogLevelConsole, LogLevel.Fatal, rule.Targets.First(), rule.LoggerNamePattern);
-                    conf.LoggingRules.Remove(rule);
+                    rule.SetLoggingLevels(minLogLevelConsole, LogLevel.Fatal);
+                    continue;
                 }
 
-                if (rule.LoggerNamePattern == debugConsoleLoggerName && verbose)
+                if (rule.LoggerNamePattern == debugConsoleLoggerName)
                 {
-                    conf.AddRule(minLogLevelDebug, LogLevel.Fatal, rule.Targets.First(), rule.LoggerNamePattern);
-                    conf.LoggingRules.Remove(rule);
+                    rule.SetLoggingLevels(minLogLevelDebug, LogLevel.Fatal);
+                    continue;
                 }
 
-                if (rule.LoggerNamePattern == traceConsoleLoggerName && trace)
+                if (rule.LoggerNamePattern == traceConsoleLoggerName)
                 {
-                    conf.AddRule(minLogLevelConsole, LogLevel.Fatal, rule.Targets.First(), rule.LoggerNamePattern);
-                    conf.LoggingRules.Remove(rule);
+                    rule.SetLoggingLevels(minLogLevelConsole, LogLevel.Fatal);
+                    continue;
+                }
+
+                if (name == consoleTargetName)
+                {
+                    rule.SetLoggingLevels(loglevel, LogLevel.Fatal);
                 }
             }
 
@@ -394,16 +486,16 @@ namespace chocolatey.infrastructure.logging
                 bool debug = (i & 1) == 1;
                 bool verbose = (i & 2) == 2;
                 bool trace = (i & 4) == 4;
-                string s = "Adjusting levels to debug=" + debug + " verbose=" + verbose + " trace=" + trace;
+                string s = i + ") Adjusting levels to debug=" + debug + " verbose=" + verbose + " trace=" + trace;
                 console.Fatal(s); "chocolatey".Log().Fatal(s);
                 adjustLogLevels(debug, verbose, trace);
 
-                //TraceAll(normalConsoleLoggerName);
-                //TraceAll(highlightedConsoleLoggerName);
-                //TraceAll(debugConsoleLoggerName);
-                //TraceAll(traceConsoleLoggerName);
-                //TraceAll("Unknown");
-                TraceAll2(new LogService());
+                TraceAll(normalConsoleLoggerName);
+                TraceAll(highlightedConsoleLoggerName);
+                TraceAll(debugConsoleLoggerName);
+                TraceAll(traceConsoleLoggerName);
+                TraceAll("chocolatey.infrastructure.logging.LogService");
+                TraceAll("chocolatey.infrastructure.logging.LogService2");
             }
 
             Environment.Exit(2);
