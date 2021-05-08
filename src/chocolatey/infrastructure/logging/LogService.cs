@@ -47,23 +47,6 @@ namespace chocolatey.infrastructure.logging
             log.Fatal("fatal 6");log2.Fatal("fatal 6");
         }
 
-        public static void TraceAll2<T>(T t)
-        {
-            Type logType = t.GetType();
-            string loggerName = logType.FullName;
-            var log = LogManager.GetLogger(loggerName);
-            ILog log2 = t.Log();
-            log.Fatal("- Printing using logger '" + loggerName + "'"); log2.Fatal("- Printing using logger '" + loggerName + "'");
-            Console.WriteLine();
-            log.Trace("trace 1"); log2.Trace("trace 1");
-            log.Debug("debug 2 "); log2.Debug("debug 2 ");
-            log.Info("info 3"); log2.Info("info 3");
-            log.Warn("warn 4"); log2.Warn("warn 4");
-            log.Error("error 5"); log2.Error("error 5");
-            log.Fatal("fatal 6"); log2.Fatal("fatal 6");
-        }
-
-
         //const string fileLogPatternLayout = @"${date:format=yyyy-MM-dd HH\:mm\:ss,fff} ${processid} [${uppercase:${level:padding=-5:alignmentOnTruncation=left}}] - ${message}";
         const string fileLogPatternLayout = @"${processid} [${uppercase:${level:padding=-5:alignmentOnTruncation=left}}] - ${message}";
         //const string convPatternDebug = "%property{pid}:%thread [%-5level] - %message - %file:%method:%line %newline";
@@ -339,6 +322,7 @@ namespace chocolatey.infrastructure.logging
             for(int i = 0; i < rulesList.Count; i++)
             {
                 var rule = rulesList[i];
+                LogLevel loglevel = null;
 
                 if (rule.Targets.Count == 0)
                 {
@@ -350,24 +334,43 @@ namespace chocolatey.infrastructure.logging
                 bool moreDetails = name == fileLoggerName;
 
                 LogLevel minLogLevelConsole = null;
+                LogLevel minLogLevelConsoleHighlight = null;
+                LogLevel minLogLevelTrace = null;
 
                 if (trace)
                 {
-                    minLogLevelConsole = (moreDetails) ? LogLevel.Trace: LogLevel.Info;
+                    minLogLevelConsole = LogLevel.Trace;
+                    minLogLevelConsoleHighlight = LogLevel.Trace;
+                    minLogLevelTrace = LogLevel.Trace;
                 }
                 else
                 {
                     minLogLevelConsole = LogLevel.Info;
+                    minLogLevelConsoleHighlight = LogLevel.Info;
+                    minLogLevelTrace = LogLevel.Fatal;
 
                     if (verbose)
                     {
                         minLogLevelConsole = LogLevel.Debug;
+                        minLogLevelConsoleHighlight = LogLevel.Debug;
+                        minLogLevelTrace = LogLevel.Fatal;
                     }
 
                     if (debug)
                     {
                         minLogLevelConsole = LogLevel.Debug;
+                        minLogLevelConsoleHighlight = LogLevel.Debug;
+                        minLogLevelTrace = LogLevel.Fatal;
                     }
+                }
+
+                if (defaultLogLevel.ContainsKey(rule.LoggerNamePattern) && !(debug || trace || verbose))
+                {
+                    loglevel = defaultLogLevel[rule.LoggerNamePattern];
+                }
+                else
+                {
+                    loglevel = minLogLevelConsole;
                 }
 
                 LogLevel minLogLevelFile;
@@ -440,7 +443,7 @@ namespace chocolatey.infrastructure.logging
 
                 if (rule.LoggerNamePattern == highlightedConsoleLoggerName)
                 {
-                    rule.SetLoggingLevels(minLogLevelConsole, LogLevel.Fatal);
+                    rule.SetLoggingLevels(minLogLevelConsoleHighlight, LogLevel.Fatal);
                     continue;
                 }
 
@@ -452,13 +455,13 @@ namespace chocolatey.infrastructure.logging
 
                 if (rule.LoggerNamePattern == traceConsoleLoggerName)
                 {
-                    rule.SetLoggingLevels(minLogLevelConsole, LogLevel.Fatal);
+                    rule.SetLoggingLevels(minLogLevelTrace, LogLevel.Fatal);
                     continue;
                 }
 
                 if (name == consoleTargetName)
                 {
-                    rule.SetLoggingLevels(minLogLevelFile, LogLevel.Fatal);
+                    rule.SetLoggingLevels(loglevel, LogLevel.Fatal);
                 }
             }
 
