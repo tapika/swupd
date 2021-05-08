@@ -106,7 +106,6 @@ namespace chocolatey.infrastructure.logging
             LogManager.ConfigurationReloaded += LogManager_ConfigurationReloaded;
 
             bool clearLogFile = true;
-            userConfiguredRules = conf.LoggingRules.Count;
             //bool clearLogFile = ApplicationParameters.LogsAppendToFile;
             reconfigure(clearLogFile, conf);
             //Console.WriteLine("press any key...");
@@ -114,7 +113,6 @@ namespace chocolatey.infrastructure.logging
         }
 
         static Dictionary<string, LogLevel> defaultLogLevel;
-        static int userConfiguredRules = 0;
 
 
         static void reconfigure(bool clearLogFile, LoggingConfiguration conf)
@@ -436,11 +434,6 @@ namespace chocolatey.infrastructure.logging
                         }
                     }
 
-                    //if (i <= userConfiguredRules)
-                    //{
-                    //    continue;
-                    //}
-                    
                     rule.SetLoggingLevels(minLogLevelFile, LogLevel.Fatal);
                     continue;
                 }
