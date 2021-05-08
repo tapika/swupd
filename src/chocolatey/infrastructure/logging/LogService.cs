@@ -57,9 +57,6 @@ namespace chocolatey.infrastructure.logging
         ;
 
 
-
-
-
         static string outputDirectory;
 
         public static void configure(string outputDirectory = null)
@@ -74,10 +71,12 @@ namespace chocolatey.infrastructure.logging
 @"<nlog throwExceptions='true' autoReload='true'>
   <targets>
     <target name='console' type='coloredConsole' />
+    <target name='chocolog' type='null' />
+    <target name='chocolog_summary' type='null' />
   </targets>
   <rules>
      <!-- log first, and then discard the rest (so chocolatey* would not log it)
-    <logger name='<class name>' minlevel='Error' writeTo='console' final=""true"" />
+    <logger name='<class name>' minlevel='Error' writeTo='console,chocolog,chocolog_summary' final=""true"" />
     <logger name='<class name>' final=""true"" />
     -->
    </rules>
@@ -184,6 +183,28 @@ namespace chocolatey.infrastructure.logging
                 defaultLogLevel.Add(name, minLogLevel);
                 conf.AddRule(minLogLevel, LogLevel.Fatal, t, name);
             };
+
+            // If any rule has multiple targets, we make multiple rules, so can reconfigure each rule levels individually.
+            if (conf.LoggingRules.Any(x => x.Targets.Count > 1))
+            {
+                foreach (var rule in conf.LoggingRules.ToList())
+                {
+                    LogLevel min = LogLevel.AllLevels.Where(x => rule.IsLoggingEnabledForLevel(x)).First();
+
+                    foreach (var t in rule.Targets)
+                    {
+                        conf.AddRule(min, LogLevel.Fatal, t, rule.LoggerNamePattern, rule.Final);
+                    }
+
+                    if (rule.Targets.Count == 0)
+                    { 
+                        conf.LoggingRules.Add(rule);
+                    }
+
+                    conf.LoggingRules.Remove(rule);
+                }
+            }
+
 
             foreach (var rule in conf.LoggingRules)
             {
