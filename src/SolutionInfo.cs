@@ -9,6 +9,6 @@ using System.Reflection;
 [assembly: AssemblyProduct("Chocolatey GUI")]
 [assembly: AssemblyVersion("0.19.0.0")]
 [assembly: AssemblyFileVersion("0.19.0.0")]
-[assembly: AssemblyInformationalVersion("0.19.0-alpha.173+branch.develop.sha.d015ab3b3bdd97c6e30fdb618cab1b0487c61a9e")]
+[assembly: AssemblyInformationalVersion("0.19.0")]
 [assembly: AssemblyCopyright("Copyright 2014 - Present Rob Reynolds, the maintainers of Chocolatey, and RealDimensions Software, LLC")]
 
