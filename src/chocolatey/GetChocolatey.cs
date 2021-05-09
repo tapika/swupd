@@ -140,6 +140,48 @@ namespace chocolatey
         }
 
         /// <summary>
+        ///   This is an optional helper to give you the correct settings for a logger. You can still set this in the set by calling propConfig.Logger without having to call this method.
+        /// </summary>
+        /// <param name="logger">This is the logger you want Chocolatey to also use.</param>
+        /// <returns>This <see cref="GetChocolatey"/> instance</returns>
+        public GetChocolatey SetCustomLogging(ILog logger)
+        {
+            Log.InitializeWith(logger, resetLoggers: false);
+            drain_log_sink(logger);
+            return this;
+        }
+
+        private void drain_log_sink(ILog logger)
+        {
+            foreach (var logMessage in _logSinkLogger.Messages.or_empty_list_if_null())
+            {
+                switch (logMessage.LogLevel)
+                {
+                    case LogLevelType.Trace:
+                        logger.Trace(logMessage.Message);
+                        break;
+                    case LogLevelType.Debug:
+                        logger.Debug(logMessage.Message);
+                        break;
+                    case LogLevelType.Information:
+                        logger.Info(logMessage.Message);
+                        break;
+                    case LogLevelType.Warning:
+                        logger.Warn(logMessage.Message);
+                        break;
+                    case LogLevelType.Error:
+                        logger.Error(logMessage.Message);
+                        break;
+                    case LogLevelType.Fatal:
+                        logger.Fatal(logMessage.Message);
+                        break;
+                }
+            }
+
+            _logSinkLogger.Messages.Clear();
+        }
+
+        /// <summary>
         ///   Set your options for running chocolatey here. It looks like Set(c => {c.CommandName = "install"; c.PackageNames = "bob";}).Run();
         /// </summary>
         /// <param name="propConfig">The configuration to set</param>
