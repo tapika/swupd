@@ -1,7 +1,7 @@
 <Project>
   <!-- This configuration is needed so .netcore3.1 and .net40 framework would not conflict with each other when performing nuget restore -->
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\nuget\$(SolutionName)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)src\obj\nuget\$(SolutionName)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
   </PropertyGroup>
 </Project>
 
