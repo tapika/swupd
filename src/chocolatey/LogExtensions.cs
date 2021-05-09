@@ -70,7 +70,12 @@ namespace chocolatey
         /// <returns>Instance of a logger for the object.</returns>
         public static ILog Log(this string objectName)
         {
-            return _dictionary.Value.GetOrAdd(objectName, infrastructure.logging.Log.GetLoggerFor(objectName));
+            if (!_dictionary.Value.ContainsKey(objectName))
+            {
+                _dictionary.Value.TryAdd(objectName,infrastructure.logging.Log.GetLoggerFor(objectName));
+            }
+
+            return _dictionary.Value[objectName];
         }
     }
 
