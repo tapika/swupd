@@ -91,7 +91,10 @@ namespace chocolatey.console
                   Log4NetAppenderConfiguration.configure_additional_log_file(fileSystem.get_full_path(config.AdditionalLogFileLocation));
                 }
 #else
-                //swupd TODO: Add logging without colors support
+                if (config.Features.LogWithoutColor)
+                {
+                    LogService.enableColors(false);
+                }
                 //swupd TODO: Add logging to additional file
 #endif
 

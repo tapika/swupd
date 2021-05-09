@@ -59,7 +59,10 @@ namespace chocolatey.infrastructure.logging
 
         public static void configure(string outputDirectory = null)
         {
-            LogService.outputDirectory = outputDirectory;
+            if (outputDirectory != null)
+            { 
+                LogService.outputDirectory = outputDirectory;
+            }
             string path = Path.Combine(ApplicationParameters.InstallLocation, "nlog.config");
 
             // Create initial configuration just so it would be easy to modify, and also watch from file system.
@@ -83,6 +86,7 @@ namespace chocolatey.infrastructure.logging
             }
 
             var conf = new XmlLoggingConfiguration(path, LogManager.LogFactory);
+            LogManager.ConfigurationReloaded -= LogManager_ConfigurationReloaded;
             LogManager.ConfigurationReloaded += LogManager_ConfigurationReloaded;
 
 #if USE_LOG4NET
@@ -99,6 +103,17 @@ namespace chocolatey.infrastructure.logging
             //Console.ReadLine();
         }
 
+        /// <summary>
+        /// Enables or disables colors (Normally called before adjustLogLevels)
+        /// </summary>
+        /// <param name="b">true to enable</param>
+        public static void enableColors(bool b = true)
+        {
+            colorsEnabled = b;
+            configure();
+        }
+
+        static bool colorsEnabled = true;
         static Dictionary<string, LogLevel> defaultLogLevel;
 
 
@@ -126,45 +141,58 @@ namespace chocolatey.infrastructure.logging
 #endif
             const string console2LoggerName = "console2";
 
-            var consoletarget = new ColoredConsoleTarget() { Layout = "${message}", Name = consoleTargetName };
-            var consoletarget2 = new ColoredConsoleTarget() { Layout = "${message}", Name = console2LoggerName };
+            TargetWithLayoutHeaderAndFooter consoletarget;
+            TargetWithLayoutHeaderAndFooter consoletarget2;
 
-            string andHighlightConsole = " and equals(logger, '" + highlightedConsoleLoggerName + "')";
-            string andDebugConsole = " and equals(logger, '" + debugConsoleLoggerName + "')";
-            string andTraceConsole = " and equals(logger, '" + traceConsoleLoggerName + "')";
+            if (colorsEnabled)
+            {
+                var cct1 = new ColoredConsoleTarget() { Layout = "${message}", Name = consoleTargetName };
+                consoletarget = cct1;
+                var cct2 = new ColoredConsoleTarget() { Layout = "${message}", Name = console2LoggerName };
+                consoletarget2 = cct2;
 
-            ((List<ConsoleRowHighlightingRule>)consoletarget.RowHighlightingRules).AddRange(new[] {
-                new ConsoleRowHighlightingRule("level == LogLevel.Fatal", ConsoleOutputColor.White, ConsoleOutputColor.Red),
-                new ConsoleRowHighlightingRule("level == LogLevel.Error", ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
-                new ConsoleRowHighlightingRule("level == LogLevel.Warn", ConsoleOutputColor.Yellow, ConsoleOutputColor.NoChange),
-                new ConsoleRowHighlightingRule("level == LogLevel.Info", ConsoleOutputColor.Gray, ConsoleOutputColor.Black),
-                new ConsoleRowHighlightingRule("level == LogLevel.Debug", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-                new ConsoleRowHighlightingRule("level == LogLevel.Trace", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-            });
+                ((List<ConsoleRowHighlightingRule>)cct1.RowHighlightingRules).AddRange(new[] {
+                    new ConsoleRowHighlightingRule("level == LogLevel.Fatal", ConsoleOutputColor.White, ConsoleOutputColor.Red),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Error", ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Warn", ConsoleOutputColor.Yellow, ConsoleOutputColor.NoChange),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Info", ConsoleOutputColor.Gray, ConsoleOutputColor.Black),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Debug", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Trace", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                });
 
-            ((List<ConsoleRowHighlightingRule>)consoletarget2.RowHighlightingRules).AddRange(new[] {
-                // Originally copied from NLog, search from DefaultConsoleRowHighlightingRules
-                new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andHighlightConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
-                new ConsoleRowHighlightingRule("level == LogLevel.Error" + andHighlightConsole, ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
-                new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andHighlightConsole, ConsoleOutputColor.Magenta, ConsoleOutputColor.NoChange),
-                new ConsoleRowHighlightingRule("level == LogLevel.Info" + andHighlightConsole, ConsoleOutputColor.Green, ConsoleOutputColor.Black),
-                new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andHighlightConsole, ConsoleOutputColor.Blue, ConsoleOutputColor.Gray),
-                new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andHighlightConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                string andHighlightConsole = " and equals(logger, '" + highlightedConsoleLoggerName + "')";
+                string andDebugConsole = " and equals(logger, '" + debugConsoleLoggerName + "')";
+                string andTraceConsole = " and equals(logger, '" + traceConsoleLoggerName + "')";
 
-                new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andDebugConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
-                new ConsoleRowHighlightingRule("level == LogLevel.Error" + andDebugConsole, ConsoleOutputColor.Red, ConsoleOutputColor.Black),
-                new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andDebugConsole, ConsoleOutputColor.DarkMagenta, ConsoleOutputColor.Black),
-                new ConsoleRowHighlightingRule("level == LogLevel.Info" + andDebugConsole, ConsoleOutputColor.DarkGreen, ConsoleOutputColor.Black),
-                new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andDebugConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-                new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andDebugConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                ((List<ConsoleRowHighlightingRule>)cct2.RowHighlightingRules).AddRange(new[] {
+                    // Originally copied from NLog, search from DefaultConsoleRowHighlightingRules
+                    new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andHighlightConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Error" + andHighlightConsole, ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andHighlightConsole, ConsoleOutputColor.Magenta, ConsoleOutputColor.NoChange),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Info" + andHighlightConsole, ConsoleOutputColor.Green, ConsoleOutputColor.Black),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andHighlightConsole, ConsoleOutputColor.Blue, ConsoleOutputColor.Gray),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andHighlightConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
 
-                new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andTraceConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
-                new ConsoleRowHighlightingRule("level == LogLevel.Error" + andTraceConsole, ConsoleOutputColor.Red, ConsoleOutputColor.Black),
-                new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andTraceConsole, ConsoleOutputColor.DarkMagenta, ConsoleOutputColor.Black),
-                new ConsoleRowHighlightingRule("level == LogLevel.Info" + andTraceConsole, ConsoleOutputColor.DarkGreen, ConsoleOutputColor.Black),
-                new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andTraceConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-                new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andTraceConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-            });
+                    new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andDebugConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Error" + andDebugConsole, ConsoleOutputColor.Red, ConsoleOutputColor.Black),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andDebugConsole, ConsoleOutputColor.DarkMagenta, ConsoleOutputColor.Black),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Info" + andDebugConsole, ConsoleOutputColor.DarkGreen, ConsoleOutputColor.Black),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andDebugConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andDebugConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+
+                    new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andTraceConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Error" + andTraceConsole, ConsoleOutputColor.Red, ConsoleOutputColor.Black),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andTraceConsole, ConsoleOutputColor.DarkMagenta, ConsoleOutputColor.Black),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Info" + andTraceConsole, ConsoleOutputColor.DarkGreen, ConsoleOutputColor.Black),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andTraceConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                    new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andTraceConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                });
+            }
+            else 
+            { 
+                consoletarget = new ConsoleTarget() { Layout = "${message}", Name = consoleTargetName };
+                consoletarget2 = new ConsoleTarget() { Layout = "${message}", Name = console2LoggerName };
+            }
 
             var targets = conf.AllTargets;
             var targetNames = targets.Select(x => x.Name).ToList();
