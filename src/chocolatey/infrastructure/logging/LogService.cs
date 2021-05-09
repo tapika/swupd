@@ -24,6 +24,7 @@ namespace chocolatey.infrastructure.logging
         const string traceConsoleLoggerName = "Trace";
         const string fileLoggerName = "chocolog";
         const string fileSummaryLoggerName = "chocolog_summary";
+        const string fileSummary2LoggerName = "chocolog_summary2";
 
         private static string DisabledName(string s)
         {
@@ -53,6 +54,7 @@ namespace chocolatey.infrastructure.logging
             "${callsite:classname=false:methodname=true}:" +
             "${callsite-linenumber}"
         ;
+        static string simplifiedLogPatternLayout = "${message}";
 
 
         static string outputDirectory;
@@ -104,6 +106,34 @@ namespace chocolatey.infrastructure.logging
         }
 
         /// <summary>
+        /// Reconfigures additional log file.
+        /// </summary>
+        /// <param name="path">Path to file</param>
+        public static void configureAdditionalLogFile(string path)
+        {
+            var conf = LogManager.Configuration;
+            var newSummaryTarget = new FileTarget
+            {
+                Name = fileSummary2LoggerName,
+                FileName = path,
+                Layout = simplifiedLogPatternLayout,
+                CreateDirs = true,
+                AutoFlush = true,
+                ArchiveOldFileOnStartup = true,
+                MaxArchiveFiles = 1
+            };
+
+            conf.AddTarget(newSummaryTarget);
+
+            foreach (var name in GetLoggerNames())
+            { 
+                conf.AddRule(LogLevel.Info, LogLevel.Fatal, newSummaryTarget, name);
+            }
+
+            LogManager.ReconfigExistingLoggers();
+        }
+
+        /// <summary>
         /// Enables or disables colors (Normally called before adjustLogLevels)
         /// </summary>
         /// <param name="b">true to enable</param>
@@ -115,6 +145,13 @@ namespace chocolatey.infrastructure.logging
 
         static bool colorsEnabled = true;
         static Dictionary<string, LogLevel> defaultLogLevel;
+
+        static IEnumerable<string> GetLoggerNames()
+        {
+            yield return normalConsoleLoggerName + "*";
+            yield return highlightedConsoleLoggerName;
+            yield return debugConsoleLoggerName;
+        }
 
 
         static void reconfigure(bool clearLogFile, LoggingConfiguration conf)
@@ -289,22 +326,14 @@ namespace chocolatey.infrastructure.logging
                 MaxArchiveFiles = 1
             };
 
-            var layerNameLevelList = new List<(string, LogLevel)>
+            foreach (var name in GetLoggerNames())
             {
-                (normalConsoleLoggerName + "*", LogLevel.Debug),
-                (highlightedConsoleLoggerName, LogLevel.Debug),
-                (debugConsoleLoggerName, LogLevel.Debug),
-            };
-
-            foreach (var layerLevel in layerNameLevelList)
-            {
-                conf.AddRule(layerLevel.Item2, LogLevel.Fatal, filetargetDetailed, layerLevel.Item1);
+                conf.AddRule(LogLevel.Debug, LogLevel.Fatal, filetargetDetailed, name);
                 conf.AddTarget(filetargetDetailed);
 
-                conf.AddRule(LogLevel.Info, LogLevel.Fatal, filetargetSummary, layerLevel.Item1);
+                conf.AddRule(LogLevel.Info, LogLevel.Fatal, filetargetSummary, name);
                 conf.AddTarget(filetargetSummary);
             }
-
 
             conf.AddRule(LogLevel.Trace, LogLevel.Fatal, filetargetDetailed, DisabledName(traceConsoleLoggerName));
             replaceOrAddTarget(filetargetDetailed);

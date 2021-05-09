@@ -95,7 +95,11 @@ namespace chocolatey.console
                 {
                     LogService.enableColors(false);
                 }
-                //swupd TODO: Add logging to additional file
+
+                if (!string.IsNullOrWhiteSpace(config.AdditionalLogFileLocation))
+                {
+                    LogService.configureAdditionalLogFile(fileSystem.get_full_path(config.AdditionalLogFileLocation));
+                }
 #endif
 
                 report_version_and_exit_if_requested(args, config);
