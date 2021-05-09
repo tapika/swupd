@@ -201,6 +201,10 @@ namespace chocolatey.infrastructure.logging
             }
         }
 
+        static string datePatten = "%date ";
+        static string convPattern = "%property{pid} [%-5level] - %message%newline";
+        static string convPatternDebug = "%property{pid}:%thread [%-5level] - %message - %file:%method:%line %newline";
+
         /// <summary>
         ///   Adds a file appender to all current loggers. Only runs one time.
         /// </summary>
@@ -216,8 +220,8 @@ namespace chocolatey.infrastructure.logging
 
                 var layout = new PatternLayout
                     {
-                        ConversionPattern = "%date %property{pid} [%-5level] - %message%newline"
-                    };
+                        ConversionPattern = datePatten + convPattern
+                };
                 layout.ActivateOptions();
 
                 var app = new RollingFileAppender
@@ -372,7 +376,7 @@ namespace chocolatey.infrastructure.logging
                     {
                         var traceLayout = new PatternLayout
                         {
-                            ConversionPattern = "%date %property{pid}:%thread [%-5level] - %message - %file:%method:%line %newline"
+                            ConversionPattern = datePatten + convPatternDebug
                         };
                         traceLayout.ActivateOptions();
 
@@ -391,7 +395,7 @@ namespace chocolatey.infrastructure.logging
             if (!string.IsNullOrWhiteSpace(logDirectory) && !Directory.Exists(logDirectory)) Directory.CreateDirectory(logDirectory);
             var layout = new PatternLayout
             {
-                ConversionPattern = "%date %property{pid} [%-5level] - %message%newline"
+                ConversionPattern = datePatten + convPattern
             };
             layout.ActivateOptions();
 
