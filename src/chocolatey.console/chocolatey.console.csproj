@@ -62,7 +62,8 @@
       <!-- The type initializer for 'System.Runtime.Serialization.Formatters.Binary.Converter' threw an exception. -->
       <TrimmerRootAssembly Include="mscorlib" />
       <!-- Unhandled exception. System.MissingMethodException: No parameterless constructor defined for type 'log4net.Repository.Hierarchy.Hierarchy'. -->
-      <TrimmerRootAssembly Include="log4net" />
+      <!--<TrimmerRootAssembly Include="log4net" />-->
+      <TrimmerRootAssembly Include="NLog" />
       <!--log4net:ERROR Exception while reading ConfigurationSettings. Check your .config file is well formed XML.
       System.Configuration.ConfigurationErrorsException: Configuration system failed to initialize
       System.MissingMethodException: No parameterless constructor defined for type 'System.Configuration.ClientConfigurationHost'.-->
