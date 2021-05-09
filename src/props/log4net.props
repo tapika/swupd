@@ -1,13 +1,21 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <PropertyGroup>
+    <!--<Log4NetIntegrateSources>true</Log4NetIntegrateSources>-->
+  </PropertyGroup>
+
   <!-- .net framework specific references -->
-  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' and '$(Log4NetIntegrateSources)' != 'true'">
     <PackageReference Include="log4net" Version="2.0.3" />
   </ItemGroup>
 
   <!-- .net core specific references -->
-  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' and '$(Log4NetIntegrateSources)' != 'true'">
     <PackageReference Include="log4net" Version="2.0.12" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Log4NetIntegrateSources)' == 'true'">
+    <ProjectReference Include="..\..\..\logging-log4net\src\log4net.csproj" />
   </ItemGroup>
 
 </Project>
