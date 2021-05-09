@@ -54,9 +54,10 @@ namespace chocolatey.console
                 //no file system at this point
                 if (!Directory.Exists(loggingLocation)) Directory.CreateDirectory(loggingLocation);
 
-                Log4NetAppenderConfiguration.configure(loggingLocation, excludeLoggerNames: ChocolateyLoggers.Trace.to_string());
+                LogService.configure(loggingLocation);
                 Bootstrap.initialize();
                 Bootstrap.startup();
+                //LogService.Test();
                 ChocolateyLicense license = null;
 #if NETFRAMEWORK
                 license = License.validate_license();
@@ -78,6 +79,7 @@ namespace chocolatey.console
                      warning => { warnings.Add(warning); }
                      );
 
+#if USE_LOG4NET
                 if (config.Features.LogWithoutColor)
                 {
                     ApplicationParameters.Log4NetConfigurationResource = @"chocolatey.infrastructure.logging.log4net.nocolor.config.xml";
@@ -88,6 +90,10 @@ namespace chocolatey.console
                 {
                   Log4NetAppenderConfiguration.configure_additional_log_file(fileSystem.get_full_path(config.AdditionalLogFileLocation));
                 }
+#else
+                //swupd TODO: Add logging without colors support
+                //swupd TODO: Add logging to additional file
+#endif
 
                 report_version_and_exit_if_requested(args, config);
 
@@ -129,11 +135,7 @@ namespace chocolatey.console
                     Environment.Exit(config.UnsuccessfulParsing ? 1 : 0);
                 }
 
-                var verboseAppenderName = "{0}LoggingColoredConsoleAppender".format_with(ChocolateyLoggers.Verbose.to_string());
-                var traceAppenderName = "{0}LoggingColoredConsoleAppender".format_with(ChocolateyLoggers.Trace.to_string());
-                Log4NetAppenderConfiguration.set_logging_level_debug_when_debug(config.Debug, verboseAppenderName, traceAppenderName);
-                Log4NetAppenderConfiguration.set_verbose_logger_when_verbose(config.Verbose, config.Debug, verboseAppenderName);
-                Log4NetAppenderConfiguration.set_trace_logger_when_trace(config.Trace, traceAppenderName);
+                LogService.adjustLogLevels(config.Debug, config.Verbose, config.Trace);
                 "chocolatey".Log().Debug(() => "{0} is running on {1} v {2}".format_with(ApplicationParameters.Name, config.Information.PlatformType, config.Information.PlatformVersion.to_string()));
                 //"chocolatey".Log().Debug(() => "Command Line: {0}".format_with(Environment.CommandLine));
 

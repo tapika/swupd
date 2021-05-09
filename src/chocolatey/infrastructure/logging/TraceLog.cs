@@ -21,7 +21,6 @@ namespace chocolatey.infrastructure.logging
     using System.Net;
     using System.Reflection;
     using System.Threading;
-    using log4net.Util;
 
     public class TraceLog : TraceListener
     {

@@ -37,7 +37,7 @@
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
   </ItemGroup>
 
-  <Import Project="..\props\log4net.props" />
+  <!--<Import Project="..\props\log4net.props" />-->
   <Import Project="..\props\nlog.props" />
 
   <ItemGroup>

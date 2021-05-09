@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+#if USE_LOG4NET
 namespace chocolatey.infrastructure.logging
 {
     using System;
@@ -422,3 +422,4 @@ namespace chocolatey.infrastructure.logging
         }
     }
 }
+#endif

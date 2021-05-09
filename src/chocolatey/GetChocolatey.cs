@@ -30,7 +30,9 @@ namespace chocolatey
     using infrastructure.logging;
     using infrastructure.registration;
     using infrastructure.synchronization;
+#if USE_LOG4NET
     using log4net;
+#endif
 #if !NoResources
     using resources;
 #endif
@@ -45,8 +47,6 @@ namespace chocolatey
     /// </summary>
     public static class Lets
     {
-        private static readonly log4net.ILog _logger = LogManager.GetLogger(typeof(Lets));
-
         private static GetChocolatey set_up()
         {
             add_assembly_resolver();
@@ -85,7 +85,7 @@ namespace chocolatey
                     if (requestedAssembly.get_public_key_token().is_equal_to(chocolateyPublicKey)
                         && requestedAssembly.Name.is_equal_to(ApplicationParameters.LicensedChocolateyAssemblySimpleName))
                     {
-                        _logger.Debug("Resolving reference to chocolatey.licensed...");
+                        //_logger.Debug("Resolving reference to chocolatey.licensed...");
                         return AssemblyResolution.resolve_or_load_assembly(
                             ApplicationParameters.LicensedChocolateyAssemblySimpleName,
                             requestedAssembly.get_public_key_token(),
@@ -123,57 +123,20 @@ namespace chocolatey
         /// </summary>
         public GetChocolatey()
         {
-            Log4NetAppenderConfiguration.configure(null, excludeLoggerNames: ChocolateyLoggers.Trace.to_string());
+            LogService.configure();
             Bootstrap.initialize();
+#if USE_LOG4NET
             Log.InitializeWith(new AggregateLog(new List<ILog>() { new Log4NetLog(), _logSinkLogger }));
+#else
+            Log.InitializeWith(new AggregateLog(new List<ILog>() { new NLogLog(), _logSinkLogger }));
+#endif
+
 #if NETFRAMEWORK
             _license = License.validate_license();
 #else
             _license = null;
 #endif
             _container = SimpleInjectorContainer.Container;
-        }
-
-        /// <summary>
-        ///   This is an optional helper to give you the correct settings for a logger. You can still set this in the set by calling propConfig.Logger without having to call this method.
-        /// </summary>
-        /// <param name="logger">This is the logger you want Chocolatey to also use.</param>
-        /// <returns>This <see cref="GetChocolatey"/> instance</returns>
-        public GetChocolatey SetCustomLogging(ILog logger)
-        {
-            Log.InitializeWith(logger, resetLoggers: false);
-            drain_log_sink(logger);
-            return this;
-        }
-
-        private void drain_log_sink(ILog logger)
-        {
-            foreach (var logMessage in _logSinkLogger.Messages.or_empty_list_if_null())
-            {
-                switch (logMessage.LogLevel)
-                {
-                    case LogLevelType.Trace:
-                        logger.Trace(logMessage.Message);
-                        break;
-                    case LogLevelType.Debug:
-                        logger.Debug(logMessage.Message);
-                        break;
-                    case LogLevelType.Information:
-                        logger.Info(logMessage.Message);
-                        break;
-                    case LogLevelType.Warning:
-                        logger.Warn(logMessage.Message);
-                        break;
-                    case LogLevelType.Error:
-                        logger.Error(logMessage.Message);
-                        break;
-                    case LogLevelType.Fatal:
-                        logger.Fatal(logMessage.Message);
-                        break;
-                }
-            }
-
-            _logSinkLogger.Messages.Clear();
         }
 
         /// <summary>
@@ -442,11 +405,7 @@ namespace chocolatey
                     returnValue = function.Invoke(configuration);
                 }
 
-                var verboseAppenderName = "{0}LoggingColoredConsoleAppender".format_with(ChocolateyLoggers.Verbose.to_string());
-                var traceAppenderName = "{0}LoggingColoredConsoleAppender".format_with(ChocolateyLoggers.Trace.to_string());
-                Log4NetAppenderConfiguration.set_logging_level_debug_when_debug(configuration.Debug, verboseAppenderName, traceAppenderName);
-                Log4NetAppenderConfiguration.set_verbose_logger_when_verbose(configuration.Verbose, configuration.Debug, verboseAppenderName);
-                Log4NetAppenderConfiguration.set_trace_logger_when_trace(configuration.Trace, traceAppenderName);
+                LogService.adjustLogLevels(configuration.Debug, configuration.Verbose, configuration.Trace);
             }
             finally
             {
