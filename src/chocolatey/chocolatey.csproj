@@ -20,9 +20,7 @@
     <PackageReference Include="Microsoft.Web.Xdt" Version="2.1.1" />
     <PackageReference Include="PublishedApplications" Version="2.4.0" />
     <PackageReference Include="SimpleInjector" Version="2.5.0" />
-    <PackageReference Include="Rx-Core" Version="2.1.30214.0" />
-    <PackageReference Include="Rx-Interfaces" Version="2.1.30214.0" />
-    <PackageReference Include="Rx-Linq" Version="2.1.30214.0" />
+    <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
@@ -81,6 +79,11 @@
   </ItemGroup>
 
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);FORCE_CHOCOLATEY_OFFICIAL_KEY</DefineConstants>
+  </PropertyGroup>
+
 
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>$(ProjectDir)..\..\chocolatey.snk</AssemblyOriginatorKeyFile>
