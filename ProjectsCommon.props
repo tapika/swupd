@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(MyTargetFramework)' == ''">
-    <MyTargetFramework>net40</MyTargetFramework>
+    <MyTargetFramework>net48</MyTargetFramework>
   </PropertyGroup>
 
   <!--<Target Name="DisplayMessages" BeforeTargets="Build">

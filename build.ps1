@@ -119,10 +119,11 @@ if($verbose)
     "Will perform following operations: $operationsToPerform"
 }
 
+$buildPlatform = 'net48'
 $nunitConsole = [System.IO.Path]::Combine($scriptDir, 'src\packages\NUnit.Runners.2.6.4\tools\nunit-console.exe')
-$chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\net40-$configuration")
+$chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\$buildPlatform-$configuration")
 #$chocolateyIntegrationTestsDir = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration")
-$chocolateyIntegrationTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\net40-$configuration")
+$chocolateyIntegrationTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\$buildPlatform-$configuration")
 $chocolateyTestsDll = [System.IO.Path]::Combine($chocolateyTestsDir, 'chocolatey.tests.dll')
 #$chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration\chocolatey.tests.integration.dll")
 $chocolateyTests2Dll = [System.IO.Path]::Combine($chocolateyIntegrationTestsDir, 'chocolatey.tests.integration.dll')
