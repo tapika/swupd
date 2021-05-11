@@ -87,7 +87,15 @@ $packageOutputFolder = [System.IO.Path]::Combine($scriptDir, 'build_output')
 
 if( $operationsToPerform.Contains("build") )
 {
-    $operationsToPerform = ,"nuget" + $operationsToPerform
+    if(!$operationsToPerform.Contains("nuget"))
+    {
+      $operationsToPerform = ,"nuget" + $operationsToPerform
+    }
+
+    if(!$operationsToPerform.Contains("env"))
+    {
+      $operationsToPerform = ,"env" + $operationsToPerform
+    }
 }
 
 if( $operationsToPerform.Contains("all") )
@@ -147,9 +155,34 @@ foreach ($operation in $operationsToPerform)
         $cmdArgs = @( 'restore', $sln)
     }
 
+    if($operation -eq 'env')
+    {
+        foreach ($vsvariant in "Enterprise,Community".split(","))
+        {
+          $batch = "C:\Program Files (x86)\Microsoft Visual Studio\2019\$vsvariant\VC\Auxiliary\Build\vcvars64.bat"
+          if ((test-path $batch) -eq $true)
+          {
+            break
+          }
+        }
+
+        "Importing environment variables from vcvars64.bat"
+        $cmd = "`"$batch`""
+        cmd /c "$cmd > nul 2>&1 && set" | . { process {
+            if ($_ -match '^([^=]+)=(.*)') {
+                #"-set env variable: " + $matches[1] + "=" + $matches[2]
+                [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2])
+            }
+        }}
+    }
+
     if($operation -eq 'build')
     {
-        $cmdArgs = @( 'build', $sln, '-c', $configuration )
+        $cmd = 'cmd.exe'
+        $cmdArgs = @( '/c', 'devenv', $sln, '/build', '"Release|AnyCPU"' )
+
+        #"dotnet build" does not work with StrongNamer + net48
+        #$cmdArgs = @( 'build', $sln, '-c', $configuration )
         if($rebuild)
         {
             $cmdArgs += '--no-incremental'
