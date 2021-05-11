@@ -163,15 +163,23 @@ namespace chocolatey.infrastructure.logging
 #else
             const string logSuffix = "";
 #endif
-            string logFile21 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingFile + logSuffix);
-            string logFile22 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingSummaryFile + logSuffix);
+            bool configureFileLogging = outputDirectory != null;
+
+            string logFile21 = null;
+            string logFile22 = null;
+
+            if (configureFileLogging)
+            {
+                logFile21 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingFile + logSuffix);
+                logFile22 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingSummaryFile + logSuffix);
 
 #if USE_LOG4NET
-            if (clearLogFile && File.Exists(logFile11)) { File.Delete(logFile11); }
-            if (clearLogFile && File.Exists(logFile12)) { File.Delete(logFile12); }
+                if (clearLogFile && File.Exists(logFile11)) { File.Delete(logFile11); }
+                if (clearLogFile && File.Exists(logFile12)) { File.Delete(logFile12); }
 #endif
-            if (clearLogFile && File.Exists(logFile21)) { File.Delete(logFile21); }
-            if (clearLogFile && File.Exists(logFile22)) { File.Delete(logFile22); }
+                if (clearLogFile && File.Exists(logFile21)) { File.Delete(logFile21); }
+                if (clearLogFile && File.Exists(logFile22)) { File.Delete(logFile22); }
+            }
 
 #if USE_LOG4NET
             Log4NetAppenderConfiguration.configure(outputDirectory, ChocolateyLoggers.Trace.to_string());
@@ -304,41 +312,44 @@ namespace chocolatey.infrastructure.logging
             conf.AddRule(LogLevel.Error, LogLevel.Fatal, consoletarget2, debugConsoleLoggerName);
             conf.AddRule(LogLevel.Fatal, LogLevel.Fatal, consoletarget2, traceConsoleLoggerName);
 
-            var filetargetDetailed = new FileTarget
+            if(configureFileLogging)
             {
-                Name = fileLoggerName,
-                FileName = logFile21,
-                Layout = dateFormatString + fileLogPatternLayout,
-                CreateDirs = true,
-                AutoFlush = true,
-                ArchiveOldFileOnStartup = true,
-                MaxArchiveFiles = 1
-            };
+                var filetargetDetailed = new FileTarget
+                {
+                    Name = fileLoggerName,
+                    FileName = logFile21,
+                    Layout = dateFormatString + fileLogPatternLayout,
+                    CreateDirs = true,
+                    AutoFlush = true,
+                    ArchiveOldFileOnStartup = true,
+                    MaxArchiveFiles = 1
+                };
 
-            var filetargetSummary = new FileTarget
-            {
-                Name = fileSummaryLoggerName,
-                FileName = logFile22,
-                Layout = dateFormatString + fileLogPatternLayout,
-                CreateDirs = true,
-                AutoFlush = true,
-                ArchiveOldFileOnStartup = true,
-                MaxArchiveFiles = 1
-            };
+                var filetargetSummary = new FileTarget
+                {
+                    Name = fileSummaryLoggerName,
+                    FileName = logFile22,
+                    Layout = dateFormatString + fileLogPatternLayout,
+                    CreateDirs = true,
+                    AutoFlush = true,
+                    ArchiveOldFileOnStartup = true,
+                    MaxArchiveFiles = 1
+                };
 
-            foreach (var name in GetLoggerNames())
-            {
-                conf.AddRule(LogLevel.Debug, LogLevel.Fatal, filetargetDetailed, name);
-                conf.AddTarget(filetargetDetailed);
+                foreach (var name in GetLoggerNames())
+                {
+                    conf.AddRule(LogLevel.Debug, LogLevel.Fatal, filetargetDetailed, name);
+                    conf.AddTarget(filetargetDetailed);
 
-                conf.AddRule(LogLevel.Info, LogLevel.Fatal, filetargetSummary, name);
-                conf.AddTarget(filetargetSummary);
+                    conf.AddRule(LogLevel.Info, LogLevel.Fatal, filetargetSummary, name);
+                    conf.AddTarget(filetargetSummary);
+                }
+
+                conf.AddRule(LogLevel.Trace, LogLevel.Fatal, filetargetDetailed, DisabledName(traceConsoleLoggerName));
+                replaceOrAddTarget(filetargetDetailed);
+                conf.AddRule(LogLevel.Trace, LogLevel.Fatal, filetargetSummary, DisabledName(traceConsoleLoggerName));
+                replaceOrAddTarget(filetargetSummary);
             }
-
-            conf.AddRule(LogLevel.Trace, LogLevel.Fatal, filetargetDetailed, DisabledName(traceConsoleLoggerName));
-            replaceOrAddTarget(filetargetDetailed);
-            conf.AddRule(LogLevel.Trace, LogLevel.Fatal, filetargetSummary, DisabledName(traceConsoleLoggerName));
-            replaceOrAddTarget(filetargetSummary);
 
             LogManager.Configuration = conf;
             LogManager.ReconfigExistingLoggers();
