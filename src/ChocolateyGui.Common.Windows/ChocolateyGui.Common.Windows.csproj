@@ -58,7 +58,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\NuGet-Chocolatey\src\Core\Core.csproj" />
-    <ProjectReference Include="..\ChocolateyGui.Common\ChocolateyGui.Common2.csproj" />
+    <ProjectReference Include="..\ChocolateyGui.Common\ChocolateyGui.Common.csproj" />
     <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
   </ItemGroup>
 
