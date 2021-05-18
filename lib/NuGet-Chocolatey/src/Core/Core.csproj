@@ -6,6 +6,7 @@
     <AssemblyName>NuGet.Core</AssemblyName>
     <RootNamespace>NuGet</RootNamespace>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>

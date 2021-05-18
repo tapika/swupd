@@ -4,6 +4,7 @@
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU</Platforms>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />

@@ -4,6 +4,7 @@
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU</Platforms>
     <ApplicationIcon>..\..\docs\logo\chocolatey.ico</ApplicationIcon>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>
