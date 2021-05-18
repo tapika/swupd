@@ -98,6 +98,14 @@ if( $operationsToPerform.Contains("build") )
     }
 }
 
+if( $operationsToPerform.Contains("buildexe") )
+{
+    if(!$operationsToPerform.Contains("env"))
+    {
+      $operationsToPerform = ,"env" + $operationsToPerform
+    }
+}
+
 if( $operationsToPerform.Contains("all") )
 {
     $operationsToPerform = @(
@@ -105,7 +113,8 @@ if( $operationsToPerform.Contains("all") )
         # Comment for faster testing
         'integration', 
         'coverage', 
-        'coveragehtml'
+        'coveragehtml',
+        'buildexe'
     )
 }
 
@@ -128,6 +137,7 @@ $chocolateyTestsDll = [System.IO.Path]::Combine($chocolateyTestsDir, 'chocolatey
 #$chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration\chocolatey.tests.integration.dll")
 $chocolateyTests2Dll = [System.IO.Path]::Combine($chocolateyIntegrationTestsDir, 'chocolatey.tests.integration.dll')
 $sln = 'src\chocolatey.sln'
+$sln2 = 'src\chocolatey_netcoreapp3.1.sln'
 $coverageOutDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\codecoverage')
 $coverageXml = [System.IO.Path]::Combine($coverageOutDir, 'coverage.xml')
 $testResultsXmlDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
@@ -188,6 +198,24 @@ foreach ($operation in $operationsToPerform)
         {
             $cmdArgs += '--no-incremental'
         }
+    }
+
+    if($operation -eq 'buildexe')
+    {
+        $cmd = 'cmd.exe'
+        $cmdArgs = @( '/c', 'msbuild', $sln2,
+          '/p:DeployOnBuild=true',
+          '/p:Configuration=Release',
+          '/p:Platform="Any CPU"',
+          '/t:restore;build;publish',
+          '/p:PublishDir=bin\publish\',
+          '/p:PublishProtocol=FileSystem',
+          '/p:RuntimeIdentifier=win-x86',
+          '/p:SelfContained=true',
+          '/p:PublishSingleFile=true',
+          '/p:PublishReadyToRun=false',
+          '/p:PublishTrimmed=true'
+        )
     }
 
     if($operation -eq 'test1')
