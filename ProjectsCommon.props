@@ -39,5 +39,12 @@
     <DefineConstants Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">$(DefineConstants);NETFRAMEWORK</DefineConstants>
     <DefineConstants Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">$(DefineConstants);NETCORE</DefineConstants>
   </PropertyGroup>
+
+  <!-- Ignore any intermediate folder if any -->
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
 </Project>
 
