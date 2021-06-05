@@ -315,14 +315,7 @@ foreach ($operation in $operationsToPerform)
             exit 2
         }
         
-        $versionNumber =  $env:APPVEYOR_BUILD_VERSION
-        
-        if([string]::IsNullOrEmpty($versionNumber))
-        {
-            $versionNumber = git describe --abbrev=0
-            #$versionNumber = [Regex]::new('[\d.]+').Matches($versionNumber).Value
-        }
-
+        $versionNumber = git describe --abbrev=0
         $commitId = $env:APPVEYOR_REPO_COMMIT
 
         if([string]::IsNullOrEmpty($commitId))
