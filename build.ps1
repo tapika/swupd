@@ -306,7 +306,7 @@ foreach ($operation in $operationsToPerform)
 
         if([string]::IsNullOrEmpty($gitHubApiKey))
         {
-            $gitHubApiKey = env:GITHUB_APIKEY
+            $gitHubApiKey = $env:GITHUB_APIKEY
         }
         
         if([string]::IsNullOrEmpty($gitHubApiKey))
