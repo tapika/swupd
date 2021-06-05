@@ -10,9 +10,12 @@ init:
 - git config --global user.name "Chocolatey yo"
 nuget:
   disable_publish_on_pr: true
+# See https://www.appveyor.com/docs/build-configuration/#secure-variables
 environment:
   COVERALLS_REPO_TOKEN:
     secure: 2HaukGxepJGCR69mwx4u14VaR6p/q6Qdy1+PJmqHoEWGzbI5EfV+s4BaLWAZSk0j
+  GITHUB_APIKEY:
+    secure: 4O7GRcOJFAK2K+VHtPZVKzqDMfwWrObiu1TAaHay6sUsF5gOBXhDHpz97wXt4jnG
 build_script:
 - ps: ./build.ps1 'all'
 test: off

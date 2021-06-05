@@ -111,10 +111,11 @@ if( $operationsToPerform.Contains("all") )
     $operationsToPerform = @(
         'nuget', 'env', 'build', 
         # Comment for faster testing
-        'integration', 
+        #'integration', 
         'coverage', 
         'coveragehtml',
-        'buildexe'
+        'buildexe',
+        'github_publishrelease'
     )
 }
 
@@ -295,8 +296,139 @@ foreach ($operation in $operationsToPerform)
         $cmdArgs = @( '--opencover', """$coverageXml""")
     }
 
-    if($operation -eq 'pack')
+    if($operation -eq 'github_publishrelease')
     {
+        $privateApiKeyPath = 'c:\Private\github_apikey.txt'
+        if ((test-path $privateApiKeyPath) -eq $true)
+        {
+            $gitHubApiKey = Get-Content $privateApiKeyPath
+        }
+
+        if([string]::IsNullOrEmpty($gitHubApiKey))
+        {
+            $gitHubApiKey = env:GITHUB_APIKEY
+        }
+        
+        if([string]::IsNullOrEmpty($gitHubApiKey))
+        {
+            "GITHUB_APIKEY environment not set, and not saved in $privateApiKeyPath"
+            exit 2
+        }
+        
+        $versionNumber =  $env:APPVEYOR_BUILD_VERSION
+        
+        if([string]::IsNullOrEmpty($versionNumber))
+        {
+            $versionNumber = git describe --abbrev=0
+            #$versionNumber = [Regex]::new('[\d.]+').Matches($versionNumber).Value
+        }
+
+        $commitId = $env:APPVEYOR_REPO_COMMIT
+
+        if([string]::IsNullOrEmpty($commitId))
+        {
+            $commitId = git rev-parse HEAD
+        }
+
+        $releaseNotes = $env:APPVEYOR_REPO_COMMIT_MESSAGE
+
+        if([string]::IsNullOrEmpty($releaseNotes))
+        {
+            $releaseNotes = git log -1 --oneline --pretty=%B
+        }
+
+        $branchName = $env:APPVEYOR_REPO_BRANCH
+        if([string]::IsNullOrEmpty($branchName))
+        {
+            $branchName = git branch --show-current
+        }
+
+        if($branchName -eq 'master')
+        {
+            $preRelease = $FALSE
+        }
+        else
+        {
+            $preRelease = $TRUE
+        }
+
+        $uploadFilePath = [System.IO.Path]::Combine($scriptDir, 'src\chocolatey.console\bin\publish\choco.exe')
+
+
+        "Creating github release:"
+        "Release tag name: $versionNumber"
+        "Commit id: $commitId"
+        "Release notes: '$releaseNotes'"
+        "Branch name: $branchName"
+
+        # See also https://blog.peterritchie.com/Resetting-Build-Number-in-Appveyor/
+
+        $releaseData = @{
+            tag_name = $versionNumber;
+            target_commitish = $commitId;
+            name = $versionNumber;
+            body = "$releaseNotes";
+            # Set to true to mark this as a draft release (not visible to users)
+            draft = $FALSE;
+            prerelease = $preRelease;
+         }
+
+        $authHeaders = @{ Authorization = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($gitHubApiKey + ":x-oauth-basic")); } 
+        $releaseParams = @{
+            Uri = "https://api.github.com/repos/tapika/swupd/releases";
+            Method = 'POST';
+            Headers = $authHeaders;
+            ContentType = 'application/json';
+            Body = (ConvertTo-Json $releaseData -Compress)
+        }
+
+        $canRetry = $true
+
+        while($true)
+        {
+            try{
+              $result = Invoke-RestMethod @releaseParams
+              break
+            }catch
+            {
+               try{ $jsonObj = ConvertFrom-Json $_ } catch {}
+               if($jsonObj -ne $null -and $jsonObj.errors.code -ne 'already_exists')
+               {
+                   $_
+                   exit 3
+               }
+
+               if(!$canRetry) { break }
+               $canRetry = $false
+        
+               "Release already exists, deleting one..."
+               # https://docs.github.com/en/rest/reference/repos#get-a-release-by-tag-name
+               # If already exists => get asset url
+               $req = @{ Uri = "https://api.github.com/repos/tapika/swupd/releases/tags/$versionNumber"; Method = 'GET'; Headers = $authHeaders; } 
+               $result = Invoke-RestMethod @req
+               $url = $result.url
+
+               # and delete it
+               #https://docs.github.com/en/rest/reference/repos#delete-a-release-asset
+               $req = @{ Uri = $url; Method = 'DELETE'; Headers = $authHeaders; } 
+               $result = Invoke-RestMethod @req
+            }
+        }
+        
+        $uploadUri = $result | Select -ExpandProperty upload_url
+        
+        $uploadFilename = [System.IO.Path]::GetFileName($uploadFilePath)
+        $uploadUri = $uploadUri -replace '\{\?name.*\}', "?name=$uploadFilename"
+
+        $uploadParams = @{
+            Uri = $uploadUri;
+            Method = 'POST';
+            Headers = $authHeaders;
+            ContentType = 'application/octet-stream';
+            InFile = $uploadFilePath
+        }
+
+        $result = Invoke-RestMethod @uploadParams
     }
 
     if($cmdArgs.Count -ne 0)
