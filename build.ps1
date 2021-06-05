@@ -315,7 +315,8 @@ foreach ($operation in $operationsToPerform)
             exit 2
         }
         
-        $versionNumber = git describe --abbrev=0
+        $versionNumber = 1.0.0
+        #$versionNumber = git describe --abbrev=0
         $commitId = $env:APPVEYOR_REPO_COMMIT
 
         if([string]::IsNullOrEmpty($commitId))
