@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace ChocolateyGui.Common.Utilities
 {
@@ -49,12 +50,7 @@ namespace ChocolateyGui.Common.Utilities
 
         public static string GetAppDataPath(string applicationName)
         {
-            _appDataPath = Path.Combine(
-                Environment.GetFolderPath(
-                    Environment.SpecialFolder.CommonApplicationData,
-                    Environment.SpecialFolderOption.DoNotVerify),
-                applicationName);
-
+            _appDataPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             return _appDataPath;
         }
     }

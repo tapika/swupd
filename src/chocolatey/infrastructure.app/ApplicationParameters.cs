@@ -33,7 +33,7 @@ namespace chocolatey.infrastructure.app
 
 #if FORCE_CHOCOLATEY_OFFICIAL_KEY
         // always look at the official location of the machine installation
-        public static readonly string InstallLocation = System.Environment.GetEnvironmentVariable(ChocolateyInstallEnvironmentVariableName) ?? _fileSystem.get_directory_name(_fileSystem.get_current_assembly_path());
+        public static readonly string InstallLocation = _fileSystem.get_directory_name(_fileSystem.get_current_assembly_path());
         public static readonly string LicensedAssemblyLocation = _fileSystem.combine_paths(InstallLocation, "extensions", "chocolatey", "chocolatey.licensed.dll");
 #elif DEBUG
         // Install location is choco.exe or chocolatey.dll
