@@ -85,28 +85,6 @@ namespace chocolatey.infrastructure.app.runners
 #endif
                     Environment.Exit(config.UnsuccessfulParsing? 1 : 0);
                 }
-
-                var token = Assembly.GetExecutingAssembly().get_public_key_token();
-                if (string.IsNullOrWhiteSpace(token) || !token.is_equal_to(ApplicationParameters.OfficialChocolateyPublicKey))
-                {
-                    if (!config.AllowUnofficialBuild)
-                    {
-                        throw new Exception(@"
-Custom unofficial builds are not allowed by default.
- To override this behavior, explicitly set --allow-unofficial.
- See the help menu (choco -h) for options.");
-                    }
-                    else
-                    {
-                        this.Log().Warn(config.RegularOutput ? ChocolateyLoggers.Important : ChocolateyLoggers.LogFileOnly, @"
-Chocolatey is not an official build (bypassed with --allow-unofficial).
- If you are seeing this message and it is not expected, your system may
- now be in a bad state. Only official builds are to be trusted.
-"
-                        );
-
-                    }
-                }
             }
 
             return command;
