@@ -111,7 +111,7 @@ if( $operationsToPerform.Contains("all") )
     $operationsToPerform = @(
         'nuget', 'env', 'build', 
         # Comment for faster testing
-        #'integration', 
+        'integration', 
         'coverage', 
         'coveragehtml',
         'buildexe',
