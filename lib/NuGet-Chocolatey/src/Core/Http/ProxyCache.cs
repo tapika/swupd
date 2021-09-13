@@ -85,6 +85,11 @@ namespace NuGet
 
             WebProxy systemProxy = GetSystemProxy(uri);
 
+            if (systemProxy.Address == null)
+            {
+                return null;
+            }
+
             WebProxy effectiveProxy;
             // See if we have a proxy instance cached for this proxy address
             if (_cache.TryGetValue(systemProxy.Address, out effectiveProxy))
