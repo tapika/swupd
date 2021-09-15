@@ -266,7 +266,7 @@ namespace chocolatey.infrastructure.app.services
                     try
                     {
                         result = configuration.Features.UsePowerShellHost
-                                    ? Execute.with_timeout(configuration.CommandExecutionTimeoutSeconds).command(() => run_host(configuration, chocoPowerShellScript, null), result)
+                                    ? Execute.with_timeout(configuration.CommandExecutionTimeoutSeconds).command(() => run_host(configuration, chocoPowerShellScript), result)
                                     : run_external_powershell(configuration, chocoPowerShellScript);
                     }
                     catch (Exception ex)
@@ -533,7 +533,7 @@ namespace chocolatey.infrastructure.app.services
             }
         }
 
-        public PowerShellExecutionResults run_host(ChocolateyConfiguration config, string chocoPowerShellScript, Action<Pipeline> additionalActionsBeforeScript)
+        public PowerShellExecutionResults run_host(ChocolateyConfiguration config, string chocoPowerShellScript)
         {
             // since we control output in the host, always set these true
             Environment.SetEnvironmentVariable("ChocolateyEnvironmentDebug", "true");
@@ -625,8 +625,6 @@ try {
 }
 ";
                     pipeline.Commands.Add(new Command(outputRedirectionFixScript, isScript: true, useLocalScope: false));
-
-                    if (additionalActionsBeforeScript != null) additionalActionsBeforeScript.Invoke(pipeline);
 
                     pipeline.Commands.Add(new Command(commandToRun, isScript: true, useLocalScope: false));
 

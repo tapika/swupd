@@ -211,7 +211,7 @@ foreach ($operation in $operationsToPerform)
           '/t:restore;build;publish',
           '/p:PublishDir=bin\publish\',
           '/p:PublishProtocol=FileSystem',
-          '/p:RuntimeIdentifier=win-x86',
+          '/p:RuntimeIdentifier=win7-x64',
           '/p:SelfContained=true',
           '/p:PublishSingleFile=true',
           '/p:PublishReadyToRun=false',

@@ -17,7 +17,6 @@
 namespace chocolatey.infrastructure.app.services
 {
     using System;
-    using System.Management.Automation.Runspaces;
     using configuration;
     using NuGet;
     using results;
@@ -67,6 +66,6 @@ namespace chocolatey.infrastructure.app.services
         bool before_modify(ChocolateyConfiguration configuration, PackageResult packageResult);
 
         void prepare_powershell_environment(IPackage package, ChocolateyConfiguration configuration, string packageDirectory);
-        PowerShellExecutionResults run_host(ChocolateyConfiguration config, string chocoPowerShellScript, Action<Pipeline> additionalActionsBeforeScript);
+        PowerShellExecutionResults run_host(ChocolateyConfiguration config, string chocoPowerShellScript);
     }
 }

@@ -31,7 +31,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
     <PublishTrimmed>true</PublishTrimmed>
 
     <TrimMode>link</TrimMode>
@@ -81,6 +81,17 @@
       <TrimmerRootAssembly Include="System.Xml.XmlSerializer" />
       <!--The type initializer for 'System.Data.Services.Client.TypeSystem' threw an exception.-->
       <TrimmerRootAssembly Include="System.Spatial" />
+      <!-- Cannot load PowerShell snap-in Microsoft.PowerShell.Diagnostics because of the following error: Could not load file or assembly -->
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Diagnostics" />
+      <!-- Cannot load PowerShell snap-in ...  -->
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.ConsoleHost" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Utility" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Management" />
+      <TrimmerRootAssembly Include="Microsoft.Management.Infrastructure" />
+      <TrimmerRootAssembly Include="Microsoft.WSMan.Management" />
+      <TrimmerRootAssembly Include="System.Management.Automation" />
+      <TrimmerRootAssembly Include="Microsoft.ApplicationInsights" />
+      
     </ItemGroup>
   </Target>
 </Project>
