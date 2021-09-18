@@ -206,7 +206,7 @@ foreach ($operation in $operationsToPerform)
         $cmd = 'cmd.exe'
         $cmdArgs = @( '/c', 'msbuild', $sln2,
           '/p:DeployOnBuild=true',
-          '/p:Configuration=Release',
+          "/p:Configuration=$configuration",
           '/p:Platform="Any CPU"',
           '/t:restore;build;publish',
           '/p:PublishDir=bin\publish\',
