@@ -91,7 +91,12 @@
       <TrimmerRootAssembly Include="Microsoft.WSMan.Management" />
       <TrimmerRootAssembly Include="System.Management.Automation" />
       <TrimmerRootAssembly Include="Microsoft.ApplicationInsights" />
-      
+
+      <!-- Cannot process argument because the value of argument "getterCodeReference setterCodeReference" is null. -->
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Security" />
+      <!--<TrimmerRootAssembly Include="Microsoft.PowerShell.CoreCLR.Eventing" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.MarkdownRender" />-->
+
     </ItemGroup>
   </Target>
 </Project>
