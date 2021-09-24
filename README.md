@@ -11,7 +11,7 @@ develop | [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/
 
 ### Compiling / Building Source on Windows
 
-### From Visual Studio
+#### From Visual Studio
 
 Open `chocolatey.sln` if you wish to develop Chocolatey or Chocolatey GUI:
  * .NET Framework 4.8 is required
