@@ -98,7 +98,7 @@ if( $operationsToPerform.Contains("build") )
     }
 }
 
-if( $operationsToPerform.Contains("buildexe") )
+if( $operationsToPerform -match "buildexe_?.*" )
 {
     if(!$operationsToPerform.Contains("env"))
     {
@@ -114,7 +114,8 @@ if( $operationsToPerform.Contains("all") )
         'integration', 
         'coverage', 
         'coveragehtml',
-        'buildexe',
+        'buildexe_win7',
+        'buildexe_linux',
         'github_publishrelease'
     )
 }
@@ -201,17 +202,24 @@ foreach ($operation in $operationsToPerform)
         }
     }
 
-    if($operation -eq 'buildexe')
+    if($operation -match 'buildexe_?(.*)')
     {
         $cmd = 'cmd.exe'
+        $publishPlatform = $matches.1
+        $runtimeIdentifier = $publishPlatform + '-x64'
+        $publishDirectory = 'bin\publish_' + $runtimeIdentifier
+
         $cmdArgs = @( '/c', 'msbuild', $sln2,
           '/p:DeployOnBuild=true',
           "/p:Configuration=$configuration",
           '/p:Platform="Any CPU"',
           '/t:restore;build;publish',
-          '/p:PublishDir=bin\publish\',
+          ('/p:PublishDir=' + $publishDirectory + '\'),
           '/p:PublishProtocol=FileSystem',
-          '/p:RuntimeIdentifier=win7-x64',
+          # For example:
+          #'/p:RuntimeIdentifier=win7-x64',
+          #'/p:RuntimeIdentifier=linux-x64',
+          ('/p:RuntimeIdentifier=' + $runtimeIdentifier),
           '/p:SelfContained=true',
           '/p:PublishSingleFile=true',
           '/p:PublishReadyToRun=false',
@@ -346,9 +354,6 @@ foreach ($operation in $operationsToPerform)
             $preRelease = $TRUE
         }
 
-        $uploadFilePath = [System.IO.Path]::Combine($scriptDir, 'src\chocolatey.console\bin\publish\choco.exe')
-
-
         "Creating github release:"
         "Release tag name: $versionNumber"
         "Commit id: $commitId"
@@ -411,18 +416,38 @@ foreach ($operation in $operationsToPerform)
         
         $uploadUri = $result | Select -ExpandProperty upload_url
         
-        $uploadFilename = [System.IO.Path]::GetFileName($uploadFilePath)
-        $uploadUri = $uploadUri -replace '\{\?name.*\}', "?name=$uploadFilename"
 
-        $uploadParams = @{
-            Uri = $uploadUri;
-            Method = 'POST';
-            Headers = $authHeaders;
-            ContentType = 'application/octet-stream';
-            InFile = $uploadFilePath
+        $platforms = @("win7", "linux")
+        foreach ($publishPlatform in $platforms)
+        {
+            $runtimeIdentifier = $publishPlatform + '-x64'
+            $publishDirectory = 'bin\publish_' + $runtimeIdentifier
+            $executableName = 'choco'
+
+            if($publishPlatform -eq 'win7')
+            {
+                $executableName = 'choco.exe'
+            }
+
+            $uploadFilePath = [System.IO.Path]::Combine($scriptDir, 'src\chocolatey.console', $publishDirectory, $executableName)
+
+            $uploadFilename = [System.IO.Path]::GetFileName($uploadFilePath)
+            $uploadFileUri = $uploadUri -replace '\{\?name.*\}', "?name=$uploadFilename"
+
+            "Uploading file:"
+            " - " + $uploadFilePath
+            "to: $uploadFileUri"
+
+            $uploadParams = @{
+                Uri = $uploadFileUri;
+                Method = 'POST';
+                Headers = $authHeaders;
+                ContentType = 'application/octet-stream';
+                InFile = $uploadFilePath
+            }
+
+            $result = Invoke-RestMethod @uploadParams
         }
-
-        $result = Invoke-RestMethod @uploadParams
     }
 
     if($cmdArgs.Count -ne 0)
