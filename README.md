@@ -27,8 +27,8 @@ Run `build.bat` from root folder.
 
 Check releases, and download latest suitable for you release.
 
-choco.exe - Windows executable ( Windows 7 64-bit or latest )
-choco - Linux executable ( CentOS, Debian, Fedora, Ubuntu, and derivatives )
+ * choco.exe - Windows 64-bit executable ( Windows 7 64-bit or later )
+ * choco - Linux 64-bit executable ( CentOS, Debian, Fedora, Ubuntu, and derivatives )
 
 Both images are built using ReadyToRun technology - meaning you don't need to preinstall anything on your OS.
 
