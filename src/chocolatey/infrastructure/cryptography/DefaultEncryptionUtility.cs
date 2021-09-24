@@ -24,13 +24,14 @@ namespace chocolatey.infrastructure.cryptography
     public class DefaultEncryptionUtility : IEncryptionUtility
     {
         private readonly byte[] _entropyBytes = Encoding.UTF8.GetBytes("Chocolatey");
+        private SimpleAES simpleAes = new SimpleAES();
 
         public string encrypt_string(string cleartextValue)
         {
             if (string.IsNullOrWhiteSpace(cleartextValue)) return null;
 
             var decryptedByteArray = Encoding.UTF8.GetBytes(cleartextValue);
-            var encryptedByteArray = ProtectedData.Protect(decryptedByteArray, _entropyBytes, DataProtectionScope.LocalMachine);
+            var encryptedByteArray = simpleAes.Encrypt(decryptedByteArray);
             var encryptedString = Convert.ToBase64String(encryptedByteArray);
 
             return encryptedString;
@@ -39,7 +40,7 @@ namespace chocolatey.infrastructure.cryptography
         public string decrypt_string(string encryptedString)
         {
             var encryptedByteArray = Convert.FromBase64String(encryptedString);
-            var decryptedByteArray = ProtectedData.Unprotect(encryptedByteArray, _entropyBytes, DataProtectionScope.LocalMachine);
+            var decryptedByteArray = simpleAes.DecryptRaw(encryptedByteArray);
 
             return Encoding.UTF8.GetString(decryptedByteArray);
         }
