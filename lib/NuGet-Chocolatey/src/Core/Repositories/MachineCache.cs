@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuGet.Utility;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -211,7 +212,7 @@ namespace NuGet
             try
             {
                 // Global: machine cache is per user across TS sessions
-                var mutexName = "Global\\" + EncryptionUtility.GenerateUniqueToken(FileSystem.GetFullPath(path) ?? path);
+                var mutexName = "Global\\" + MutexNamingHelper.GenerateUniqueToken(FileSystem.GetFullPath(path) ?? path);
                 using (var mutex = new Mutex(false, mutexName))
                 {
                     bool owner = false;
