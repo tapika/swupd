@@ -7,6 +7,7 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using NuGet.Resources;
+using NuGet.Utility;
 
 namespace NuGet
 {
@@ -805,7 +806,7 @@ namespace NuGet
             var fileName = _fileSystem.GetFullPath(_fileName);
 
             // Global: ensure mutex is honored across TS sessions 
-            using (var mutex = new Mutex(false, "Global\\" + EncryptionUtility.GenerateUniqueToken(fileName)))
+            using (var mutex = new Mutex(false, "Global\\" + MutexNamingHelper.GenerateUniqueToken(fileName)))
             {
                 var owner = false;
                 try

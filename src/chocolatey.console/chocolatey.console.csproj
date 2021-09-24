@@ -82,13 +82,17 @@
       <!--The type initializer for 'System.Data.Services.Client.TypeSystem' threw an exception.-->
       <TrimmerRootAssembly Include="System.Spatial" />
       <!-- Cannot load PowerShell snap-in Microsoft.PowerShell.Diagnostics because of the following error: Could not load file or assembly -->
-      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Diagnostics" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Diagnostics" Condition=" $(RuntimeIdentifier.StartsWith('win')) " />
       <!-- Cannot load PowerShell snap-in ...  -->
       <TrimmerRootAssembly Include="Microsoft.PowerShell.ConsoleHost" />
       <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Utility" />
       <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Management" />
       <TrimmerRootAssembly Include="Microsoft.Management.Infrastructure" />
-      <TrimmerRootAssembly Include="Microsoft.WSMan.Management" />
+      <!--
+      One or more errors occurred. (Cannot load PowerShell snap-in Microsoft.WSMan.Management because of the following error: Could not 
+      load file or assembly 'C:\Users\user\AppData\Local\Temp\.net\choco\nkgh5bs1.ed5\Microsoft.WSMan.Management.dll'. The system cannot find the file specified.)
+      -->
+      <TrimmerRootAssembly Include="Microsoft.WSMan.Management" Condition=" $(RuntimeIdentifier.StartsWith('win')) " />
       <TrimmerRootAssembly Include="System.Management.Automation" />
       <TrimmerRootAssembly Include="Microsoft.ApplicationInsights" />
 
