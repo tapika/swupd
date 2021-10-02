@@ -202,11 +202,26 @@ foreach ($operation in $operationsToPerform)
         }
     }
 
+    #------------------------------------------------------------------------------------
+    # Build ReadyToRun executable, for example:
+    # buildexe_win7     => Windows
+    # buildexe_linux    => Linux
+    # buildexe_osx      => MacOS
+    # Full list of runtime identifier catalog is in here:
+    #------------------------------------------------------------------------------------
+    # .NET Runtime Identifier (RID) Catalog
+    #
+    # Documentation:
+    #   https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    # Same in git:
+    #   https://github.com/jesulink2514/docs-1/blob/master/docs/core/rid-catalog.md
+    #------------------------------------------------------------------------------------
     if($operation -match 'buildexe_?(.*)')
     {
         $cmd = 'cmd.exe'
         $publishPlatform = $matches.1
         $runtimeIdentifier = $publishPlatform + '-x64'
+        #$runtimeIdentifier = $publishPlatform + '-arm64'
         $publishDirectory = 'bin\publish_' + $runtimeIdentifier
 
         $cmdArgs = @( '/c', 'msbuild', $sln2,
@@ -224,6 +239,7 @@ foreach ($operation in $operationsToPerform)
           '/p:PublishSingleFile=true',
           '/p:PublishReadyToRun=false',
           '/p:PublishTrimmed=true'
+          #'/p:UseAppHost=true'
         )
     }
 
