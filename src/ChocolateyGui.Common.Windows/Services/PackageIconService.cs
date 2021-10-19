@@ -17,7 +17,6 @@ using LiteDB;
 using MahApps.Metro.IconPacks;
 using Microsoft.VisualStudio.Threading;
 using SkiaSharp;
-using Splat;
 using Svg.Skia;
 using ILogger = Serilog.ILogger;
 
@@ -36,7 +35,7 @@ namespace ChocolateyGui.Common.Windows.Services
 
         public virtual async Task<ImageSource> GetImage(string url, Size desiredSize, DateTime absoluteExpiration)
         {
-            return (await LoadImage(url, desiredSize, absoluteExpiration)).ToNative();
+            return await LoadImage(url, desiredSize, absoluteExpiration);
         }
 
         public virtual ImageSource GetEmptyIconImage()
@@ -169,12 +168,18 @@ namespace ChocolateyGui.Common.Windows.Services
             return resizeInfo;
         }
 
-        private async Task<IBitmap> LoadImage(string url, Size desiredSize, DateTime absoluteExpiration)
+        private async Task<ImageSource> LoadImage(string url, Size desiredSize, DateTime absoluteExpiration)
         {
             var imageStream = await DownloadUrl(url, desiredSize, absoluteExpiration).ConfigureAwait(false);
 
-            // Don't specify width and height to keep the aspect ratio of the image.
-            return await BitmapLoader.Current.Load(imageStream, null, null);
+            BitmapImage bmi = new BitmapImage();
+            bmi.BeginInit();
+            bmi.StreamSource = imageStream;
+            bmi.CacheOption = BitmapCacheOption.OnLoad;
+            bmi.EndInit();
+            bmi.Freeze();
+
+            return bmi;
         }
 
         private async Task<Stream> DownloadUrl(string url, Size desiredSize, DateTime absoluteExpiration)
