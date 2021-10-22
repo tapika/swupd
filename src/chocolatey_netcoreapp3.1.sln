@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.OData", "..\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Data.Services.Client", "..\lib\Microsoft.Data.Services.Client\WCFDataService\Client\System.Data.Services.Client.csproj", "{B2667D84-F31E-482D-A604-1323905D582F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChocolateyGui.Common", "ChocolateyGui.Common\ChocolateyGui.Common.csproj", "{5625DF34-48CD-4957-A54C-E8D835EF2FD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Coverage|Any CPU = Coverage|Any CPU
@@ -286,6 +288,34 @@ Global
 		{B2667D84-F31E-482D-A604-1323905D582F}.ReleaseOfficial|Any CPU.Build.0 = Release|Any CPU
 		{B2667D84-F31E-482D-A604-1323905D582F}.ReleaseOfficial|x86.ActiveCfg = Release|Any CPU
 		{B2667D84-F31E-482D-A604-1323905D582F}.ReleaseOfficial|x86.Build.0 = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Coverage|Any CPU.ActiveCfg = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Coverage|Any CPU.Build.0 = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Coverage|x86.ActiveCfg = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Coverage|x86.Build.0 = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Debug|x86.Build.0 = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Mono Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Mono Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Mono Debug|x86.ActiveCfg = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Mono Debug|x86.Build.0 = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Mono Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Mono Release|Any CPU.Build.0 = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Mono Release|x86.ActiveCfg = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Mono Release|x86.Build.0 = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.NoResources|Any CPU.ActiveCfg = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.NoResources|Any CPU.Build.0 = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.NoResources|x86.ActiveCfg = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.NoResources|x86.Build.0 = Debug|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Release|x86.ActiveCfg = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.Release|x86.Build.0 = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.ReleaseOfficial|Any CPU.ActiveCfg = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.ReleaseOfficial|Any CPU.Build.0 = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.ReleaseOfficial|x86.ActiveCfg = Release|Any CPU
+		{5625DF34-48CD-4957-A54C-E8D835EF2FD8}.ReleaseOfficial|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
