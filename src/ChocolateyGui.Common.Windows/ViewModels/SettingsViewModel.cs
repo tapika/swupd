@@ -274,7 +274,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels
                 await Task.Run(() => _configService.ToggleFeature(configuration, false));
             }
 
-            _eventAggregator.PublishOnUIThread(new FeatureModifiedMessage());
+            await _eventAggregator.PublishOnUIThreadAsync(new FeatureModifiedMessage());
 
             if (feature.Title == "ShowAggregatedSourceView")
             {
@@ -448,9 +448,9 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             DraftSource = new ChocolateySource(SelectedSource);
         }
 
-        public void Back()
+        public async void Back()
         {
-            _eventAggregator.PublishOnUIThread(new SettingsGoBackMessage());
+            await _eventAggregator.PublishOnUIThreadAsync(new SettingsGoBackMessage());
         }
 
         public async void SetUserAndPassword()
@@ -570,12 +570,22 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             }
         }
 
-        private void OnDeactivated(object sender, DeactivationEventArgs deactivationEventArgs)
+        private 
+#if NETFRAMEWORK
+        void
+#else
+        Task 
+#endif
+        OnDeactivated(object sender, DeactivationEventArgs deactivationEventArgs)
         {
             _changedChocolateyFeature.OnCompleted();
             _changedChocolateySetting.OnCompleted();
             _changedChocolateyGuiFeature.OnCompleted();
             _changedChocolateyGuiSetting.OnCompleted();
+
+#if !NETFRAMEWORK
+            return Task.FromResult(true);
+#endif
         }
 
         private bool FilterChocolateyGuiFeatures(ChocolateyGuiFeature chocolateyGuiFeature)

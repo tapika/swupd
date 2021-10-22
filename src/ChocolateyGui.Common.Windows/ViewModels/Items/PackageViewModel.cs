@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Caliburn.Micro;
@@ -453,7 +454,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                     IsInstalled = true;
 
                     _chocolateyGuiCacheService.PurgeOutdatedPackages();
-                    _eventAggregator.BeginPublishOnUIThread(new PackageChangedMessage(Id, PackageChangeType.Installed, Version));
+                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Installed, Version));
                 }
             }
             catch (Exception ex)
@@ -530,7 +531,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                         }
 
                         IsInstalled = false;
-                        _eventAggregator.BeginPublishOnUIThread(new PackageChangedMessage(Id, PackageChangeType.Uninstalled, Version));
+                        await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Uninstalled, Version));
                     }
                 }
             }
@@ -574,7 +575,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                     }
 
                     _chocolateyGuiCacheService.PurgeOutdatedPackages();
-                    _eventAggregator.BeginPublishOnUIThread(new PackageChangedMessage(Id, PackageChangeType.Updated));
+                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Updated));
                 }
             }
             catch (Exception ex)
@@ -618,7 +619,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                     }
 
                     IsPinned = true;
-                    _eventAggregator.BeginPublishOnUIThread(new PackageChangedMessage(Id, PackageChangeType.Pinned, Version));
+                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Pinned, Version));
                 }
             }
             catch (Exception ex)
@@ -662,7 +663,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                     }
 
                     IsPinned = false;
-                    _eventAggregator.BeginPublishOnUIThread(new PackageChangedMessage(Id, PackageChangeType.Unpinned, Version));
+                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Unpinned, Version));
                 }
             }
             catch (Exception ex)
@@ -682,12 +683,20 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
             await _eventAggregator.PublishOnUIThreadAsync(new ShowPackageDetailsMessage(this)).ConfigureAwait(false);
         }
 
+#if NETFRAMEWORK        
         public void Handle(FeatureModifiedMessage message)
+#else
+        public async Task HandleAsync(FeatureModifiedMessage message, CancellationToken cancellationToken)
+#endif
         {
             NotifyPropertyChanged(nameof(IsDownloadCountAvailable));
         }
 
+#if NETFRAMEWORK        
         public void Handle(PackageHasUpdateMessage message)
+#else
+        public async Task HandleAsync(PackageHasUpdateMessage message, CancellationToken cancellationToken)
+#endif
         {
             if (!string.Equals(message.Id, Id, StringComparison.OrdinalIgnoreCase))
             {

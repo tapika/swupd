@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -34,7 +35,7 @@ using Serilog;
 
 namespace ChocolateyGui.Common.Windows.ViewModels
 {
-    public sealed class LocalSourceViewModel : Screen, ISourceViewModelBase, IHandleWithTask<PackageChangedMessage>
+    public sealed class LocalSourceViewModel : Screen, ISourceViewModelBase, IHandle<PackageChangedMessage>
     {
         private static readonly ILogger Logger = Log.ForContext<LocalSourceViewModel>();
         private readonly IChocolateyService _chocolateyService;
@@ -294,7 +295,11 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             await LoadPackages();
         }
 
-        public async Task Handle(PackageChangedMessage message)
+#if NETFRAMEWORK        
+        public async void Handle(PackageChangedMessage message)
+#else
+        public async Task HandleAsync(PackageChangedMessage message, CancellationToken cancellationToken)
+#endif
         {
             switch (message.ChangeType)
             {
@@ -331,9 +336,14 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             }
         }
 
+#if NETFRAMEWORK
 #pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
         protected override async void OnInitialize()
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
+#else
+        protected override async Task OnInitializeAsync(CancellationToken cancellationToken)
+#endif
+
         {
             try
             {

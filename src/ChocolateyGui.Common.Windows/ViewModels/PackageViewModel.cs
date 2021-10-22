@@ -25,9 +25,9 @@ namespace ChocolateyGui.Common.Windows.ViewModels
 
         public new string DisplayName => string.Format(Resources.PackageViewModel_DisplayName, Package?.Title);
 
-        public void Back()
+        public async void Back()
         {
-            _eventAggregator.PublishOnUIThread(new ShowSourcesMessage(null));
+            await _eventAggregator.PublishOnUIThreadAsync(new ShowSourcesMessage(null));
         }
     }
 }

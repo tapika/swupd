@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AutoMapper;
@@ -346,7 +347,11 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             _eventAggregator.Subscribe(view);
         }
 
+#if NETFRAMEWORK
         protected override void OnInitialize()
+#else
+        protected override async Task OnInitializeAsync(CancellationToken cancellationToken)
+#endif
         {
             try
             {
