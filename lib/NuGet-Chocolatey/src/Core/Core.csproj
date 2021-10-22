@@ -38,7 +38,6 @@
   <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
     <PackageReference Include="Microsoft.Web.Xdt" Version="3.1.0" />
     <PackageReference Include="System.ServiceModel.Security" Version="4.8.1" />
-    <PackageReference Include="Microsoft.Data.Services.Client" Version="5.8.4" />
     <PackageReference Include="runtime.win.System.IO.FileSystem" Version="4.3.0" />
     <PackageReference Include="System.IO.Packaging" Version="5.0.0" />
     <PackageReference Include="System.Runtime.WindowsRuntime" Version="4.7.0" />
@@ -58,6 +57,11 @@
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="WindowsBase" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
+    <!--<PackageReference Include="Microsoft.Data.Services.Client" Version="5.8.4" />-->
+    <ProjectReference Include="..\..\..\Microsoft.Data.Services.Client\WCFDataService\Client\System.Data.Services.Client.csproj" />
   </ItemGroup>
 
   <Import Project="$(ProjectDir)..\..\..\..\ProjectsCommon.props" />
