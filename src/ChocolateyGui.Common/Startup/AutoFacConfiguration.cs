@@ -25,6 +25,7 @@ namespace ChocolateyGui.Common.Startup
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyModules(System.Reflection.Assembly.GetCallingAssembly());
 
+#if NETFRAMEWORK
             var license = License.validate_license();
             if (license.IsValid)
             {
@@ -45,6 +46,7 @@ namespace ChocolateyGui.Common.Startup
                     }
                 }
             }
+#endif
 
             return builder.Build();
         }
