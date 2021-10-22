@@ -5,17 +5,36 @@
     <Platforms>AnyCPU</Platforms>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <UseWPF>true</UseWPF>
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
+  <!--
+    When exporting this to linux, will result in error:
+      error NETSDK1082: There was no runtime pack for Microsoft.WindowsDesktop.App available for the specified RuntimeIdentifier 'linux-x64'
+
+    We reconfigure project to be empty & UseWPF disabled => then project does not reference that package, and no build error is produced.
+  -->
+  <PropertyGroup Condition=" ! $(RuntimeIdentifier.StartsWith('lin')) ">
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
+
+  <ItemGroup Condition=" '$(UseWPF)' != 'true' ">
+    <Compile Remove="**/*.cs" />
+    <Page Remove="**/*.xaml" />
+    <None Remove="**/*.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="app.config" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="$(ProjectDir)..\..\ProjectsCommon.props" Link="ProjectsCommon.props" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(UseWPF)' == 'true' ">
     <PackageReference Include="Autofac" Version="4.6.1" />
     <PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="ControlzEx" Version="4.4.0" />
@@ -57,7 +76,7 @@
   </ItemGroup>
 
   <!-- .net core specific references -->
-  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' and '$(UseWPF)' == 'true' ">
     <PackageReference Include="Caliburn.Micro" Version="4.0.173" />
     <PackageReference Include="Caliburn.Micro.Core" Version="4.0.173" />
     <PackageReference Include="SimpleInjector" Version="5.2.1" />
@@ -72,7 +91,7 @@
     <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(UseWPF)' == 'true' ">
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Xaml" />
