@@ -90,8 +90,8 @@ namespace ChocolateyGui.Common.Windows.Startup
                     .ForMember(vm => vm.IsInstalled, options => options.Ignore());
 
                 config.CreateMap<DataServicePackage, Package>()
-                    .ForMember(dest => dest.Authors, opt => opt.MapFrom(src => src.Authors.Split(',')))
-                    .ForMember(dest => dest.Owners, opt => opt.MapFrom(src => src.Owners.Split(',')));
+                    .ForMember(dest => dest.Authors, opt => opt.MapFrom(src => src.Authors.Split(new[] { ',' })))
+                    .ForMember(dest => dest.Owners, opt => opt.MapFrom(src => src.Owners.Split(new[] { ',' })));
                 config.CreateMap<IPackage, Package>();
 
                 config.CreateMap<ConfigFileFeatureSetting, ChocolateyFeature>();
