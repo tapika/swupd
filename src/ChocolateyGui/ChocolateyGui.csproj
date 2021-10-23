@@ -1,12 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+<!--<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop" ToolsVersion="15.0">-->
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
     <Platforms>AnyCPU</Platforms>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <ApplicationIcon>chocolateyicon.ico</ApplicationIcon>
     <ApplicationManifest>ChocolateyGui.exe.manifest</ApplicationManifest>
+    <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
+
+  <!-- See comments in ChocolateyGui.Common.Windows.csproj -->
+  <PropertyGroup Condition=" ! $(RuntimeIdentifier.StartsWith('lin')) ">
+    <UseWPF>true</UseWPF>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(UseWPF)' != 'true' ">
+    <!-- No need to have Main() -->
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
@@ -15,17 +27,21 @@
     <None Include="$(ProjectDir)..\..\ProjectsCommon.props" Link="ProjectsCommon.props" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(UseWPF)' != 'true' ">
+    <Compile Remove="**/*.cs" />
+    <Page Remove="**/*.xaml" />
+    <None Remove="**/*.xaml" />
+  </ItemGroup>
+
   <ItemGroup>
     <Resource Include="..\..\ABOUT.md" Link="Resources\ABOUT.md" />
     <Resource Include="..\..\CHANGELOG.md" Link="Resources\CHANGELOG.md" />
     <Resource Include="..\..\CREDITS.md" Link="Resources\CREDITS.md" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(UseWPF)' == 'true' ">
     <PackageReference Include="Autofac" Version="4.6.1" />
     <PackageReference Include="AutoMapper" Version="7.0.1" />
-    <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
-    <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
     <PackageReference Include="ControlzEx" Version="4.4.0" />
     <PackageReference Include="Fizzler" Version="1.2.0" />
     <PackageReference Include="HarfBuzzSharp" Version="2.6.1.4" />
@@ -38,7 +54,6 @@
     <PackageReference Include="MahApps.Metro.IconPacks.Octicons" Version="4.8.0" />
     <PackageReference Include="Markdig.Signed" Version="0.23.0" />
     <PackageReference Include="Markdig.Wpf.Signed" Version="0.5.0.1" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="15.4.4" />
     <PackageReference Include="Microsoft.VisualStudio.Validation" Version="15.3.32" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
@@ -47,31 +62,42 @@
     <PackageReference Include="Serilog.Sinks.Async" Version="1.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="3.2.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.1" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="SimpleInjector" Version="2.5.0" />
     <PackageReference Include="SkiaSharp" Version="1.68.3" />
     <PackageReference Include="SkiaSharp.HarfBuzz" Version="1.68.3" />
-    <PackageReference Include="Splat" Version="2.0.0" />
-    <PackageReference Include="StrongNamer" Version="0.2.5" />
     <PackageReference Include="Svg.Custom" Version="0.3.0" />
     <PackageReference Include="Svg.Skia" Version="0.3.0" />
+  </ItemGroup>
+
+  <!-- .net framework specific references -->
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
+    <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
+    <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
+    <PackageReference Include="SimpleInjector" Version="2.5.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.1.0" />
     <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
     <PackageReference Include="System.Reactive.Windows.Threading" Version="3.1.1" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Page Include="**/*.xaml" />
+  <!-- .net core specific references -->
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' and '$(UseWPF)' == 'true'">
+    <PackageReference Include="Caliburn.Micro" Version="4.0.173" />
+    <PackageReference Include="Caliburn.Micro.Core" Version="4.0.173" />
+    <PackageReference Include="SimpleInjector" Version="5.2.1" />
+    <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="5.0.3" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(UseWPF)' == 'true' ">
     <ProjectReference Include="..\..\lib\NuGet-Chocolatey\src\Core\Core.csproj" />
     <ProjectReference Include="..\ChocolateyGui.Common.Windows\ChocolateyGui.Common.Windows.csproj" />
     <ProjectReference Include="..\ChocolateyGui.Common\ChocolateyGui.Common.csproj" />
     <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(UseWPF)' == 'true' ">
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Xaml" />

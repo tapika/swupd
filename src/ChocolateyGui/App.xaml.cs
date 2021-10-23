@@ -23,8 +23,6 @@ namespace ChocolateyGui
     /// </summary>
     public partial class App
     {
-        private static readonly App _application = new App();
-
         #region DupFinder Exclusion
         public App()
         {
@@ -74,34 +72,15 @@ namespace ChocolateyGui
 
         internal static SplashScreen SplashScreen { get; set; }
 
-        [STAThread]
-        public static void Main(string[] args)
-        {
-            var splashScreenService = Bootstrapper.Container.Resolve<ISplashScreenService>();
-            splashScreenService.Show();
-
-            _application.InitializeComponent();
-
-            try
-            {
-                _application.Run();
-            }
-            catch (Exception ex)
-            {
-                if (Bootstrapper.IsExiting)
-                {
-                    Bootstrapper.Logger.Error(ex, Common.Properties.Resources.Command_GeneralError);
-                    return;
-                }
-
-                throw;
-            }
-        }
-
         /// <inheritdoc />
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            var splashScreenService = Bootstrapper.Container.Resolve<ISplashScreenService>();
+            splashScreenService.Show();
+
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             ThemeAssist.BundledTheme.Generate("ChocolateyGui");
 
@@ -123,6 +102,18 @@ namespace ChocolateyGui
             }
 
             ThemeAssist.BundledTheme.SyncTheme(themeMode);
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception ex = e.ExceptionObject as Exception;
+            // Previously this code did check for Bootstrapper.IsExiting == true, but now it just logs all exceptions, no matter how non-serious they are.
+            if (ex == null)
+            {
+                return;
+            }
+            
+            Bootstrapper.Logger.Error(ex, Common.Properties.Resources.Command_GeneralError);
         }
     }
 }

@@ -202,6 +202,21 @@ foreach ($operation in $operationsToPerform)
         }
     }
 
+    if($operation -match 'buildexe_?(.*)')
+    {
+        $nugetTempDir = [System.IO.Path]::Combine($scriptDir, 'src\obj\nuget')
+
+        if (Test-Path -Path $nugetTempDir)
+        {
+            "Deleting $nugetTempDir..."
+
+            if($dontexecute -ne $true)
+            {
+                Remove-Item -LiteralPath "$nugetTempDir" -Force -Recurse        
+            }
+        }       
+    }
+
     #------------------------------------------------------------------------------------
     # Build ReadyToRun executable, for example:
     # buildexe_win7     => Windows
@@ -476,6 +491,13 @@ foreach ($operation in $operationsToPerform)
 
             if ($LASTEXITCODE -ne 0)
             {
+                if($operation -match 'buildexe_?(.*)')
+                {
+                    "------------------------------------------------------------------------------------------------------------------------"
+                    "WARNING: If you run buildexe_* from command line, make sure that Visual studio is not running simultaneously - otherwise"
+                    "you might get nuget package reference conflicts (Especially for 'build buildexe_linux')"
+                }
+
                 "Command failed: Exit code: $LASTEXITCODE ('$cmd $cmdArgs')"
                 exit $LASTEXITCODE
             }
