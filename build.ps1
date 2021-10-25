@@ -202,7 +202,7 @@ foreach ($operation in $operationsToPerform)
         }
     }
 
-    if($operation -match 'buildexe_?(.*)')
+    if($operation -eq 'buildexe_linux')
     {
         $nugetTempDir = [System.IO.Path]::Combine($scriptDir, 'src\obj\nuget')
 
@@ -254,6 +254,7 @@ foreach ($operation in $operationsToPerform)
           '/p:PublishSingleFile=true',
           '/p:PublishReadyToRun=false',
           '/p:PublishTrimmed=true'
+          #'/p:PublishTrimmed=false'
           #'/p:UseAppHost=true'
         )
     }
@@ -491,11 +492,11 @@ foreach ($operation in $operationsToPerform)
 
             if ($LASTEXITCODE -ne 0)
             {
-                if($operation -match 'buildexe_?(.*)')
+                if($operation -eq 'buildexe_linux')
                 {
                     "------------------------------------------------------------------------------------------------------------------------"
                     "WARNING: If you run buildexe_* from command line, make sure that Visual studio is not running simultaneously - otherwise"
-                    "you might get nuget package reference conflicts (Especially for 'build buildexe_linux')"
+                    "you might get nuget package reference conflicts"
                 }
 
                 "Command failed: Exit code: $LASTEXITCODE ('$cmd $cmdArgs')"
