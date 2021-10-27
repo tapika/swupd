@@ -7,6 +7,8 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Caliburn.Micro;
 using ChocolateyGui.Common.Models.Messages;
@@ -73,7 +75,11 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             get { return true; }
         }
 
+#if NETFRAMEWORK        
         public void Handle(ShowPackageDetailsMessage message)
+#else
+        public async Task HandleAsync(ShowPackageDetailsMessage message, CancellationToken cancellationToken)
+#endif
         {
             if (message == null)
             {
@@ -96,32 +102,56 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             SetActiveItem(packageVm);
         }
 
+#if NETFRAMEWORK
         public void Handle(ShowSourcesMessage message)
+#else
+        public async Task HandleAsync(ShowSourcesMessage message, CancellationToken cancellationToken)
+#endif
         {
             SetActiveItem(_sourcesViewModel);
         }
 
+#if NETFRAMEWORK
         public void Handle(ShowSettingsMessage message)
+#else
+        public async Task HandleAsync(ShowSettingsMessage message, CancellationToken cancellationToken)
+#endif
         {
             ShowSettings();
         }
 
+#if NETFRAMEWORK
         public void Handle(ShowAboutMessage message)
+#else
+        public async Task HandleAsync(ShowAboutMessage message, CancellationToken cancellationToken)
+#endif
         {
             ShowAbout();
         }
 
+#if NETFRAMEWORK
         public void Handle(SettingsGoBackMessage message)
+#else
+        public async Task HandleAsync(SettingsGoBackMessage message, CancellationToken cancellationToken)
+#endif
         {
             SetActiveItem(_sourcesViewModel);
         }
 
+#if NETFRAMEWORK
         public void Handle(AboutGoBackMessage message)
+#else
+        public async Task HandleAsync(AboutGoBackMessage message, CancellationToken cancellationToken)
+#endif
         {
             SetActiveItem(_sourcesViewModel);
         }
 
+#if NETFRAMEWORK
         public void Handle(FeatureModifiedMessage message)
+#else
+        public async Task HandleAsync(FeatureModifiedMessage message, CancellationToken cancellationToken)
+#endif
         {
             NotifyOfPropertyChange(nameof(CanShowSettings));
         }
@@ -146,7 +176,11 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             SetActiveItem(IoC.Get<AboutViewModel>());
         }
 
+#if NETFRAMEWORK
         protected override void OnInitialize()
+#else
+        protected override async Task OnInitializeAsync(CancellationToken cancellationToken)
+#endif
         {
             _eventAggregator.Subscribe(this);
         }
@@ -174,11 +208,15 @@ namespace ChocolateyGui.Common.Windows.ViewModels
                     return;
                 }
 
+#if NETFRAMEWORK
                 _sourcesViewModel.ActivateItem(_sourcesViewModel.Items[sourceIndex.Value]);
+#else
+                _sourcesViewModel.ActivateItemAsync(_sourcesViewModel.Items[sourceIndex.Value]).GetAwaiter().GetResult();
+#endif
             }
         }
 
-        private void SetActiveItem<T>(T newItem)
+        private async void SetActiveItem<T>(T newItem)
         {
             if (_lastActiveItem != null && _lastActiveItem.Equals(newItem))
             {
@@ -189,10 +227,18 @@ namespace ChocolateyGui.Common.Windows.ViewModels
                 _lastActiveItem = ActiveItem;
             }
 
+#if NETFRAMEWORK
             ActivateItem(newItem);
+#else
+            await ActivateItemAsync(newItem);
+#endif
             if (_lastActiveItem is PackageViewModel)
             {
+#if NETFRAMEWORK
                 this.CloseItem(_lastActiveItem);
+#else
+                await this.CloseItemAsync(_lastActiveItem);
+#endif
             }
         }
 

@@ -32,9 +32,9 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             get { return _versionService.InformationalVersion; }
         }
 
-        public void Back()
+        public async void Back()
         {
-            _eventAggregator.PublishOnUIThread(new AboutGoBackMessage());
+            await _eventAggregator.PublishOnUIThreadAsync(new AboutGoBackMessage());
         }
     }
 }

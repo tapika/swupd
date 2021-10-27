@@ -4,6 +4,11 @@
     <OutputType>Exe</OutputType>
     <Platforms>AnyCPU</Platforms>
     <RootNamespace>chocolatey.console</RootNamespace>
+    <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(PUBLISH_CHOCO)' != '' ">
+    <IsPublishable>true</IsPublishable>
   </PropertyGroup>
 
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />

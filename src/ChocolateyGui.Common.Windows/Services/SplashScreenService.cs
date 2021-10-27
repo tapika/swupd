@@ -29,7 +29,10 @@ namespace ChocolateyGui.Common.Windows.Services
 
         public void Close(TimeSpan duration)
         {
-            _splashScreen.Close(duration);
+            if (_splashScreen != null)
+            { 
+                _splashScreen.Close(duration);
+            }
         }
     }
 }

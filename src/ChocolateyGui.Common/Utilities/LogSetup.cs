@@ -40,9 +40,10 @@ namespace ChocolateyGui.Common.Utilities
         public static string GetLocalAppDataPath(string applicationName)
         {
             _localAppDataPath = Path.Combine(
-                Environment.GetFolderPath(
-                    Environment.SpecialFolder.LocalApplicationData,
-                    Environment.SpecialFolderOption.DoNotVerify),
+                Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName),
+
+                // Original ChocolateyGui was using preinstalled folder.
+                //Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData,Environment.SpecialFolderOption.DoNotVerify),
                 applicationName);
 
             return _localAppDataPath;
@@ -50,7 +51,7 @@ namespace ChocolateyGui.Common.Utilities
 
         public static string GetAppDataPath(string applicationName)
         {
-            _appDataPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            _appDataPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             return _appDataPath;
         }
     }

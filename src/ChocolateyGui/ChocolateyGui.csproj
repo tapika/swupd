@@ -1,12 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+<!--<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop" ToolsVersion="15.0">-->
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
     <Platforms>AnyCPU</Platforms>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <ApplicationIcon>chocolateyicon.ico</ApplicationIcon>
     <ApplicationManifest>ChocolateyGui.exe.manifest</ApplicationManifest>
+    <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(PUBLISH_CHOCOGUI)' != '' ">
+    <IsPublishable>true</IsPublishable>
+  </PropertyGroup>
+
+  <!-- See comments in ChocolateyGui.Common.Windows.csproj -->
+  <PropertyGroup Condition=" ! $(RuntimeIdentifier.StartsWith('lin')) ">
+    <UseWPF>true</UseWPF>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(UseWPF)' != 'true' ">
+    <!-- No need to have Main() -->
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
@@ -15,17 +31,21 @@
     <None Include="$(ProjectDir)..\..\ProjectsCommon.props" Link="ProjectsCommon.props" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(UseWPF)' != 'true' ">
+    <Compile Remove="**/*.cs" />
+    <Page Remove="**/*.xaml" />
+    <None Remove="**/*.xaml" />
+  </ItemGroup>
+
   <ItemGroup>
     <Resource Include="..\..\ABOUT.md" Link="Resources\ABOUT.md" />
     <Resource Include="..\..\CHANGELOG.md" Link="Resources\CHANGELOG.md" />
     <Resource Include="..\..\CREDITS.md" Link="Resources\CREDITS.md" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(UseWPF)' == 'true' ">
     <PackageReference Include="Autofac" Version="4.6.1" />
     <PackageReference Include="AutoMapper" Version="7.0.1" />
-    <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
-    <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
     <PackageReference Include="ControlzEx" Version="4.4.0" />
     <PackageReference Include="Fizzler" Version="1.2.0" />
     <PackageReference Include="HarfBuzzSharp" Version="2.6.1.4" />
@@ -38,7 +58,6 @@
     <PackageReference Include="MahApps.Metro.IconPacks.Octicons" Version="4.8.0" />
     <PackageReference Include="Markdig.Signed" Version="0.23.0" />
     <PackageReference Include="Markdig.Wpf.Signed" Version="0.5.0.1" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="15.4.4" />
     <PackageReference Include="Microsoft.VisualStudio.Validation" Version="15.3.32" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
@@ -47,31 +66,42 @@
     <PackageReference Include="Serilog.Sinks.Async" Version="1.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="3.2.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.1" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="SimpleInjector" Version="2.5.0" />
     <PackageReference Include="SkiaSharp" Version="1.68.3" />
     <PackageReference Include="SkiaSharp.HarfBuzz" Version="1.68.3" />
-    <PackageReference Include="Splat" Version="2.0.0" />
-    <PackageReference Include="StrongNamer" Version="0.2.5" />
     <PackageReference Include="Svg.Custom" Version="0.3.0" />
     <PackageReference Include="Svg.Skia" Version="0.3.0" />
+  </ItemGroup>
+
+  <!-- .net framework specific references -->
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
+    <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
+    <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
+    <PackageReference Include="SimpleInjector" Version="2.5.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.1.0" />
     <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
     <PackageReference Include="System.Reactive.Windows.Threading" Version="3.1.1" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Page Include="**/*.xaml" />
+  <!-- .net core specific references -->
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' and '$(UseWPF)' == 'true'">
+    <PackageReference Include="Caliburn.Micro" Version="4.0.173" />
+    <PackageReference Include="Caliburn.Micro.Core" Version="4.0.173" />
+    <PackageReference Include="SimpleInjector" Version="5.2.1" />
+    <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="5.0.3" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(UseWPF)' == 'true' ">
     <ProjectReference Include="..\..\lib\NuGet-Chocolatey\src\Core\Core.csproj" />
     <ProjectReference Include="..\ChocolateyGui.Common.Windows\ChocolateyGui.Common.Windows.csproj" />
     <ProjectReference Include="..\ChocolateyGui.Common\ChocolateyGui.Common.csproj" />
     <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(UseWPF)' == 'true' ">
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Xaml" />
@@ -106,5 +136,822 @@
   <ItemGroup>
     <None Include="ChocolateyGui.exe.manifest" />
   </ItemGroup>
+
+  <!-- 
+    Most of stuff was copied here from chocolatey.console.csproj - more complex stuff was tried to get reconfigured - each with it's own problems.
+  -->
+  <Target Name="EnsureAllAssembliesAreLinked" BeforeTargets="PrepareForILLink">
+    <ItemGroup>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Accessibility'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Autofac'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'AutoMapper'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Caliburn.Micro.Core'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Caliburn.Micro.Platform.Core'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Caliburn.Micro.Platform'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'choco'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'chocolatey'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'chocolatey.resources'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'ChocolateyGui.Common'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'ChocolateyGui.Common.Windows'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'ChocolateyGui'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'ControlzEx'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'ext-ms-win-advapi32-encryptedfile-l1-1-0'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'ext-ms-win-ntuser-keyboard-l1-2-1'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Fizzler'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'HarfBuzzSharp'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'LiteDB'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'MahApps.Metro'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'MahApps.Metro.IconPacks.BoxIcons'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'MahApps.Metro.IconPacks.Core'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'MahApps.Metro.IconPacks.Entypo'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'MahApps.Metro.IconPacks.FontAwesome'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'MahApps.Metro.IconPacks.Modern'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'MahApps.Metro.IconPacks.Octicons'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Markdig.Signed'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Markdig.Wpf'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.ApplicationInsights'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.CodeAnalysis.CSharp'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.CodeAnalysis'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.CSharp'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Data.Edm'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Data.OData'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Data.Services.Client'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Management.Infrastructure.CimCmdlets'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Management.Infrastructure'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Management.Infrastructure.Native'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.PowerShell.Commands.Diagnostics'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.PowerShell.Commands.Management'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.PowerShell.Commands.Utility'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.PowerShell.ConsoleHost'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.PowerShell.CoreCLR.Eventing'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.PowerShell.MarkdownRender'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.PowerShell.SDK'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.PowerShell.Security'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.VisualBasic.Core'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.VisualBasic'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.VisualStudio.Threading'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.VisualStudio.Validation'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Web.XmlTransform'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Win32.Primitives'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Win32.Registry.AccessControl'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Win32.Registry'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Win32.SystemEvents'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.WSMan.Management'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.WSMan.Runtime'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Xaml.Behaviors'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'mscorlib'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Namotion.Reflection'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'netstandard'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Newtonsoft.Json'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'NJsonSchema'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'NLog'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'NuGet.Core'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'obj.netcoreapp3._1_Release'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationCore'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework-SystemCore'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework-SystemData'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework-SystemDrawing'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework-SystemXml'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework-SystemXmlLinq'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework.Aero'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework.Aero2'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework.AeroLite'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework.Classic'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework.Luna'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationFramework.Royale'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'PresentationUI'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'ReachFramework'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Serilog'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Serilog.Formatting.Compact'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Serilog.Sinks.Async'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Serilog.Sinks.Console'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Serilog.Sinks.File'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Serilog.Sinks.PeriodicBatching'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Serilog.Sinks.RollingFile'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'SimpleInjector'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'SkiaSharp'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'SkiaSharp.HarfBuzz'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Svg.Custom'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Svg.Skia'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.AppContext'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Buffers'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.CodeDom'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Collections.Concurrent'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Collections'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Collections.Immutable'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Collections.NonGeneric'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Collections.Specialized'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ComponentModel.Annotations'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ComponentModel.Composition'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ComponentModel.Composition.Registration'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ComponentModel.DataAnnotations'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ComponentModel'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ComponentModel.EventBasedAsync'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ComponentModel.Primitives'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ComponentModel.TypeConverter'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Configuration.ConfigurationManager'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Configuration'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Console'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Core'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Data.Common'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Data.DataSetExtensions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Data'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Data.Odbc'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Data.OleDb'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Data.SqlClient'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Design'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.Contracts'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.Debug'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.DiagnosticSource'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.EventLog'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.FileVersionInfo'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.PerformanceCounter'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.Process'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.StackTrace'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.TextWriterTraceListener'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.Tools'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.TraceSource'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Diagnostics.Tracing'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.DirectoryServices.AccountManagement'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.DirectoryServices'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.DirectoryServices.Protocols'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Drawing.Common'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Drawing.Design'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Drawing'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Drawing.Primitives'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Dynamic.Runtime'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Formats.Asn1'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Globalization.Calendars'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Globalization'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Globalization.Extensions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.Compression.Brotli'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.Compression'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.Compression.FileSystem'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.Compression.ZipFile'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.FileSystem.AccessControl'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.FileSystem'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.FileSystem.DriveInfo'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.FileSystem.Primitives'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.FileSystem.Watcher'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.IsolatedStorage'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.MemoryMappedFiles'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.Packaging'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.Pipes.AccessControl'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.Pipes'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.Ports'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.IO.UnmanagedMemoryStream'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Linq'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Linq.Expressions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Linq.Parallel'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Linq.Queryable'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Management.Automation'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Management'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Memory'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.Http'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.Http.WinHttpHandler'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.HttpListener'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.Mail'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.NameResolution'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.NetworkInformation'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.Ping'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.Primitives'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.Requests'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.Security'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.ServicePoint'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.Sockets'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.WebClient'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.WebHeaderCollection'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.WebProxy'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.WebSockets.Client'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Net.WebSockets'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Numerics'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Numerics.Vectors'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ObjectModel'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Printing'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Private.CoreLib'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Private.DataContractSerialization'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Private.ServiceModel'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Private.Uri'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Private.Xml'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Private.Xml.Linq'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reactive'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reactive.Linq'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection.Context'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection.DispatchProxy'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection.Emit'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection.Emit.ILGeneration'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection.Emit.Lightweight'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection.Extensions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection.Metadata'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection.Primitives'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Reflection.TypeExtensions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Resources.Extensions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Resources.Reader'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Resources.ResourceManager'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Resources.Writer'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Caching'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.CompilerServices.Unsafe'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.CompilerServices.VisualC'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Extensions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Handles'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.InteropServices'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.InteropServices.RuntimeInformation'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.InteropServices.WindowsRuntime'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Intrinsics'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Loader'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Numerics'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Serialization'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Serialization.Formatters'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Serialization.Json'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Serialization.Primitives'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.Serialization.Xml'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.WindowsRuntime'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Runtime.WindowsRuntime.UI.Xaml'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.AccessControl'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Claims'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.Algorithms'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.Cng'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.Csp'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.Encoding'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.OpenSsl'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.Pkcs'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.Primitives'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.ProtectedData'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.X509Certificates'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Cryptography.Xml'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Permissions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Principal'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.Principal.Windows'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Security.SecureString'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceModel'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceModel.Duplex'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceModel.Http'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceModel.NetTcp'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceModel.Primitives'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceModel.Security'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceModel.Syndication'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceModel.Web'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceProcess'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ServiceProcess.ServiceController'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Spatial'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Text.Encoding.CodePages'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Text.Encoding'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Text.Encoding.Extensions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Text.Encodings.Web'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Text.Json'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Text.RegularExpressions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.AccessControl'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.Channels'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.Overlapped'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.Tasks.Dataflow'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.Tasks'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.Tasks.Extensions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.Tasks.Parallel'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.Thread'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.ThreadPool'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Threading.Timer'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Transactions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Transactions.Local'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.ValueTuple'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Web'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Web.HttpUtility'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Windows.Controls.Ribbon'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Windows'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Windows.Extensions'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Windows.Forms.Design'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Windows.Forms.Design.Editors'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Windows.Forms'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Windows.Input.Manipulations'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Windows.Presentation'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xaml'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xml'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xml.Linq'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xml.ReaderWriter'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xml.Serialization'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xml.XDocument'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xml.XmlDocument'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xml.XmlSerializer'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xml.XPath'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'System.Xml.XPath.XDocument'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'UIAutomationClient'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'UIAutomationClientSideProviders'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'UIAutomationProvider'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'UIAutomationTypes'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'WindowsBase'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'WindowsFormsIntegration'"> <TrimMode>copyused</TrimMode> </ManagedAssemblyToLink>
+
+      <!-- If not yet specified - fall back to this. -->
+      <ManagedAssemblyToLink Condition=" '%(ManagedAssemblyToLink.TrimMode)' == '' ">
+        <TrimMode>copyused</TrimMode>
+      </ManagedAssemblyToLink>
+
+      <!--<ManagedAssemblyToLink>
+        <TrimMode>link</TrimMode>
+      </ManagedAssemblyToLink>-->
+
+      <TrimmerRootAssembly Include="mscorlib" />
+      <TrimmerRootAssembly Include="NLog" />
+      <TrimmerRootAssembly Include="System.Configuration.ConfigurationManager" />
+      <TrimmerRootAssembly Include="System.Private.CoreLib" />
+      <TrimmerRootAssembly Include="NuGet.Core" />
+      <TrimmerRootAssembly Include="chocolatey" />
+      <TrimmerRootAssembly Include="System.Xml.XmlSerializer" />
+      <TrimmerRootAssembly Include="System.Spatial" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Diagnostics" Condition=" $(RuntimeIdentifier.StartsWith('win')) " />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.ConsoleHost" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Utility" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Management" />
+      <TrimmerRootAssembly Include="Microsoft.Management.Infrastructure" />
+      <TrimmerRootAssembly Include="Microsoft.WSMan.Management" Condition=" $(RuntimeIdentifier.StartsWith('win')) " />
+      <TrimmerRootAssembly Include="System.Management.Automation" />
+      <TrimmerRootAssembly Include="Microsoft.ApplicationInsights" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Security" />
+
+      <TrimmerRootAssembly Include="MahApps.Metro" />
+      <TrimmerRootAssembly Include="ChocolateyGui.Common" />
+      <TrimmerRootAssembly Include="ChocolateyGui.Common.Windows" />
+      <TrimmerRootAssembly Include="System.Windows.Controls.Ribbon" />
+      <TrimmerRootAssembly Include="ChocolateyGui" />
+      <TrimmerRootAssembly Include="PresentationFramework" />
+      <TrimmerRootAssembly Include="AutoMapper" />
+      <TrimmerRootAssembly Include="ControlzEx" />
+      <TrimmerRootAssembly Include="Autofac" />
+      <TrimmerRootAssembly Include="WindowsFormsIntegration" />
+      <TrimmerRootAssembly Include="MahApps.Metro.IconPacks.FontAwesome" />
+      <TrimmerRootAssembly Include="System.Xaml" />
+      <TrimmerRootAssembly Include="System.Windows.Extensions" />
+      <TrimmerRootAssembly Include="Markdig.Wpf" />
+      <TrimmerRootAssembly Include="System.Collections" />
+      <TrimmerRootAssembly Include="MahApps.Metro.IconPacks.BoxIcons" />
+      <TrimmerRootAssembly Include="MahApps.Metro.IconPacks.Core" />
+      <TrimmerRootAssembly Include="MahApps.Metro.IconPacks.Entypo" />
+      <TrimmerRootAssembly Include="MahApps.Metro.IconPacks.Modern" />
+      <TrimmerRootAssembly Include="MahApps.Metro.IconPacks.Octicons" />
+      <TrimmerRootAssembly Include="System.Resources.ResourceManager" />
+      <TrimmerRootAssembly Include="PresentationFramework.Aero2" />
+      <TrimmerRootAssembly Include="PresentationFramework.Classic" />
+      <TrimmerRootAssembly Include="PresentationCore" />
+      <TrimmerRootAssembly Include="System.Runtime.InteropServices" />
+      <TrimmerRootAssembly Include="System.Runtime.InteropServices.RuntimeInformation" />
+      <TrimmerRootAssembly Include="System.Runtime.InteropServices.WindowsRuntime" />
+      <TrimmerRootAssembly Include="UIAutomationClient" />
+      <TrimmerRootAssembly Include="UIAutomationClientSideProviders" />
+      <TrimmerRootAssembly Include="UIAutomationProvider" />
+      <TrimmerRootAssembly Include="UIAutomationTypes" />
+      <TrimmerRootAssembly Include="System.Windows.Forms" />
+      <TrimmerRootAssembly Include="System.Windows.Forms.Design" />
+      <TrimmerRootAssembly Include="System.Windows.Forms.Design.Editors" />
+      <TrimmerRootAssembly Include="WindowsBase" />
+      <TrimmerRootAssembly Include="PresentationFramework.Aero" />
+      <TrimmerRootAssembly Include="System.Drawing.Common" />
+      <TrimmerRootAssembly Include="System.Windows" />
+
+      <TrimmerRootAssembly Include="System.Threading.Timer" />
+      <TrimmerRootAssembly Include="System.Runtime.Serialization.Formatters" />
+
+      <TrimmerRootAssembly Include="System.Runtime.CompilerServices.VisualC" />
+      <TrimmerRootAssembly Include="Microsoft.CSharp" />
+      <TrimmerRootAssembly Include="Caliburn.Micro.Platform" />
+      <TrimmerRootAssembly Include="Caliburn.Micro.Core" />
+      <TrimmerRootAssembly Include="Caliburn.Micro.Platform.Core" />
+
+      <TrimmerRootAssembly Include="System.Runtime.Serialization.Formatters" />
+      <TrimmerRootAssembly Include="System.IO.MemoryMappedFiles" />
+      <TrimmerRootAssembly Include="PresentationFramework-SystemData" />
+
+      <TrimmerRootAssembly Include="System.Runtime" />
+
+      <!-- native -->
+      <!--<TrimmerRootAssembly Include="DirectWriteForwarder" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Accessibility" />
+      <TrimmerRootAssembly Include="Markdig.Signed" />
+
+      <!-- native -->
+      <!--<TrimmerRootAssembly Include="coreclr" />-->
+
+      <!-- native -->
+      <!--<TrimmerRootAssembly Include="D3DCompiler_47_cor3" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="PresentationUI" />
+      <TrimmerRootAssembly Include="PresentationFramework-SystemCore" />
+      <TrimmerRootAssembly Include="PresentationFramework-SystemDrawing" />
+      <TrimmerRootAssembly Include="PresentationFramework-SystemXml" />
+      <TrimmerRootAssembly Include="PresentationFramework-SystemXmlLinq" />
+      <TrimmerRootAssembly Include="PresentationFramework.AeroLite" />
+      <TrimmerRootAssembly Include="PresentationFramework" />
+      <TrimmerRootAssembly Include="PresentationFramework.Luna" />
+      <TrimmerRootAssembly Include="PresentationFramework.Royale" />
+
+      <!--Native-->
+      <!-- <TrimmerRootAssembly Include="PresentationNative_cor3" /> -->
+
+      <!--Native-->
+      <!--<TrimmerRootAssembly Include="clrcompression" />-->
+
+      <!--Native-->
+      <!--<TrimmerRootAssembly Include="clretwrc" />-->
+
+      <!--Native-->
+      <!--<TrimmerRootAssembly Include="clrjit" />-->
+
+      <!--Native-->
+      <!--<TrimmerRootAssembly Include="dbgshim" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Fizzler" />
+      <TrimmerRootAssembly Include="HarfBuzzSharp" />
+
+      <!--Native-->
+      <!--<TrimmerRootAssembly Include="hostfxr" />-->
+
+      <!--Native-->
+      <!--<TrimmerRootAssembly Include="hostpolicy" />-->
+
+      <!--Native-->
+      <!--<TrimmerRootAssembly Include="libHarfBuzzSharp" />-->
+
+      <!--Native-->
+      <!--<TrimmerRootAssembly Include="libSkiaSharp" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="LiteDB" />
+
+      <!--Native-->
+      <!--<TrimmerRootAssembly Include="mi" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Microsoft.ApplicationInsights" />
+      <TrimmerRootAssembly Include="Microsoft.CodeAnalysis.CSharp" />
+      <TrimmerRootAssembly Include="Microsoft.CodeAnalysis" />
+      <TrimmerRootAssembly Include="Microsoft.CSharp" />
+      <TrimmerRootAssembly Include="Microsoft.Data.Edm" />
+      <TrimmerRootAssembly Include="Microsoft.Data.OData" />
+      <TrimmerRootAssembly Include="Microsoft.Data.Services.Client" />
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="Microsoft.DiaSymReader.Native.amd64" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Microsoft.Management.Infrastructure.CimCmdlets" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Microsoft.Management.Infrastructure.Native" />
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="Microsoft.Management.Infrastructure.Native.Unmanaged" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Diagnostics" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Management" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Commands.Utility" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.ConsoleHost" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.CoreCLR.Eventing" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.MarkdownRender" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.SDK" />
+      <TrimmerRootAssembly Include="Microsoft.PowerShell.Security" />
+      <TrimmerRootAssembly Include="Microsoft.VisualBasic.Core" />
+      <TrimmerRootAssembly Include="Microsoft.VisualBasic" />
+      <TrimmerRootAssembly Include="Microsoft.VisualStudio.Threading" />
+      <TrimmerRootAssembly Include="Microsoft.VisualStudio.Validation" />
+      <TrimmerRootAssembly Include="Microsoft.Web.XmlTransform" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Microsoft.Win32.Primitives" />
+      <TrimmerRootAssembly Include="Microsoft.Win32.Registry.AccessControl" />
+      <TrimmerRootAssembly Include="Microsoft.Win32.Registry" />
+      <TrimmerRootAssembly Include="Microsoft.Win32.SystemEvents" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Microsoft.WSMan.Management" />
+      <TrimmerRootAssembly Include="Microsoft.WSMan.Runtime" />
+      <TrimmerRootAssembly Include="Microsoft.Xaml.Behaviors" />
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="miutils" />-->
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="mscordaccore" />-->
+
+      <!-- <TrimmerRootAssembly Include="mscordaccore_amd64_amd64_4.700.21.35901" /> -->
+      <!-- <TrimmerRootAssembly Include="mscordaccore_amd64_amd64_4.700.21.41101" /> -->
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="mscordbi" />-->
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="mscorrc.debug" />-->
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="mscorrc" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Namotion.Reflection" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="netstandard" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Newtonsoft.Json" />
+      <TrimmerRootAssembly Include="NJsonSchema" />
+      <TrimmerRootAssembly Include="NuGet.Core" />
+
+
+      <!--<TrimmerRootAssembly Include="obj.net48_Release" />-->
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="obj.netcoreapp3._1_Release" />-->
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="PenImc_cor3" />-->
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="pwrshplugin" />-->
+
+      <!--Native -->
+      <!--<TrimmerRootAssembly Include="PowerShell.Core.Instrumentation" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="ReachFramework" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Serilog" />
+      <TrimmerRootAssembly Include="Serilog.Formatting.Compact" />
+      <TrimmerRootAssembly Include="Serilog.Sinks.Async" />
+      <TrimmerRootAssembly Include="Serilog.Sinks.Console" />
+      <TrimmerRootAssembly Include="Serilog.Sinks.File" />
+      <TrimmerRootAssembly Include="Serilog.Sinks.PeriodicBatching" />
+      <TrimmerRootAssembly Include="Serilog.Sinks.RollingFile" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="SimpleInjector" />
+      <TrimmerRootAssembly Include="SkiaSharp" />
+      <TrimmerRootAssembly Include="SkiaSharp.HarfBuzz" />
+
+      <!-- native -->
+      <!--<TrimmerRootAssembly Include="sni" />-->
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="Svg.Custom" />
+      <TrimmerRootAssembly Include="Svg.Skia" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.AppContext" />
+      <TrimmerRootAssembly Include="System.Buffers" />
+      <TrimmerRootAssembly Include="System.CodeDom" />
+      <TrimmerRootAssembly Include="System.Collections.Concurrent" />
+      <TrimmerRootAssembly Include="System.Collections" />
+      <TrimmerRootAssembly Include="System.Collections.Immutable" />
+      <TrimmerRootAssembly Include="System.Collections.NonGeneric" />
+      <TrimmerRootAssembly Include="System.Collections.Specialized" />
+      <TrimmerRootAssembly Include="System.ComponentModel.Annotations" />
+      <TrimmerRootAssembly Include="System.ComponentModel.Composition" />
+      <TrimmerRootAssembly Include="System.ComponentModel.Composition.Registration" />
+      <TrimmerRootAssembly Include="System.ComponentModel.DataAnnotations" />
+      <TrimmerRootAssembly Include="System.ComponentModel" />
+      <TrimmerRootAssembly Include="System.ComponentModel.EventBasedAsync" />
+      <TrimmerRootAssembly Include="System.ComponentModel.Primitives" />
+      <TrimmerRootAssembly Include="System.ComponentModel.TypeConverter" />
+      <TrimmerRootAssembly Include="System.Configuration.ConfigurationManager" />
+      <TrimmerRootAssembly Include="System.Configuration" />
+      <TrimmerRootAssembly Include="System.Console" />
+      <TrimmerRootAssembly Include="System.Core" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.Data.Common" />
+      <TrimmerRootAssembly Include="System.Data.DataSetExtensions" />
+      <TrimmerRootAssembly Include="System.Data" />
+      <TrimmerRootAssembly Include="System.Data.Odbc" />
+      <TrimmerRootAssembly Include="System.Data.OleDb" />
+      <TrimmerRootAssembly Include="System.Data.SqlClient" />
+      <TrimmerRootAssembly Include="System.Design" />
+      <TrimmerRootAssembly Include="System.Diagnostics.Contracts" />
+      <TrimmerRootAssembly Include="System.Diagnostics.Debug" />
+      <TrimmerRootAssembly Include="System.Diagnostics.DiagnosticSource" />
+      <TrimmerRootAssembly Include="System.Diagnostics.EventLog" />
+      <TrimmerRootAssembly Include="System.Diagnostics.FileVersionInfo" />
+      <TrimmerRootAssembly Include="System.Diagnostics.PerformanceCounter" />
+      <TrimmerRootAssembly Include="System.Diagnostics.Process" />
+      <TrimmerRootAssembly Include="System.Diagnostics.StackTrace" />
+      <TrimmerRootAssembly Include="System.Diagnostics.TextWriterTraceListener" />
+      <TrimmerRootAssembly Include="System.Diagnostics.Tools" />
+      <TrimmerRootAssembly Include="System.Diagnostics.TraceSource" />
+      <TrimmerRootAssembly Include="System.Diagnostics.Tracing" />
+      <TrimmerRootAssembly Include="System.DirectoryServices.AccountManagement" />
+      <TrimmerRootAssembly Include="System.DirectoryServices" />
+      <TrimmerRootAssembly Include="System.DirectoryServices.Protocols" />
+      <TrimmerRootAssembly Include="System" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.Drawing.Common" />
+      <TrimmerRootAssembly Include="System.Drawing.Design" />
+      <TrimmerRootAssembly Include="System.Drawing" />
+      <TrimmerRootAssembly Include="System.Drawing.Primitives" />
+      <TrimmerRootAssembly Include="System.Dynamic.Runtime" />
+      <TrimmerRootAssembly Include="System.Formats.Asn1" />
+      <TrimmerRootAssembly Include="System.Globalization.Calendars" />
+      <TrimmerRootAssembly Include="System.Globalization" />
+      <TrimmerRootAssembly Include="System.Globalization.Extensions" />
+      <TrimmerRootAssembly Include="System.IO.Compression.Brotli" />
+      <TrimmerRootAssembly Include="System.IO.Compression" />
+      <TrimmerRootAssembly Include="System.IO.Compression.FileSystem" />
+      <TrimmerRootAssembly Include="System.IO.Compression.ZipFile" />
+      <TrimmerRootAssembly Include="System.IO" />
+      <TrimmerRootAssembly Include="System.IO.FileSystem.AccessControl" />
+      <TrimmerRootAssembly Include="System.IO.FileSystem" />
+      <TrimmerRootAssembly Include="System.IO.FileSystem.DriveInfo" />
+      <TrimmerRootAssembly Include="System.IO.FileSystem.Primitives" />
+      <TrimmerRootAssembly Include="System.IO.FileSystem.Watcher" />
+      <TrimmerRootAssembly Include="System.IO.IsolatedStorage" />
+      <TrimmerRootAssembly Include="System.IO.MemoryMappedFiles" />
+      <TrimmerRootAssembly Include="System.IO.Packaging" />
+      <TrimmerRootAssembly Include="System.IO.Pipes.AccessControl" />
+      <TrimmerRootAssembly Include="System.IO.Pipes" />
+      <TrimmerRootAssembly Include="System.IO.Ports" />
+      <TrimmerRootAssembly Include="System.IO.UnmanagedMemoryStream" />
+      <TrimmerRootAssembly Include="System.Linq" />
+      <TrimmerRootAssembly Include="System.Linq.Expressions" />
+      <TrimmerRootAssembly Include="System.Linq.Parallel" />
+      <TrimmerRootAssembly Include="System.Linq.Queryable" />
+      <TrimmerRootAssembly Include="System.Management.Automation" />
+      <TrimmerRootAssembly Include="System.Management" />
+
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.Memory" />
+      <TrimmerRootAssembly Include="System.Net" />
+      <TrimmerRootAssembly Include="System.Net.Http" />
+      <TrimmerRootAssembly Include="System.Net.Http.WinHttpHandler" />
+      <TrimmerRootAssembly Include="System.Net.HttpListener" />
+      <TrimmerRootAssembly Include="System.Net.Mail" />
+      <TrimmerRootAssembly Include="System.Net.NameResolution" />
+      <TrimmerRootAssembly Include="System.Net.NetworkInformation" />
+      <TrimmerRootAssembly Include="System.Net.Ping" />
+      <TrimmerRootAssembly Include="System.Net.Primitives" />
+      <TrimmerRootAssembly Include="System.Net.Requests" />
+      <TrimmerRootAssembly Include="System.Net.Security" />
+      <TrimmerRootAssembly Include="System.Net.ServicePoint" />
+      <TrimmerRootAssembly Include="System.Net.Sockets" />
+      <TrimmerRootAssembly Include="System.Net.WebClient" />
+      <TrimmerRootAssembly Include="System.Net.WebHeaderCollection" />
+      <TrimmerRootAssembly Include="System.Net.WebProxy" />
+      <TrimmerRootAssembly Include="System.Net.WebSockets.Client" />
+      <TrimmerRootAssembly Include="System.Net.WebSockets" />
+      <TrimmerRootAssembly Include="System.Numerics" />
+      <TrimmerRootAssembly Include="System.Numerics.Vectors" />
+      <TrimmerRootAssembly Include="System.ObjectModel" />
+      <TrimmerRootAssembly Include="System.Printing" />
+      <TrimmerRootAssembly Include="System.Private.CoreLib" />
+      <TrimmerRootAssembly Include="System.Private.DataContractSerialization" />
+      <TrimmerRootAssembly Include="System.Private.ServiceModel" />
+      <TrimmerRootAssembly Include="System.Private.Uri" />
+      <TrimmerRootAssembly Include="System.Private.Xml" />
+      <TrimmerRootAssembly Include="System.Private.Xml.Linq" />
+      <TrimmerRootAssembly Include="System.Reactive" />
+      <TrimmerRootAssembly Include="System.Reactive.Linq" />
+
+      <!-- Some debugger glitch appears ? -->
+      <TrimmerRootAssembly Include="System.Reflection.Context" />
+      <TrimmerRootAssembly Include="System.Reflection.DispatchProxy" />
+      <TrimmerRootAssembly Include="System.Reflection" />
+      <TrimmerRootAssembly Include="System.Reflection.Emit" />
+      <TrimmerRootAssembly Include="System.Reflection.Emit.ILGeneration" />
+      <TrimmerRootAssembly Include="System.Reflection.Emit.Lightweight" />
+      <TrimmerRootAssembly Include="System.Reflection.Extensions" />
+      <TrimmerRootAssembly Include="System.Reflection.Metadata" />
+      <TrimmerRootAssembly Include="System.Reflection.Primitives" />
+      <TrimmerRootAssembly Include="System.Reflection.TypeExtensions" />
+
+      <!-- No help -->
+      <TrimmerRootAssembly Include="System.Resources.Extensions" />
+      <TrimmerRootAssembly Include="System.Resources.Reader" />
+      <TrimmerRootAssembly Include="System.Resources.ResourceManager" />
+      <TrimmerRootAssembly Include="System.Resources.Writer" />
+      <TrimmerRootAssembly Include="System.Runtime.Caching" />
+
+      <!-- No help -->
+      <TrimmerRootAssembly Include="System.Runtime.CompilerServices.Unsafe" />
+
+      <!-- No help -->
+      <TrimmerRootAssembly Include="System.Runtime.CompilerServices.VisualC" />
+      <TrimmerRootAssembly Include="System.Runtime" />
+      <TrimmerRootAssembly Include="System.Runtime.Extensions" />
+      <TrimmerRootAssembly Include="System.Runtime.Handles" />
+      <TrimmerRootAssembly Include="System.Runtime.InteropServices" />
+      <TrimmerRootAssembly Include="System.Runtime.InteropServices.RuntimeInformation" />
+      <TrimmerRootAssembly Include="System.Runtime.InteropServices.WindowsRuntime" />
+      <TrimmerRootAssembly Include="System.Runtime.Intrinsics" />
+      <TrimmerRootAssembly Include="System.Runtime.Loader" />
+      <TrimmerRootAssembly Include="System.Runtime.Numerics" />
+      <TrimmerRootAssembly Include="System.Runtime.Serialization" />
+      <TrimmerRootAssembly Include="System.Runtime.Serialization.Formatters" />
+      <TrimmerRootAssembly Include="System.Runtime.Serialization.Json" />
+      <TrimmerRootAssembly Include="System.Runtime.Serialization.Primitives" />
+      <TrimmerRootAssembly Include="System.Runtime.Serialization.Xml" />
+      <TrimmerRootAssembly Include="System.Runtime.WindowsRuntime" />
+      <TrimmerRootAssembly Include="System.Runtime.WindowsRuntime.UI.Xaml" />
+
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.Security.AccessControl" />
+      <TrimmerRootAssembly Include="System.Security.Claims" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.Algorithms" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.Cng" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.Csp" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.Encoding" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.OpenSsl" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.Pkcs" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.Primitives" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.ProtectedData" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.X509Certificates" />
+      <TrimmerRootAssembly Include="System.Security.Cryptography.Xml" />
+      <TrimmerRootAssembly Include="System.Security" />
+      <TrimmerRootAssembly Include="System.Security.Permissions" />
+      <TrimmerRootAssembly Include="System.Security.Principal" />
+      <TrimmerRootAssembly Include="System.Security.Principal.Windows" />
+      <TrimmerRootAssembly Include="System.Security.SecureString" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.ServiceModel" />
+      <TrimmerRootAssembly Include="System.ServiceModel.Duplex" />
+      <TrimmerRootAssembly Include="System.ServiceModel.Http" />
+      <TrimmerRootAssembly Include="System.ServiceModel.NetTcp" />
+      <TrimmerRootAssembly Include="System.ServiceModel.Primitives" />
+      <TrimmerRootAssembly Include="System.ServiceModel.Security" />
+      <TrimmerRootAssembly Include="System.ServiceModel.Syndication" />
+      <TrimmerRootAssembly Include="System.ServiceModel.Web" />
+      <TrimmerRootAssembly Include="System.ServiceProcess" />
+      <TrimmerRootAssembly Include="System.ServiceProcess.ServiceController" />
+      <TrimmerRootAssembly Include="System.Spatial" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.Text.Encoding.CodePages" />
+      <TrimmerRootAssembly Include="System.Text.Encoding" />
+      <TrimmerRootAssembly Include="System.Text.Encoding.Extensions" />
+      <TrimmerRootAssembly Include="System.Text.Encodings.Web" />
+      <TrimmerRootAssembly Include="System.Text.Json" />
+      <TrimmerRootAssembly Include="System.Text.RegularExpressions" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.Threading.AccessControl" />
+      <TrimmerRootAssembly Include="System.Threading.Channels" />
+      <TrimmerRootAssembly Include="System.Threading" />
+      <TrimmerRootAssembly Include="System.Threading.Overlapped" />
+      <TrimmerRootAssembly Include="System.Threading.Tasks.Dataflow" />
+      <TrimmerRootAssembly Include="System.Threading.Tasks" />
+      <TrimmerRootAssembly Include="System.Threading.Tasks.Extensions" />
+      <TrimmerRootAssembly Include="System.Threading.Tasks.Parallel" />
+      <TrimmerRootAssembly Include="System.Threading.Thread" />
+      <TrimmerRootAssembly Include="System.Threading.ThreadPool" />
+      <TrimmerRootAssembly Include="System.Threading.Timer" />
+      <TrimmerRootAssembly Include="System.Transactions" />
+      <TrimmerRootAssembly Include="System.Transactions.Local" />
+      <TrimmerRootAssembly Include="System.ValueTuple" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.Web" />
+      <TrimmerRootAssembly Include="System.Web.HttpUtility" />
+      <TrimmerRootAssembly Include="System.Windows.Controls.Ribbon" />
+      <TrimmerRootAssembly Include="System.Windows" />
+      <TrimmerRootAssembly Include="System.Windows.Extensions" />
+      <TrimmerRootAssembly Include="System.Windows.Forms.Design" />
+      <TrimmerRootAssembly Include="System.Windows.Forms.Design.Editors" />
+      <TrimmerRootAssembly Include="System.Windows.Forms" />
+      <TrimmerRootAssembly Include="System.Windows.Input.Manipulations" />
+      <TrimmerRootAssembly Include="System.Windows.Presentation" />
+
+      <!-- Does not help -->
+      <TrimmerRootAssembly Include="System.Xaml" />
+      <TrimmerRootAssembly Include="System.Xml" />
+      <TrimmerRootAssembly Include="System.Xml.Linq" />
+      <TrimmerRootAssembly Include="System.Xml.ReaderWriter" />
+      <TrimmerRootAssembly Include="System.Xml.Serialization" />
+      <TrimmerRootAssembly Include="System.Xml.XDocument" />
+      <TrimmerRootAssembly Include="System.Xml.XmlDocument" />
+      <TrimmerRootAssembly Include="System.Xml.XmlSerializer" />
+      <TrimmerRootAssembly Include="System.Xml.XPath" />
+      <TrimmerRootAssembly Include="System.Xml.XPath.XDocument" />
+
+      <!-- Native -->
+      <!--<TrimmerRootAssembly Include="ucrtbase" />-->
+
+      <!-- Native -->
+      <!--<TrimmerRootAssembly Include="vcruntime140_cor3" />-->
+
+      <!-- Native -->
+      <!--<TrimmerRootAssembly Include="wpfgfx_cor3" />-->
+
+    </ItemGroup>
+  </Target>
 
 </Project>

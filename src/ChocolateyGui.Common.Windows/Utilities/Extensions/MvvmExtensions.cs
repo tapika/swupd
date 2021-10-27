@@ -33,7 +33,11 @@ namespace ChocolateyGui.Common.Windows.Utilities.Extensions
         public static async Task RunOnUIThreadAsync(this Func<Task> func)
         {
             var tcs = new TaskCompletionSource<bool>();
+#if NETFRAMEWORK        
             System.Action action = async () =>
+#else
+            Func<Task> action = async () =>
+#endif
             {
                 try
                 {
@@ -45,14 +49,18 @@ namespace ChocolateyGui.Common.Windows.Utilities.Extensions
                     tcs.SetException(ex);
                 }
             };
-            await action.OnUIThreadAsync();
+            await Execute.OnUIThreadAsync(action);
             await tcs.Task;
         }
 
         public static async Task<T> RunOnUIThreadAsync<T>(this Func<Task<T>> func)
         {
             var tcs = new TaskCompletionSource<T>();
+#if NETFRAMEWORK        
             System.Action action = async () =>
+#else
+            Func<Task> action = async () =>
+#endif
             {
                 try
                 {
@@ -64,7 +72,7 @@ namespace ChocolateyGui.Common.Windows.Utilities.Extensions
                     tcs.SetException(ex);
                 }
             };
-            await action.OnUIThreadAsync();
+            await Execute.OnUIThreadAsync(action);
             return await tcs.Task;
         }
 

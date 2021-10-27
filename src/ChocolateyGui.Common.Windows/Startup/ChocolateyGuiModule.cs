@@ -90,8 +90,8 @@ namespace ChocolateyGui.Common.Windows.Startup
                     .ForMember(vm => vm.IsInstalled, options => options.Ignore());
 
                 config.CreateMap<DataServicePackage, Package>()
-                    .ForMember(dest => dest.Authors, opt => opt.MapFrom(src => src.Authors.Split(',')))
-                    .ForMember(dest => dest.Owners, opt => opt.MapFrom(src => src.Owners.Split(',')));
+                    .ForMember(dest => dest.Authors, opt => opt.MapFrom(src => src.Authors.Split(new[] { ',' })))
+                    .ForMember(dest => dest.Owners, opt => opt.MapFrom(src => src.Owners.Split(new[] { ',' })));
                 config.CreateMap<IPackage, Package>();
 
                 config.CreateMap<ConfigFileFeatureSetting, ChocolateyFeature>();
@@ -114,7 +114,13 @@ namespace ChocolateyGui.Common.Windows.Startup
                 LiteDatabase globalDatabase;
                 if (Hacks.IsElevated)
                 {
-                    globalDatabase = new LiteDatabase($"filename={Path.Combine(Bootstrapper.AppDataPath, "Config", "data.db")};upgrade=true");
+                    string dir = Path.Combine(Bootstrapper.AppDataPath, "Config");
+                    if (!Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+
+                    globalDatabase = new LiteDatabase($"filename={Path.Combine(dir, "data.db")};upgrade=true");
                 }
                 else
                 {

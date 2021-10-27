@@ -1,7 +1,21 @@
 <Project>
-  <!-- This configuration is needed so .netcore3.1 and .net40 framework would not conflict with each other when performing nuget restore -->
+  <!-- 
+    Setting nuget intermediate folder to src\obj\nuget\$(SolutionName) - avoid conflicts between
+    different .net platform - e.g. "net48" & "netcoreapp3.1"
+  
+    Probing whether or not build is done from visual studio versus command line allows to avoid conflicts
+    between visual studio and command line execution ("build buildexe_win7")
+  -->
+  <PropertyGroup Condition=" '$(BuildingInsideVisualStudio)' != 'true' ">
+    <NugetSuffix>_msbuild</NugetSuffix> 
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BuildingFromCli)' == 'true' ">
+    <NugetSuffix>_msbuild</NugetSuffix>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)src\obj\nuget\$(SolutionName)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)src\obj\nuget\$(SolutionName)$(NugetSuffix)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
   </PropertyGroup>
 </Project>
 

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <Platforms>AnyCPU</Platforms>
+    <AssemblyName>Microsoft.Data.OData</AssemblyName>
+    <RootNamespace>Microsoft.Data.OData</RootNamespace>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>TRACE;ODATALIB_ASYNC;ODATALIB</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(ProjectDir)..\..\..\..\..\..\ProjectsCommon.props" Link="ProjectsCommon.props" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\EdmLib\Desktop\.Net4.0\Microsoft.Data.Edm.csproj" />
+    <ProjectReference Include="..\..\..\Spatial\Desktop\.Net4.0\System.Spatial.csproj" />
+  </ItemGroup>
+
+  <Import Project="$(ProjectDir)..\..\..\..\..\..\ProjectsCommon.props" />
+</Project>

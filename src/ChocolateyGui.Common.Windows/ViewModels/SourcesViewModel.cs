@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Caliburn.Micro;
@@ -22,7 +23,7 @@ using ChocolateyGui.Common.Windows.Services;
 
 namespace ChocolateyGui.Common.Windows.ViewModels
 {
-    public class SourcesViewModel : Conductor<ISourceViewModelBase>.Collection.OneActive, IHandleWithTask<SourcesUpdatedMessage>
+    public class SourcesViewModel : Conductor<ISourceViewModelBase>.Collection.OneActive, IHandle<SourcesUpdatedMessage>
     {
         private readonly IChocolateyService _packageService;
         private readonly CreateRemove _remoteSourceVmFactory;
@@ -97,19 +98,33 @@ namespace ChocolateyGui.Common.Windows.ViewModels
             }
 
             await Execute.OnUIThreadAsync(
+#if !NETFRAMEWORK
+                async
+#endif
                 () =>
                     {
                         Items.RemoveRange(oldItems);
                         Items.AddRange(vms);
 
+#if NETFRAMEWORK
                         ActivateItem(Items[0]);
+#else
+                        ActivateItemAsync(Items[0]);
+#endif
                     });
         }
 
-        public async Task Handle(SourcesUpdatedMessage message)
+#if NETFRAMEWORK        
+        public void Handle(SourcesUpdatedMessage message)
+        {
+            LoadSources().GetAwaiter().GetResult();
+        }
+#else
+        public async Task HandleAsync(SourcesUpdatedMessage message, CancellationToken cancellationToken)
         {
             await LoadSources();
         }
+#endif
 
         protected override void OnViewReady(object view)
         {

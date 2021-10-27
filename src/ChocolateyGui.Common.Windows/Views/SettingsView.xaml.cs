@@ -7,6 +7,8 @@
 
 using Caliburn.Micro;
 using ChocolateyGui.Common.Models.Messages;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ChocolateyGui.Common.Windows.Views
 {
@@ -21,7 +23,11 @@ namespace ChocolateyGui.Common.Windows.Views
             InitializeComponent();
         }
 
+#if NETFRAMEWORK        
         public void Handle(SourcesUpdatedMessage message)
+#else
+        public async Task HandleAsync(SourcesUpdatedMessage message, CancellationToken cancellationToken)
+#endif
         {
             SourcesGrid.Items.Refresh();
         }

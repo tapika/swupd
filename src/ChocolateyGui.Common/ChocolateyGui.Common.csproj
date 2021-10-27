@@ -7,6 +7,7 @@
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <AssemblyName>ChocolateyGui.Common</AssemblyName>
     <RootNamespace>ChocolateyGui.Common</RootNamespace>
+    <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />

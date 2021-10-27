@@ -6,6 +6,8 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -35,7 +37,11 @@ namespace ChocolateyGui.Common.Windows.Views
             this.Loaded += RemoteSourceViewOnLoaded;
         }
 
+#if NETFRAMEWORK        
         public void Handle(ResetScrollPositionMessage message)
+#else
+        public async Task HandleAsync(ResetScrollPositionMessage message, CancellationToken cancellationToken)
+#endif
         {
             if (Packages.Items.Count > 0)
             {
