@@ -114,7 +114,13 @@ namespace ChocolateyGui.Common.Windows.Startup
                 LiteDatabase globalDatabase;
                 if (Hacks.IsElevated)
                 {
-                    globalDatabase = new LiteDatabase($"filename={Path.Combine(Bootstrapper.AppDataPath, "Config", "data.db")};upgrade=true");
+                    string dir = Path.Combine(Bootstrapper.AppDataPath, "Config");
+                    if (!Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+
+                    globalDatabase = new LiteDatabase($"filename={Path.Combine(dir, "data.db")};upgrade=true");
                 }
                 else
                 {
