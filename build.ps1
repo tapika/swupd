@@ -114,8 +114,8 @@ if( $operationsToPerform.Contains("all") )
         'integration', 
         'coverage', 
         'coveragehtml',
-        'buildexe_win7',
-        'buildexe_linux',
+        'buildexe_choco_win7',
+        'buildexe_choco_linux',
         'github_publishrelease'
     )
 }
@@ -217,13 +217,20 @@ foreach ($operation in $operationsToPerform)
     # Same in git:
     #   https://github.com/jesulink2514/docs-1/blob/master/docs/core/rid-catalog.md
     #------------------------------------------------------------------------------------
-    if($operation -match 'buildexe_?(.*)')
+    if($operation -match 'buildexe_?(.*)_(.*)')
     {
         $cmd = 'cmd.exe'
-        $publishPlatform = $matches.1
+        $buildTarget = $matches.1
+        $publishPlatform = $matches.2
         $runtimeIdentifier = $publishPlatform + '-x64'
         #$runtimeIdentifier = $publishPlatform + '-arm64'
         $publishDirectory = 'bin\publish_' + $runtimeIdentifier
+
+        $publishTrimmed = 'true'
+        if($buildTarget -eq 'chocogui')
+        {
+            $publishTrimmed = 'false'
+        }
 
         $cmdArgs = @( '/c', 'msbuild', $sln2,
           '/p:DeployOnBuild=true',
@@ -239,8 +246,9 @@ foreach ($operation in $operationsToPerform)
           '/p:SelfContained=true',
           '/p:PublishSingleFile=true',
           '/p:PublishReadyToRun=false',
-          '/p:PublishTrimmed=true'
-          #'/p:PublishTrimmed=false'
+          ('/p:PublishTrimmed=' + $publishTrimmed),
+          #'buildexe_choco_win7' => 'choco' => 'PUBLISH_CHOCO'
+          ('/p:PUBLISH_' + $buildTarget.ToUpper() + '=true')
           #'/p:UseAppHost=true'
         )
     }
