@@ -191,6 +191,7 @@ foreach ($operation in $operationsToPerform)
 
     if($operation -eq 'build')
     {
+        [System.Environment]::SetEnvironmentVariable('BuildingFromCli', 'true')
         $cmd = 'cmd.exe'
         $cmdArgs = @( '/c', 'devenv', $sln, '/build', '"Release|AnyCPU"' )
 

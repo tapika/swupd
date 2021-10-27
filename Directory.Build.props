@@ -10,6 +10,10 @@
     <NugetSuffix>_msbuild</NugetSuffix> 
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(BuildingFromCli)' == 'true' ">
+    <NugetSuffix>_msbuild</NugetSuffix>
+  </PropertyGroup>
+
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)src\obj\nuget\$(SolutionName)$(NugetSuffix)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
   </PropertyGroup>
