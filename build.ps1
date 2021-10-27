@@ -205,9 +205,9 @@ foreach ($operation in $operationsToPerform)
 
     #------------------------------------------------------------------------------------
     # Build ReadyToRun executable, for example:
-    # buildexe_win7     => Windows
-    # buildexe_linux    => Linux
-    # buildexe_osx      => MacOS
+    # buildexe_<target>_win7     => Windows
+    # buildexe_<target>_linux    => Linux
+    # buildexe_<target>_osx      => MacOS
     # Full list of runtime identifier catalog is in here:
     #------------------------------------------------------------------------------------
     # .NET Runtime Identifier (RID) Catalog
