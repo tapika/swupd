@@ -6,6 +6,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using Autofac;
@@ -77,8 +78,11 @@ namespace ChocolateyGui
         {
             base.OnStartup(e);
 
-            var splashScreenService = Bootstrapper.Container.Resolve<ISplashScreenService>();
-            splashScreenService.Show();
+            if (!Debugger.IsAttached)
+            {
+                var splashScreenService = Bootstrapper.Container.Resolve<ISplashScreenService>();
+                splashScreenService.Show();
+            }
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
