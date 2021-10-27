@@ -23,7 +23,7 @@ Open `chocolatey_netcoreapp3.1.sln` if you wish to develop Chocolatey:
 
 Run `build.bat` from root folder.
 
-### Running existing build
+#### Running existing build
 
 Check releases, and download latest suitable for you release.
 
@@ -31,4 +31,14 @@ Check releases, and download latest suitable for you release.
  * choco - Linux 64-bit executable ( CentOS, Debian, Fedora, Ubuntu, and derivatives )
 
 Both images are built using `ReadyToRun` technology - meaning you don't need to preinstall anything on your OS.
+
+#### Building `ReadyToRun` executables
+
+| `build.bat` argument     | Description                             |
+| ------------------------ | --------------------------------------- |
+| `buildexe_choco_win7`    | `choco` command line tool for Windows * |
+| `buildexe_choco_linux`   | `choco` command line tool for Linux     |
+| `buildexe_chocogui_win7` | `Chocolatey UI` for Windows *           |
+
+
 
