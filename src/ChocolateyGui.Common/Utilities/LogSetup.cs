@@ -51,7 +51,7 @@ namespace ChocolateyGui.Common.Utilities
 
         public static string GetAppDataPath(string applicationName)
         {
-            _appDataPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            _appDataPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             return _appDataPath;
         }
     }
