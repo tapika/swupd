@@ -7,14 +7,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using chocolatey;
+using chocolatey.infrastructure.app;
 using chocolatey.infrastructure.app.configuration;
 using chocolatey.infrastructure.app.domain;
 using chocolatey.infrastructure.app.nuget;
 using chocolatey.infrastructure.app.services;
+using chocolatey.infrastructure.extractors;
 using chocolatey.infrastructure.results;
 using chocolatey.infrastructure.services;
 using ChocolateyGui.Common.Models;
@@ -604,9 +607,20 @@ namespace ChocolateyGui.Common.Windows.Services
         private async Task<ConfigFileSettings> GetConfigFile()
         {
             var xmlService = _choco.Container().GetInstance<IXmlService>();
+
+            string configPath = ApplicationParameters.GlobalConfigFileLocation;
+
+            // If config file does not exists, create default one.
+            if (!File.Exists(configPath))
+            {
+                AssemblyFileExtractor.extract_text_file_from_assembly(_fileSystem,
+                    chocolatey.infrastructure.adapters.Assembly.GetAssembly(typeof(GetChocolatey)), 
+                    ApplicationParameters.ChocolateyConfigFileResource, configPath);
+            }
+
             var config =
                 await Task.Run(
-                    () => xmlService.deserialize<ConfigFileSettings>(chocolatey.infrastructure.app.ApplicationParameters.GlobalConfigFileLocation));
+                    () => xmlService.deserialize<ConfigFileSettings>(configPath));
             return config;
         }
     }
