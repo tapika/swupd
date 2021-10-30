@@ -47,11 +47,19 @@ namespace chocolatey.infrastructure.commandline
 
         private void console_read()
         {
-            while (true)
+            try
             {
-                _backgroundResponseReset.WaitOne();
-                _input = Console.ReadLine();
-                _foregroundResponseReset.Set();
+                while (true)
+                {
+
+                    _backgroundResponseReset.WaitOne();
+                    _input = Console.ReadLine();
+                    _foregroundResponseReset.Set();
+                }
+            }
+            catch (ThreadInterruptedException)
+            {
+                // .net core except here, in .net framework it works, but _input is null on return
             }
         }
 
@@ -72,7 +80,11 @@ namespace chocolatey.infrastructure.commandline
             if (_isDisposing) return;
 
             _isDisposing = true;
+#if !NETFRAMEWORK
+            _responseThread.Interrupt();
+#else
             _responseThread.Abort();
+#endif
             _backgroundResponseReset.Close();
             _backgroundResponseReset.Dispose();
             _foregroundResponseReset.Close();
