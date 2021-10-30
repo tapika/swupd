@@ -72,7 +72,7 @@ namespace ChocolateyGui.Common.Windows.Controls.Dialogs
                 WrappedDialog.Dispatcher.Invoke(action);
             }
 
-            await CloseCallback();
+            await WrappedDialog.Dispatcher.Invoke(async () => { await CloseCallback(); });
 
             WrappedDialog.Dispatcher.Invoke(() => { IsOpen = false; });
         }
