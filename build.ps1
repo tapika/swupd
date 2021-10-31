@@ -14,9 +14,6 @@ param (
     [Alias('v')]
     [switch]$verbose=$false,
 
-    [Alias('servers')]
-    $serversConf,
-
     [Alias('b')]
     [string]$branch,
 
