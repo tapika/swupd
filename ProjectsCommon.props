@@ -16,7 +16,17 @@
   <!--<Target Name="DisplayMessages" BeforeTargets="Build">
       <Message Text="MyTargetFramework: $(MyTargetFramework)" Importance="high" />
   </Target>-->
-  
+
+  <PropertyGroup Condition=" '$(UseWPF)' == 'true' and '$(MyTargetFramework)' == 'net5.0'">
+    <!--<MyTargetFramework>net5.0-windows</MyTargetFramework>-->
+    <MyTargetFramework>net5.0-windows10.0.19041</MyTargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(UseWPF)' == 'true' and '$(MyTargetFramework)' == 'net6.0'">
+    <!--<MyTargetFramework>net6.0-windows</MyTargetFramework>-->
+    <MyTargetFramework>net6.0-windows10.0.19041</MyTargetFramework>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!--<TargetFramework>net472</TargetFramework>-->
     <TargetFramework>$(MyTargetFramework)</TargetFramework>
