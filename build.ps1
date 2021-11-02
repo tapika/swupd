@@ -345,6 +345,11 @@ foreach ($operation in $operationsToPerform)
         
         if([string]::IsNullOrEmpty($gitHubApiKey))
         {
+            $gitHubApiKey = $env:GITHUB_TOKEN
+        }
+
+        if([string]::IsNullOrEmpty($gitHubApiKey))
+        {
             "GITHUB_APIKEY environment not set, and not saved in $privateApiKeyPath"
             exit 2
         }
