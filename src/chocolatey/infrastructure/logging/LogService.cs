@@ -61,6 +61,12 @@ namespace chocolatey.infrastructure.logging
 
         public static void configure(string outputDirectory = null)
         {
+#if !NETFRAMEWORK
+            // Disable messages coming from output window:
+            // Application Insights Telemetry: {"name":"Microsoft.ApplicationInsights....
+            // Microsoft.PowerShell.SDK > bring that dependency along
+            Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.DisableTelemetry = true;
+#endif
             if (outputDirectory != null)
             { 
                 LogService.outputDirectory = outputDirectory;

@@ -87,7 +87,7 @@ namespace Microsoft.Data.Edm.Csdl.Internal.CsdlSemantics
         {
             if (this.expression.Function == null)
             {
-                return CsdlSemanticsModel.WrapExpression(this.expression.Arguments.FirstOrDefault(null), this.bindingContext, this.schema);
+                return CsdlSemanticsModel.WrapExpression(this.expression.Arguments.FirstOrDefault(), this.bindingContext, this.schema);
             }
             else
             {

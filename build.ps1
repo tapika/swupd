@@ -14,11 +14,12 @@ param (
     [Alias('v')]
     [switch]$verbose=$false,
 
-    [Alias('servers')]
-    $serversConf,
-
     [Alias('b')]
     [string]$branch,
+
+    # or newer 'net5.0' / 'net6.0'
+    [Alias('net')]
+    [string]$netPlatform = 'netcoreapp3.1',
 
     # Can add operations using simple command line like this: 
     #   build a -add_operations c=true,d=true,e=false -v
@@ -139,7 +140,7 @@ $chocolateyTestsDll = [System.IO.Path]::Combine($chocolateyTestsDir, 'chocolatey
 #$chocolateyTests2Dll = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration\chocolatey.tests.integration.dll")
 $chocolateyTests2Dll = [System.IO.Path]::Combine($chocolateyIntegrationTestsDir, 'chocolatey.tests.integration.dll')
 $sln = 'src\chocolatey.sln'
-$sln2 = 'src\chocolatey_netcoreapp3.1.sln'
+$sln2 = "src\chocolatey_$netPlatform.sln"
 $coverageOutDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\codecoverage')
 $coverageXml = [System.IO.Path]::Combine($coverageOutDir, 'coverage.xml')
 $testResultsXmlDir = [System.IO.Path]::Combine($scriptDir, 'build_output\build_artifacts\tests')
@@ -172,14 +173,23 @@ foreach ($operation in $operationsToPerform)
     {
         foreach ($vsvariant in "Enterprise,Community".split(","))
         {
+          if($netPlatform -eq 'net6.0')
+          {
+              $batch = "C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\Tools\VsDevCmd.bat"
+              if ((test-path $batch) -eq $true)
+              {
+                 break
+              }
+          }
+
           $batch = "C:\Program Files (x86)\Microsoft Visual Studio\2019\$vsvariant\VC\Auxiliary\Build\vcvars64.bat"
           if ((test-path $batch) -eq $true)
           {
-            break
+             break
           }
         }
 
-        "Importing environment variables from vcvars64.bat"
+        "Importing environment variables from " + [System.IO.Path]::GetFileName($batch)
         $cmd = "`"$batch`""
         cmd /c "$cmd > nul 2>&1 && set" | . { process {
             if ($_ -match '^([^=]+)=(.*)') {
@@ -227,10 +237,11 @@ foreach ($operation in $operationsToPerform)
         $publishDirectory = 'bin\publish_' + $runtimeIdentifier
 
         $publishTrimmed = 'true'
-        if($buildTarget -eq 'chocogui')
-        {
-            $publishTrimmed = 'false'
-        }
+        # If published trimmed does not work for some reason
+        #if($buildTarget -eq 'chocogui')
+        #{
+        #    $publishTrimmed = 'false'
+        #}
 
         $cmdArgs = @( '/c', 'msbuild', $sln2,
           '/p:DeployOnBuild=true',
@@ -246,6 +257,8 @@ foreach ($operation in $operationsToPerform)
           '/p:SelfContained=true',
           '/p:PublishSingleFile=true',
           '/p:PublishReadyToRun=false',
+          # works only in .net 6.0, older platforms ignore this parameter
+          '/p:EnableCompressionInSingleFile=true',
           ('/p:PublishTrimmed=' + $publishTrimmed),
           #'buildexe_choco_win7' => 'choco' => 'PUBLISH_CHOCO'
           ('/p:PUBLISH_' + $buildTarget.ToUpper() + '=true')

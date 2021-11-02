@@ -37,7 +37,7 @@ namespace ChocolateyGui.Common.Windows.Services
                         AffirmativeButtonText = Resources.ChocolateyDialog_OK
                     };
 
-                    return await ShellView.ShowMessageAsync(title, message, MessageDialogStyle.Affirmative, dialogSettings);
+                    return await ShellView.Dispatcher.Invoke(async () => { return await ShellView.ShowMessageAsync(title, message, MessageDialogStyle.Affirmative, dialogSettings);  });
                 }
 
                 return MessageBox.Show(message, title) == MessageBoxResult.OK
