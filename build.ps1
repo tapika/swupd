@@ -238,7 +238,7 @@ foreach ($operation in $operationsToPerform)
 
         $publishTrimmed = 'true'
         # If published trimmed does not work for some reason
-        if($buildTarget -eq 'chocogui' -and $netPlatform -eq 'net6.0')
+        if($netPlatform -eq 'net6.0')
         {
             $publishTrimmed = 'false'
         }
