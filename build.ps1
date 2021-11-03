@@ -234,14 +234,14 @@ foreach ($operation in $operationsToPerform)
         $publishPlatform = $matches.2
         $runtimeIdentifier = $publishPlatform + '-x64'
         #$runtimeIdentifier = $publishPlatform + '-arm64'
-        $publishDirectory = 'bin\publish_' + $runtimeIdentifier
+        $publishDirectory = 'bin\publish_' + $runtimeIdentifier + '_' + $netPlatform
 
         $publishTrimmed = 'true'
         # If published trimmed does not work for some reason
-        #if($buildTarget -eq 'chocogui')
-        #{
-        #    $publishTrimmed = 'false'
-        #}
+        if($buildTarget -eq 'chocogui' -and $netPlatform -eq 'net6.0')
+        {
+            $publishTrimmed = 'false'
+        }
 
         $cmdArgs = @( '/c', 'msbuild', $sln2,
           '/p:DeployOnBuild=true',
@@ -259,6 +259,8 @@ foreach ($operation in $operationsToPerform)
           '/p:PublishReadyToRun=false',
           # works only in .net 6.0, older platforms ignore this parameter
           '/p:EnableCompressionInSingleFile=true',
+          '/p:IncludeNativeLibrariesForSelfExtract=true',
+          '/p:IncludeAllContentForSelfExtract=true',
           ('/p:PublishTrimmed=' + $publishTrimmed),
           #'buildexe_choco_win7' => 'choco' => 'PUBLISH_CHOCO'
           ('/p:PUBLISH_' + $buildTarget.ToUpper() + '=true')
@@ -465,7 +467,7 @@ foreach ($operation in $operationsToPerform)
         foreach ($publishPlatform in $platforms)
         {
             $runtimeIdentifier = $publishPlatform + '-x64'
-            $publishDirectory = 'bin\publish_' + $runtimeIdentifier
+            $publishDirectory = 'bin\publish_' + $runtimeIdentifier + '_' + $netPlatform
             $executableName = 'choco'
 
             if($publishPlatform -eq 'win7')
