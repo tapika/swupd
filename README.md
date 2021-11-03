@@ -13,11 +13,8 @@ develop | [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/
 
 #### From Visual Studio
 
-Open `chocolatey.sln` if you wish to develop Chocolatey or Chocolatey GUI:
- * .NET Framework 4.8 is required
-
-Open `chocolatey_netcoreapp3.1.sln` if you wish to develop Chocolatey:
- * .NET Core 3.1 is required
+There are multiple solutions at the moment `chocolatey.sln` for .NET Framework 4.8, and others `chocolatey_*.sln` which targets to same .net platform
+which is set in solution name.
 
 #### From command line
 
@@ -38,7 +35,8 @@ Both images are built using `ReadyToRun` technology - meaning you don't need to 
 | ------------------------ | --------------------------------------- |
 | `buildexe_choco_win7`    | `choco` command line tool for Windows * |
 | `buildexe_choco_linux`   | `choco` command line tool for Linux     |
-| `buildexe_chocogui_win7` | `Chocolatey UI` for Windows *           |
+| `buildexe_chocogui_win7` | `Chocolatey UI` for Windows 7 or higher |
+| `buildexe_chocogui_win81` | `Chocolatey UI` for Windows 8.1 or higher |
 
-
+Using additionally `-net net5.0`, `-net net6.0` can force for build to happen using specific .net platform for correspondent solution.
 
