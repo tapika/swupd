@@ -1,4 +1,4 @@
-name: Chocolatey (swupd) Builds
+name: Swupd Builds
 
 on:
   # Trigger on pushes to master and stable, or with pull requests

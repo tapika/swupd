@@ -31,7 +31,7 @@ param (
 
 $ErrorActionPreference = "Stop"
 $scriptDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$isBuildMachine = $env:APPVEYOR -eq 'true'
+$isBuildMachine = $env:APPVEYOR -eq 'true' -or $env:GITHUB_ACTIONS -eq 'true'
 if( $isBuildMachine )
 {
     $verbose = $true
@@ -121,9 +121,14 @@ if( $operationsToPerform.Contains("all") )
     )
 }
 
+if(![string]::IsNullOrEmpty($env:APPVEYOR_JOB_ID) -and $isBuildMachine )
+{
+    $operationsToPerform = $operationsToPerform + 'testresultupload'
+}
+
 if( $operationsToPerform.Contains("coverage") -and $isBuildMachine )
 {
-    $operationsToPerform = $operationsToPerform + 'testresultupload', 'coverageupload'
+    $operationsToPerform = $operationsToPerform + 'coverageupload'
 }
 
 if($verbose)
@@ -328,6 +333,12 @@ foreach ($operation in $operationsToPerform)
 
     if($operation -eq 'testresultupload')
     {
+        if($dontexecute)
+        {
+            "Test results upload skipped - --noop option"
+            continue
+        }
+
         $wc = New-Object 'System.Net.WebClient'
         $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsXml) )
         continue
@@ -405,6 +416,11 @@ foreach ($operation in $operationsToPerform)
         "Commit id: $commitId"
         "Release notes: '$releaseNotes'"
         "Branch name: $branchName"
+
+        if($dontexecute)
+        {
+            continue
+        }
 
         # See also https://blog.peterritchie.com/Resetting-Build-Number-in-Appveyor/
 
