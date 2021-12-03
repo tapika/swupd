@@ -360,12 +360,12 @@ foreach ($operation in $operationsToPerform)
         
         if([string]::IsNullOrEmpty($gitHubApiKey))
         {
-            $gitHubApiKey = $env:GITHUB_TOKEN
+            $gitHubApiKey = $env:API_KEY
         }
 
         if([string]::IsNullOrEmpty($gitHubApiKey))
         {
-            "GITHUB_APIKEY/GITHUB_TOKEN environment not set, and not saved in $privateApiKeyPath"
+            "GITHUB_APIKEY/API_KEY environment not set, and not saved in $privateApiKeyPath"
             exit 2
         }
         

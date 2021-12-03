@@ -6,6 +6,7 @@ on:
     branches:
     - master
     - stable
+    - develop
   pull_request:
     branches:
     - master
@@ -15,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  API_KEY: ${{secrets.API_KEY}}
 
 jobs:
   # Build using mono on Ubuntu
