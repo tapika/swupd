@@ -35,6 +35,8 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 5
     - name: Build all
       run: .\build.bat all
   # Build using mono on MacOS
