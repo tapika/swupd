@@ -31,7 +31,6 @@ namespace chocolatey.infrastructure.app.services
         private const string PATH_TOKEN = "{{path}}";
         private const string ICON_PATH_TOKEN = "{{icon_path}}";
         private const string OUTPUT_TOKEN = "{{output}}";
-        private readonly string _shimGenExePath = ApplicationParameters.Tools.ShimGenExe;
         private readonly IDictionary<string, ExternalCommandArgument> _shimGenArguments = new Dictionary<string, ExternalCommandArgument>(StringComparer.InvariantCultureIgnoreCase);
 
 
@@ -104,7 +103,7 @@ namespace chocolatey.infrastructure.app.services
                 }
 
                 var exitCode = _commandExecutor.execute(
-                    _shimGenExePath, argsForPackage, configuration.CommandExecutionTimeoutSeconds,
+                    ApplicationParameters.Tools.ShimGenExe, argsForPackage, configuration.CommandExecutionTimeoutSeconds,
                     (s, e) =>
                         {
                             if (string.IsNullOrWhiteSpace(e.Data)) return;

@@ -22,7 +22,7 @@ namespace chocolatey.tests.integration.scenarios
     using chocolatey.infrastructure.app.commands;
     using chocolatey.infrastructure.app.configuration;
     using chocolatey.infrastructure.app.services;
-    using Should;
+    using FluentAssertions;
 
     public class PackScenarios
     {
@@ -65,17 +65,17 @@ namespace chocolatey.tests.integration.scenarios
             public void generated_package_should_be_in_current_directory()
             {
                 var infos = MockLogger.MessagesFor(LogLevel.Info);
-                infos.Count.ShouldEqual(2);
-                infos[0].ShouldEqual("Attempting to build package from 'myPackage.nuspec'.");
-                infos[1].ShouldEqual(string.Concat("Successfully created package '", package_path, "'"));
+                infos.Count.Should().Be(2);
+                infos[0].Should().Be("Attempting to build package from 'myPackage.nuspec'.");
+                infos[1].Should().Be(string.Concat("Successfully created package '", package_path, "'"));
 
-                File.Exists(package_path).ShouldBeTrue();
+                File.Exists(package_path).Should().BeTrue();
             }
 
             [Fact]
             public void sources_should_be_set_to_current_directory()
             {
-                Configuration.Sources.ShouldEqual(Scenario.get_top_level());
+                Configuration.Sources.Should().Be(Scenario.get_top_level());
             }
         }
 
@@ -101,17 +101,17 @@ namespace chocolatey.tests.integration.scenarios
             public void generated_package_should_be_in_specified_output_directory()
             {
                 var infos = MockLogger.MessagesFor(LogLevel.Info);
-                infos.Count.ShouldEqual(2);
-                infos[0].ShouldEqual("Attempting to build package from 'myPackage.nuspec'.");
-                infos[1].ShouldEqual(string.Concat("Successfully created package '", package_path, "'"));
+                infos.Count.Should().Be(2);
+                infos[0].Should().Be("Attempting to build package from 'myPackage.nuspec'.");
+                infos[1].Should().Be(string.Concat("Successfully created package '", package_path, "'"));
 
-                File.Exists(package_path).ShouldBeTrue();
+                File.Exists(package_path).Should().BeTrue();
             }
 
             [Fact]
             public void sources_should_be_set_to_specified_output_directory()
             {
-                Configuration.Sources.ShouldEqual("PackageOutput");
+                Configuration.Sources.Should().Be("PackageOutput");
             }
         }
 
@@ -146,18 +146,18 @@ namespace chocolatey.tests.integration.scenarios
             public void generated_package_should_be_in_current_directory()
             {
                 var infos = MockLogger.MessagesFor(LogLevel.Info);
-                infos.Count.ShouldEqual(2);
-                infos[0].ShouldEqual("Attempting to build package from 'myPackage.nuspec'.");
-                infos[1].ShouldEqual(string.Concat("Successfully created package '", package_path, "'"));
+                infos.Count.Should().Be(2);
+                infos[0].Should().Be("Attempting to build package from 'myPackage.nuspec'.");
+                infos[1].Should().Be(string.Concat("Successfully created package '", package_path, "'"));
 
-                File.Exists(package_path).ShouldBeTrue();
+                File.Exists(package_path).Should().BeTrue();
             }
 
             [Fact]
             public void property_settings_should_be_logged_as_debug_messages()
             {
                 var messages = MockLogger.MessagesFor(LogLevel.Debug);
-                messages.Count.ShouldEqual(2);
+                messages.Count.Should().Be(2);
                 messages.Contains("Setting property 'commitId': 1234abcd");
                 messages.Contains("Setting property 'version': 0.1.0");
             }

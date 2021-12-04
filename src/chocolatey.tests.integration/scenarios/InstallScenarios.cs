@@ -28,7 +28,7 @@ namespace chocolatey.tests.integration.scenarios
     using chocolatey.infrastructure.commands;
     using chocolatey.infrastructure.results;
     using NuGet;
-    using Should;
+    using FluentAssertions;
     using IFileSystem = chocolatey.infrastructure.filesystem.IFileSystem;
 
     public class InstallScenarios
@@ -73,7 +73,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -85,19 +85,19 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("would have used NuGet to install packages")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_contain_a_message_that_it_would_have_run_a_powershell_script()
             {
-                MockLogger.contains_message("chocolateyinstall.ps1", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("chocolateyinstall.ps1", LogLevel.Info).Should().BeTrue();
             }
 
             [Fact]
             public void should_not_contain_a_message_that_it_would_have_run_powershell_modification_script()
             {
-                MockLogger.contains_message("chocolateyBeforeModify.ps1", LogLevel.Info).ShouldBeFalse();
+                MockLogger.contains_message("chocolateyBeforeModify.ps1", LogLevel.Info).Should().BeFalse();
             }
         }
 
@@ -121,7 +121,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -133,7 +133,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("would have used NuGet to install packages")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -145,7 +145,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("somethingnonexisting not installed. The package was not found with the source(s) listed")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
         }
 
@@ -163,7 +163,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -171,7 +171,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -179,7 +179,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -187,7 +187,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "console.exe");
 
-                File.Exists(shimfile).ShouldBeTrue();
+                File.Exists(shimfile).Should().BeTrue();
             }
 
             [Fact]
@@ -195,7 +195,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "graphical.exe");
 
-                File.Exists(shimfile).ShouldBeTrue();
+                File.Exists(shimfile).Should().BeTrue();
             }
 
             [Fact]
@@ -203,7 +203,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "not.installed.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -211,7 +211,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "casemismatch.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -219,7 +219,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var extensionsDirectory = Path.Combine(Scenario.get_top_level(), "extensions", Configuration.PackageNames);
 
-                Directory.Exists(extensionsDirectory).ShouldBeFalse();
+                Directory.Exists(extensionsDirectory).Should().BeFalse();
             }
 
             [Fact]
@@ -236,15 +236,7 @@ namespace chocolatey.tests.integration.scenarios
                     stdErrAction: (s, e) => messages.Add(e.Data)
                 );
 
-                var messageFound = false;
-
-                foreach (var message in messages.or_empty_list_if_null())
-                {
-                    if (string.IsNullOrWhiteSpace(message)) continue;
-                    if (message.Contains("is gui? False")) messageFound = true;
-                }
-
-                messageFound.ShouldBeTrue("GUI false message not found");
+                messages.Should().ContainMatch("*is gui? False*");
             }
 
             [Fact]
@@ -261,15 +253,7 @@ namespace chocolatey.tests.integration.scenarios
                     stdErrAction: (s, e) => messages.Add(e.Data)
                 );
 
-                var messageFound = false;
-
-                foreach (var message in messages.or_empty_list_if_null())
-                {
-                    if (string.IsNullOrWhiteSpace(message)) continue;
-                    if (message.Contains("is gui? True")) messageFound = true;
-                }
-
-                messageFound.ShouldBeTrue("GUI true message not found");
+                messages.Should().ContainMatch("*is gui? True*");
             }
 
             [Fact]
@@ -281,43 +265,43 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero_dot_zero()
             {
-                packageResult.Version.ShouldEqual("1.0.0");
+                packageResult.Version.Should().Be("1.0.0");
             }
 
             [Fact]
             public void should_have_executed_chocolateyInstall_script()
             {
-                MockLogger.contains_message("installpackage v1.0.0 has been installed", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("installpackage v1.0.0 has been installed", LogLevel.Info).Should().BeTrue();
             }
         }
 
@@ -347,7 +331,7 @@ namespace chocolatey.tests.integration.scenarios
                 {
                     if (packageResult.Value.Name.is_equal_to("missingpackage")) continue;
 
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -364,7 +348,7 @@ namespace chocolatey.tests.integration.scenarios
                 foreach (var package in packagesExpected)
                 {
                     var packageDir = Path.Combine(Scenario.get_top_level(), "lib", package);
-                    Directory.Exists(packageDir).ShouldBeTrue();
+                    Directory.Exists(packageDir).Should().BeTrue();
                 }
             }
 
@@ -373,7 +357,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -385,7 +369,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("5/6")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
@@ -397,7 +381,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgradepackage v1.0.0")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -407,7 +391,7 @@ namespace chocolatey.tests.integration.scenarios
                 {
                     if (packageResult.Value.Name.is_equal_to("missingpackage")) continue;
 
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -418,7 +402,7 @@ namespace chocolatey.tests.integration.scenarios
                 {
                     if (!packageResult.Value.Name.is_equal_to("missingpackage")) continue;
 
-                    packageResult.Value.Success.ShouldBeFalse();
+                    packageResult.Value.Success.Should().BeFalse();
                 }
             }
 
@@ -427,7 +411,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -436,7 +420,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
 
@@ -449,7 +433,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("Installing from config file:")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -461,7 +445,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("installpackage")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
         }
 
@@ -487,7 +471,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -495,7 +479,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -507,7 +491,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installWarning = true;
                 }
 
-                installWarning.ShouldBeTrue();
+                installWarning.Should().BeTrue();
             }
 
             [Fact]
@@ -522,19 +506,19 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                installWarning.ShouldBeTrue();
+                installWarning.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeTrue();
+                packageResult.Inconclusive.Should().BeTrue();
             }
 
             [Fact]
             public void should_ave_warning_package_result()
             {
-                packageResult.Warning.ShouldBeTrue();
+                packageResult.Warning.Should().BeTrue();
             }
         }
 
@@ -563,7 +547,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -571,7 +555,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -579,14 +563,14 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
             public void should_remove_and_re_add_the_package_files_in_the_lib_directory()
             {
                 var modifiedFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "chocolateyInstall.ps1");
-                File.ReadAllText(modifiedFile).ShouldNotEqual(modifiedText);
+                File.ReadAllText(modifiedFile).Should().NotBe(modifiedText);
             }
 
             [Fact]
@@ -594,7 +578,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -606,37 +590,37 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero_dot_zero()
             {
-                packageResult.Version.ShouldEqual("1.0.0");
+                packageResult.Version.Should().Be("1.0.0");
             }
         }
 
@@ -670,14 +654,14 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
             public void should_restore_the_original_files_in_the_package_lib_folder()
             {
                 var modifiedFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "chocolateyInstall.ps1");
-                File.ReadAllText(modifiedFile).ShouldEqual(modifiedText);
+                File.ReadAllText(modifiedFile).Should().Be(modifiedText);
             }
 
             [Fact]
@@ -685,7 +669,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -697,25 +681,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
         }
 
@@ -749,7 +733,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -757,7 +741,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -765,7 +749,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -773,7 +757,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -785,37 +769,37 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero_dot_zero()
             {
-                packageResult.Version.ShouldEqual("1.0.0");
+                packageResult.Version.Should().Be("1.0.0");
             }
         }
 
@@ -851,7 +835,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -859,7 +843,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -868,7 +852,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -880,27 +864,27 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
             [Pending("Force install with file locked leaves inconsistent state - GH-114")]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeTrue();
+                packageResult.Inconclusive.Should().BeTrue();
             }
 
             [Fact]
             [Pending("Force install with file locked leaves inconsistent state - GH-114")]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
         }
 
@@ -926,7 +910,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -938,25 +922,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
@@ -971,7 +955,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -986,13 +970,13 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero_dot_one()
             {
-                packageResult.Version.ShouldEqual("1.0.1");
+                packageResult.Version.Should().Be("1.0.1");
             }
         }
 
@@ -1018,7 +1002,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1030,25 +1014,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
@@ -1063,7 +1047,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -1078,7 +1062,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -1104,7 +1088,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1112,7 +1096,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bad", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1124,25 +1108,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
@@ -1157,7 +1141,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -1172,7 +1156,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -1199,7 +1183,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -1207,7 +1191,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.Input);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1215,7 +1199,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.Input, Configuration.Input + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1227,37 +1211,37 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.Input);
+                packageResult.Name.Should().Be(Configuration.Input);
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero()
             {
-                packageResult.Version.ShouldEqual("1.0");
+                packageResult.Version.Should().Be("1.0");
             }
         }
 
@@ -1286,7 +1270,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1294,7 +1278,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bad", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1306,25 +1290,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
@@ -1339,7 +1323,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -1354,7 +1338,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -1378,7 +1362,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -1386,7 +1370,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames) + ".1.0.0";
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1398,37 +1382,37 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero_dot_zero()
             {
-                packageResult.Version.ShouldEqual("1.0.0");
+                packageResult.Version.Should().Be("1.0.0");
             }
         }
 
@@ -1454,7 +1438,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -1462,7 +1446,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames) + ".1.0.0";
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1474,37 +1458,37 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero_dot_zero()
             {
-                packageResult.Version.ShouldEqual("1.0.0");
+                packageResult.Version.Should().Be("1.0.0");
             }
         }
 
@@ -1531,7 +1515,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -1539,7 +1523,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1551,37 +1535,37 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero_dot_zero()
             {
-                packageResult.Version.ShouldEqual("1.0.0");
+                packageResult.Version.Should().Be("1.0.0");
             }
         }
 
@@ -1607,7 +1591,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -1616,7 +1600,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1624,7 +1608,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1632,7 +1616,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1644,7 +1628,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("3/3")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1652,7 +1636,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -1661,7 +1645,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -1670,7 +1654,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
 
@@ -1679,7 +1663,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Version.ShouldEqual("1.0.0");
+                    packageResult.Value.Version.Should().Be("1.0.0");
                 }
             }
         }
@@ -1710,7 +1694,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -1719,7 +1703,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1727,7 +1711,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1735,7 +1719,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1743,7 +1727,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1755,7 +1739,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1763,7 +1747,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -1772,7 +1756,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -1781,7 +1765,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
 
@@ -1790,7 +1774,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Version.ShouldEqual("1.0.0");
+                    packageResult.Value.Version.Should().Be("1.0.0");
                 }
             }
         }
@@ -1822,7 +1806,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -1831,7 +1815,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1839,7 +1823,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1847,7 +1831,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1855,7 +1839,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -1863,7 +1847,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1875,7 +1859,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("3/3")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
@@ -1883,7 +1867,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -1892,7 +1876,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -1901,7 +1885,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -1933,7 +1917,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -1942,7 +1926,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1950,7 +1934,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1958,7 +1942,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1966,7 +1950,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1974,7 +1958,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1986,7 +1970,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
@@ -1994,7 +1978,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2003,7 +1987,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2012,7 +1996,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2045,7 +2029,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -2054,7 +2038,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2062,21 +2046,21 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
             public void should_remove_the_floating_dependency()
             {
                 var dependency = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
-                Directory.Exists(dependency).ShouldBeFalse();
+                Directory.Exists(dependency).Should().BeFalse();
             }
 
             [Fact]
             public void should_remove_the_exact_dependency()
             {
                 var dependency = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency");
-                Directory.Exists(dependency).ShouldBeFalse();
+                Directory.Exists(dependency).Should().BeFalse();
             }
 
             [Fact]
@@ -2088,7 +2072,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
@@ -2096,7 +2080,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2105,7 +2089,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2114,7 +2098,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2139,7 +2123,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2147,7 +2131,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2159,7 +2143,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
@@ -2167,7 +2151,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeFalse();
+                    packageResult.Value.Success.Should().BeFalse();
                 }
             }
 
@@ -2176,7 +2160,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2185,7 +2169,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
 
@@ -2205,7 +2189,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -2224,7 +2208,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -2250,7 +2234,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -2258,7 +2242,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2266,7 +2250,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("2.1.0.0");
+                package.Version.Version.to_string().Should().Be("2.1.0.0");
             }
 
             [Fact]
@@ -2274,7 +2258,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2286,31 +2270,31 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
         }
 
@@ -2338,7 +2322,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -2347,7 +2331,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2355,7 +2339,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.6.0.0");
+                package.Version.Version.to_string().Should().Be("1.6.0.0");
             }
 
             [Fact]
@@ -2363,7 +2347,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2371,7 +2355,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -2383,7 +2367,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("3/3")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
@@ -2391,7 +2375,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2400,7 +2384,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2409,7 +2393,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2437,7 +2421,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2449,7 +2433,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2457,7 +2441,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeFalse();
+                    packageResult.Value.Success.Should().BeFalse();
                 }
             }
 
@@ -2466,7 +2450,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2475,7 +2459,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2504,7 +2488,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -2513,7 +2497,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2521,7 +2505,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.6.0.0");
+                package.Version.Version.to_string().Should().Be("1.6.0.0");
             }
 
             [Fact]
@@ -2533,7 +2517,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2541,7 +2525,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2550,7 +2534,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2559,7 +2543,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2589,7 +2573,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2597,7 +2581,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2609,7 +2593,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
@@ -2617,7 +2601,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeFalse();
+                    packageResult.Value.Success.Should().BeFalse();
                 }
             }
 
@@ -2626,7 +2610,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2635,7 +2619,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
 
@@ -2655,7 +2639,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -2674,7 +2658,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -2703,7 +2687,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -2712,7 +2696,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2720,7 +2704,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.1.0");
+                package.Version.Version.to_string().Should().Be("1.0.1.0");
             }
 
             [Fact]
@@ -2732,7 +2716,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("installed 2/2")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2740,7 +2724,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2749,7 +2733,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2758,7 +2742,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2789,7 +2773,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -2799,7 +2783,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2808,7 +2792,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2817,7 +2801,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2830,7 +2814,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("installed 0/3")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2839,7 +2823,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeFalse();
+                    packageResult.Value.Success.Should().BeFalse();
                 }
             }
 
@@ -2849,7 +2833,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2859,7 +2843,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
 
@@ -2880,7 +2864,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -2916,7 +2900,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2925,7 +2909,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2938,7 +2922,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("installed 0/3")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2947,7 +2931,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeFalse();
+                    packageResult.Value.Success.Should().BeFalse();
                 }
             }
 
@@ -2957,7 +2941,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2967,7 +2951,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
 
@@ -2988,7 +2972,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -3022,7 +3006,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    Directory.Exists(packageResult.Value.InstallLocation).ShouldBeTrue();
+                    Directory.Exists(packageResult.Value.InstallLocation).Should().BeTrue();
                 }
             }
 
@@ -3032,7 +3016,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -3041,7 +3025,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "childdependencywithlooserversiondependency");
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -3050,7 +3034,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "childdependencywithlooserversiondependency", "childdependencywithlooserversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -3059,7 +3043,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -3072,7 +3056,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("3/3")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -3081,7 +3065,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -3091,7 +3075,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -3101,7 +3085,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -3126,7 +3110,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -3134,7 +3118,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "installpackage");
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -3142,7 +3126,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "installpackage", "installpackage" + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -3150,7 +3134,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "console.exe");
 
-                File.Exists(shimfile).ShouldBeTrue();
+                File.Exists(shimfile).Should().BeTrue();
             }
 
             [Fact]
@@ -3158,7 +3142,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "graphical.exe");
 
-                File.Exists(shimfile).ShouldBeTrue();
+                File.Exists(shimfile).Should().BeTrue();
             }
 
             [Fact]
@@ -3166,7 +3150,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "not.installed.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -3174,7 +3158,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "casemismatch.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -3182,7 +3166,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var extensionsDirectory = Path.Combine(Scenario.get_top_level(), "extensions", "installpackage");
 
-                Directory.Exists(extensionsDirectory).ShouldBeFalse();
+                Directory.Exists(extensionsDirectory).Should().BeFalse();
             }
 
             [Fact]
@@ -3199,15 +3183,7 @@ namespace chocolatey.tests.integration.scenarios
                     stdErrAction: (s, e) => messages.Add(e.Data)
                 );
 
-                var messageFound = false;
-
-                foreach (var message in messages.or_empty_list_if_null())
-                {
-                    if (string.IsNullOrWhiteSpace(message)) continue;
-                    if (message.Contains("is gui? False")) messageFound = true;
-                }
-
-                messageFound.ShouldBeTrue("GUI false message not found");
+                messages.Should().ContainMatch("*is gui? False*");
             }
 
             [Fact]
@@ -3224,15 +3200,7 @@ namespace chocolatey.tests.integration.scenarios
                     stdErrAction: (s, e) => messages.Add(e.Data)
                 );
 
-                var messageFound = false;
-
-                foreach (var message in messages.or_empty_list_if_null())
-                {
-                    if (string.IsNullOrWhiteSpace(message)) continue;
-                    if (message.Contains("is gui? True")) messageFound = true;
-                }
-
-                messageFound.ShouldBeTrue("GUI true message not found");
+                messages.Should().ContainMatch("*is gui? True*");
             }
 
             [Fact]
@@ -3244,37 +3212,37 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual("installpackage");
+                packageResult.Name.Should().Be("installpackage");
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero_dot_zero()
             {
-                packageResult.Version.ShouldEqual("1.0.0");
+                packageResult.Version.Should().Be("1.0.0");
             }
         }
 
@@ -3307,7 +3275,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -3319,49 +3287,49 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_have_a_version_of_one_dot_zero_dot_zero()
             {
-                packageResult.Version.ShouldEqual("1.0.0");
+                packageResult.Version.Should().Be("1.0.0");
             }
 
             [Fact]
             public void should_not_change_the_test_value_in_the_config_due_to_XDT_InsertIfMissing()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='test']/@value").TypedValue.to_string().ShouldEqual("default 1.0.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='test']/@value").TypedValue.to_string().Should().Be("default 1.0.0");
             }
 
             [Fact]
             public void should_change_the_testReplace_value_in_the_config_due_to_XDT_Replace()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='testReplace']/@value").TypedValue.to_string().ShouldEqual("1.0.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='testReplace']/@value").TypedValue.to_string().Should().Be("1.0.0");
             }
 
             [Fact]
             public void should_add_the_insert_value_in_the_config_due_to_XDT_InsertIfMissing()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insert']/@value").TypedValue.to_string().ShouldEqual("1.0.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insert']/@value").TypedValue.to_string().Should().Be("1.0.0");
             }
         }
 
@@ -3382,13 +3350,13 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_have_no_sources_enabled_result()
             {
-                MockLogger.contains_message("Installation was NOT successful. There are no sources enabled for", LogLevel.Error).ShouldBeTrue();
+                MockLogger.contains_message("Installation was NOT successful. There are no sources enabled for", LogLevel.Error).Should().BeTrue();
             }
 
             [Fact]
             public void should_not_install_any_packages()
             {
-                Results.Count().ShouldEqual(0);
+                Results.Count().Should().Be(0);
             }
         }
     }

@@ -29,7 +29,7 @@ namespace chocolatey.tests.integration.scenarios
     using chocolatey.infrastructure.results;
     using NuGet;
     using NUnit.Framework;
-    using Should;
+    using FluentAssertions;
     using IFileSystem = chocolatey.infrastructure.filesystem.IFileSystem;
 
     public class UninstallScenarios
@@ -78,7 +78,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -90,19 +90,19 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("Would have uninstalled installpackage v1.0.0")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_contain_a_message_that_it_would_have_run_a_powershell_script()
             {
-                MockLogger.contains_message("chocolateyuninstall.ps1").ShouldBeTrue();
+                MockLogger.contains_message("chocolateyuninstall.ps1").Should().BeTrue();
             }
 
             [Fact]
             public void should_contain_a_message_that_it_would_have_run_powershell_modification_script()
             {
-                MockLogger.contains_message("chocolateyBeforeModify.ps1").ShouldBeTrue();
+                MockLogger.contains_message("chocolateyBeforeModify.ps1").Should().BeTrue();
             }
         }
 
@@ -130,7 +130,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("somethingnonexisting is not installed. Cannot uninstall a non-existent package")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
         }
 
@@ -150,7 +150,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -158,7 +158,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -166,7 +166,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "console.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -174,7 +174,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "graphical.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -182,7 +182,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var generatedFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "simplefile.txt");
 
-                File.Exists(generatedFile).ShouldBeFalse();
+                File.Exists(generatedFile).Should().BeFalse();
             }
 
             [Fact]
@@ -194,43 +194,43 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_have_executed_chocolateyBeforeModify_script()
             {
-                MockLogger.contains_message("installpackage 1.0.0 Before Modification", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("installpackage 1.0.0 Before Modification", LogLevel.Info).Should().BeTrue();
             }
 
             [Fact]
             public void should_have_executed_chocolateyUninstall_script()
             {
-                MockLogger.contains_message("installpackage 1.0.0 Uninstalled", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("installpackage 1.0.0 Uninstalled", LogLevel.Info).Should().BeTrue();
             }
         }
 
@@ -256,7 +256,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -264,7 +264,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -272,7 +272,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "console.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -280,7 +280,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "graphical.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -292,31 +292,31 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
         }
 
@@ -335,10 +335,9 @@ namespace chocolatey.tests.integration.scenarios
             }
 
             [Fact]
-            [ExpectedException(typeof(ApplicationException))]
             public void should_throw_an_error_that_it_is_not_allowed()
             {
-                Results = Service.uninstall_run(Configuration);
+                Assert.Throws<ApplicationException>(() => Results = Service.uninstall_run(Configuration));
             }
         }
 
@@ -366,7 +365,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -374,7 +373,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -386,25 +385,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("uninstalled 1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
         }
 
@@ -439,7 +438,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -447,7 +446,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -459,25 +458,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("uninstalled 1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
         }
 
@@ -512,7 +511,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -520,7 +519,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -528,7 +527,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.Exists(shimFile).ShouldBeTrue();
+                File.Exists(shimFile).Should().BeTrue();
             }
 
             [Fact]
@@ -540,25 +539,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("uninstalled 0/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeFalse();
+                _packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
         }
 
@@ -585,7 +584,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var fileAdded = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "dude.txt");
 
-                File.Exists(fileAdded).ShouldBeTrue();
+                File.Exists(fileAdded).Should().BeTrue();
             }
 
             [Fact]
@@ -595,7 +594,7 @@ namespace chocolatey.tests.integration.scenarios
 
                 foreach (var file in files.or_empty_list_if_null())
                 {
-                    Path.GetFileName(file).ShouldEqual("dude.txt", "Expected files were not deleted.");
+                    Path.GetFileName(file).Should().Be("dude.txt", "Expected files were not deleted.");
                 }
             }
 
@@ -604,7 +603,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -612,7 +611,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "console.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -620,7 +619,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "graphical.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -632,31 +631,31 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
         }
 
@@ -683,7 +682,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var fileChanged = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "chocolateyInstall.ps1");
 
-                File.Exists(fileChanged).ShouldBeTrue();
+                File.Exists(fileChanged).Should().BeTrue();
             }
 
             [Fact]
@@ -693,7 +692,7 @@ namespace chocolatey.tests.integration.scenarios
 
                 foreach (var file in files.or_empty_list_if_null())
                 {
-                    Path.GetFileName(file).ShouldEqual("chocolateyInstall.ps1", "Expected files were not deleted.");
+                    Path.GetFileName(file).Should().Be("chocolateyInstall.ps1", "Expected files were not deleted.");
                 }
             }
 
@@ -702,7 +701,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -710,7 +709,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "console.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -718,7 +717,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "graphical.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -730,31 +729,31 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
         }
 
@@ -784,7 +783,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -792,7 +791,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var fileChanged = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "dude.txt");
 
-                File.Exists(fileChanged).ShouldBeFalse();
+                File.Exists(fileChanged).Should().BeFalse();
             }
 
             [Fact]
@@ -800,7 +799,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var fileChanged = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "chocolateyInstall.ps1");
 
-                File.Exists(fileChanged).ShouldBeFalse();
+                File.Exists(fileChanged).Should().BeFalse();
             }
 
             [Fact]
@@ -808,7 +807,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -816,7 +815,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "console.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -824,7 +823,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimfile = Path.Combine(Scenario.get_top_level(), "bin", "graphical.exe");
 
-                File.Exists(shimfile).ShouldBeFalse();
+                File.Exists(shimfile).Should().BeFalse();
             }
 
             [Fact]
@@ -836,31 +835,31 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("1/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeTrue();
+                packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                packageResult.Name.Should().Be(Configuration.PackageNames);
             }
         }
 
@@ -890,7 +889,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("somethingnonexisting is not installed. Cannot uninstall a non-existent package")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -902,25 +901,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
@@ -935,7 +934,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -961,14 +960,14 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
             public void should_still_have_the_package_file_in_the_directory()
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
-                File.Exists(packageFile).ShouldBeTrue();
+                File.Exists(packageFile).Should().BeTrue();
             }
 
             [Fact]
@@ -976,7 +975,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bad", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -984,7 +983,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -996,25 +995,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
@@ -1029,7 +1028,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -1044,7 +1043,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
     }

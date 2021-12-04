@@ -30,7 +30,7 @@ namespace chocolatey.tests.integration.scenarios
     using chocolatey.infrastructure.results;
     using NuGet;
     using NUnit.Framework;
-    using Should;
+    using FluentAssertions;
 
     public class UpgradeScenarios
     {
@@ -77,7 +77,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.0.0");
+                File.ReadAllText(shimFile).Should().Be("1.0.0");
             }
 
             [Fact]
@@ -89,7 +89,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("You have upgradepackage v1.0.0 installed. Version 1.1.0 is available based on your source(s)")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -101,7 +101,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("can upgrade 1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -109,7 +109,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
         }
 
@@ -137,7 +137,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("installpackage v1.0.0 is the latest version available based on your source(s)")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -149,7 +149,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("can upgrade 0/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -157,7 +157,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
         }
 
@@ -185,7 +185,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("nonexistingpackage not installed. The package was not found with the source(s) listed")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -197,7 +197,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("can upgrade 0/0")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
         }
 
@@ -215,7 +215,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_upgrade_where_install_location_reports()
             {
-                Directory.Exists(_packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(_packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -223,7 +223,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -231,7 +231,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -239,7 +239,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.1.0");
+                File.ReadAllText(shimFile).Should().Be("1.1.0");
             }
 
             [Fact]
@@ -247,7 +247,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -259,7 +259,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -271,43 +271,43 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("You have upgradepackage v1.0.0 installed. Version 1.1.0 is available based on your source")) upgradeMessage = true;
                 }
 
-                upgradeMessage.ShouldBeTrue();
+                upgradeMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                _packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                _packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_match_the_upgrade_version_of_one_dot_one_dot_zero()
             {
-                _packageResult.Version.ShouldEqual("1.1.0");
+                _packageResult.Version.Should().Be("1.1.0");
             }
 
             [Fact]
             public void should_have_executed_chocolateyBeforeModify_script_for_original_package()
             {
-                MockLogger.contains_message("upgradepackage 1.0.0 Before Modification", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("upgradepackage 1.0.0 Before Modification", LogLevel.Info).Should().BeTrue();
             }
 
             [Fact]
@@ -316,25 +316,25 @@ namespace chocolatey.tests.integration.scenarios
                 MockLogger.MessagesFor(LogLevel.Info).or_empty_list_if_null()
                     .SkipWhile(p => !p.Contains("upgradepackage 1.0.0 Before Modification"))
                     .Any(p => p.EndsWith("upgradepackage 1.1.0 Installed"))
-                    .ShouldBeTrue();
+                    .Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_executed_chocolateyUninstall_script_for_original_package()
             {
-                MockLogger.contains_message("upgradepackage 1.0.0 Uninstalled", LogLevel.Info).ShouldBeFalse();
+                MockLogger.contains_message("upgradepackage 1.0.0 Uninstalled", LogLevel.Info).Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_executed_chocolateyBeforeModify_script_for_new_package()
             {
-                MockLogger.contains_message("upgradepackage 1.1.0 Before Modification", LogLevel.Info).ShouldBeFalse();
+                MockLogger.contains_message("upgradepackage 1.1.0 Before Modification", LogLevel.Info).Should().BeFalse();
             }
 
             [Fact]
             public void should_have_executed_chocolateyInstall_script_for_new_package()
             {
-                MockLogger.contains_message("upgradepackage 1.1.0 Installed", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("upgradepackage 1.1.0 Installed", LogLevel.Info).Should().BeTrue();
             }
         }
 
@@ -364,7 +364,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgradepackage v1.1.0 is the latest version available based on your source(s)")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -376,7 +376,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 0/1 ")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -384,7 +384,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -392,7 +392,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -400,31 +400,31 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeTrue();
+                _packageResult.Inconclusive.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_match_the_original_package_version()
             {
-                _packageResult.Version.ShouldEqual("1.1.0");
+                _packageResult.Version.Should().Be("1.1.0");
             }
         }
 
@@ -448,7 +448,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_upgrade_where_install_location_reports()
             {
-                Directory.Exists(_packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(_packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -456,7 +456,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -464,7 +464,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -472,7 +472,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.1.1-beta2");
+                File.ReadAllText(shimFile).Should().Be("1.1.1-beta2");
             }
 
             [Fact]
@@ -480,8 +480,8 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.1.0");
-                package.Version.to_string().ShouldEqual("1.1.1-beta2");
+                package.Version.Version.to_string().Should().Be("1.1.1.0");
+                package.Version.to_string().Should().Be("1.1.1-beta2");
             }
 
             [Fact]
@@ -493,7 +493,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -505,43 +505,43 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("You have upgradepackage v1.0.0 installed. Version 1.1.1-beta2 is available based on your source")) upgradeMessage = true;
                 }
 
-                upgradeMessage.ShouldBeTrue();
+                upgradeMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                _packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                _packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_match_the_upgrade_version_of_the_new_beta()
             {
-                _packageResult.Version.ShouldEqual("1.1.1-beta2");
+                _packageResult.Version.Should().Be("1.1.1-beta2");
             }
 
             [Fact]
             public void should_have_executed_chocolateyBeforeModify_script_for_original_package()
             {
-                MockLogger.contains_message("upgradepackage 1.0.0 Before Modification", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("upgradepackage 1.0.0 Before Modification", LogLevel.Info).Should().BeTrue();
             }
 
             [Fact]
@@ -550,25 +550,25 @@ namespace chocolatey.tests.integration.scenarios
                 MockLogger.MessagesFor(LogLevel.Info).or_empty_list_if_null()
                     .SkipWhile(p => !p.Contains("upgradepackage 1.0.0 Before Modification"))
                     .Any(p => p.EndsWith("upgradepackage 1.1.1-beta2 Installed"))
-                    .ShouldBeTrue();
+                    .Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_executed_chocolateyUninstall_script_for_original_package()
             {
-                MockLogger.contains_message("upgradepackage 1.0.0 Uninstalled", LogLevel.Info).ShouldBeFalse();
+                MockLogger.contains_message("upgradepackage 1.0.0 Uninstalled", LogLevel.Info).Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_executed_chocolateyBeforeModify_script_for_new_package()
             {
-                MockLogger.contains_message("upgradepackage 1.1.1-beta2 Before Modification", LogLevel.Info).ShouldBeFalse();
+                MockLogger.contains_message("upgradepackage 1.1.1-beta2 Before Modification", LogLevel.Info).Should().BeFalse();
             }
 
             [Fact]
             public void should_have_executed_chocolateyInstall_script_for_new_package()
             {
-                MockLogger.contains_message("upgradepackage 1.1.1-beta2 Installed", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("upgradepackage 1.1.1-beta2 Installed", LogLevel.Info).Should().BeTrue();
             }
         }
 
@@ -594,7 +594,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_upgrade_where_install_location_reports()
             {
-                Directory.Exists(_packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(_packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -602,7 +602,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -610,7 +610,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -618,7 +618,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.1.1-beta2");
+                File.ReadAllText(shimFile).Should().Be("1.1.1-beta2");
             }
 
             [Fact]
@@ -626,8 +626,8 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.1.0");
-                package.Version.to_string().ShouldEqual("1.1.1-beta2");
+                package.Version.Version.to_string().Should().Be("1.1.1.0");
+                package.Version.to_string().Should().Be("1.1.1-beta2");
             }
 
             [Fact]
@@ -639,7 +639,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -651,43 +651,43 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("You have upgradepackage v1.1.1-beta installed. Version 1.1.1-beta2 is available based on your source")) upgradeMessage = true;
                 }
 
-                upgradeMessage.ShouldBeTrue();
+                upgradeMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                _packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                _packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_match_the_upgrade_version_of_the_new_beta()
             {
-                _packageResult.Version.ShouldEqual("1.1.1-beta2");
+                _packageResult.Version.Should().Be("1.1.1-beta2");
             }
 
             [Fact]
             public void should_have_executed_chocolateyBeforeModify_script_for_original_package()
             {
-                MockLogger.contains_message("upgradepackage 1.1.1-beta Before Modification", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("upgradepackage 1.1.1-beta Before Modification", LogLevel.Info).Should().BeTrue();
             }
 
             [Fact]
@@ -696,25 +696,25 @@ namespace chocolatey.tests.integration.scenarios
                 MockLogger.MessagesFor(LogLevel.Info).or_empty_list_if_null()
                     .SkipWhile(p => !p.Contains("upgradepackage 1.1.1-beta Before Modification"))
                     .Any(p => p.EndsWith("upgradepackage 1.1.1-beta2 Installed"))
-                    .ShouldBeTrue();
+                    .Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_executed_chocolateyUninstall_script_for_original_package()
             {
-                MockLogger.contains_message("upgradepackage 1.1.1-beta Uninstalled", LogLevel.Info).ShouldBeFalse();
+                MockLogger.contains_message("upgradepackage 1.1.1-beta Uninstalled", LogLevel.Info).Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_executed_chocolateyBeforeModify_script_for_new_package()
             {
-                MockLogger.contains_message("upgradepackage 1.1.1-beta2 Before Modification", LogLevel.Info).ShouldBeFalse();
+                MockLogger.contains_message("upgradepackage 1.1.1-beta2 Before Modification", LogLevel.Info).Should().BeFalse();
             }
 
             [Fact]
             public void should_have_executed_chocolateyInstall_script_for_new_package()
             {
-                MockLogger.contains_message("upgradepackage 1.1.1-beta2 Installed", LogLevel.Info).ShouldBeTrue();
+                MockLogger.contains_message("upgradepackage 1.1.1-beta2 Installed", LogLevel.Info).Should().BeTrue();
             }
         }
 
@@ -747,7 +747,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgradepackage v1.1.1-beta is newer")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -759,7 +759,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 0/1 ")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -767,7 +767,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -775,7 +775,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -783,31 +783,31 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.1.0");
+                package.Version.Version.to_string().Should().Be("1.1.1.0");
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeTrue();
+                _packageResult.Inconclusive.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_only_find_the_last_stable_version()
             {
-                _packageResult.Version.ShouldEqual("1.1.0");
+                _packageResult.Version.Should().Be("1.1.0");
             }
         } 
         
@@ -841,7 +841,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgradepackage v1.1.1-beta is newer")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -853,7 +853,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 0/1 ")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -861,7 +861,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -869,7 +869,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -877,31 +877,31 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.1.0");
+                package.Version.Version.to_string().Should().Be("1.1.1.0");
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeTrue();
+                _packageResult.Inconclusive.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_only_find_the_last_stable_version()
             {
-                _packageResult.Version.ShouldEqual("1.1.0");
+                _packageResult.Version.Should().Be("1.1.0");
             }
         }
 
@@ -925,7 +925,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_upgrade_where_install_location_reports()
             {
-                Directory.Exists(_packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(_packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -933,7 +933,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -941,7 +941,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -949,7 +949,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -957,7 +957,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.1.0");
+                File.ReadAllText(shimFile).Should().Be("1.1.0");
             }
 
             [Fact]
@@ -969,7 +969,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -981,37 +981,37 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("You have upgradepackage v1.0.0 installed. Version 1.1.0 is available based on your source")) upgradeMessage = true;
                 }
 
-                upgradeMessage.ShouldBeTrue();
+                upgradeMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void config_should_match_package_result_name()
             {
-                _packageResult.Name.ShouldEqual(Configuration.PackageNames);
+                _packageResult.Name.Should().Be(Configuration.PackageNames);
             }
 
             [Fact]
             public void should_match_the_upgrade_version_of_one_dot_one_dot_zero()
             {
-                _packageResult.Version.ShouldEqual("1.1.0");
+                _packageResult.Version.Should().Be("1.1.0");
             }
         }
 
@@ -1041,7 +1041,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("installpackage v1.0.0 is the latest version available based on your source(s)")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1053,7 +1053,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 0/1 ")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1061,7 +1061,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1069,7 +1069,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1077,31 +1077,31 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeTrue();
+                _packageResult.Inconclusive.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_match_the_existing_version_of_one_dot_zero_dot_zero()
             {
-                _packageResult.Version.ShouldEqual("1.0.0");
+                _packageResult.Version.Should().Be("1.0.0");
             }
         }
 
@@ -1132,7 +1132,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("installpackage v1.0.0 is the latest version available based on your source(s)")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1144,7 +1144,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1152,7 +1152,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1160,7 +1160,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1168,31 +1168,31 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_match_the_existing_version_of_one_dot_zero_dot_zero()
             {
-                _packageResult.Version.ShouldEqual("1.0.0");
+                _packageResult.Version.Should().Be("1.0.0");
             }
         }
 
@@ -1211,10 +1211,9 @@ namespace chocolatey.tests.integration.scenarios
             }
 
             [Fact]
-            [ExpectedException(typeof(ApplicationException))]
             public void should_throw_an_error_that_it_is_not_allowed()
             {
-                Results = Service.upgrade_run(Configuration);
+                Assert.Throws<ApplicationException>(() => Results = Service.upgrade_run(Configuration));
             }
         }
 
@@ -1240,7 +1239,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_upgrade_where_install_location_reports()
             {
-                Directory.Exists(_packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(_packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -1248,7 +1247,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1256,7 +1255,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -1264,7 +1263,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1272,7 +1271,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.1.0");
+                File.ReadAllText(shimFile).Should().Be("1.1.0");
             }
 
             [Fact]
@@ -1284,7 +1283,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1296,25 +1295,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("You have upgradepackage v1.0.0 installed. Version 1.1.0 is available based on your source")) upgradeMessage = true;
                 }
 
-                upgradeMessage.ShouldBeTrue();
+                upgradeMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
         }
 
@@ -1347,7 +1346,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_upgrade_where_install_location_reports()
             {
-                Directory.Exists(_packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(_packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -1355,7 +1354,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1363,7 +1362,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -1371,7 +1370,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1379,7 +1378,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.1.0");
+                File.ReadAllText(shimFile).Should().Be("1.1.0");
             }
 
             [Fact]
@@ -1391,7 +1390,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1403,25 +1402,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("You have upgradepackage v1.0.0 installed. Version 1.1.0 is available based on your source")) upgradeMessage = true;
                 }
 
-                upgradeMessage.ShouldBeTrue();
+                upgradeMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
         }
 
@@ -1456,7 +1455,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1464,7 +1463,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1472,7 +1471,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.0.0");
+                File.ReadAllText(shimFile).Should().Be("1.0.0");
             }
 
             [Fact]
@@ -1480,7 +1479,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1492,7 +1491,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 0/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1504,25 +1503,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("You have upgradepackage v1.0.0 installed. Version 1.1.0 is available based on your source")) upgradeMessage = true;
                 }
 
-                upgradeMessage.ShouldBeTrue();
+                upgradeMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeFalse();
+                _packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
         }
 
@@ -1549,7 +1548,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var fileAdded = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "dude.txt");
 
-                File.Exists(fileAdded).ShouldBeTrue();
+                File.Exists(fileAdded).Should().BeTrue();
             }
 
             [Fact]
@@ -1557,7 +1556,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.1.0");
+                File.ReadAllText(shimFile).Should().Be("1.1.0");
             }
 
             [Fact]
@@ -1565,7 +1564,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -1577,31 +1576,31 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_match_the_upgrade_version_of_one_dot_one_dot_zero()
             {
-                _packageResult.Version.ShouldEqual("1.1.0");
+                _packageResult.Version.Should().Be("1.1.0");
             }
         }
 
@@ -1628,7 +1627,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var fileChanged = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "chocolateyInstall.ps1");
 
-                File.ReadAllText(fileChanged).ShouldNotEqual("hellow");
+                File.ReadAllText(fileChanged).Should().NotBe("hellow");
             }
 
             [Fact]
@@ -1636,7 +1635,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var shimFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, "tools", "console.exe");
 
-                File.ReadAllText(shimFile).ShouldEqual("1.1.0");
+                File.ReadAllText(shimFile).Should().Be("1.1.0");
             }
 
             [Fact]
@@ -1644,7 +1643,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -1656,31 +1655,31 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_match_the_upgrade_version_of_one_dot_one_dot_zero()
             {
-                _packageResult.Version.ShouldEqual("1.1.0");
+                _packageResult.Version.Should().Be("1.1.0");
             }
         }
 
@@ -1706,7 +1705,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1718,7 +1717,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("nonexistingpackage not installed. The package was not found with the source(s) listed")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -1730,25 +1729,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 0/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
@@ -1763,7 +1762,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -1778,7 +1777,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -1803,7 +1802,7 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_install_where_install_location_reports()
             {
-                Directory.Exists(_packageResult.InstallLocation).ShouldBeTrue();
+                Directory.Exists(_packageResult.InstallLocation).Should().BeTrue();
             }
 
             [Fact]
@@ -1811,7 +1810,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1819,7 +1818,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1831,25 +1830,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
         }
 
@@ -1877,7 +1876,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -1889,25 +1888,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) notInstalled = true;
                 }
 
-                notInstalled.ShouldBeTrue();
+                notInstalled.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeFalse();
+                _packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
@@ -1922,7 +1921,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -1937,7 +1936,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -1963,7 +1962,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1971,7 +1970,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -1979,7 +1978,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bad", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -1987,7 +1986,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib-bad", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("2.0.0.0");
+                package.Version.Version.to_string().Should().Be("2.0.0.0");
             }
 
             [Fact]
@@ -1995,7 +1994,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib-bkp", Configuration.PackageNames);
 
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2007,25 +2006,25 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("0/1")) installedSuccessfully = true;
                 }
 
-                installedSuccessfully.ShouldBeTrue();
+                installedSuccessfully.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_a_successful_package_result()
             {
-                packageResult.Success.ShouldBeFalse();
+                packageResult.Success.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                packageResult.Inconclusive.ShouldBeFalse();
+                packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                packageResult.Warning.ShouldBeFalse();
+                packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
@@ -2040,7 +2039,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -2055,7 +2054,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -2083,7 +2082,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency", "hasdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("2.1.0.0");
+                package.Version.Version.to_string().Should().Be("2.1.0.0");
             }
 
             [Fact]
@@ -2091,7 +2090,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("2.0.0.0");
+                package.Version.Version.to_string().Should().Be("2.0.0.0");
             }
 
             [Fact]
@@ -2099,7 +2098,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("2.0.0.0");
+                package.Version.Version.to_string().Should().Be("2.0.0.0");
             }
 
             [Fact]
@@ -2111,7 +2110,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 3/3")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2119,7 +2118,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2128,7 +2127,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2137,7 +2136,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2166,7 +2165,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency", "hasdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2174,7 +2173,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2182,7 +2181,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2194,7 +2193,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 0/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2202,7 +2201,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeFalse();
+                    packageResult.Value.Success.Should().BeFalse();
                 }
             }
 
@@ -2211,7 +2210,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2220,7 +2219,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
 
@@ -2240,7 +2239,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
 
             [Fact]
@@ -2259,7 +2258,7 @@ namespace chocolatey.tests.integration.scenarios
                     }
                 }
 
-                errorFound.ShouldBeTrue();
+                errorFound.Should().BeTrue();
             }
         }
 
@@ -2288,7 +2287,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency", "hasdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("2.1.0.0");
+                package.Version.Version.to_string().Should().Be("2.1.0.0");
             }
 
             [Fact]
@@ -2296,7 +2295,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2304,7 +2303,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2316,7 +2315,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2324,7 +2323,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2333,7 +2332,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2342,7 +2341,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2371,7 +2370,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -2379,7 +2378,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency", "hasdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2387,7 +2386,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
@@ -2399,7 +2398,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2407,7 +2406,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2416,7 +2415,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2425,7 +2424,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2470,21 +2469,21 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
             public void should_remove_the_legacy_folder_version_of_the_package()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency.1.0.0");
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
             public void should_replace_the_legacy_folder_version_of_the_package_with_a_lib_package_folder_that_has_no_version()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2492,21 +2491,21 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency.1.0.0", "hasdependency.1.0.0.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
             public void should_not_add_a_versionless_parent_package_folder_to_the_lib_dir()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency");
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
             public void should_leave_the_parent_package_as_legacy_folder()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency.1.0.0");
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2514,21 +2513,21 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency.1.0.0", "isexactversiondependency.1.0.0.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.0.0");
+                package.Version.Version.to_string().Should().Be("1.0.0.0");
             }
 
             [Fact]
             public void should_leave_the_exact_version_package_as_legacy_folder()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency.1.0.0");
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
             public void should_not_add_a_versionless_exact_version_package_folder_to_the_lib_dir()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency");
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2540,7 +2539,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2548,7 +2547,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2557,7 +2556,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2566,7 +2565,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2595,7 +2594,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("2.1.0.0");
+                package.Version.Version.to_string().Should().Be("2.1.0.0");
             }
 
             [Fact]
@@ -2603,7 +2602,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency", "hasdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.1.0");
+                package.Version.Version.to_string().Should().Be("1.0.1.0");
             }
 
             [Fact]
@@ -2611,7 +2610,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.1.0");
+                package.Version.Version.to_string().Should().Be("1.0.1.0");
             }
 
             [Fact]
@@ -2623,7 +2622,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 3/3")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2631,7 +2630,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2640,7 +2639,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2649,7 +2648,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2686,21 +2685,21 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isdependency", "isdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("2.1.0.0");
+                package.Version.Version.to_string().Should().Be("2.1.0.0");
             }
 
             [Fact]
             public void should_remove_the_legacy_folder_version_of_the_package()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency.1.0.0");
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
             public void should_replace_the_legacy_folder_version_of_the_package_with_a_lib_package_folder_that_has_no_version()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isdependency");
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2708,14 +2707,14 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency", "hasdependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.1.0");
+                package.Version.Version.to_string().Should().Be("1.0.1.0");
             }
 
             [Fact]
             public void should_replace_the_legacy_folder_version_of_the_parent_package_with_a_lib_package_folder_that_has_no_version()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency");
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2723,7 +2722,7 @@ namespace chocolatey.tests.integration.scenarios
             public void should_remove_the_legacy_folder_version_of_the_parent_package()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "hasdependency.1.0.0");
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2731,14 +2730,14 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency", "isexactversiondependency.nupkg");
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.0.1.0");
+                package.Version.Version.to_string().Should().Be("1.0.1.0");
             }
 
             [Fact]
             public void should_replace_the_legacy_folder_version_of_the_exact_version_package_with_a_lib_package_folder_that_has_no_version()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency");
-                Directory.Exists(packageDir).ShouldBeTrue();
+                Directory.Exists(packageDir).Should().BeTrue();
             }
 
             [Fact]
@@ -2746,7 +2745,7 @@ namespace chocolatey.tests.integration.scenarios
             public void should_remove_the_legacy_folder_version_of_the_exact_version_package()
             {
                 var packageDir = Path.Combine(Scenario.get_top_level(), "lib", "isexactversiondependency.1.0.0");
-                Directory.Exists(packageDir).ShouldBeFalse();
+                Directory.Exists(packageDir).Should().BeFalse();
             }
 
             [Fact]
@@ -2758,7 +2757,7 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 3/3")) expectedMessage = true;
                 }
 
-                expectedMessage.ShouldBeTrue();
+                expectedMessage.Should().BeTrue();
             }
 
             [Fact]
@@ -2766,7 +2765,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Success.ShouldBeTrue();
+                    packageResult.Value.Success.Should().BeTrue();
                 }
             }
 
@@ -2775,7 +2774,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Inconclusive.ShouldBeFalse();
+                    packageResult.Value.Inconclusive.Should().BeFalse();
                 }
             }
 
@@ -2784,7 +2783,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 foreach (var packageResult in Results)
                 {
-                    packageResult.Value.Warning.ShouldBeFalse();
+                    packageResult.Value.Warning.Should().BeFalse();
                 }
             }
         }
@@ -2817,7 +2816,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -2829,31 +2828,31 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_match_the_upgrade_version_of_one_dot_one_dot_zero()
             {
-                _packageResult.Version.ShouldEqual("1.1.0");
+                _packageResult.Version.Should().Be("1.1.0");
             }
 
             // any file in a nuget package will overwrite an existing file 
@@ -2863,25 +2862,25 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_not_change_the_test_value_in_the_config_from_original_one_dot_zero_dot_zero_due_to_upgrade_and_XDT_InsertIfMissing()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='test']/@value").TypedValue.to_string().ShouldEqual("default 1.0.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='test']/@value").TypedValue.to_string().Should().Be("default 1.0.0");
             }
 
             [Fact]
             public void should_change_the_testReplace_value_in_the_config_due_to_XDT_Replace()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='testReplace']/@value").TypedValue.to_string().ShouldEqual("1.1.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='testReplace']/@value").TypedValue.to_string().Should().Be("1.1.0");
             }
 
             [Fact]
             public void should_not_change_the_insert_value_in_the_config_due_to_upgrade_and_XDT_InsertIfMissing()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insert']/@value").TypedValue.to_string().ShouldEqual("1.0.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insert']/@value").TypedValue.to_string().Should().Be("1.0.0");
             }
 
             [Fact]
             public void should_add_the_insertNew_value_in_the_config_due_to_XDT_InsertIfMissing()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insertNew']/@value").TypedValue.to_string().ShouldEqual("1.1.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insertNew']/@value").TypedValue.to_string().Should().Be("1.1.0");
             }
         }
 
@@ -2916,7 +2915,7 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", Configuration.PackageNames, Configuration.PackageNames + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.Version.to_string().ShouldEqual("1.1.0.0");
+                package.Version.Version.to_string().Should().Be("1.1.0.0");
             }
 
             [Fact]
@@ -2928,31 +2927,31 @@ namespace chocolatey.tests.integration.scenarios
                     if (message.Contains("upgraded 1/1")) upgradedSuccessMessage = true;
                 }
 
-                upgradedSuccessMessage.ShouldBeTrue();
+                upgradedSuccessMessage.Should().BeTrue();
             }
 
             [Fact]
             public void should_have_a_successful_package_result()
             {
-                _packageResult.Success.ShouldBeTrue();
+                _packageResult.Success.Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_inconclusive_package_result()
             {
-                _packageResult.Inconclusive.ShouldBeFalse();
+                _packageResult.Inconclusive.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_have_warning_package_result()
             {
-                _packageResult.Warning.ShouldBeFalse();
+                _packageResult.Warning.Should().BeFalse();
             }
 
             [Fact]
             public void should_match_the_upgrade_version_of_one_dot_one_dot_zero()
             {
-                _packageResult.Version.ShouldEqual("1.1.0");
+                _packageResult.Version.Should().Be("1.1.0");
             }
 
             // any file in a nuget package will overwrite an existing file 
@@ -2962,31 +2961,31 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_not_change_the_test_value_in_the_config_from_original_one_dot_zero_dot_zero_due_to_upgrade_and_XDT_InsertIfMissing()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='test']/@value").TypedValue.to_string().ShouldEqual("default 1.0.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='test']/@value").TypedValue.to_string().Should().Be("default 1.0.0");
             }
 
             [Fact]
             public void should_change_the_testReplace_value_in_the_config_due_to_XDT_Replace()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='testReplace']/@value").TypedValue.to_string().ShouldEqual("1.1.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='testReplace']/@value").TypedValue.to_string().Should().Be("1.1.0");
             }
 
             [Fact]
             public void should_not_change_the_insert_value_in_the_config_due_to_upgrade_and_XDT_InsertIfMissing()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insert']/@value").TypedValue.to_string().ShouldEqual("1.0.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insert']/@value").TypedValue.to_string().Should().Be("1.0.0");
             }
 
             [Fact]
             public void should_add_the_insertNew_value_in_the_config_due_to_XDT_InsertIfMissing()
             {
-                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insertNew']/@value").TypedValue.to_string().ShouldEqual("1.1.0");
+                _xPathNavigator.SelectSingleNode("//configuration/appSettings/add[@key='insertNew']/@value").TypedValue.to_string().Should().Be("1.1.0");
             }
 
             [Fact]
             public void should_have_a_config_with_the_comment_from_the_original()
             {
-                File.ReadAllText(_xmlFilePath).ShouldContain(COMMENT_ADDED);
+                File.ReadAllText(_xmlFilePath).Should().Contain(COMMENT_ADDED);
             }
         }
 
@@ -3007,13 +3006,13 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_have_no_sources_enabled_result()
             {
-                MockLogger.contains_message("Upgrading was NOT successful. There are no sources enabled for", LogLevel.Error).ShouldBeTrue();
+                MockLogger.contains_message("Upgrading was NOT successful. There are no sources enabled for", LogLevel.Error).Should().BeTrue();
             }
 
             [Fact]
             public void should_not_have_any_packages_upgraded()
             {
-                Results.Count().ShouldEqual(0);
+                Results.Count().Should().Be(0);
             }
         }
 
@@ -3034,23 +3033,23 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_report_for_all_installed_packages()
             {
-                Results.Count().ShouldEqual(3);
+                Results.Count().Should().Be(3);
             }
 
             [Fact]
             public void should_upgrade_packages_with_upgrades()
             {
                 var upgradePackageResult = Results.Where(x => x.Key == "upgradepackage").ToList();
-                upgradePackageResult.Count.ShouldEqual(1, "upgradepackage must be there once");
-                upgradePackageResult.First().Value.Version.ShouldEqual("1.1.0");
+                upgradePackageResult.Count.Should().Be(1, "upgradepackage must be there once");
+                upgradePackageResult.First().Value.Version.Should().Be("1.1.0");
             }
 
             [Fact]
             public void should_skip_packages_without_upgrades()
             {
                 var installPackageResult = Results.Where(x => x.Key == "installpackage").ToList();
-                installPackageResult.Count.ShouldEqual(1, "installpackage must be there once");
-                installPackageResult.First().Value.Version.ShouldEqual("1.0.0");
+                installPackageResult.Count.Should().Be(1, "installpackage must be there once");
+                installPackageResult.First().Value.Version.Should().Be("1.0.0");
             }
         }
 
@@ -3074,15 +3073,15 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_report_for_all_installed_packages()
             {
-                Results.Count().ShouldEqual(3);
+                Results.Count().Should().Be(3);
             }
 
             [Fact]
             public void should_upgrade_packages_with_upgrades()
             {
                 var upgradePackageResult = Results.Where(x => x.Key == "upgradepackage").ToList();
-                upgradePackageResult.Count.ShouldEqual(1, "upgradepackage must be there once");
-                upgradePackageResult.First().Value.Version.ShouldEqual("1.1.1-beta2");
+                upgradePackageResult.Count.Should().Be(1, "upgradepackage must be there once");
+                upgradePackageResult.First().Value.Version.Should().Be("1.1.1-beta2");
             }
 
             [Fact]
@@ -3090,15 +3089,15 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "upgradepackage", "upgradepackage" + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.to_string().ShouldEqual("1.1.1-beta2");
+                package.Version.to_string().Should().Be("1.1.1-beta2");
             }
 
             [Fact]
             public void should_skip_packages_without_upgrades()
             {
                 var installPackageResult = Results.Where(x => x.Key == "installpackage").ToList();
-                installPackageResult.Count.ShouldEqual(1, "installpackage must be there once");
-                installPackageResult.First().Value.Version.ShouldEqual("1.0.0");
+                installPackageResult.Count.Should().Be(1, "installpackage must be there once");
+                installPackageResult.First().Value.Version.Should().Be("1.0.0");
             }
         }
 
@@ -3124,16 +3123,16 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_report_for_all_installed_packages()
             {
-                Results.Count().ShouldEqual(3);
+                Results.Count().Should().Be(3);
             }
 
             [Fact]
             public void should_upgrade_packages_with_upgrades()
             {
                 var upgradePackageResult = Results.Where(x => x.Key == "upgradepackage").ToList();
-                upgradePackageResult.Count.ShouldEqual(1, "upgradepackage must be there once");
+                upgradePackageResult.Count.Should().Be(1, "upgradepackage must be there once");
                 // available version will show as last stable
-                upgradePackageResult.First().Value.Version.ShouldEqual("1.1.0");
+                upgradePackageResult.First().Value.Version.Should().Be("1.1.0");
             }
 
             [Fact]
@@ -3141,15 +3140,15 @@ namespace chocolatey.tests.integration.scenarios
             {
                 var packageFile = Path.Combine(Scenario.get_top_level(), "lib", "upgradepackage", "upgradepackage" + Constants.PackageExtension);
                 var package = new OptimizedZipPackage(packageFile);
-                package.Version.to_string().ShouldEqual("1.1.1-beta");
+                package.Version.to_string().Should().Be("1.1.1-beta");
             }
 
             [Fact]
             public void should_skip_packages_without_upgrades()
             {
                 var installPackageResult = Results.Where(x => x.Key == "installpackage").ToList();
-                installPackageResult.Count.ShouldEqual(1, "installpackage must be there once");
-                installPackageResult.First().Value.Version.ShouldEqual("1.0.0");
+                installPackageResult.Count.Should().Be(1, "installpackage must be there once");
+                installPackageResult.First().Value.Version.Should().Be("1.0.0");
             }
         }
 
@@ -3171,15 +3170,15 @@ namespace chocolatey.tests.integration.scenarios
             [Fact]
             public void should_report_for_all_non_skipped_packages()
             {
-                Results.Count().ShouldEqual(1);
-                Results.First().Key.ShouldEqual("installpackage");
+                Results.Count().Should().Be(1);
+                Results.First().Key.Should().Be("installpackage");
             }
 
             [Fact]
             public void should_skip_packages_in_except_list()
             {
                 var upgradePackageResult = Results.Where(x => x.Key == "upgradepackage").ToList();
-                upgradePackageResult.Count.ShouldEqual(0, "upgradepackage should not be in the results list");
+                upgradePackageResult.Count.Should().Be(0, "upgradepackage should not be in the results list");
             }
         }
     }
