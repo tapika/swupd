@@ -121,10 +121,62 @@ if( $operationsToPerform.Contains("all") )
     )
 }
 
-if(![string]::IsNullOrEmpty($env:APPVEYOR_JOB_ID) -and $isBuildMachine )
+# Testing locally:
+# > set GITHUB_REF=refs/heads/develop
+# > set GITHUB_RUN_ID=1538394100
+#
+# > build coverageupload
+if(![string]::IsNullOrEmpty($env:GITHUB_RUN_ID))
 {
-    $operationsToPerform = $operationsToPerform + 'testresultupload'
+    $env:APPVEYOR_JOB_ID = $env:GITHUB_RUN_ID
+    $env:APPVEYOR = 'true'
 }
+
+if([string]::IsNullOrEmpty($env:APPVEYOR_REPO_BRANCH) -and ![string]::IsNullOrEmpty($env:GITHUB_REF))
+{
+    if ($env:GITHUB_REF -match '.*/(.*)') {
+        $env:APPVEYOR_REPO_BRANCH = $matches[1]
+    }
+}
+
+#----------------------------------------------------------
+# Determine commit id
+#----------------------------------------------------------
+$commitId = $env:APPVEYOR_REPO_COMMIT
+
+if([string]::IsNullOrEmpty($commitId))
+{
+    $commitId = $env:GITHUB_SHA
+}
+
+if([string]::IsNullOrEmpty($commitId))
+{
+    $commitId = git rev-parse HEAD
+}
+
+if([string]::IsNullOrEmpty($env:APPVEYOR_REPO_COMMIT)) { $env:APPVEYOR_REPO_COMMIT = $commitId }
+if([string]::IsNullOrEmpty($env:GITHUB_SHA)) { $env:GITHUB_SHA = $commitId }
+
+
+#----------------------------------------------------------
+# Determine commit message (used by coverageupload)
+#----------------------------------------------------------
+$commitMessage = $env:APPVEYOR_REPO_COMMIT_MESSAGE
+
+if([string]::IsNullOrEmpty($commitMessage))
+{
+    $commitMessage = git log -1 --oneline --pretty=%B
+}
+
+if([string]::IsNullOrEmpty($env:APPVEYOR_REPO_COMMIT_MESSAGE))
+{
+    $env:APPVEYOR_REPO_COMMIT_MESSAGE = $commitMessage
+}
+
+#if(![string]::IsNullOrEmpty($env:APPVEYOR_JOB_ID) -and $isBuildMachine )
+#{
+#    $operationsToPerform = $operationsToPerform + 'testresultupload'
+#}
 
 if( $operationsToPerform.Contains("coverage") -and $isBuildMachine )
 {
