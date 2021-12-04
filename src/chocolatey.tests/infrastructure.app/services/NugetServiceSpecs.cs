@@ -25,7 +25,7 @@ namespace chocolatey.tests.infrastructure.app.services
     using chocolatey.infrastructure.app.services;
     using Moq;
     using NuGet;
-    using Should;
+    using FluentAssertions;
     using IFileSystem = chocolatey.infrastructure.filesystem.IFileSystem;
 
     public class NugetServiceSpecs
@@ -307,8 +307,8 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var infos = MockLogger.MessagesFor(LogLevel.Info);
-                infos.Count.ShouldEqual(1);
-                infos[0].ShouldEqual("Chocolatey would have searched for a nuspec file in \"c:\\projects\\chocolatey\" and attempted to compile it.");
+                infos.Count.Should().Be(1);
+                infos[0].Should().Be("Chocolatey would have searched for a nuspec file in \"c:\\projects\\chocolatey\" and attempted to compile it.");
             }
 
             [Fact]
@@ -321,8 +321,8 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var infos = MockLogger.MessagesFor(LogLevel.Info);
-                infos.Count.ShouldEqual(1);
-                infos[0].ShouldEqual("Chocolatey would have searched for a nuspec file in \"c:\\packages\" and attempted to compile it.");
+                infos.Count.Should().Be(1);
+                infos[0].Should().Be("Chocolatey would have searched for a nuspec file in \"c:\\packages\" and attempted to compile it.");
             }
         }
     }

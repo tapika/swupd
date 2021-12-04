@@ -26,7 +26,8 @@ namespace chocolatey.tests.infrastructure.app.commands
     using chocolatey.infrastructure.app.services;
     using chocolatey.infrastructure.commandline;
     using Moq;
-    using Should;
+    using FluentAssertions;
+
 
     public class ChocolateyPushCommandSpecs
     {
@@ -56,7 +57,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_implement_push()
             {
-                results.ShouldContain("push");
+                results.Should().Contain("push");
             }
         }
 
@@ -79,37 +80,37 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_clear_previously_set_Source()
             {
-                configuration.Sources.ShouldBeNull();
+                configuration.Sources.Should().BeNull();
             }
 
             [Fact]
             public void should_add_source_to_the_option_set()
             {
-                optionSet.Contains("source").ShouldBeTrue();
+                optionSet.Contains("source").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_source_to_the_option_set()
             {
-                optionSet.Contains("s").ShouldBeTrue();
+                optionSet.Contains("s").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_apikey_to_the_option_set()
             {
-                optionSet.Contains("apikey").ShouldBeTrue();
+                optionSet.Contains("apikey").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_apikey_to_the_option_set()
             {
-                optionSet.Contains("k").ShouldBeTrue();
+                optionSet.Contains("k").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_timeout_to_the_option_set()
             {
-                optionSet.Contains("t").ShouldBeTrue();
+                optionSet.Contains("t").Should().BeTrue();
             }
         }
 
@@ -137,7 +138,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 string nupkgPath = "./some/path/to.nupkg";
                 unparsedArgs.Add(nupkgPath);
                 because();
-                configuration.Input.ShouldEqual(nupkgPath);
+                configuration.Input.Should().Be(nupkgPath);
             }
 
             [Fact]
@@ -147,7 +148,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 configuration.Sources = "";
                 because();
 
-                configuration.Sources.ShouldEqual(ApplicationParameters.ChocolateyCommunityFeedPushSource);
+                configuration.Sources.Should().Be(ApplicationParameters.ChocolateyCommunityFeedPushSource);
             }
 
             [Fact]
@@ -159,7 +160,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 configuration.Sources = "https://localhost/somewhere/out/there";
                 because();
 
-                configuration.PushCommand.Key.ShouldEqual("");
+                configuration.PushCommand.Key.Should().Be("");
             }
 
             [Fact]
@@ -171,7 +172,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 configuration.Sources = "https://localhost/somewhere/out/there";
                 because();
 
-                configuration.PushCommand.Key.ShouldEqual("bob");
+                configuration.PushCommand.Key.Should().Be("bob");
                 configSettingsService.Verify(c => c.get_api_key(It.IsAny<ChocolateyConfiguration>(), It.IsAny<Action<ConfigFileApiKeySetting>>()), Times.Never);
             }
 
@@ -224,10 +225,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                     error = ex;
                 }
 
-                errorred.ShouldBeTrue();
-                error.ShouldNotBeNull();
-                error.ShouldBeType<ApplicationException>();
-                error.Message.ShouldContain("Source is required.");
+                errorred.Should().BeTrue();
+                error.Should().NotBeNull();
+                error.Should().BeOfType<ApplicationException>();
+                error.Message.Should().Contain("Source is required.");
             }
 
             [Fact]
@@ -248,10 +249,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                     error = ex;
                 }
 
-                errorred.ShouldBeTrue();
-                error.ShouldNotBeNull();
-                error.ShouldBeType<ApplicationException>();
-                error.Message.ShouldContain("ApiKey was not found");
+                errorred.Should().BeTrue();
+                error.Should().NotBeNull();
+                error.Should().BeOfType<ApplicationException>();
+                error.Message.Should().Contain("ApiKey was not found");
             }
 
             [Fact]
@@ -297,10 +298,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                     error = ex;
                 }
 
-                errorred.ShouldBeTrue();
-                error.ShouldNotBeNull();
-                error.ShouldBeType<ApplicationException>();
-                error.Message.ShouldContain("WARNING! The specified source '{0}' is not secure".format_with(configuration.Sources));
+                errorred.Should().BeTrue();
+                error.Should().NotBeNull();
+                error.Should().BeOfType<ApplicationException>();
+                error.Message.Should().Contain("WARNING! The specified source '{0}' is not secure".format_with(configuration.Sources));
             }
 
             [Fact]

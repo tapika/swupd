@@ -29,7 +29,8 @@ namespace chocolatey.tests.infrastructure.app.commands
     using chocolatey.infrastructure.results;
     using Moq;
     using NuGet;
-    using Should;
+    using FluentAssertions;
+
 
     public class ChocolateyPinCommandSpecs
     {
@@ -87,7 +88,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_implement_source()
             {
-                results.ShouldContain("pin");
+                results.Should().Contain("pin");
             }
         }
 
@@ -109,19 +110,19 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_add_name_to_the_option_set()
             {
-                optionSet.Contains("name").ShouldBeTrue();
+                optionSet.Contains("name").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_name_to_the_option_set()
             {
-                optionSet.Contains("n").ShouldBeTrue();
+                optionSet.Contains("n").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_version_to_the_option_set()
             {
-                optionSet.Contains("version").ShouldBeTrue();
+                optionSet.Contains("version").Should().BeTrue();
             }
         }
 
@@ -148,7 +149,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 unparsedArgs.Add("list");
                 because();
 
-                configuration.PinCommand.Command.ShouldEqual(PinCommandType.list);
+                configuration.PinCommand.Command.Should().Be(PinCommandType.list);
             }
 
             [Fact]
@@ -170,10 +171,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                     error = ex;
                 }
 
-                errorred.ShouldBeTrue();
-                error.ShouldNotBeNull();
-                error.ShouldBeType<ApplicationException>();
-                error.Message.ShouldContain("A single pin command must be listed");
+                errorred.Should().BeTrue();
+                error.Should().NotBeNull();
+                error.Should().BeOfType<ApplicationException>();
+                error.Message.Should().Contain("A single pin command must be listed");
             }
 
             [Fact]
@@ -183,7 +184,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 unparsedArgs.Add("add");
                 because();
 
-                configuration.PinCommand.Command.ShouldEqual(PinCommandType.add);
+                configuration.PinCommand.Command.Should().Be(PinCommandType.add);
             }
 
             [Fact]
@@ -193,7 +194,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 unparsedArgs.Add("ADD");
                 because();
 
-                configuration.PinCommand.Command.ShouldEqual(PinCommandType.add);
+                configuration.PinCommand.Command.Should().Be(PinCommandType.add);
             }
 
             [Fact]
@@ -203,7 +204,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 unparsedArgs.Add("remove");
                 because();
 
-                configuration.PinCommand.Command.ShouldEqual(PinCommandType.remove);
+                configuration.PinCommand.Command.Should().Be(PinCommandType.remove);
             }
 
             [Fact]
@@ -213,7 +214,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 unparsedArgs.Add("wtf");
                 because();
 
-                configuration.PinCommand.Command.ShouldEqual(PinCommandType.list);
+                configuration.PinCommand.Command.Should().Be(PinCommandType.list);
             }
 
             [Fact]
@@ -222,7 +223,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 reset();
                 because();
 
-                configuration.PinCommand.Command.ShouldEqual(PinCommandType.list);
+                configuration.PinCommand.Command.Should().Be(PinCommandType.list);
             }
 
             [Fact]
@@ -232,7 +233,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 unparsedArgs.Add(" ");
                 because();
 
-                configuration.PinCommand.Command.ShouldEqual(PinCommandType.list);
+                configuration.PinCommand.Command.Should().Be(PinCommandType.list);
             }
 
             [Fact]
@@ -241,7 +242,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 reset();
                 because();
 
-                configuration.Sources.ShouldEqual(ApplicationParameters.PackagesLocation);
+                configuration.Sources.Should().Be(ApplicationParameters.PackagesLocation);
             }
 
             [Fact]
@@ -250,7 +251,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 reset();
                 because();
 
-                configuration.ListCommand.LocalOnly.ShouldBeTrue();
+                configuration.ListCommand.LocalOnly.Should().BeTrue();
             }
 
             [Fact]
@@ -259,7 +260,7 @@ namespace chocolatey.tests.infrastructure.app.commands
                 reset();
                 because();
 
-                configuration.AllVersions.ShouldBeTrue();
+                configuration.AllVersions.Should().BeTrue();
             }
         }
 
@@ -290,10 +291,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                     error = ex;
                 }
 
-                errorred.ShouldBeTrue();
-                error.ShouldNotBeNull();
-                error.ShouldBeType<ApplicationException>();
-                error.Message.ShouldEqual("When specifying the subcommand '{0}', you must also specify --name.".format_with(configuration.PinCommand.Command.to_string()));
+                errorred.Should().BeTrue();
+                error.Should().NotBeNull();
+                error.Should().BeOfType<ApplicationException>();
+                error.Message.Should().Be("When specifying the subcommand '{0}', you must also specify --name.".format_with(configuration.PinCommand.Command.to_string()));
             }
 
             [Fact]
@@ -330,9 +331,9 @@ namespace chocolatey.tests.infrastructure.app.commands
             public void should_log_the_message_we_expect()
             {
                 var messages = MockLogger.MessagesFor(LogLevel.Info);
-                messages.ShouldNotBeEmpty();
-                messages.Count.ShouldEqual(1);
-                messages[0].ShouldContain("Pin would have called");
+                messages.Should().NotBeEmpty();
+                messages.Count.Should().Be(1);
+                messages[0].Should().Contain("Pin would have called");
             }
         }
 
@@ -379,7 +380,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_log_one_message()
             {
-                MockLogger.Messages.Count.ShouldEqual(1);
+                MockLogger.Messages.Count.Should().Be(1);
             }
         }
 

@@ -13,24 +13,24 @@
     <None Include="$(ProjectDir)..\..\ProjectsCommon.props" Link="ProjectsCommon.props" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="6.2.0" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+  </ItemGroup>
+
   <!-- .net framework specific references -->
   <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
     <PackageReference Include="Moq" Version="4.2.1402.2112" />
-    <PackageReference Include="NUnit" Version="2.6.4" />
-    <PackageReference Include="Should" Version="1.1.12" />
     <PackageReference Include="StrongNamer" Version="0.2.5" />
-    <PackageReference Include="TinySpec.NUnit" Version="0.9.5" />
   </ItemGroup>
 
   <!-- .net core specific references -->
   <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
     <PackageReference Include="StrongNamer" Version="0.2.5" />
-    <PackageReference Include="TinySpec.NUnit" Version="0.9.5" />
     <PackageReference Include="Moq" Version="4.8.0" />
-    <PackageReference Include="NUnit" Version="3.13.1" />
-    <PackageReference Include="Should-DotNetStandard" Version="1.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\lib\NuGet-Chocolatey\src\Core\Core.csproj" />
     <ProjectReference Include="..\chocolatey.console\chocolatey.console.csproj" />

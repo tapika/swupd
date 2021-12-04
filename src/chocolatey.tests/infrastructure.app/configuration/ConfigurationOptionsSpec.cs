@@ -25,7 +25,8 @@ namespace chocolatey.tests.infrastructure.app.configuration
     using chocolatey.infrastructure.app.configuration;
     using chocolatey.infrastructure.commandline;
     using Moq;
-    using Should;
+    using FluentAssertions;
+
 
     public class ConfigurationOptionsSpec
     {
@@ -67,6 +68,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 validateConfiguration = () => { };
                 helpMessage = () => { };
                 helpMessageContents.Clear();
+                ConfigurationOptions.reset_options();
             }
         }
 
@@ -77,9 +79,9 @@ namespace chocolatey.tests.infrastructure.app.configuration
             {
                 setOptions = set =>
                 {
-                    set.Contains("h").ShouldBeTrue();
-                    set.Contains("help").ShouldBeTrue();
-                    set.Contains("?").ShouldBeTrue();
+                    set.Contains("h").Should().BeTrue();
+                    set.Contains("help").Should().BeTrue();
+                    set.Contains("?").Should().BeTrue();
                 };
                 because();
             }
@@ -87,7 +89,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
             [Fact]
             public void should_not_have_set_other_options_by_default()
             {
-                setOptions = set => { set.Contains("dude").ShouldBeFalse(); };
+                setOptions = set => { set.Contains("dude").Should().BeFalse(); };
                 because();
             }
 
@@ -98,7 +100,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                config.HelpRequested.ShouldBeTrue();
+                config.HelpRequested.Should().BeTrue();
             }
 
             [Fact, Explicit]
@@ -108,14 +110,14 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                helpMessageContents.ToString().ShouldNotBeEmpty();
+                helpMessageContents.ToString().Should().NotBeEmpty();
             }
 
             [Fact, Explicit]
             public void should_not_run_validate_configuration_when_help_is_requested()
             {
                 args.Add("-h");
-                validateConfiguration = () => { "should".ShouldEqual("not be reached"); };
+                validateConfiguration = () => { "should".Should().Be("not be reached"); };
 
                 because();
             }
@@ -128,7 +130,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                wasCalled.ShouldBeTrue();
+                wasCalled.Should().BeTrue();
             }
 
             [Fact]
@@ -138,12 +140,12 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 afterParse = list =>
                 {
                     wasCalled = true;
-                    list.ShouldBeEmpty();
+                    list.Should().BeEmpty();
                 };
 
                 because();
 
-                wasCalled.ShouldBeTrue();
+                wasCalled.Should().BeTrue();
             }
 
             [Fact]
@@ -154,12 +156,12 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 afterParse = list =>
                 {
                     wasCalled = true;
-                    list.ShouldBeEmpty();
+                    list.Should().BeEmpty();
                 };
 
                 because();
 
-                wasCalled.ShouldBeTrue();
+                wasCalled.Should().BeTrue();
             }
 
             [Fact]
@@ -170,12 +172,12 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 afterParse = list =>
                 {
                     wasCalled = true;
-                    list.ShouldContain(args.First());
+                    list.Should().Contain(args.First());
                 };
 
                 because();
 
-                wasCalled.ShouldBeTrue();
+                wasCalled.Should().BeTrue();
             }
 
             [Fact]
@@ -186,13 +188,13 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 afterParse = list =>
                 {
                     wasCalled = true;
-                    list.ShouldContain(args.First());
+                    list.Should().Contain(args.First());
                 };
 
                 because();
 
-                config.CommandName.ShouldEqual("dude");
-                wasCalled.ShouldBeTrue();
+                config.CommandName.Should().Be("dude");
+                wasCalled.Should().BeTrue();
             }
 
             [Fact]
@@ -203,14 +205,14 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 afterParse = list =>
                 {
                     wasCalled = true;
-                    list.ShouldContain(args.First());
+                    list.Should().Contain(args.First());
                 };
 
                 because();
 
-                config.CommandName.ShouldNotEqual("dude");
-                config.HelpRequested.ShouldBeTrue();
-                wasCalled.ShouldBeTrue();
+                config.CommandName.Should().NotBe("dude");
+                config.HelpRequested.Should().BeTrue();
+                wasCalled.Should().BeTrue();
             }
 
             [Fact]
@@ -219,7 +221,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 setOptions = set => { set.Add("bob", "sets the bob switch", option => config.Verbose = option != null); };
                 because();
 
-                config.Verbose.ShouldBeFalse();
+                config.Verbose.Should().BeFalse();
             }
 
             [Fact]
@@ -230,7 +232,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                config.Verbose.ShouldBeTrue();
+                config.Verbose.Should().BeTrue();
             }
 
             [Fact]
@@ -240,7 +242,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 args.Add("--tina");
                 because();
 
-                config.Verbose.ShouldBeTrue();
+                config.Verbose.Should().BeTrue();
             }
 
             [Fact]
@@ -251,7 +253,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                config.Verbose.ShouldBeTrue();
+                config.Verbose.Should().BeTrue();
             }
 
             [Fact]
@@ -268,9 +270,9 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                config.SkipPackageInstallProvider.ShouldBeTrue();
-                config.Debug.ShouldBeTrue();
-                config.Verbose.ShouldBeTrue();
+                config.SkipPackageInstallProvider.Should().BeTrue();
+                config.Debug.Should().BeTrue();
+                config.Verbose.Should().BeTrue();
             }
 
             [Fact]
@@ -287,10 +289,10 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                config.SkipPackageInstallProvider.ShouldBeTrue();
-                config.Debug.ShouldBeTrue();
-                config.ListCommand.LocalOnly.ShouldBeTrue();
-                helpMessageContents.ToString().ShouldBeEmpty();
+                config.SkipPackageInstallProvider.Should().BeTrue();
+                config.Debug.Should().BeTrue();
+                config.ListCommand.LocalOnly.Should().BeTrue();
+                helpMessageContents.ToString().Should().BeEmpty();
             }
 
             [Fact]
@@ -301,8 +303,8 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                config.Debug.ShouldBeFalse();
-                helpMessageContents.ToString().ShouldNotBeEmpty();
+                config.Debug.Should().BeFalse();
+                helpMessageContents.ToString().Should().NotBeEmpty();
             }
 
             [Fact]
@@ -312,7 +314,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                config.UnsuccessfulParsing.ShouldBeFalse();
+                config.UnsuccessfulParsing.Should().BeFalse();
             }
 
             [Fact]
@@ -322,7 +324,7 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
                 because();
 
-                config.UnsuccessfulParsing.ShouldBeTrue();
+                config.UnsuccessfulParsing.Should().BeTrue();
             }
         }
     }

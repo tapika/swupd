@@ -156,9 +156,9 @@ namespace chocolatey.infrastructure.app
         public static readonly string PackagePendingFileName = ".chocolateyPending";
 
         /// <summary>
-        /// This is a readonly bool set to true. It is only shifted for specs.
+        /// Allow user interaction with end-user over cli.
         /// </summary>
-        public static readonly bool AllowPrompts = true;
+        public static bool AllowPrompts = true;
 
         public static class ExitCodes
         {

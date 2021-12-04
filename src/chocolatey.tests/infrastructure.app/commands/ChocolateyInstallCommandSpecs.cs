@@ -26,7 +26,8 @@ namespace chocolatey.tests.infrastructure.app.commands
     using chocolatey.infrastructure.app.services;
     using chocolatey.infrastructure.commandline;
     using Moq;
-    using Should;
+    using FluentAssertions;
+
 
     public class ChocolateyInstallCommandSpecs
     {
@@ -55,7 +56,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_implement_install()
             {
-                results.ShouldContain(CommandNameType.install.to_string());
+                results.Should().Contain(CommandNameType.install.to_string());
             }
         }
 
@@ -77,163 +78,163 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_add_source_to_the_option_set()
             {
-                optionSet.Contains("source").ShouldBeTrue();
+                optionSet.Contains("source").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_source_to_the_option_set()
             {
-                optionSet.Contains("s").ShouldBeTrue();
+                optionSet.Contains("s").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_version_to_the_option_set()
             {
-                optionSet.Contains("version").ShouldBeTrue();
+                optionSet.Contains("version").Should().BeTrue();
             }
 
             [Fact]
             public void should_allow_insensitive_case_Version_to_the_option_set()
             {
-                optionSet.Contains("Version").ShouldBeTrue();
+                optionSet.Contains("Version").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_prerelease_to_the_option_set()
             {
-                optionSet.Contains("prerelease").ShouldBeTrue();
+                optionSet.Contains("prerelease").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_prerelease_to_the_option_set()
             {
-                optionSet.Contains("pre").ShouldBeTrue();
+                optionSet.Contains("pre").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_installargs_to_the_option_set()
             {
-                optionSet.Contains("installarguments").ShouldBeTrue();
+                optionSet.Contains("installarguments").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_installargs_to_the_option_set()
             {
-                optionSet.Contains("ia").ShouldBeTrue();
+                optionSet.Contains("ia").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_overrideargs_to_the_option_set()
             {
-                optionSet.Contains("overridearguments").ShouldBeTrue();
+                optionSet.Contains("overridearguments").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_overrideargs_to_the_option_set()
             {
-                optionSet.Contains("o").ShouldBeTrue();
+                optionSet.Contains("o").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_notsilent_to_the_option_set()
             {
-                optionSet.Contains("notsilent").ShouldBeTrue();
+                optionSet.Contains("notsilent").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_packageparameters_to_the_option_set()
             {
-                optionSet.Contains("packageparameters").ShouldBeTrue();
+                optionSet.Contains("packageparameters").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_packageparameters_to_the_option_set()
             {
-                optionSet.Contains("params").ShouldBeTrue();
+                optionSet.Contains("params").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_applyPackageParametersToDependencies_to_the_option_set()
             {
-                optionSet.Contains("apply-package-parameters-to-dependencies").ShouldBeTrue();
+                optionSet.Contains("apply-package-parameters-to-dependencies").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_applyInstallArgumentsToDependencies_to_the_option_set()
             {
-                optionSet.Contains("apply-install-arguments-to-dependencies").ShouldBeTrue();
+                optionSet.Contains("apply-install-arguments-to-dependencies").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_allowmultipleversions_to_the_option_set()
             {
-                optionSet.Contains("allowmultipleversions").ShouldBeTrue();
+                optionSet.Contains("allowmultipleversions").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_allowmultipleversions_to_the_option_set()
             {
-                optionSet.Contains("m").ShouldBeTrue();
+                optionSet.Contains("m").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_ignoredependencies_to_the_option_set()
             {
-                optionSet.Contains("ignoredependencies").ShouldBeTrue();
+                optionSet.Contains("ignoredependencies").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_ignoredependencies_to_the_option_set()
             {
-                optionSet.Contains("i").ShouldBeTrue();
+                optionSet.Contains("i").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_forcedependencies_to_the_option_set()
             {
-                optionSet.Contains("forcedependencies").ShouldBeTrue();
+                optionSet.Contains("forcedependencies").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_forcedependencies_to_the_option_set()
             {
-                optionSet.Contains("x").ShouldBeTrue();
+                optionSet.Contains("x").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_skippowershell_to_the_option_set()
             {
-                optionSet.Contains("skippowershell").ShouldBeTrue();
+                optionSet.Contains("skippowershell").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_skippowershell_to_the_option_set()
             {
-                optionSet.Contains("n").ShouldBeTrue();
+                optionSet.Contains("n").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_user_to_the_option_set()
             {
-                optionSet.Contains("user").ShouldBeTrue();
+                optionSet.Contains("user").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_user_to_the_option_set()
             {
-                optionSet.Contains("u").ShouldBeTrue();
+                optionSet.Contains("u").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_password_to_the_option_set()
             {
-                optionSet.Contains("password").ShouldBeTrue();
+                optionSet.Contains("password").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_password_to_the_option_set()
             {
-                optionSet.Contains("p").ShouldBeTrue();
+                optionSet.Contains("p").Should().BeTrue();
             }
         }
 
@@ -256,7 +257,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_set_unparsed_arguments_to_the_package_names()
             {
-                configuration.PackageNames.ShouldEqual("pkg1;pkg2");
+                configuration.PackageNames.Should().Be("pkg1;pkg2");
             }
         }
 
@@ -283,9 +284,9 @@ namespace chocolatey.tests.infrastructure.app.commands
                     error = ex;
                 }
 
-                errorred.ShouldBeTrue();
-                error.ShouldNotBeNull();
-                error.ShouldBeType<ApplicationException>();
+                errorred.Should().BeTrue();
+                error.Should().NotBeNull();
+                error.Should().BeOfType<ApplicationException>();
             }
 
             [Fact]

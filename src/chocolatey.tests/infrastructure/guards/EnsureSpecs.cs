@@ -20,7 +20,7 @@ namespace chocolatey.tests.infrastructure.guards
     using chocolatey.infrastructure.app.configuration;
     using chocolatey.infrastructure.guards;
     using Moq;
-    using Should;
+    using FluentAssertions;
 
     public class EnsureSpecs
     {
@@ -44,14 +44,14 @@ namespace chocolatey.tests.infrastructure.guards
             [Fact]
             public void should_return_a_type_of_string_for_ensuring()
             {
-                result.ShouldBeType<Ensure<string>>();
+                result.Should().BeOfType<Ensure<string>>();
             }
 
             [Fact]
             public void should_have_the_value_specified()
             {
                 var bobEnsure = result as Ensure<string>;
-                bobEnsure.Value.ShouldEqual(bob);
+                bobEnsure.Value.Should().Be(bob);
             }
         }
 
@@ -84,8 +84,8 @@ namespace chocolatey.tests.infrastructure.guards
                     exceptionMessage = ex.Message;
                 }
 
-                exceptionType.ShouldBeType<ArgumentNullException>();
-                exceptionMessage.ShouldContain("cannot be null.");
+                exceptionType.Should().BeOfType<ArgumentNullException>();
+                exceptionMessage.Should().Contain("cannot be null.");
             }
 
             [Fact]
@@ -111,8 +111,8 @@ namespace chocolatey.tests.infrastructure.guards
                     exceptionMessage = ex.Message;
                 }
 
-                exceptionType.ShouldBeType<ArgumentNullException>();
-                exceptionMessage.ShouldContain("cannot be null.");
+                exceptionType.Should().BeOfType<ArgumentNullException>();
+                exceptionMessage.Should().Contain("cannot be null.");
             }
 
             [Fact]
@@ -138,8 +138,8 @@ namespace chocolatey.tests.infrastructure.guards
                     exceptionMessage = ex.Message;
                 }
 
-                exceptionType.ShouldBeType<ArgumentNullException>();
-                exceptionMessage.ShouldContain("cannot be null.");
+                exceptionType.Should().BeOfType<ArgumentNullException>();
+                exceptionMessage.Should().Contain("cannot be null.");
             }
 
             [Fact]
@@ -160,8 +160,8 @@ namespace chocolatey.tests.infrastructure.guards
                     exceptionMessage = ex.Message;
                 }
 
-                exceptionType.ShouldBeType<ArgumentNullException>();
-                exceptionMessage.ShouldContain("Value for ensureFunction cannot be null.");
+                exceptionType.Should().BeOfType<ArgumentNullException>();
+                exceptionMessage.Should().Contain("Value for ensureFunction cannot be null.");
             }
 
             [Fact]
@@ -182,9 +182,9 @@ namespace chocolatey.tests.infrastructure.guards
                     exceptionMessage = ex.Message;
                 }
 
-                exceptionType.ShouldBeType<ArgumentNullException>();
-                exceptionMessage.ShouldContain("exceptionAction");
-                exceptionMessage.ShouldContain("cannot be null.");
+                exceptionType.Should().BeOfType<ArgumentNullException>();
+                exceptionMessage.Should().Contain("exceptionAction");
+                exceptionMessage.Should().Contain("cannot be null.");
             }
 
             [Fact]
@@ -205,9 +205,9 @@ namespace chocolatey.tests.infrastructure.guards
                     exceptionMessage = ex.Message;
                 }
 
-                exceptionType.ShouldBeType<ArgumentNullException>();
-                exceptionMessage.ShouldContain("exceptionAction");
-                exceptionMessage.ShouldContain("cannot be null.");
+                exceptionType.Should().BeOfType<ArgumentNullException>();
+                exceptionMessage.Should().Contain("exceptionAction");
+                exceptionMessage.Should().Contain("cannot be null.");
             }
 
             [Fact]
@@ -228,9 +228,9 @@ namespace chocolatey.tests.infrastructure.guards
                     exceptionMessage = ex.Message;
                 }
 
-                exceptionType.ShouldBeType<ArgumentNullException>();
-                exceptionMessage.ShouldContain("ensureFunction");
-                exceptionMessage.ShouldContain("cannot be null.");
+                exceptionType.Should().BeOfType<ArgumentNullException>();
+                exceptionMessage.Should().Contain("ensureFunction");
+                exceptionMessage.Should().Contain("cannot be null.");
             }
 
             [Fact]
@@ -251,9 +251,9 @@ namespace chocolatey.tests.infrastructure.guards
                     exceptionMessage = ex.Message;
                 }
 
-                exceptionType.ShouldBeType<ArgumentNullException>();
-                exceptionMessage.ShouldContain("exceptionAction");
-                exceptionMessage.ShouldContain("cannot be null.");
+                exceptionType.Should().BeOfType<ArgumentNullException>();
+                exceptionMessage.Should().Contain("exceptionAction");
+                exceptionMessage.Should().Contain("cannot be null.");
             }
 
             [Fact]
@@ -274,9 +274,9 @@ namespace chocolatey.tests.infrastructure.guards
                     exceptionMessage = ex.Message;
                 }
 
-                exceptionType.ShouldBeType<ArgumentNullException>();
-                exceptionMessage.ShouldContain("ensureFunction");
-                exceptionMessage.ShouldContain("cannot be null.");
+                exceptionType.Should().BeOfType<ArgumentNullException>();
+                exceptionMessage.Should().Contain("ensureFunction");
+                exceptionMessage.Should().Contain("cannot be null.");
             }
         }
 
@@ -310,19 +310,19 @@ namespace chocolatey.tests.infrastructure.guards
             [Fact]
             public void should_not_invoke_the_exceptionAction()
             {
-                exceptionActionInvoked.ShouldBeFalse();
+                exceptionActionInvoked.Should().BeFalse();
             }
 
             [Fact]
             public void should_not_return_a_specified_exception_since_there_was_no_failure()
             {
-                exceptionType.ShouldBeNull();
+                exceptionType.Should().BeNull();
             }
 
             [Fact]
             public void should_not_return_the_specified_error_message()
             {
-                exceptionMessage.ShouldNotContain("this is what we throw.");
+                exceptionMessage.Should().NotContain("this is what we throw.");
             }
 
             [Fact]
@@ -362,19 +362,19 @@ namespace chocolatey.tests.infrastructure.guards
             [Fact]
             public void should_invoke_the_exceptionAction()
             {
-                exceptionActionInvoked.ShouldBeTrue();
+                exceptionActionInvoked.Should().BeTrue();
             }
 
             [Fact]
             public void should_return_the_specified_exception_of_type_ApplicationException()
             {
-                exceptionType.ShouldBeType<ApplicationException>();
+                exceptionType.Should().BeOfType<ApplicationException>();
             }
 
             [Fact]
             public void should_return_the_specified_error_message()
             {
-                exceptionMessage.ShouldContain("this is what we throw.");
+                exceptionMessage.Should().Contain("this is what we throw.");
             }
 
             [Fact]
@@ -414,25 +414,25 @@ namespace chocolatey.tests.infrastructure.guards
             [Fact]
             public void should_not_invoke_the_exceptionAction()
             {
-                exceptionActionInvoked.ShouldBeFalse();
+                exceptionActionInvoked.Should().BeFalse();
             }
 
             [Fact]
             public void should_throw_an_error()
             {
-                exceptionType.ShouldNotBeNull();
+                exceptionType.Should().NotBeNull();
             }
 
             [Fact]
             public void should_not_return_the_specified_exception_of_type_ApplicationException()
             {
-                exceptionType.ShouldNotBeType<ApplicationException>();
+                exceptionType.Should().NotBeOfType<ApplicationException>();
             }
 
             [Fact]
             public void should_not_return_the_specified_error_message()
             {
-                exceptionMessage.ShouldNotContain("this is what we throw.");
+                exceptionMessage.Should().NotContain("this is what we throw.");
             }
 
             //[Fact]
@@ -445,9 +445,9 @@ namespace chocolatey.tests.infrastructure.guards
             //    public void should_log_the_error_we_expect()
             //    {
             //       var messages = MockLogger.MessagesFor(LogLevel.Error);
-            //        messages.ShouldNotBeEmpty();
-            //        messages.Count.ShouldEqual(1);
-            //        messages[0].ShouldContain("Trying to call ensureFunction on");
+            //        messages.Should().NotBeEmpty();
+            //        messages.Count.Should().Be(1);
+            //        messages[0].Should().Contain("Trying to call ensureFunction on");
             //    }
         }
     }

@@ -22,7 +22,8 @@ namespace chocolatey.tests.infrastructure.app.nuget
     using chocolatey.infrastructure.app.nuget;
     using Moq;
     using NuGet;
-    using Should;
+    using FluentAssertions;
+
 
     public class NugetCommonSpecs 
     {
@@ -54,7 +55,7 @@ namespace chocolatey.tests.infrastructure.app.nuget
             
                 because();
 
-                ((AggregateRepository)packageRepository).Repositories.Count().ShouldEqual(0);
+                ((AggregateRepository)packageRepository).Repositories.Count().Should().Be(0);
             }
         }
     }

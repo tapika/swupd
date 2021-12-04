@@ -26,7 +26,8 @@ namespace chocolatey.tests.infrastructure.app.commands
     using chocolatey.infrastructure.app.templates;
     using chocolatey.infrastructure.commandline;
     using Moq;
-    using Should;
+    using FluentAssertions;
+
 
     public class ChocolateyNewCommandSpecs
     {
@@ -54,7 +55,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_implement_new()
             {
-                results.ShouldContain("new");
+                results.Should().Contain("new");
             }
         }
 
@@ -76,37 +77,37 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_add_automaticpackage_to_the_option_set()
             {
-                optionSet.Contains("automaticpackage").ShouldBeTrue();
+                optionSet.Contains("automaticpackage").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_automaticpackage_to_the_option_set()
             {
-                optionSet.Contains("a").ShouldBeTrue();
+                optionSet.Contains("a").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_name_to_the_option_set()
             {
-                optionSet.Contains("name").ShouldBeTrue();
+                optionSet.Contains("name").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_version_to_the_option_set()
             {
-                optionSet.Contains("version").ShouldBeTrue();
+                optionSet.Contains("version").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_maintainer_to_the_option_set()
             {
-                optionSet.Contains("maintainer").ShouldBeTrue();
+                optionSet.Contains("maintainer").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_outputdirectory_to_the_option_set()
             {
-                optionSet.Contains("outputdirectory").ShouldBeTrue();
+                optionSet.Contains("outputdirectory").Should().BeTrue();
             }
         }
 
@@ -132,7 +133,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             {
                 reset();
                 because();
-                configuration.NewCommand.TemplateProperties.Count.ShouldEqual(0);
+                configuration.NewCommand.TemplateProperties.Count.Should().Be(0);
             }
 
             [Fact]
@@ -143,10 +144,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
 
                 var properties = configuration.NewCommand.TemplateProperties;
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("bob");
-                templateProperty.Value.ShouldEqual("new");
+                templateProperty.Key.Should().Be("bob");
+                templateProperty.Value.Should().Be("new");
             }
 
             [Fact]
@@ -158,10 +159,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
 
                 var properties = configuration.NewCommand.TemplateProperties;
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("bob");
-                templateProperty.Value.ShouldEqual("one");
+                templateProperty.Key.Should().Be("bob");
+                templateProperty.Value.Should().Be("one");
             }
 
             [Fact]
@@ -173,10 +174,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
 
                 var properties = configuration.NewCommand.TemplateProperties;
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("bob");
-                templateProperty.Value.ShouldEqual("one");
+                templateProperty.Key.Should().Be("bob");
+                templateProperty.Value.Should().Be("one");
             }
 
             [Fact]
@@ -189,10 +190,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
 
                 var properties = configuration.NewCommand.TemplateProperties;
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("PackageName");
-                templateProperty.Value.ShouldEqual("bill");
+                templateProperty.Key.Should().Be("PackageName");
+                templateProperty.Value.Should().Be("bill");
             }
 
             [Fact]
@@ -205,10 +206,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
 
                 var properties = configuration.NewCommand.TemplateProperties;
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("PackageName");
-                templateProperty.Value.ShouldEqual("bill");
+                templateProperty.Key.Should().Be("PackageName");
+                templateProperty.Value.Should().Be("bill");
             }
 
             [Fact]
@@ -222,8 +223,8 @@ namespace chocolatey.tests.infrastructure.app.commands
 
                 var properties = configuration.NewCommand.TemplateProperties;
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("PackageName");
-                templateProperty.Value.ShouldEqual("bill");
+                templateProperty.Key.Should().Be("PackageName");
+                templateProperty.Value.Should().Be("bill");
             }
 
             [Fact]
@@ -234,10 +235,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
 
                 var properties = configuration.NewCommand.TemplateProperties;
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("bob");
-                templateProperty.Value.ShouldEqual("new");
+                templateProperty.Key.Should().Be("bob");
+                templateProperty.Value.Should().Be("new");
             }
 
             [Fact]
@@ -248,10 +249,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
 
                 var properties = configuration.NewCommand.TemplateProperties;
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("bob");
-                templateProperty.Value.ShouldEqual("new this");
+                templateProperty.Key.Should().Be("bob");
+                templateProperty.Value.Should().Be("new this");
             }
 
             [Fact]
@@ -262,10 +263,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
                 var properties = configuration.NewCommand.TemplateProperties;
 
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("bob");
-                templateProperty.Value.ShouldEqual("new \"this");
+                templateProperty.Key.Should().Be("bob");
+                templateProperty.Value.Should().Be("new \"this");
             }
 
             [Fact]
@@ -276,10 +277,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
                 var properties = configuration.NewCommand.TemplateProperties;
 
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("bob");
-                templateProperty.Value.ShouldEqual("new this");
+                templateProperty.Key.Should().Be("bob");
+                templateProperty.Value.Should().Be("new this");
             }
 
             [Fact]
@@ -290,10 +291,10 @@ namespace chocolatey.tests.infrastructure.app.commands
                 because();
                 var properties = configuration.NewCommand.TemplateProperties;
 
-                properties.Count.ShouldEqual(1);
+                properties.Count.Should().Be(1);
                 var templateProperty = properties.FirstOrDefault();
-                templateProperty.Key.ShouldEqual("bob");
-                templateProperty.Value.ShouldEqual("new 'this");
+                templateProperty.Key.Should().Be("bob");
+                templateProperty.Value.Should().Be("new 'this");
             }
         }
 
@@ -320,9 +321,9 @@ namespace chocolatey.tests.infrastructure.app.commands
                     error = ex;
                 }
 
-                errorred.ShouldBeTrue();
-                error.ShouldNotBeNull();
-                error.ShouldBeType<ApplicationException>();
+                errorred.Should().BeTrue();
+                error.Should().NotBeNull();
+                error.Should().BeOfType<ApplicationException>();
             }
 
             [Fact]
@@ -380,38 +381,38 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_name_equal_to_Bob()
             {
-                configuration.NewCommand.Name.ShouldEqual("Bob");
-                configuration.NewCommand.TemplateProperties[TemplateValues.NamePropertyName].ShouldEqual("Bob");
+                configuration.NewCommand.Name.Should().Be("Bob");
+                configuration.NewCommand.TemplateProperties[TemplateValues.NamePropertyName].Should().Be("Bob");
             }
 
             [Fact]
             public void should_automaticpackage_equal_to_true()
             {
-                configuration.NewCommand.AutomaticPackage.ShouldBeTrue();
+                configuration.NewCommand.AutomaticPackage.Should().BeTrue();
             }
 
             [Fact]
             public void should_templatename_equal_to_custom()
             {
-                configuration.NewCommand.TemplateName.ShouldEqual("custom");
+                configuration.NewCommand.TemplateName.Should().Be("custom");
             }
 
             [Fact]
             public void should_version_equal_to_42()
             {
-                configuration.NewCommand.TemplateProperties[TemplateValues.VersionPropertyName].ShouldEqual("0.42.0");
+                configuration.NewCommand.TemplateProperties[TemplateValues.VersionPropertyName].Should().Be("0.42.0");
             }
 
             [Fact]
             public void should_maintainer_equal_to_Loyd()
             {
-                configuration.NewCommand.TemplateProperties[TemplateValues.MaintainerPropertyName].ShouldEqual("Loyd");
+                configuration.NewCommand.TemplateProperties[TemplateValues.MaintainerPropertyName].Should().Be("Loyd");
             }
 
             [Fact]
             public void should_outputdirectory_equal_packages()
             {
-                configuration.OutputDirectory.ShouldEqual("c:\\packages");
+                configuration.OutputDirectory.Should().Be("c:\\packages");
             }
         }
     }

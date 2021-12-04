@@ -25,7 +25,8 @@ namespace chocolatey.tests.infrastructure.app.commands
     using chocolatey.infrastructure.app.services;
     using chocolatey.infrastructure.commandline;
     using Moq;
-    using Should;
+    using FluentAssertions;
+
 
     public class ChocolateyInfoCommandSpecs
     {
@@ -54,7 +55,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_implement_info()
             {
-                results.ShouldContain("info");
+                results.Should().Contain("info");
             }
         }
 
@@ -76,61 +77,61 @@ namespace chocolatey.tests.infrastructure.app.commands
             [Fact]
             public void should_add_source_to_the_option_set()
             {
-                optionSet.Contains("source").ShouldBeTrue();
+                optionSet.Contains("source").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_source_to_the_option_set()
             {
-                optionSet.Contains("s").ShouldBeTrue();
+                optionSet.Contains("s").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_localonly_to_the_option_set()
             {
-                optionSet.Contains("localonly").ShouldBeTrue();
+                optionSet.Contains("localonly").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_localonly_to_the_option_set()
             {
-                optionSet.Contains("l").ShouldBeTrue();
+                optionSet.Contains("l").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_prerelease_to_the_option_set()
             {
-                optionSet.Contains("prerelease").ShouldBeTrue();
+                optionSet.Contains("prerelease").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_prerelease_to_the_option_set()
             {
-                optionSet.Contains("pre").ShouldBeTrue();
+                optionSet.Contains("pre").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_user_to_the_option_set()
             {
-                optionSet.Contains("user").ShouldBeTrue();
+                optionSet.Contains("user").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_user_to_the_option_set()
             {
-                optionSet.Contains("u").ShouldBeTrue();
+                optionSet.Contains("u").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_password_to_the_option_set()
             {
-                optionSet.Contains("password").ShouldBeTrue();
+                optionSet.Contains("password").Should().BeTrue();
             }
 
             [Fact]
             public void should_add_short_version_of_password_to_the_option_set()
             {
-                optionSet.Contains("p").ShouldBeTrue();
+                optionSet.Contains("p").Should().BeTrue();
             }
         }
 
@@ -157,7 +158,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             public void should_set_unparsed_arguments_to_configuration_input()
             {
                 because();
-                configuration.Input.ShouldEqual("pkg1 pkg2");
+                configuration.Input.Should().Be("pkg1 pkg2");
             }
 
             [Fact]
@@ -165,7 +166,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             {
                 configuration.ListCommand.LocalOnly = false;
                 because();
-                configuration.Sources.ShouldEqual(source);
+                configuration.Sources.Should().Be(source);
             }
 
             [Fact]
@@ -173,7 +174,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             {
                 configuration.ListCommand.Exact = false;
                 because();
-                configuration.ListCommand.Exact.ShouldBeTrue();
+                configuration.ListCommand.Exact.Should().BeTrue();
             }
 
             [Fact]
@@ -181,7 +182,7 @@ namespace chocolatey.tests.infrastructure.app.commands
             {
                 configuration.Verbose = false;
                 because();
-                configuration.Verbose.ShouldBeTrue();
+                configuration.Verbose.Should().BeTrue();
             }
         }
 

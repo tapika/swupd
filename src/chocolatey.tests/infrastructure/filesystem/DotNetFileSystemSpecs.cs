@@ -24,7 +24,7 @@ namespace chocolatey.tests.infrastructure.filesystem
     using chocolatey.infrastructure.platforms;
     using Moq;
     using NUnit.Framework;
-    using Should;
+    using FluentAssertions;
 
     public class DotNetFileSystemSpecs
     {
@@ -47,37 +47,37 @@ namespace chocolatey.tests.infrastructure.filesystem
             [Fact]
             public void GetFullPath_should_return_the_full_path_to_an_item()
             {
-                FileSystem.get_full_path("test.txt").ShouldEqual(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test.txt"));
+                FileSystem.get_full_path("test.txt").Should().Be(Path.Combine(TestContext.CurrentContext.WorkDirectory, "test.txt"));
             }
 
             [Fact]
             public void GetFileNameWithoutExtension_should_return_a_file_name_without_an_extension()
             {
-                FileSystem.get_file_name_without_extension("test.txt").ShouldEqual("test");
+                FileSystem.get_file_name_without_extension("test.txt").Should().Be("test");
             }
 
             [Fact]
             public void GetFileNameWithoutExtension_should_return_a_file_name_without_an_extension_even_with_a_full_path()
             {
-                FileSystem.get_file_name_without_extension("C:\\temp\\test.txt").ShouldEqual("test");
+                FileSystem.get_file_name_without_extension("C:\\temp\\test.txt").Should().Be("test");
             }
 
             [Fact]
             public void GetExtension_should_return_the_extension_of_the_filename()
             {
-                FileSystem.get_file_extension("test.txt").ShouldEqual(".txt");
+                FileSystem.get_file_extension("test.txt").Should().Be(".txt");
             }
 
             [Fact]
             public void GetExtension_should_return_the_extension_of_the_filename_even_with_a_full_path()
             {
-                FileSystem.get_file_extension("C:\\temp\\test.txt").ShouldEqual(".txt");
+                FileSystem.get_file_extension("C:\\temp\\test.txt").Should().Be(".txt");
             }
 
             [Fact]
             public void GetDirectoryName_should_return_the_directory_of_the_path_to_the_file()
             {
-                FileSystem.get_directory_name("C:\\temp\\test.txt").ShouldEqual(
+                FileSystem.get_directory_name("C:\\temp\\test.txt").Should().Be(
                     Platform.get_platform() == PlatformType.Windows
                         ? "C:\\temp"
                         : "C:/temp");
@@ -86,7 +86,7 @@ namespace chocolatey.tests.infrastructure.filesystem
             [Fact]
             public void Combine_should_combine_the_file_paths_of_all_the_included_items_together()
             {
-                FileSystem.combine_paths("C:\\temp", "yo", "filename.txt").ShouldEqual(
+                FileSystem.combine_paths("C:\\temp", "yo", "filename.txt").Should().Be(
                     Platform.get_platform() == PlatformType.Windows
                         ? "C:\\temp\\yo\\filename.txt"
                         : "C:/temp/yo/filename.txt");
@@ -95,7 +95,7 @@ namespace chocolatey.tests.infrastructure.filesystem
             [Fact]
             public void Combine_should_combine_when_paths_have_backslashes_in_subpaths()
             {
-                FileSystem.combine_paths("C:\\temp", "yo\\timmy", "filename.txt").ShouldEqual(
+                FileSystem.combine_paths("C:\\temp", "yo\\timmy", "filename.txt").Should().Be(
                     Platform.get_platform() == PlatformType.Windows
                         ? "C:\\temp\\yo\\timmy\\filename.txt"
                         : "C:/temp/yo/timmy/filename.txt");
@@ -104,7 +104,7 @@ namespace chocolatey.tests.infrastructure.filesystem
             [Fact]
             public void Combine_should_combine_when_paths_start_with_backslashes_in_subpaths()
             {
-                FileSystem.combine_paths("C:\\temp", "\\yo", "filename.txt").ShouldEqual(
+                FileSystem.combine_paths("C:\\temp", "\\yo", "filename.txt").Should().Be(
                     Platform.get_platform() == PlatformType.Windows
                         ? "C:\\temp\\yo\\filename.txt"
                         : "C:/temp/yo/filename.txt");
@@ -113,17 +113,19 @@ namespace chocolatey.tests.infrastructure.filesystem
             [Fact]
             public void Combine_should_combine_when_paths_start_with_forwardslashes_in_subpaths()
             {
-                FileSystem.combine_paths("C:\\temp", "/yo", "filename.txt").ShouldEqual(
+                FileSystem.combine_paths("C:\\temp", "/yo", "filename.txt").Should().Be(
                     Platform.get_platform() == PlatformType.Windows
                         ? "C:\\temp\\yo\\filename.txt"
                         : "C:/temp/yo/filename.txt");
             }
 
             [Fact]
-            [ExpectedException(typeof(ApplicationException), MatchType = MessageMatch.StartsWith, ExpectedMessage = "Cannot combine a path with")]
             public void Combine_should_error_if_any_path_but_the_primary_contains_colon()
             {
-                FileSystem.combine_paths("C:\\temp", "C:");
+                Assert.Throws<ApplicationException>(() => 
+                {
+                    FileSystem.combine_paths("C:\\temp", "C:");
+                })?.Message.Should().StartWith("Cannot combine a path with");
             }
         }
 
@@ -154,41 +156,37 @@ namespace chocolatey.tests.infrastructure.filesystem
             [Fact]
             public void GetExecutablePath_should_find_existing_executable()
             {
-                FileSystem.get_executable_path("cmd").to_lower().ShouldEqual(
+                FileSystem.get_executable_path("cmd").Should().BeEquivalentTo(
                     Platform.get_platform() == PlatformType.Windows
                         ? "c:\\windows\\system32\\cmd.exe"
-                        : "cmd",
-                    StringComparer.OrdinalIgnoreCase
-                );
+                        : "cmd");
             }
 
             [Fact]
             public void GetExecutablePath_should_find_existing_executable_with_extension()
             {
-                FileSystem.get_executable_path("cmd.exe").to_lower().ShouldEqual(
+                FileSystem.get_executable_path("cmd.exe").Should().BeEquivalentTo(
                     Platform.get_platform() == PlatformType.Windows
                         ? "c:\\windows\\system32\\cmd.exe"
-                        : "cmd.exe",
-                    StringComparer.OrdinalIgnoreCase
-                );
+                        : "cmd.exe");
             }
 
             [Fact]
             public void GetExecutablePath_should_return_same_value_when_executable_is_not_found()
             {
-                FileSystem.get_executable_path("daslakjsfdasdfwea").ShouldEqual("daslakjsfdasdfwea");
+                FileSystem.get_executable_path("daslakjsfdasdfwea").Should().Be("daslakjsfdasdfwea");
             }
 
             [Fact]
             public void GetExecutablePath_should_return_empty_string_when_value_is_null()
             {
-                FileSystem.get_executable_path(null).ShouldEqual(string.Empty);
+                FileSystem.get_executable_path(null).Should().Be(string.Empty);
             }
 
             [Fact]
             public void GetExecutablePath_should_return_empty_string_when_value_is_empty_string()
             {
-                FileSystem.get_executable_path(string.Empty).ShouldEqual(string.Empty);
+                FileSystem.get_executable_path(string.Empty).Should().Be(string.Empty);
             }
         }
 
@@ -214,28 +212,35 @@ namespace chocolatey.tests.infrastructure.filesystem
             [Fact]
             public void GetExecutablePath_should_find_existing_executable()
             {
-                FileSystem.get_executable_path("ls").ShouldEqual(
-                    Platform.get_platform() != PlatformType.Windows
-                        ? "/bin/ls"
-                        : "ls");
+                if (Platform.get_platform() == PlatformType.Windows)
+                {
+                    FileSystem.get_executable_path("ls").Should().Be("ls");
+                }
+                else
+                {
+                    new string[]
+                    {
+                        "/bin/ls", "/usr/bin/ls"
+                    }.Should().Contain(FileSystem.get_executable_path("ls"));
+                }
             }
 
             [Fact]
             public void GetExecutablePath_should_return_same_value_when_executable_is_not_found()
             {
-                FileSystem.get_executable_path("daslakjsfdasdfwea").ShouldEqual("daslakjsfdasdfwea");
+                FileSystem.get_executable_path("daslakjsfdasdfwea").Should().Be("daslakjsfdasdfwea");
             }
 
             [Fact]
             public void GetExecutablePath_should_return_empty_string_when_value_is_null()
             {
-                FileSystem.get_executable_path(null).ShouldEqual(string.Empty);
+                FileSystem.get_executable_path(null).Should().Be(string.Empty);
             }
 
             [Fact]
             public void GetExecutablePath_should_return_empty_string_when_value_is_empty_string()
             {
-                FileSystem.get_executable_path(string.Empty).ShouldEqual(string.Empty);
+                FileSystem.get_executable_path(string.Empty).Should().Be(string.Empty);
             }
         }
     }

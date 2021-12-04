@@ -27,7 +27,7 @@ namespace chocolatey.tests.infrastructure.app.services
     using chocolatey.infrastructure.filesystem;
     using Moq;
     using NUnit.Framework;
-    using Should;
+    using FluentAssertions;
 
     public class TemplateServiceSpecs
     {
@@ -74,8 +74,8 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var infos = MockLogger.MessagesFor(LogLevel.Info);
-                infos.Count.ShouldEqual(1);
-                infos[0].ShouldEqual("Would have generated a new package specification at c:\\chocolatey\\Bob");
+                infos.Count.Should().Be(1);
+                infos[0].Should().Be("Would have generated a new package specification at c:\\chocolatey\\Bob");
             }
 
             [Fact]
@@ -86,8 +86,8 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var infos = MockLogger.MessagesFor(LogLevel.Info);
-                infos.Count.ShouldEqual(1);
-                infos[0].ShouldEqual("Would have generated a new package specification at c:\\packages\\Bob");
+                infos.Count.Should().Be(1);
+                infos[0].Should().Be("Would have generated a new package specification at c:\\packages\\Bob");
             }
         }
 
@@ -126,8 +126,8 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var debugs = MockLogger.MessagesFor(LogLevel.Debug);
-                debugs.Count.ShouldEqual(1);
-                debugs[0].ShouldEqual("Bob");
+                debugs.Count.Should().Be(1);
+                debugs[0].Should().Be("Bob");
             }
 
             [Fact]
@@ -138,12 +138,12 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var debugs = MockLogger.MessagesFor(LogLevel.Debug);
-                debugs.Count.ShouldEqual(1);
-                debugs[0].ShouldEqual("Bob");
+                debugs.Count.Should().Be(1);
+                debugs[0].Should().Be("Bob");
 
                 var infos = MockLogger.MessagesFor(LogLevel.Info);
-                infos.Count.ShouldEqual(1);
-                infos[0].ShouldEqual(string.Format(@"Generating template to a file{0} at 'c:\packages\bob.nuspec'", Environment.NewLine));
+                infos.Count.Should().Be(1);
+                infos[0].Should().Be(string.Format(@"Generating template to a file{0} at 'c:\packages\bob.nuspec'", Environment.NewLine));
             }
         }
 
@@ -196,9 +196,9 @@ namespace chocolatey.tests.infrastructure.app.services
                     errorMessage = ex.Message;
                 }
 
-                errored.ShouldBeTrue();
-                errorMessage.ShouldEqual(string.Format("The location for the template already exists. You can:{0} 1. Remove 'c:\\chocolatey\\Bob'{0} 2. Use --force{0} 3. Specify a different name", Environment.NewLine));
-                verifiedDirectoryPath.ShouldEqual("c:\\chocolatey\\Bob");
+                errored.Should().BeTrue();
+                errorMessage.Should().Be(string.Format("The location for the template already exists. You can:{0} 1. Remove 'c:\\chocolatey\\Bob'{0} 2. Use --force{0} 3. Specify a different name", Environment.NewLine));
+                verifiedDirectoryPath.Should().Be("c:\\chocolatey\\Bob");
             }
 
             [Fact]
@@ -219,9 +219,9 @@ namespace chocolatey.tests.infrastructure.app.services
                     errorMessage = ex.Message;
                 }
 
-                errored.ShouldBeTrue();
-                errorMessage.ShouldEqual(string.Format("The location for the template already exists. You can:{0} 1. Remove 'c:\\packages\\Bob'{0} 2. Use --force{0} 3. Specify a different name", Environment.NewLine));
-                verifiedDirectoryPath.ShouldEqual("c:\\packages\\Bob");
+                errored.Should().BeTrue();
+                errorMessage.Should().Be(string.Format("The location for the template already exists. You can:{0} 1. Remove 'c:\\packages\\Bob'{0} 2. Use --force{0} 3. Specify a different name", Environment.NewLine));
+                verifiedDirectoryPath.Should().Be("c:\\packages\\Bob");
             }
         }
 
@@ -285,15 +285,15 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var directories = directoryCreated.ToList();
-                directories.Count.ShouldEqual(2, "There should be 2 directories, but there was: " + string.Join(", ", directories));
-                directories[0].ShouldEqual("c:\\chocolatey\\Bob");
-                directories[1].ShouldEqual("c:\\chocolatey\\Bob\\tools");
+                directories.Count.Should().Be(2, "There should be 2 directories, but there was: " + string.Join(", ", directories));
+                directories[0].Should().Be("c:\\chocolatey\\Bob");
+                directories[1].Should().Be("c:\\chocolatey\\Bob\\tools");
 
-                files.Count.ShouldEqual(2, "There should be 2 files, but there was: " + string.Join(", ", files));
-                files[0].ShouldEqual("c:\\chocolatey\\Bob\\__name_replace__.nuspec");
-                files[1].ShouldEqual("c:\\chocolatey\\Bob\\random.txt");
+                files.Count.Should().Be(2, "There should be 2 files, but there was: " + string.Join(", ", files));
+                files[0].Should().Be("c:\\chocolatey\\Bob\\__name_replace__.nuspec");
+                files[1].Should().Be("c:\\chocolatey\\Bob\\random.txt");
 
-                MockLogger.MessagesFor(LogLevel.Info).Last().ShouldEqual(string.Format(@"Successfully generated Bob package specification files{0} at 'c:\chocolatey\Bob'", Environment.NewLine));
+                MockLogger.MessagesFor(LogLevel.Info).Last().Should().Be(string.Format(@"Successfully generated Bob package specification files{0} at 'c:\chocolatey\Bob'", Environment.NewLine));
             }
 
             [Fact]
@@ -304,15 +304,15 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var directories = directoryCreated.ToList();
-                directories.Count.ShouldEqual(2, "There should be 2 directories, but there was: " + string.Join(", ", directories));
-                directories[0].ShouldEqual("c:\\packages\\Bob");
-                directories[1].ShouldEqual("c:\\packages\\Bob\\tools");
+                directories.Count.Should().Be(2, "There should be 2 directories, but there was: " + string.Join(", ", directories));
+                directories[0].Should().Be("c:\\packages\\Bob");
+                directories[1].Should().Be("c:\\packages\\Bob\\tools");
 
-                files.Count.ShouldEqual(2, "There should be 2 files, but there was: " + string.Join(", ", files));
-                files[0].ShouldEqual("c:\\packages\\Bob\\__name_replace__.nuspec");
-                files[1].ShouldEqual("c:\\packages\\Bob\\random.txt");
+                files.Count.Should().Be(2, "There should be 2 files, but there was: " + string.Join(", ", files));
+                files[0].Should().Be("c:\\packages\\Bob\\__name_replace__.nuspec");
+                files[1].Should().Be("c:\\packages\\Bob\\random.txt");
 
-                MockLogger.MessagesFor(LogLevel.Info).Last().ShouldEqual(string.Format(@"Successfully generated Bob package specification files{0} at 'c:\packages\Bob'", Environment.NewLine));
+                MockLogger.MessagesFor(LogLevel.Info).Last().Should().Be(string.Format(@"Successfully generated Bob package specification files{0} at 'c:\packages\Bob'", Environment.NewLine));
             }
         }
 
@@ -380,18 +380,18 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var directories = directoryCreated.ToList();
-                directories.Count.ShouldEqual(3, "There should be 3 directories, but there was: " + string.Join(", ", directories));
-                directories[0].ShouldEqual("c:\\chocolatey\\Bob");
-                directories[1].ShouldEqual("c:\\chocolatey\\Bob\\tools");
-                directories[2].ShouldEqual("c:\\chocolatey\\Bob\\tools\\lower");
+                directories.Count.Should().Be(3, "There should be 3 directories, but there was: " + string.Join(", ", directories));
+                directories[0].Should().Be("c:\\chocolatey\\Bob");
+                directories[1].Should().Be("c:\\chocolatey\\Bob\\tools");
+                directories[2].Should().Be("c:\\chocolatey\\Bob\\tools\\lower");
 
-                files.Count.ShouldEqual(4, "There should be 4 files, but there was: " + string.Join(", ", files));
-                files[0].ShouldEqual("c:\\chocolatey\\Bob\\__name_replace__.nuspec");
-                files[1].ShouldEqual("c:\\chocolatey\\Bob\\random.txt");
-                files[2].ShouldEqual("c:\\chocolatey\\Bob\\tools\\chocolateyInstall.ps1");
-                files[3].ShouldEqual("c:\\chocolatey\\Bob\\tools\\lower\\another.ps1");
+                files.Count.Should().Be(4, "There should be 4 files, but there was: " + string.Join(", ", files));
+                files[0].Should().Be("c:\\chocolatey\\Bob\\__name_replace__.nuspec");
+                files[1].Should().Be("c:\\chocolatey\\Bob\\random.txt");
+                files[2].Should().Be("c:\\chocolatey\\Bob\\tools\\chocolateyInstall.ps1");
+                files[3].Should().Be("c:\\chocolatey\\Bob\\tools\\lower\\another.ps1");
 
-                MockLogger.MessagesFor(LogLevel.Info).Last().ShouldEqual(string.Format(@"Successfully generated Bob package specification files{0} at 'c:\chocolatey\Bob'", Environment.NewLine));
+                MockLogger.MessagesFor(LogLevel.Info).Last().Should().Be(string.Format(@"Successfully generated Bob package specification files{0} at 'c:\chocolatey\Bob'", Environment.NewLine));
             }
 
             [Fact]
@@ -404,18 +404,18 @@ namespace chocolatey.tests.infrastructure.app.services
                 because();
 
                 var directories = directoryCreated.ToList();
-                directories.Count.ShouldEqual(3, "There should be 3 directories, but there was: " + string.Join(", ", directories));
-                directories[0].ShouldEqual("c:\\packages\\Bob");
-                directories[1].ShouldEqual("c:\\packages\\Bob\\tools");
-                directories[2].ShouldEqual("c:\\packages\\Bob\\tools\\lower");
+                directories.Count.Should().Be(3, "There should be 3 directories, but there was: " + string.Join(", ", directories));
+                directories[0].Should().Be("c:\\packages\\Bob");
+                directories[1].Should().Be("c:\\packages\\Bob\\tools");
+                directories[2].Should().Be("c:\\packages\\Bob\\tools\\lower");
 
-                files.Count.ShouldEqual(4, "There should be 4 files, but there was: " + string.Join(", ", files));
-                files[0].ShouldEqual("c:\\packages\\Bob\\__name_replace__.nuspec");
-                files[1].ShouldEqual("c:\\packages\\Bob\\random.txt");
-                files[2].ShouldEqual("c:\\packages\\Bob\\tools\\chocolateyInstall.ps1");
-                files[3].ShouldEqual("c:\\packages\\Bob\\tools\\lower\\another.ps1");
+                files.Count.Should().Be(4, "There should be 4 files, but there was: " + string.Join(", ", files));
+                files[0].Should().Be("c:\\packages\\Bob\\__name_replace__.nuspec");
+                files[1].Should().Be("c:\\packages\\Bob\\random.txt");
+                files[2].Should().Be("c:\\packages\\Bob\\tools\\chocolateyInstall.ps1");
+                files[3].Should().Be("c:\\packages\\Bob\\tools\\lower\\another.ps1");
 
-                MockLogger.MessagesFor(LogLevel.Info).Last().ShouldEqual(string.Format(@"Successfully generated Bob package specification files{0} at 'c:\packages\Bob'", Environment.NewLine));
+                MockLogger.MessagesFor(LogLevel.Info).Last().Should().Be(string.Format(@"Successfully generated Bob package specification files{0} at 'c:\packages\Bob'", Environment.NewLine));
             }
         }
     }

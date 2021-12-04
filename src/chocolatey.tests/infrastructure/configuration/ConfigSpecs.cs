@@ -18,7 +18,7 @@ namespace chocolatey.tests.infrastructure.configuration
 {
     using chocolatey.infrastructure.app.configuration;
     using chocolatey.infrastructure.configuration;
-    using Should;
+    using FluentAssertions;
 
     public class ConfigSpecs
     {
@@ -39,7 +39,7 @@ namespace chocolatey.tests.infrastructure.configuration
             [Fact]
             public void should_be_of_type_ChocolateyConfiguration()
             {
-                Config.get_configuration_settings().ShouldBeType<ChocolateyConfiguration>();
+                Config.get_configuration_settings().Should().BeOfType<ChocolateyConfiguration>();
             }
         }
 
@@ -57,7 +57,7 @@ namespace chocolatey.tests.infrastructure.configuration
             [Fact]
             public void should_use_the_overridden_type()
             {
-                Config.get_configuration_settings().ShouldBeType<LocalConfig>();
+                Config.get_configuration_settings().Should().BeOfType<LocalConfig>();
             }
         }
     }
