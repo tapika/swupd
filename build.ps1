@@ -113,13 +113,14 @@ if( $operationsToPerform.Contains("all") )
         'nuget', 'env', 'build', 
         # Comment for faster testing
         'integration', 
-        
-        # Disabled for timebeing
-        #'coverage', 
-        #'coveragehtml',
-        'test1',
-        'test2',
 
+        # 'coverage' runs same tests as 'test1' & 'test2' only with code coverage enabled. 
+        # If you comment one out - enable other ones.
+        #'test1',
+        #'test2',
+        'coverage', 
+
+        'coveragehtml',
         'buildexe_choco_win7',
         'buildexe_choco_linux',
         'github_publishrelease'
@@ -359,9 +360,10 @@ foreach ($operation in $operationsToPerform)
     if($operation -eq 'coverage')
     {
         if ((test-path $testResultsXmlDir) -eq $false) { New-Item -Type Directory -Path $testResultsXmlDir | out-null }
-        $cmd = [System.IO.Path]::Combine($scriptDir, 'lib\OpenCover\OpenCover.Console.exe')
+        $cmd = [System.IO.Path]::Combine($scriptDir, 'src\packages\opencover\4.7.1221\tools\OpenCover.Console.exe')
+
         $dlls = ($dlls2test -join " ")
-        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyIntegrationTestsDir"" ", "-targetargs:"" $dlls /xml=$testResultsXml """)
+        $cmdArgs = @( "-target:""$nunitConsole""", "-targetdir:""$chocolateyIntegrationTestsDir"" ", "-targetargs:"" $dlls /result=$testResultsXml --workers=1 --agents=1 """)
         $filters = '+[chocolatey*]*'
         $filters = "$filters -[chocolatey*test*]*"
         $filters = "$filters -[chocolatey]*adapters.*"
@@ -380,6 +382,8 @@ foreach ($operation in $operationsToPerform)
         $cmdArgs = $cmdArgs + '-log:All'
         $cmdArgs = $cmdArgs + '-skipautoprops'
         $cmdArgs = $cmdArgs + '-register:administrator'
+        
+        $curDir = $chocolateyIntegrationTestsDir
     }
 
     if($operation -eq 'coveragehtml')
