@@ -113,9 +113,13 @@ if( $operationsToPerform.Contains("all") )
         'nuget', 'env', 'build', 
         # Comment for faster testing
         'integration', 
+        
         # Disabled for timebeing
         #'coverage', 
         #'coveragehtml',
+        'test1',
+        'test2',
+
         'buildexe_choco_win7',
         'buildexe_choco_linux',
         'github_publishrelease'
