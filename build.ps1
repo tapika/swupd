@@ -113,8 +113,9 @@ if( $operationsToPerform.Contains("all") )
         'nuget', 'env', 'build', 
         # Comment for faster testing
         'integration', 
-        'coverage', 
-        'coveragehtml',
+        # Disabled for timebeing
+        #'coverage', 
+        #'coveragehtml',
         'buildexe_choco_win7',
         'buildexe_choco_linux',
         'github_publishrelease'
@@ -189,7 +190,7 @@ if($verbose)
 }
 
 $buildPlatform = 'net48'
-$nunitConsole = [System.IO.Path]::Combine($scriptDir, 'src\packages\NUnit.Runners.2.6.4\tools\nunit-console.exe')
+$nunitConsole = [System.IO.Path]::Combine($scriptDir, 'src\packages\nunit.consolerunner\3.13.0\tools\nunit3-console.exe')
 $chocolateyTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\$buildPlatform-$configuration")
 #$chocolateyIntegrationTestsDir = [System.IO.Path]::Combine($scriptDir, "src\chocolatey.tests.integration\bin\$configuration")
 $chocolateyIntegrationTestsDir = [System.IO.Path]::Combine($scriptDir, "src\bin\$buildPlatform-$configuration")
@@ -211,6 +212,7 @@ foreach ($operation in $operationsToPerform)
 
     $cmdArgs = @( )
     $cmd = 'dotnet'
+    $curDir = ""
 
     if($operation -eq 'integration')
     {
@@ -334,7 +336,7 @@ foreach ($operation in $operationsToPerform)
         
         if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
 
-        $cmdArgs = @( $dll, "/xml=$out", '/nologo', '/framework=net-4.0', '/exclude="Database,Integration,Slow,NotWorking,Ignore,database,integration,slow,notworking,ignore"' )
+        $cmdArgs = @( $dll, "/result=$out", '--workers=1', '--agents=1')
     }
 
     if($operation -eq 'test2')
@@ -346,7 +348,8 @@ foreach ($operation in $operationsToPerform)
         
         if ((test-path $outDir) -eq $false) { New-Item -Type Directory -Path $outDir | out-null }
 
-        $cmdArgs = @( $dll, "/xml=$out", '/nologo', '/framework=net-4.0', '/exclude="Database,Integration,Slow,NotWorking,Ignore,database,integration,slow,notworking,ignore"' )
+        $cmdArgs = @( $dll, "/result=$out", '--workers=1', '--agents=1' )
+        $curDir = $chocolateyIntegrationTestsDir
     }
 
     if($operation -eq 'coverage')
@@ -566,6 +569,12 @@ foreach ($operation in $operationsToPerform)
 
     if($cmdArgs.Count -ne 0)
     {
+        if($curDir -ne "")
+        {
+            "> cd $curDir"
+            Set-Location -Path $curDir
+        }
+
         "> $cmd $cmdArgs"
 
         if($dontexecute -ne $true)
@@ -578,6 +587,8 @@ foreach ($operation in $operationsToPerform)
                 exit $LASTEXITCODE
             }
         }
+        
+        Set-Location -Path $scriptDir
     }
 }
 
