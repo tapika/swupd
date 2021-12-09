@@ -67,7 +67,32 @@ namespace cakebuild
         public string[] Commands { get; set; } = Array.Empty<string>();
 
         public bool displaysHelp = false;
+
+        [CommandOption("--net <FRAMEWORK>")]
+        [Description(".net framework to use (netcoreapp3.1, net5.0, net6.0, net4.8)")]
+        public string NetFramework { get; set; } = "netcoreapp3.1";
         
+        public string NetFrameworkSuffix
+        {
+            get {
+                if (NetFramework.Length == 0)
+                    return "";
+                return "_" + NetFramework;
+            }
+        }
+
+        [CommandOption("--os <OS>")]
+        [Description(
+            "os for which to publish (win7, win81, linux, ...)\n" +
+            "See also: .NET Runtime Identifier (RID) Catalog\n" +
+            "Documentation: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog\n" +
+            "Same in git: https://github.com/jesulink2514/docs-1/blob/master/docs/core/rid-catalog.md"
+        )]
+        public string OS { get; set; } = "win7";
+
+        public bool buildexe = true;
+
+
         public string[] GetCakeArgs()
         {
             DefaultCommandLineArgs defArgs = new DefaultCommandLineArgs();
