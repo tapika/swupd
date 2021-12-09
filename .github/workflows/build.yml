@@ -38,7 +38,7 @@ jobs:
       with:
         fetch-depth: 5
     - name: Build all
-      run: .\build.bat all
+      run: .\cakebuild.bat all
   # Build using mono on MacOS
   #macos-build:
   #  runs-on: macos-latest
