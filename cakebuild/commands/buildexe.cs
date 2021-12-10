@@ -11,9 +11,16 @@ namespace cakebuild.commands
     [TaskName(nameof(buildexe))]
     public class buildexe : FrostingTask<BuildContext>
     {
+        ICakeLog log;
+
+        public buildexe(ICakeLog _log)
+        {
+            log = _log;
+        }
+
         public override bool ShouldRun(BuildContext context)
         {
-            return context.commandLineArguments.buildexe;
+            return context.cmdArgs.buildexe;
         }
 
         public string FileSize(string path)
@@ -33,20 +40,26 @@ namespace cakebuild.commands
             return result;
         }
 
-        public override void Run(BuildContext context)
+        public void LogInfo(string value)
+        {
+            log.Information(value);
+        }
+
+        public void BuildReadyToRun(BuildContext context, string os)
         {
             string rootDir = context.RootDirectory;
-            string solutionPath = Path.Combine(rootDir, $@"src\chocolatey{context.commandLineArguments.NetFrameworkSuffix}.sln");
+            string solutionPath = Path.Combine(rootDir, $@"src\chocolatey{context.cmdArgs.NetFrameworkSuffix}.sln");
             string projectPath = solutionPath;
-            string runtimeIdentifier = $"{context.commandLineArguments.OS}-x64";
+            string runtimeIdentifier = $"{os}-x64";
             string publishDir = Path.Combine(rootDir, $@"bin\publish_{runtimeIdentifier}_netcoreapp_3.1");
-            string outExe = Path.Combine(publishDir, "choco.exe");
+            string exeFile = (os == "linux") ? "choco" : "choco.exe";
+            string outExe = Path.Combine(publishDir, exeFile);
 
             MSBuildSettings settings = new MSBuildSettings()
             {
                 ToolVersion = MSBuildToolVersion.VS2019,
                 MSBuildPlatform = MSBuildPlatform.x64,
-                Verbosity = Cake.Core.Diagnostics.Verbosity.Minimal
+                Verbosity = Verbosity.Minimal
             };
 
             Array.ForEach(new string[] { "restore", "build", "publish" }, (x) => { settings.Targets.Add(x); });
@@ -72,8 +85,26 @@ namespace cakebuild.commands
                 settings.Properties.Add(k, new[] { d[k] });
             }
 
-            context.MSBuild(projectPath, settings);
-            context.Log.Information($"- {Path.GetFileName(outExe)} file size: {FileSize(outExe)}");
+            if (context.cmdArgs.DryRun)
+            {
+                LogInfo($"> msbuild.exe restore,build,publish ... with ");
+                LogInfo(string.Join("\n", d.Select(x => $"  {x.Key}: {x.Value}")));
+                LogInfo("");
+            }
+            else
+            {
+                LogInfo($"- Building {exeFile} for {os}...");
+                context.MSBuild(projectPath, settings);
+                LogInfo($"- {Path.GetFileName(outExe)} file size: {FileSize(outExe)}");
+            }
+        }
+
+        public override void Run(BuildContext context)
+        {
+            foreach (var os in context.cmdArgs.OSS.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries) )
+            {
+                BuildReadyToRun(context, os.Trim().ToLower());
+            }
         }
     }
 

@@ -7,11 +7,11 @@ namespace cakebuild
 {
     public class BuildContext : FrostingContext
     {
-        public CommandLineArgs commandLineArguments;
+        public CommandLineArgs cmdArgs;
 
         public BuildContext(ICakeContext context, CommandLineArgs _commandLineArguments) : base(context)
         {
-            commandLineArguments = _commandLineArguments;
+            cmdArgs = _commandLineArguments;
         }
 
         public string RootDirectory

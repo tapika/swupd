@@ -81,16 +81,17 @@ namespace cakebuild
             }
         }
 
-        [CommandOption("--os <OS>")]
+        [CommandOption("--os <oses>")]
         [Description(
             "os for which to publish (win7, win81, linux, ...)\n" +
             "See also: .NET Runtime Identifier (RID) Catalog\n" +
             "Documentation: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog\n" +
             "Same in git: https://github.com/jesulink2514/docs-1/blob/master/docs/core/rid-catalog.md"
         )]
-        public string OS { get; set; } = "win7";
+        public string OSS { get; set; } = "";
 
         public bool buildexe = true;
+
 
 
         public string[] GetCakeArgs()
@@ -101,6 +102,12 @@ namespace cakebuild
 
             foreach (var pi in typeof(DefaultCommandLineArgs).GetProperties())
             {
+                // Handle dryrun by ourselves
+                if (pi.Name == nameof(DefaultCommandLineArgs.DryRun))
+                {
+                    continue;
+                }
+
                 object value = pi.GetValue(thisBase);
                 if (!object.Equals(value, pi.GetValue(defArgs)))
                 {
@@ -180,6 +187,17 @@ namespace cakebuild
                 var renderables = (List<IRenderable>)mi.Invoke(null, new object[2] { ex, true });
                 renderables.ForEach((x) => AnsiConsole.Console.Write(x));
                 Environment.Exit(-2);
+            }
+
+            foreach (var a in newArgs.Commands)
+            {
+                switch (a.ToLower())
+                {
+                    case "all":
+                        newArgs.OSS = "win7,linux";
+                        newArgs.buildexe = true;
+                        break;
+                }
             }
 
             if (displaysHelp)
