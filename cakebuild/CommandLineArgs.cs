@@ -92,6 +92,9 @@ namespace cakebuild
 
         public bool buildexe = true;
 
+        [CommandOption("--show")]
+        [Description("Show commands being executed")]
+        public bool ShowCommands { get; set; }
 
 
         public string[] GetCakeArgs()
@@ -123,6 +126,12 @@ namespace cakebuild
             if (displaysHelp)
             { 
                 args.Add("--help");
+            }
+
+            if (ShowCommands)
+            {
+                args.Add("--Settings_ShowProcessCommandLine");
+                args.Add("true");
             }
 
             //Console.WriteLine("routed command: " + string.Join(' ', args));
