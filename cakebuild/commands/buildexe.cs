@@ -20,7 +20,7 @@ namespace cakebuild.commands
 
         public override bool ShouldRun(BuildContext context)
         {
-            return context.cmdArgs.buildexe;
+            return context.cmdArgs.r2r_targets.Length != 0;
         }
 
         public string FileSize(string path)
@@ -45,11 +45,21 @@ namespace cakebuild.commands
             log.Information(value);
         }
 
-        public void BuildReadyToRun(BuildContext context, string os)
+        public void BuildReadyToRun(BuildContext context, string os, string readytorun_target)
         {
             string rootDir = context.RootDirectory;
-            string solutionPath = Path.Combine(rootDir, $@"src\chocolatey{context.cmdArgs.NetFrameworkSuffix}.sln");
-            string projectPath = solutionPath;
+            string buildProject = readytorun_target;
+            switch (readytorun_target)
+            {
+                case "choco":
+                    buildProject = "chocolatey.console";
+                    break;
+                case "chocogui":
+                    buildProject = "ChocolateyGui";
+                    break;
+            }
+            string projectPath = Path.Combine(rootDir, $@"src\{buildProject}\{buildProject}.csproj"); ;
+
             string runtimeIdentifier = $"{os}-x64";
             string publishDir = Path.Combine(rootDir, $@"bin\publish_{runtimeIdentifier}_netcoreapp_3.1");
             string exeFile = (os == "linux") ? "choco" : "choco.exe";
@@ -65,6 +75,9 @@ namespace cakebuild.commands
             Array.ForEach(new string[] { "restore", "build", "publish" }, (x) => { settings.Targets.Add(x); });
 
             Dictionary<string, string> d = new Dictionary<string, string>();
+            // 2 next options are needed when compiling .csproj instead of .sln
+            d["SolutionName"] = $"chocolatey{context.cmdArgs.NetFrameworkSuffix}";      // Ensure that project can set right targetframework
+            d["SolutionDir"] = rootDir + "\\";
 
             d["DeployOnBuild"] = "true";
             d["Configuration"] = "Release";
@@ -78,7 +91,7 @@ namespace cakebuild.commands
             d["IncludeNativeLibrariesForSelfExtract"] = "true";
             d["IncludeAllContentForSelfExtract"] = "true";
             d["PublishTrimmed"] = "true";
-            d["PUBLISH_CHOCO"] = "true";
+            d[$"PUBLISH_{readytorun_target.ToUpper()}"] = "true";
 
             foreach (var k in d.Keys)
             {
@@ -99,11 +112,19 @@ namespace cakebuild.commands
             }
         }
 
+        public string[] split(string s)
+        {
+            return s.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         public override void Run(BuildContext context)
         {
-            foreach (var os in context.cmdArgs.OSS.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries) )
+            foreach (var os in split(context.cmdArgs.OSS) )
             {
-                BuildReadyToRun(context, os.Trim().ToLower());
+                foreach (var readytorun_target in split(context.cmdArgs.r2r_targets))
+                { 
+                    BuildReadyToRun(context, os.Trim().ToLower(), readytorun_target.Trim().ToLower());
+                }
             }
         }
     }

@@ -81,6 +81,15 @@ namespace cakebuild
             }
         }
 
+        //-----------------------------------------------------------------------------------
+        // buildexe / readytorun options
+        //-----------------------------------------------------------------------------------
+
+        [CommandOption("--r2r_targets <targets>")]
+        [Description("one or more targets to build, comma separated. For example choco or chocogui.")]
+        public string r2r_targets { get; set; } = "";
+
+
         [CommandOption("--os <oses>")]
         [Description(
             "os for which to publish (win7, win81, linux, ...)\n" +
@@ -90,8 +99,9 @@ namespace cakebuild
         )]
         public string OSS { get; set; } = "";
 
-        public bool buildexe = true;
-
+        //-----------------------------------------------------------------------------------
+        // other options
+        //-----------------------------------------------------------------------------------
         [CommandOption("--show")]
         [Description("Show commands being executed")]
         public bool ShowCommands { get; set; }
@@ -204,7 +214,7 @@ namespace cakebuild
                 {
                     case "all":
                         newArgs.OSS = "win7,linux";
-                        newArgs.buildexe = true;
+                        newArgs.r2r_targets = "choco";
                         break;
                 }
             }
