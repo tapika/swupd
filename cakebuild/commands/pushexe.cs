@@ -74,10 +74,14 @@ namespace cakebuild.commands
                 LogInfo($"- note: Release '{releaseTag}' does not exists ('{ex.Message}')");
             }
 
+            var commitId = context.GitLogTip(context.RootDirectory).Sha;
+            LogInfo($"- Last commit id: {commitId}");
+
             var newRelease = new NewRelease(releaseTag)
             {
                 Name = "",
-                Prerelease = true
+                Prerelease = true,
+                TargetCommitish = commitId
             };
 
             LogInfo($"- creating new release '{releaseTag}'");
