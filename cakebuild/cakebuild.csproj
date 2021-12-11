@@ -7,6 +7,14 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;MSB3246</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;MSB3246</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Cake.Common" Version="2.0.0" />
     <PackageReference Include="Cake.Frosting" Version="2.0.0" />
