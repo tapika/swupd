@@ -2,6 +2,7 @@
 using Cake.Common.Tools.MSBuild;
 using Cake.Core.Diagnostics;
 using Cake.Frosting;
+using Cake.Git;
 using Octokit;
 using System;
 using System.Collections.Generic;
@@ -111,9 +112,21 @@ namespace cakebuild.commands
 
         public override void Run(BuildContext context)
         {
-            if (!context.cmdArgs.r2r_push)
+            var r2r_push = context.cmdArgs.r2r_push;
+
+            string currentGitTag = context.GitDescribe(context.RootDirectory, GitDescribeStrategy.Tags).Split('-')[0];
+
+            if (!r2r_push.HasValue)
             {
-                LogInfo("--push_r2r not selected, skipping");
+                var branch = context.GitBranchCurrent(context.RootDirectory);
+                r2r_push = branch.FriendlyName == "master";
+                LogInfo($"{nameof(pushexe)}: branchname: {branch.FriendlyName}: => will push: {r2r_push.Value}");
+
+            }
+
+            if (!r2r_push.Value)
+            {
+                LogInfo($"--{nameof(CommandLineArgs.r2r_push)} not selected, skipping");
                 return;
             }
 
@@ -150,7 +163,7 @@ namespace cakebuild.commands
                 }
             }
 
-            PushRelease(context, "2.0", files);
+            PushRelease(context, currentGitTag, files);
         }
     }
 

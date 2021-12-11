@@ -105,7 +105,7 @@ namespace cakebuild
 
         [CommandOption($"--{nameof(r2r_push)}")]
         [Description("Pushes readytorun executables to github")]
-        public bool r2r_push { get; set; }
+        public bool? r2r_push { get; set; }
 
         //-----------------------------------------------------------------------------------
         // other options
@@ -224,7 +224,6 @@ namespace cakebuild
                         newArgs.OSS = "win7,linux";
                         newArgs.r2r_targets = "choco";
                         newArgs.r2r_build = true;
-                        newArgs.r2r_push = true;
                         break;
                 }
             }

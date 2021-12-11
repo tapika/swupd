@@ -111,7 +111,7 @@ namespace cakebuild.commands
         {
             if (!context.cmdArgs.r2r_build)
             {
-                LogInfo("--build_r2r not selected, skipping");
+                LogInfo($"--{nameof(CommandLineArgs.r2r_build)} not selected, skipping");
                 return;
             }
 
