@@ -1,4 +1,5 @@
 ﻿using Cake.Common;
+using Cake.Common.Build;
 using Cake.Common.Tools.MSBuild;
 using Cake.Core.Diagnostics;
 using Cake.Frosting;
@@ -114,14 +115,16 @@ namespace cakebuild.commands
         {
             var r2r_push = context.cmdArgs.r2r_push;
 
-            string currentGitTag = context.GitDescribe(context.RootDirectory, GitDescribeStrategy.Tags).Split('-')[0];
+            // cannot use --depth / fetch-depth if need to get tags from git
+            //string currentGitTag = context.GitDescribe(context.RootDirectory, GitDescribeStrategy.Tags).Split('-')[0];
+            string currentGitTag = "2.0";
 
             if (!r2r_push.HasValue)
             {
                 var branch = context.GitBranchCurrent(context.RootDirectory);
-                r2r_push = branch.FriendlyName == "master";
+                //r2r_push = branch.FriendlyName == "master";
+                r2r_push = !context.BuildSystem().IsLocalBuild;
                 LogInfo($"{nameof(pushexe)}: branchname: {branch.FriendlyName}: => will push: {r2r_push.Value}");
-
             }
 
             if (!r2r_push.Value)
