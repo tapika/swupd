@@ -31,7 +31,7 @@ namespace cakebuild.commands
             log.Information(value);
         }
 
-        public void PushRelease(BuildContext context, string releaseTag, List<string> files)
+        public void PushRelease(BuildContext context, string releaseTag, List<string> files, GitBranch branch)
         {
             if (context.cmdArgs.DryRun)
             {
@@ -81,7 +81,7 @@ namespace cakebuild.commands
             {
                 Name = "",
                 Prerelease = true,
-                TargetCommitish = commitId
+                TargetCommitish = branch.FriendlyName
             };
 
             LogInfo($"- creating new release '{releaseTag}'");
@@ -122,10 +122,10 @@ namespace cakebuild.commands
             // cannot use --depth / fetch-depth if need to get tags from git
             //string currentGitTag = context.GitDescribe(context.RootDirectory, GitDescribeStrategy.Tags).Split('-')[0];
             string currentGitTag = "2.0";
+            var branch = context.GitBranchCurrent(context.RootDirectory);
 
             if (!r2r_push.HasValue)
             {
-                var branch = context.GitBranchCurrent(context.RootDirectory);
                 //r2r_push = branch.FriendlyName == "master";
                 r2r_push = !context.BuildSystem().IsLocalBuild;
                 LogInfo($"{nameof(pushexe)}: branchname: {branch.FriendlyName}: => will push: {r2r_push.Value}");
@@ -170,7 +170,7 @@ namespace cakebuild.commands
                 }
             }
 
-            PushRelease(context, currentGitTag, files);
+            PushRelease(context, currentGitTag, files, branch);
         }
     }
 
