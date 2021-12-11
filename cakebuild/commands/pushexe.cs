@@ -127,8 +127,9 @@ namespace cakebuild.commands
             if (!r2r_push.HasValue)
             {
                 //r2r_push = branch.FriendlyName == "master";
-                r2r_push = !context.BuildSystem().IsLocalBuild;
-                LogInfo($"{nameof(pushexe)}: branchname: {branch.FriendlyName}: => will push: {r2r_push.Value}");
+                var isLocalBuild = context.BuildSystem().IsLocalBuild;
+                r2r_push = !isLocalBuild;
+                LogInfo($"{nameof(pushexe)}: isLocalBuild: {isLocalBuild}: => will push: {r2r_push.Value}");
             }
 
             if (!r2r_push.Value)
