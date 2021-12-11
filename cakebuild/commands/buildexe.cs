@@ -18,11 +18,6 @@ namespace cakebuild.commands
             log = _log;
         }
 
-        public override bool ShouldRun(BuildContext context)
-        {
-            return context.cmdArgs.r2r_targets.Length != 0;
-        }
-
         public string FileSize(string path)
         {
             string[] sizes = { "B", "KB", "MB", "GB", "TB" };
@@ -112,16 +107,17 @@ namespace cakebuild.commands
             }
         }
 
-        public string[] split(string s)
-        {
-            return s.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-        }
-
         public override void Run(BuildContext context)
         {
-            foreach (var os in split(context.cmdArgs.OSS) )
+            if (!context.cmdArgs.build_r2r)
             {
-                foreach (var readytorun_target in split(context.cmdArgs.r2r_targets))
+                LogInfo("--build_r2r not selected, skipping");
+                return;
+            }
+
+            foreach (var os in helpers.split(context.cmdArgs.OSS) )
+            {
+                foreach (var readytorun_target in helpers.split(context.cmdArgs.r2r_targets))
                 { 
                     BuildReadyToRun(context, os.Trim().ToLower(), readytorun_target.Trim().ToLower());
                 }
