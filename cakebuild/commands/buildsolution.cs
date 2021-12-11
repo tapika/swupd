@@ -56,13 +56,7 @@ namespace cakebuild.commands
                 {
                     Configuration = "Release", 
                     NoLogo = true,
-                    MSBuildSettings = msbuild_settings,
-                    ArgumentCustomization = aggs =>
-                    {
-                        //aggs.Append($"/p:SolutionDir=\"{rootDir}/\"");
-                        //aggs.Append($"/p:SolutionName=chocolatey_netcoreapp3.1");
-                        return aggs;
-                    }
+                    MSBuildSettings = msbuild_settings
                 }
             );
         }

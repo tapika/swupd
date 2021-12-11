@@ -1,6 +1,7 @@
 ﻿using Cake.Cli;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
+using cakebuild.commands;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Rendering;
@@ -63,8 +64,9 @@ namespace cakebuild
 
     public class CommandLineArgs : DefaultCommandLineArgs
     {
-        [CommandArgument(0, "[COMMANDS]")]
-        public string[] Commands { get; set; } = Array.Empty<string>();
+        [CommandArgument(0, "[TASKS]")]
+        [Description("List of tasks which will run")]
+        public string[] ListOfTasks { get; set; } = Array.Empty<string>();
 
         public bool displaysHelp = false;
 
@@ -220,15 +222,35 @@ namespace cakebuild
                 Environment.Exit(-2);
             }
 
-            foreach (var a in newArgs.Commands)
+            foreach (var tasklist in newArgs.ListOfTasks)
             {
-                switch (a.ToLower())
+                foreach (var a in helpers.split(tasklist.ToLower()))
                 {
-                    case "all":
-                        newArgs.OSS = "win7,linux";
-                        newArgs.r2r_targets = "choco";
-                        newArgs.r2r_build = true;
-                        break;
+                    switch (a.ToLower())
+                    {
+                        case nameof(all):
+                            newArgs.OSS = "win7,linux";
+                            newArgs.r2r_targets = "choco";
+                            newArgs.r2r_build = true;
+                            break;
+                        case nameof(buildexe):
+                            newArgs.r2r_build = true;
+                            if (string.IsNullOrEmpty(newArgs.r2r_targets))
+                            {
+                                newArgs.r2r_targets = "choco";
+                            }
+                            if (string.IsNullOrEmpty(newArgs.OSS))
+                            {
+                                newArgs.OSS = "win7";
+                            }
+                            break;
+                        case nameof(buildsolution):
+                            newArgs.build = true;
+                            break;
+                        case nameof(pushexe):
+                            newArgs.r2r_push = true;
+                            break;
+                    }
                 }
             }
 
