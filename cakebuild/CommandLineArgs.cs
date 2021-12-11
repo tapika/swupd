@@ -101,11 +101,11 @@ namespace cakebuild
 
         [CommandOption("--build_r2r")]
         [Description("Builds readytorun executables")]
-        public bool build_r2r { get; set; }
+        public bool r2r_build { get; set; }
 
         [CommandOption("--push_r2r")]
         [Description("Pushes readytorun executables to github")]
-        public bool push_r2r { get; set; }
+        public bool r2r_push { get; set; }
 
         //-----------------------------------------------------------------------------------
         // other options
@@ -223,7 +223,8 @@ namespace cakebuild
                     case "all":
                         newArgs.OSS = "win7,linux";
                         newArgs.r2r_targets = "choco";
-                        newArgs.build_r2r = true;
+                        newArgs.r2r_build = true;
+                        newArgs.r2r_push = true;
                         break;
                 }
             }

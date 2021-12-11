@@ -109,7 +109,7 @@ namespace cakebuild.commands
 
         public override void Run(BuildContext context)
         {
-            if (!context.cmdArgs.build_r2r)
+            if (!context.cmdArgs.r2r_build)
             {
                 LogInfo("--build_r2r not selected, skipping");
                 return;
