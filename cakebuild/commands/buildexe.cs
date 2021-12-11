@@ -9,6 +9,7 @@ using System.Linq;
 namespace cakebuild.commands
 {
     [TaskName(nameof(buildexe))]
+    [IsDependentOn(typeof(buildsolution))]
     public class buildexe : FrostingTask<BuildContext>
     {
         ICakeLog log;

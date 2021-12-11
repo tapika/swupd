@@ -81,6 +81,10 @@ namespace cakebuild
             }
         }
 
+        [CommandOption($"--{nameof(build)}")]
+        [Description("Builds main solution")]
+        public bool? build { get; set; }
+
         //-----------------------------------------------------------------------------------
         // buildexe / readytorun options
         //-----------------------------------------------------------------------------------
