@@ -99,11 +99,11 @@ namespace cakebuild
         )]
         public string OSS { get; set; } = "";
 
-        [CommandOption("--build_r2r")]
+        [CommandOption($"--{nameof(r2r_build)}")]
         [Description("Builds readytorun executables")]
         public bool r2r_build { get; set; }
 
-        [CommandOption("--push_r2r")]
+        [CommandOption($"--{nameof(r2r_push)}")]
         [Description("Pushes readytorun executables to github")]
         public bool r2r_push { get; set; }
 
