@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <!-- https://docs.microsoft.com/en-us/visualstudio/test/customizing-code-coverage-analysis?view=vs-2019#include-or-exclude-assemblies-and-members -->
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+        <Configuration>
+          <CodeCoverage>
+             <!--Exclude .dll's by file name pattern--> 
+            <ModulePaths>
+              <Exclude>
+                 <!--Don't include test components by itself-->
+                <ModulePath>.*xunit[^\\]*.dll</ModulePath>
+                 <!--Don't include test components by itself--> 
+                <ModulePath>.*chocolatey.tests.dll</ModulePath>
+                <ModulePath>.*chocolatey.tests.integration.dll</ModulePath>
+                 <!--Even thus it's our modification, don't take full responsibility of whole code--> 
+                <ModulePath>.*nuget.core.dll</ModulePath>
+                 <!--test components, don't care--> 
+                <ModulePath>.*nunit3.testadapter.dll</ModulePath>
+                <ModulePath>.*testlogger.dll</ModulePath>
+                <ModulePath>.*microsoft.data.services.client.dll</ModulePath>
+                <ModulePath>.*system.reactive.dll</ModulePath>
+              </Exclude>
+            </ModulePaths>
+
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
+
