@@ -1,13 +1,5 @@
-﻿using Cake.Common.Tools.DotNet;
-using Cake.Common.Tools.DotNet.Build;
-using Cake.Common.Tools.DotNet.Test;
-using Cake.Common.Tools.DotNetCore;
-using Cake.Common.Tools.DotNetCore.MSBuild;
-using Cake.Common.Tools.DotNetCore.Test;
-using Cake.Common.Tools.VSTest;
+﻿using Cake.Common.Tools.VSTest;
 using Cake.Core.Diagnostics;
-using Cake.Core.IO.Arguments;
-using Cake.Coverlet;
 using Cake.Frosting;
 using System.IO;
 using System.Linq;
