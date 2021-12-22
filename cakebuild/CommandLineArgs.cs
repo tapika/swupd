@@ -240,6 +240,8 @@ namespace cakebuild
                             newArgs.OSS = "win7,linux";
                             newArgs.r2r_targets = "choco";
                             newArgs.r2r_build = true;
+                            newArgs.test = true;
+                            newArgs.codecoverage = true;
                             break;
                         case nameof(buildexe):
                             newArgs.r2r_build = true;
