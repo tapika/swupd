@@ -10,9 +10,16 @@
 
   <ItemGroup>
     <PackageReference Include="Cake.Common" Version="2.0.0" />
+    <PackageReference Include="Cake.Coverlet" Version="2.5.4" />
     <PackageReference Include="Cake.Frosting" Version="2.0.0" />
     <PackageReference Include="Cake.Git" Version="1.1.0" />
     <PackageReference Include="tapika.Octokit" Version="0.51.0" />
   </ItemGroup>
+
+  <!--<ItemGroup>
+    <ProjectReference Include="..\..\..\PrototypingQuick\BuildSystems_2021_11\Cake.Coverlet\src\Cake.Coverlet\Cake.Coverlet.csproj" />
+    <ProjectReference Include="..\..\..\..\PrototypingQuick\BuildSystems_2021_11\cake\src\Cake.Common\Cake.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\PrototypingQuick\BuildSystems_2021_11\cake\src\Cake.Frosting\Cake.Frosting.csproj" />
+  </ItemGroup>-->
 
 </Project>

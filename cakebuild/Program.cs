@@ -1,12 +1,6 @@
 ﻿using Cake.Frosting;
 using Microsoft.Extensions.DependencyInjection;
-using Spectre.Console;
-using Spectre.Console.Cli;
-using Spectre.Console.Rendering;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace cakebuild
 {
@@ -23,6 +17,16 @@ namespace cakebuild
                 config.AddSingleton(args);
             }
             );
+            // Needed when using Visual Studio built-in code coverage tools
+            host.InstallTool(new Uri("nuget:?package=Microsoft.CodeCoverage&version=17.0.0"));
+
+            // Needed when using .ReportGenerator(...) call
+            host.InstallTool(new Uri("nuget:?package=ReportGenerator&version=5.0.0"));
+
+            // Can be also installed globally
+            // dotnet tool install --global coverlet.console --version 3.1.0
+            host.InstallTool(new Uri("dotnet:?package=coverlet.console&version=3.1.0"));
+            host.InstallTool(new Uri("nuget:?package=NUnit.ConsoleRunner&version=3.13.0"));
             //host.InstallTool(new Uri("nuget:?package=coveralls.io&version=1.1.86"));
             //host.InstallTool(new Uri("nuget:?package=ReportGenerator&version=5.0.0"));
             return host.Run(args.GetCakeArgs());

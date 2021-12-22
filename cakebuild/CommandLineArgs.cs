@@ -87,6 +87,14 @@ namespace cakebuild
         [Description("Builds main solution")]
         public bool? build { get; set; }
 
+        [CommandOption($"--{nameof(test)}")]
+        [Description("Tests main solution")]
+        public bool? test { get; set; }
+
+        [CommandOption($"--{nameof(codecoverage)}")]
+        [Description("Enables code coverage testing")]
+        public bool? codecoverage { get; set; }
+
         //-----------------------------------------------------------------------------------
         // buildexe / readytorun options
         //-----------------------------------------------------------------------------------
