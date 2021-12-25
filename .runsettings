@@ -24,6 +24,24 @@
               </Exclude>
             </ModulePaths>
 
+            <Functions>
+              <Include>
+                <Function>.*</Function>
+              </Include>
+              <Exclude>
+                <!-- Same configuration parameters as it was before in .uppercut -->
+                <Function>.*adapters\..*</Function>
+                <Function>.*infrastructure\.app\.configuration.*Setting.*</Function>
+                <Function>.*app\.configuration.*Configuration</Function>
+                <Function>.*app\.domain.*</Function>
+                <Function>.*app\.messages\..*</Function>
+                <Function>.*\.registration\..*</Function>
+                <Function>.*\.commandline\.Option.*</Function>
+                <Function>.*licensing\..*</Function>
+                <Function>.*infrastructure\.results.*</Function>
+              </Exclude>
+            </Functions>
+
           </CodeCoverage>
         </Configuration>
       </DataCollector>
