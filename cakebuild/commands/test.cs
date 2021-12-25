@@ -1,6 +1,8 @@
 ﻿using Cake.Common.Tools.VSTest;
 using Cake.Core.Diagnostics;
 using Cake.Frosting;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -37,14 +39,21 @@ namespace cakebuild.commands
 
             string rootDir = context.RootDirectory;
             string outDir = Path.Combine(rootDir, $@"src\bin\{context.cmdArgs.NetFramework}-Release");
-            string outPath = Path.Combine(outDir, "chocolatey.tests.dll");
+
+            List<Cake.Core.IO.FilePath> paths = new List<Cake.Core.IO.FilePath>();
+            var testsToRun = helpers.split(context.cmdArgs.testsToRun);
+            foreach (var test in testsToRun)
+            {
+                string outPath = Path.Combine(outDir, $"{test}.dll");
+                paths.Add(new Cake.Core.IO.FilePath(outPath));
+            }
 
             string operation = (context.cmdArgs.DryRun) ? "Would test" : "Testing";
             bool enableCodeCoverage = (context.cmdArgs.codecoverage.HasValue) ?
                     context.cmdArgs.codecoverage.Value : false;
             string coverageEnabledStr = (enableCodeCoverage) ? "(code coverage enabled)" : "(code coverage disabled)";
 
-            LogInfo($"> {operation} {Path.GetFileName(outPath)}... {coverageEnabledStr}");
+            LogInfo($"> {operation} {string.Join(',', testsToRun)}... {coverageEnabledStr}");
 
             if (context.cmdArgs.DryRun)
             {
@@ -59,10 +68,11 @@ namespace cakebuild.commands
             if (Directory.Exists(testResultsDir))  Directory.Delete(testResultsDir, true);
             if (!Directory.Exists(testResultsDir)) Directory.CreateDirectory(testResultsDir);
 
+            Environment.CurrentDirectory = outDir;
 
             var settings = new VSTestSettings
             {
-                WorkingDirectory = testResultsDir,
+                WorkingDirectory = outDir,
                 //ArgumentCustomization = args =>
                 //{
                 //    args.Append(new TextArgument($"/help"));
@@ -73,10 +83,7 @@ namespace cakebuild.commands
                 SettingsFile = coverageRunsettings
             };
 
-            context.VSTest(
-                new string[] { outPath }.Select(x => new Cake.Core.IO.FilePath(x)),
-                settings
-            );
+            context.VSTest( paths, settings );
         }
     }
 

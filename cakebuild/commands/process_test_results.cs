@@ -25,6 +25,17 @@ namespace cakebuild.commands
         {
             log.Information(value);
         }
+
+        public override bool ShouldRun(BuildContext context)
+        {
+            if (!context.cmdArgs.test.HasValue || !context.cmdArgs.test.Value)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public override void Run(BuildContext context)
         {
             string rootDir = context.RootDirectory;

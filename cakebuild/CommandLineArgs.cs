@@ -95,6 +95,21 @@ namespace cakebuild
         [Description("Enables code coverage testing")]
         public bool? codecoverage { get; set; }
 
+        public string _testsToRun= "chocolatey.tests";
+        [CommandOption($"--{nameof(testsToRun)}")]
+        [DefaultValue("chocolatey.tests")]
+        [Description("Tests to run, comma separated, for example: chocolatey.tests,chocolatey.tests.integration")]
+        public string testsToRun
+        {
+            get {
+                return _testsToRun;
+            }
+            set {
+                test = true;
+                _testsToRun = value;
+            }
+        }
+
         //-----------------------------------------------------------------------------------
         // buildexe / readytorun options
         //-----------------------------------------------------------------------------------
@@ -242,6 +257,7 @@ namespace cakebuild
                             newArgs.r2r_build = true;
                             newArgs.test = true;
                             newArgs.codecoverage = true;
+                            newArgs.testsToRun = "chocolatey.tests,chocolatey.tests.integration";
                             break;
                         case nameof(buildexe):
                             newArgs.r2r_build = true;
