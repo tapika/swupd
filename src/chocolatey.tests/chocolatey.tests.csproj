@@ -6,6 +6,7 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <SignAssembly>false</SignAssembly>
     <IsPublishable>false</IsPublishable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
