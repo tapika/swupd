@@ -48,13 +48,23 @@ namespace cakebuild.commands
             LogInfo($"Converting *.coverage to *.cobertura_coverage.xml file format...");
             context.ConvertCoverageReport(coveragePath, coverageXml);
 
-            string coverageHtml = System.IO.Path.Combine(testResultsDir, "html");
+            string coverageHtml = System.IO.Path.Combine(rootDir, @"build_output\build_artifacts\codecoverage\Html");
 
             if (Directory.Exists(coverageHtml)) Directory.Delete(coverageHtml, true);
 
             LogInfo($"Generating report in {coverageHtml}...");
 
-            context.ReportGenerator(new Cake.Core.IO.GlobPattern(coverageXml), new Cake.Core.IO.DirectoryPath(coverageHtml));
+            ReportGeneratorSettings coverageSettings = new ReportGeneratorSettings();
+            foreach (string covFormatStr in helpers.split(context.cmdArgs.coverageFormats))
+            {
+                var covFormat = (ReportGeneratorReportType)Enum.Parse(typeof(ReportGeneratorReportType), covFormatStr);    
+                coverageSettings.ReportTypes.Add(covFormat);
+            }
+
+            context.ReportGenerator(
+                new Cake.Core.IO.GlobPattern(coverageXml), 
+                new Cake.Core.IO.DirectoryPath(coverageHtml),
+                coverageSettings);
         }
     }
 }
