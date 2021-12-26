@@ -78,7 +78,7 @@ namespace cakebuild.commands
             if (context.BuildSystem().IsRunningOnGitHubActions)
             {
                 LogInfo($"Uploading code coverage test results ({coverageHtml})...");
-                context.BuildSystem().GitHubActions.Commands.UploadArtifact(new Cake.Core.IO.DirectoryPath(coverageHtml), "CoverageResults");
+                context.BuildSystem().GitHubActions.Commands.UploadArtifact(new Cake.Core.IO.DirectoryPath(coverageHtml), "CoverageResults").GetAwaiter().GetResult();
             }
         }
     }
