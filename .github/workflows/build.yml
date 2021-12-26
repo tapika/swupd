@@ -19,6 +19,7 @@ env:
   API_KEY: ${{secrets.API_KEY}}
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN}}
+  ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   # Build using mono on Ubuntu
