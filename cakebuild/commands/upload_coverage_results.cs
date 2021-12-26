@@ -79,12 +79,20 @@ namespace cakebuild.commands
                 commitId = workflow.Sha;
                 branch = workflow.Ref;
             }
-
-            if (string.IsNullOrEmpty(commitId))
-            { 
+            
+            if (string.IsNullOrEmpty(commitId) || string.IsNullOrEmpty(commitMessage))
+            {
                 var logTip = context.GitLogTip(context.RootDirectory);
-                commitId = logTip.Sha;
-                commitMessage = logTip.Message;
+
+                if (string.IsNullOrEmpty(commitId))
+                {
+                    commitId = logTip.Sha;
+                }
+
+                if (string.IsNullOrEmpty(commitMessage))
+                {
+                    commitMessage = logTip.Message;
+                }
             }
 
             if (string.IsNullOrEmpty(branch))
