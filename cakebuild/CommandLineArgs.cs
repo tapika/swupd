@@ -96,7 +96,7 @@ namespace cakebuild
         public bool? codecoverage { get; set; }
 
         [CommandOption($"--{nameof(coverageFormats)}")]
-        [Description("Specifies code coverage formats, comma separated. For example: 'HtmlSummary,Html' ")]
+        [Description("Specifies code coverage formats, comma separated. For example: 'HtmlSummary,Html,Cobertura' ")]
         public string coverageFormats { get; set; } = "Html";
 
         public string _testsToRun= "chocolatey.tests";
@@ -113,6 +113,10 @@ namespace cakebuild
                 _testsToRun = value;
             }
         }
+
+        [CommandOption($"--{nameof(uploadCoverageResults)}")]
+        [Description("Uploads code coverage results")]
+        public bool? uploadCoverageResults { get; set; }
 
         //-----------------------------------------------------------------------------------
         // buildexe / readytorun options
@@ -261,8 +265,9 @@ namespace cakebuild
                             newArgs.r2r_build = true;
                             newArgs.test = true;
                             newArgs.codecoverage = true;
-                            newArgs.coverageFormats = "HtmlSummary";
+                            newArgs.coverageFormats = "HtmlSummary,Cobertura";
                             newArgs.testsToRun = "chocolatey.tests,chocolatey.tests.integration";
+                            newArgs.uploadCoverageResults = true;
                             break;
                         case nameof(buildexe):
                             newArgs.r2r_build = true;
