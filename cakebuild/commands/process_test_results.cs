@@ -1,4 +1,5 @@
-﻿using Cake.Common.Tools.ReportGenerator;
+﻿using Cake.Common.Build;
+using Cake.Common.Tools.ReportGenerator;
 using Cake.Core.Diagnostics;
 using Cake.Frosting;
 using cakebuild.CodeCoverageTool;
@@ -38,6 +39,14 @@ namespace cakebuild.commands
 
         public override void Run(BuildContext context)
         {
+            bool enableCodeCoverage = (context.cmdArgs.codecoverage.HasValue) ? context.cmdArgs.codecoverage.Value : false;
+
+            if (!enableCodeCoverage)
+            {
+                LogInfo($"--{nameof(CommandLineArgs.codecoverage)} not selected, skipping");
+                return;
+            }
+
             string rootDir = context.RootDirectory;
             string testResultsDir = Path.Combine(rootDir, @"build_output\temp_codecoverage");
             string coveragePath = Directory.GetFiles(testResultsDir, "*.coverage", SearchOption.AllDirectories).First();
@@ -65,6 +74,13 @@ namespace cakebuild.commands
                 new Cake.Core.IO.GlobPattern(coverageXml), 
                 new Cake.Core.IO.DirectoryPath(coverageHtml),
                 coverageSettings);
+
+            if (context.BuildSystem().IsRunningOnGitHubActions)
+            {
+                string codeCoverageSummaryHtml = Path.Combine(coverageHtml, "summary.html");
+                LogInfo($"Uploading code coverage test results ({Path.GetFileName(coverageHtml)})...");
+                context.BuildSystem().GitHubActions.Commands.UploadArtifact(new Cake.Core.IO.FilePath(codeCoverageSummaryHtml), "CoverageResults.html");
+            }
         }
     }
 }
