@@ -265,7 +265,8 @@ namespace cakebuild
                             newArgs.r2r_build = true;
                             newArgs.test = true;
                             newArgs.codecoverage = true;
-                            newArgs.coverageFormats = "HtmlSummary,Cobertura";
+                            //newArgs.coverageFormats = "HtmlSummary,Cobertura";
+                            newArgs.coverageFormats = "Html,Cobertura";
                             newArgs.testsToRun = "chocolatey.tests,chocolatey.tests.integration";
                             newArgs.uploadCoverageResults = true;
                             newArgs.ShowCommands = true;

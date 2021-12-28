@@ -50,11 +50,11 @@ namespace cakebuild.commands
             string rootDir = context.RootDirectory;
             string testResultsDir = Path.Combine(rootDir, @"build_output\temp_codecoverage");
             string coveragePath = Directory.GetFiles(testResultsDir, "*.coverage", SearchOption.AllDirectories).First();
-            string coverageXml = Path.Combine(testResultsDir, "cobertura_coverage.xml");
+            string coverageXml = Path.Combine(testResultsDir, "vs_coverage.xml");
 
             if (File.Exists(coverageXml)) File.Delete(coverageXml);
             
-            LogInfo($"Converting *.coverage to *.cobertura_coverage.xml file format...");
+            LogInfo($"Converting *.coverage to vs_coverage.xml file format...");
             context.ConvertCoverageReport(coveragePath, coverageXml);
 
             string coverageHtml = System.IO.Path.Combine(rootDir, @"build_output\build_artifacts\codecoverage\Html");
