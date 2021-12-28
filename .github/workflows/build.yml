@@ -35,9 +35,16 @@ jobs:
   windows-build:
     runs-on: windows-latest
     steps:
+
     - uses: actions/checkout@v2
       with:
         fetch-depth: 5
+
+    - name: Github actions environment to local environment
+      uses: cake-build/cake-action@v1
+      with:
+        script-path: routeenvvar.cake
+
     - name: Build all
       run: .\cakebuild.bat all
   # Build using mono on MacOS
