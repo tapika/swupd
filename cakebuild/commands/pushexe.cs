@@ -31,8 +31,14 @@ namespace cakebuild.commands
             log.Information(value);
         }
 
-        public void PushRelease(BuildContext context, string releaseTag, List<string> files, GitBranch branch)
+        public void PushRelease(BuildContext context, string releaseTag, List<string> files, string branchName)
         {
+            bool isRelease = branchName == "master";
+            if (!isRelease)
+            {
+                releaseTag += "_beta";
+            }
+
             if (context.cmdArgs.DryRun)
             {
                 LogInfo($"Would create new release '{releaseTag}' with following files:");
@@ -80,8 +86,8 @@ namespace cakebuild.commands
             var newRelease = new NewRelease(releaseTag)
             {
                 Name = "",
-                Prerelease = true,
-                TargetCommitish = branch.FriendlyName
+                Prerelease = !isRelease,
+                TargetCommitish = commitId
             };
 
             LogInfo($"- creating new release '{releaseTag}'");
@@ -121,12 +127,16 @@ namespace cakebuild.commands
 
             // cannot use --depth / fetch-depth if need to get tags from git
             //string currentGitTag = context.GitDescribe(context.RootDirectory, GitDescribeStrategy.Tags).Split('-')[0];
-            string currentGitTag = "2.0";
-            var branch = context.GitBranchCurrent(context.RootDirectory);
+            string currentReleaseTag = "1.0";
+            string branchName = context.cmdArgs.branch;
+
+            if (String.IsNullOrEmpty(branchName))
+            {
+                branchName = context.GitBranchCurrent(context.RootDirectory).FriendlyName;
+            }
 
             if (!r2r_push.HasValue)
             {
-                //r2r_push = branch.FriendlyName == "master";
                 var isLocalBuild = context.BuildSystem().IsLocalBuild;
                 r2r_push = !isLocalBuild;
                 LogInfo($"{nameof(pushexe)}: isLocalBuild: {isLocalBuild}: => will push: {r2r_push.Value}");
@@ -171,7 +181,7 @@ namespace cakebuild.commands
                 }
             }
 
-            PushRelease(context, currentGitTag, files, branch);
+            PushRelease(context, currentReleaseTag, files, branchName);
         }
     }
 
