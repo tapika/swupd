@@ -6,7 +6,22 @@
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
           <Format>opencover</Format>
-          <Exclude>[Microsoft.*]*,[NuGet.Core]*,[System.Spatial]*</Exclude>
+          <Exclude>
+            [Microsoft.*]*,
+            [NuGet.Core]*,
+            [System.Spatial]*,
+            [chocolatey.tests*]*,
+            [chocolatey]*adapters.*,
+            [chocolatey]*infrastructure.app.configuration.*Setting*,
+            [chocolatey]*app.configuration.*Configuration,
+            [chocolatey]*app.domain.*,
+            [chocolatey]*app.messages.*,
+            [chocolatey]*.registration.*,
+            [chocolatey]*app.templates.*,
+            [chocolatey]*commandline.Option*,
+            [chocolatey]*licensing.*,
+            [chocolatey]*infrastructure.results.*
+          </Exclude>
           <SingleHit>false</SingleHit>
           <UseSourceLink>true</UseSourceLink>
           <SkipAutoProps>true</SkipAutoProps>
