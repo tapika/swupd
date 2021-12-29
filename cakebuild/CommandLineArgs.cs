@@ -101,7 +101,6 @@ namespace cakebuild
 
         public string _testsToRun= "chocolatey.tests";
         [CommandOption($"--{nameof(testsToRun)}")]
-        [DefaultValue("chocolatey.tests")]
         [Description("Tests to run, comma separated, for example: chocolatey.tests,chocolatey.tests.integration")]
         public string testsToRun
         {
