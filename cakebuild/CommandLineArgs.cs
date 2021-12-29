@@ -83,6 +83,10 @@ namespace cakebuild
             }
         }
 
+        [CommandOption($"--{nameof(branch)}")]
+        [Description("Forces specific branch name (Autodetected otherwise)")]
+        public string branch { get; set; }
+
         [CommandOption($"--{nameof(build)}")]
         [Description("Builds main solution")]
         public bool? build { get; set; }
