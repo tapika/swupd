@@ -158,7 +158,7 @@ namespace cakebuild.commands
                     string projectPath = Path.Combine(rootDir, $@"src\{buildProject}\{buildProject}.csproj"); ;
 
                     string runtimeIdentifier = $"{os}-x64";
-                    string publishDir = Path.Combine(rootDir, $@"bin\publish_{runtimeIdentifier}_netcoreapp_3.1");
+                    string publishDir = Path.Combine(rootDir, $@"bin\publish_{runtimeIdentifier}_{context.cmdArgs.NetFramework}");
                     string exeFile = (os == "linux") ? "choco" : "choco.exe";
                     string outExe = Path.Combine(publishDir, exeFile);
 
