@@ -72,7 +72,7 @@ namespace cakebuild.commands
             string projectPath = Path.Combine(rootDir, $@"src\{buildProject}\{buildProject}.csproj"); ;
 
             string runtimeIdentifier = $"{os}-x64";
-            string publishDir = Path.Combine(rootDir, $@"bin\publish_{runtimeIdentifier}_netcoreapp_3.1");
+            string publishDir = Path.Combine(rootDir, $@"bin\publish_{runtimeIdentifier}_{context.cmdArgs.NetFramework}");
             string outExe = Path.Combine(publishDir, exeFile);
 
             MSBuildSettings settings = new MSBuildSettings()
@@ -88,6 +88,8 @@ namespace cakebuild.commands
             // 2 next options are needed when compiling .csproj instead of .sln
             d["SolutionName"] = $"chocolatey{context.cmdArgs.NetFrameworkSuffix}";      // Ensure that project can set right targetframework
             d["SolutionDir"] = rootDir + "\\";
+            
+            bool isDotNet6 = context.cmdArgs.NetFramework == "net6.0";
 
             d["DeployOnBuild"] = "true";
             d["Configuration"] = "Release";
@@ -100,7 +102,13 @@ namespace cakebuild.commands
             d["PublishReadyToRun"] = "false";
             d["IncludeNativeLibrariesForSelfExtract"] = "true";
             d["IncludeAllContentForSelfExtract"] = "true";
-            d["PublishTrimmed"] = "true";
+            
+            d["PublishTrimmed"] = (!isDotNet6).ToString();
+            if (isDotNet6)
+            {
+                d["EnableCompressionInSingleFile"] = "true";
+            }
+
             d[$"PUBLISH_{readytorun_target.ToUpper()}"] = "true";
 
             foreach (var k in d.Keys)

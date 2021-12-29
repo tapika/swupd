@@ -39,9 +39,26 @@ Both images are built using `ReadyToRun` technology - meaning you don't need to 
 
 Using additionally `--net net5.0`, `--net net6.0` can force for build to happen using specific .net platform for correspondent solution.
 
-Potential compatibility issues:
+Potential compatibility issues when testing `ReadyToRun` builds:
 
 * If you build `ReadyToRun` executable for windows 8.1 and run it on windows 7 - it might not run, because of missing runtime redistributables.
 
 * If you build `ReadyToRun` executable for windows 10 and run it on windows 7 - it still might run, as nuget package might list maximum required windows version, but application itself does not use all the features of nuget package, so everything works ok on windows 7 as well.
+
+##### Known ReadyToRun problems
+
+Problem: `Single File publishing is not compatible with Windows 7.`
+
+Solution: Create `global.json` file with following content:
+
+```json
+{
+  "sdk": {
+    "version": "5.0.403",
+    "rollForward": "latestFeature"
+  }
+}
+```
+
+Open issue, see ticket:  [dotnet runtime #62453](https://github.com/dotnet/runtime/issues/62453).
 
