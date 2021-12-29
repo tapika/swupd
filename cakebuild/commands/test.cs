@@ -62,6 +62,8 @@ namespace cakebuild.commands
             if (Directory.Exists(testResultsDir)) Directory.Delete(testResultsDir, true);
             if (!Directory.Exists(testResultsDir)) Directory.CreateDirectory(testResultsDir);
 
+            Environment.CurrentDirectory = outDir;
+
             switch (context.cmdArgs.coverageMethod)
             {
                 case "vs":
@@ -74,9 +76,6 @@ namespace cakebuild.commands
                         }
 
                         string coverageRunsettings = Path.Combine(rootDir, ".runsettings"); ;
-
-
-                        Environment.CurrentDirectory = outDir;
 
                         var settings = new VSTestSettings
                         {
@@ -99,24 +98,17 @@ namespace cakebuild.commands
                     { 
                         string solutionPath = Path.Combine(rootDir, $@"src\chocolatey{context.cmdArgs.NetFrameworkSuffix}.sln");
                         string coverletSettings = Path.Combine(rootDir, "coverlet.runsettings");
-                        List<string> slnOrCsprojToRun = new List<string>();
+                        List<string> projToRun = new List<string>();
 
-                        if (testsToRun.Contains("chocolatey.tests") && testsToRun.Contains("chocolatey.tests.integration"))
+                        foreach (var test in testsToRun)
                         {
-                            slnOrCsprojToRun.Add(solutionPath);
-                        }
-                        else
-                        {
-                            foreach (var test in testsToRun)
-                            {
-                                string csprojPath = Path.Combine(rootDir, $@"src\{test}\{test}.csproj");
-                                slnOrCsprojToRun.Add(csprojPath);
-                            }
+                            string csprojPath = Path.Combine(rootDir, $@"src\{test}\{test}.csproj");
+                            projToRun.Add(csprojPath);
                         }
 
                         Environment.SetEnvironmentVariable("MySolutionName", $"chocolatey{context.cmdArgs.NetFrameworkSuffix}");
 
-                        foreach (var slnOrCsProj in slnOrCsprojToRun)
+                        foreach (var slnOrCsProj in projToRun)
                         {
                             LogInfo($"Running test for {slnOrCsProj} {coverageEnabledStr}...");
 
