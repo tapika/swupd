@@ -45,20 +45,34 @@ namespace cakebuild.commands
         {
             string rootDir = context.RootDirectory;
             string buildProject = readytorun_target;
+            string exeFile = null;
             switch (readytorun_target)
             {
                 case "choco":
                     buildProject = "chocolatey.console";
+                    exeFile = "choco.exe";
                     break;
                 case "chocogui":
                     buildProject = "ChocolateyGui";
+                    exeFile =  "ChocolateyGui.exe";
                     break;
             }
+
+            if (os == "linux")
+            {
+                exeFile = Path.GetFileNameWithoutExtension(exeFile);
+
+                if (readytorun_target == "chocogui")
+                {
+                    LogInfo("Note: chocogui for linux is not supported, skipping");
+                    return;
+                }
+            }
+
             string projectPath = Path.Combine(rootDir, $@"src\{buildProject}\{buildProject}.csproj"); ;
 
             string runtimeIdentifier = $"{os}-x64";
             string publishDir = Path.Combine(rootDir, $@"bin\publish_{runtimeIdentifier}_netcoreapp_3.1");
-            string exeFile = (os == "linux") ? "choco" : "choco.exe";
             string outExe = Path.Combine(publishDir, exeFile);
 
             MSBuildSettings settings = new MSBuildSettings()
