@@ -115,6 +115,7 @@ namespace cakebuild.commands
                             var testSettings = new DotNetCoreTestSettings
                             {
                                 OutputDirectory = outDir,
+                                WorkingDirectory = outDir,
                                 NoBuild = true,
                                 Settings = coverletSettings,
                                 Configuration = "Release",
