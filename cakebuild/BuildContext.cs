@@ -23,6 +23,13 @@ namespace cakebuild
             }
         }
 
+        public string TestResultsDirectory
+        { 
+            get
+            { 
+                return Path.Combine(RootDirectory, $@"build_output\temp_codecoverage_{cmdArgs.coverageMethod}");
+            }
+        }
     }
 }
 

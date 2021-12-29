@@ -14,8 +14,12 @@
     <NugetSuffix>_msbuild</NugetSuffix>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(MySolutionName)' == '' ">
+    <MySolutionName>$(SolutionName)</MySolutionName>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)src\obj\nuget\$(SolutionName)$(NugetSuffix)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)src\obj\nuget\$(MySolutionName)$(NugetSuffix)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
   </PropertyGroup>
 </Project>
 

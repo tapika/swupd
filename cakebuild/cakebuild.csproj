@@ -5,7 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <LangVersion>preview</LangVersion>
-    <NoWarn>$(NoWarn);MSB3246</NoWarn>
+    <NoWarn>$(NoWarn);MSB3246;CS0618</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

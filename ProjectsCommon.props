@@ -1,12 +1,16 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  
+
+  <PropertyGroup Condition=" '$(MySolutionName)' == '' ">
+    <MySolutionName>$(SolutionName)</MySolutionName>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!-- 
         Try to extract TargetFramework name from solution name itself, e.g. 'chocolatey_netcoreapp3.1.sln' => 'netcoreapp3.1'
 
         Normally developer is intrested in compiling one TargetFramework at the time, not all of them necessarily
     -->
-    <MyTargetFramework>$([System.Text.RegularExpressions.Regex]::Replace('$(SolutionName)', '.*?(_|$)(.*)$', '${2}'))</MyTargetFramework>
+    <MyTargetFramework>$([System.Text.RegularExpressions.Regex]::Replace('$(MySolutionName)', '.*?(_|$)(.*)$', '${2}'))</MyTargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(MyTargetFramework)' == ''">

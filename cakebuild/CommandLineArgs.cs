@@ -118,6 +118,10 @@ namespace cakebuild
         [Description("Uploads code coverage results")]
         public bool? uploadCoverageResults { get; set; }
 
+        [CommandOption($"--{nameof(coverageMethod)}")]
+        [Description("Method to use for code coverage measurement, one of: vs,coverlet")]
+        public string coverageMethod { get; set; } = "coverlet";
+
         //-----------------------------------------------------------------------------------
         // buildexe / readytorun options
         //-----------------------------------------------------------------------------------

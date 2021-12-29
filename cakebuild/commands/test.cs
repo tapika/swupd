@@ -1,4 +1,6 @@
-﻿using Cake.Common.Tools.VSTest;
+﻿using Cake.Common.Tools.DotNetCore;
+using Cake.Common.Tools.DotNetCore.Test;
+using Cake.Common.Tools.VSTest;
 using Cake.Core.Diagnostics;
 using Cake.Frosting;
 using System;
@@ -40,13 +42,7 @@ namespace cakebuild.commands
             string rootDir = context.RootDirectory;
             string outDir = Path.Combine(rootDir, $@"src\bin\{context.cmdArgs.NetFramework}-Release");
 
-            List<Cake.Core.IO.FilePath> paths = new List<Cake.Core.IO.FilePath>();
             var testsToRun = helpers.split(context.cmdArgs.testsToRun);
-            foreach (var test in testsToRun)
-            {
-                string outPath = Path.Combine(outDir, $"{test}.dll");
-                paths.Add(new Cake.Core.IO.FilePath(outPath));
-            }
 
             string operation = (context.cmdArgs.DryRun) ? "Would test" : "Testing";
             bool enableCodeCoverage = (context.cmdArgs.codecoverage.HasValue) ?
@@ -60,30 +56,93 @@ namespace cakebuild.commands
                 return;
             }
 
-            string coverageRunsettings = Path.Combine(rootDir, ".runsettings"); ;
-
-            string testResultsDir = Path.Combine(rootDir, @"build_output\temp_codecoverage");
+            string testResultsDir = context.TestResultsDirectory;
 
             // Directory must be cleaned and re-created, as *.coverage filename changes everytime
-            if (Directory.Exists(testResultsDir))  Directory.Delete(testResultsDir, true);
+            if (Directory.Exists(testResultsDir)) Directory.Delete(testResultsDir, true);
             if (!Directory.Exists(testResultsDir)) Directory.CreateDirectory(testResultsDir);
 
-            Environment.CurrentDirectory = outDir;
-
-            var settings = new VSTestSettings
+            switch (context.cmdArgs.coverageMethod)
             {
-                WorkingDirectory = outDir,
-                //ArgumentCustomization = args =>
-                //{
-                //    args.Append(new TextArgument($"/help"));
-                //    return args;
-                //},
-                ResultsDirectory = testResultsDir,
-                EnableCodeCoverage = enableCodeCoverage,
-                SettingsFile = coverageRunsettings
-            };
+                case "vs":
+                    {
+                        List<Cake.Core.IO.FilePath> paths = new List<Cake.Core.IO.FilePath>();
+                        foreach (var test in testsToRun)
+                        {
+                            string outPath = Path.Combine(outDir, $"{test}.dll");
+                            paths.Add(new Cake.Core.IO.FilePath(outPath));
+                        }
 
-            context.VSTest( paths, settings );
+                        string coverageRunsettings = Path.Combine(rootDir, ".runsettings"); ;
+
+
+                        Environment.CurrentDirectory = outDir;
+
+                        var settings = new VSTestSettings
+                        {
+                            WorkingDirectory = outDir,
+                            //ArgumentCustomization = args =>
+                            //{
+                            //    args.Append(new TextArgument($"/help"));
+                            //    return args;
+                            //},
+                            ResultsDirectory = testResultsDir,
+                            EnableCodeCoverage = enableCodeCoverage,
+                            SettingsFile = coverageRunsettings
+                        };
+
+                        context.VSTest(paths, settings);
+                    }
+                    break;
+
+                case "coverlet":
+                    { 
+                        string solutionPath = Path.Combine(rootDir, $@"src\chocolatey{context.cmdArgs.NetFrameworkSuffix}.sln");
+                        string coverletSettings = Path.Combine(rootDir, "coverlet.runsettings");
+                        List<string> slnOrCsprojToRun = new List<string>();
+
+                        if (testsToRun.Contains("chocolatey.tests") && testsToRun.Contains("chocolatey.tests.integration"))
+                        {
+                            slnOrCsprojToRun.Add(solutionPath);
+                        }
+                        else
+                        {
+                            foreach (var test in testsToRun)
+                            {
+                                string csprojPath = Path.Combine(rootDir, $@"src\{test}\{test}.csproj");
+                                slnOrCsprojToRun.Add(csprojPath);
+                            }
+                        }
+
+                        Environment.SetEnvironmentVariable("MySolutionName", $"chocolatey{context.cmdArgs.NetFrameworkSuffix}");
+
+                        foreach (var slnOrCsProj in slnOrCsprojToRun)
+                        {
+                            LogInfo($"Running test for {slnOrCsProj} {coverageEnabledStr}...");
+
+                            var testSettings = new DotNetCoreTestSettings
+                            {
+                                OutputDirectory = outDir,
+                                NoBuild = true,
+                                Settings = coverletSettings,
+                                Configuration = "Release",
+                                ResultsDirectory = testResultsDir,
+                                //Verbosity = Cake.Common.Tools.DotNet.DotNetVerbosity.Detailed
+                            };
+
+                            if (enableCodeCoverage)
+                            {
+                                testSettings.Collectors = new[] { "XPlat Code Coverage" };
+                            }
+
+                            context.DotNetCoreTest(slnOrCsProj, testSettings);
+                        }
+                    }
+                    break;
+                default:
+                    throw new Exception($"Unknown coverage method: --{nameof(CommandLineArgs.coverageMethod)} {context.cmdArgs.coverageMethod}");
+            }
+
         }
     }
 
