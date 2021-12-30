@@ -1,6 +1,4 @@
-﻿using Autofac;
-using ChocolateyGui.Common.Windows.Services;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 
