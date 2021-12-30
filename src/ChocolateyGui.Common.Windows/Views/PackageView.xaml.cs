@@ -6,6 +6,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -26,13 +27,13 @@ namespace ChocolateyGui.Common.Windows.Views
         {
             var hl = (Hyperlink)sender;
             var navigateUri = hl.NavigateUri.ToString();
-            Process.Start(new ProcessStartInfo(navigateUri));
+            ProcessStartHelper.OpenUrl(navigateUri);
             e.Handled = true;
         }
 
         private void HandleMarkdownLink(object sender, ExecutedRoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(e.Parameter.ToString()));
+            ProcessStartHelper.OpenUrl(e.Parameter.ToString());
         }
     }
 }

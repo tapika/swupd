@@ -143,7 +143,7 @@ namespace ChocolateyGui.Common.Windows.Views
         private void PerformGoToPage(object sender, ExecutedRoutedEventArgs e)
         {
             // https://github.com/theunrepentantgeek/Markdown.XAML/issues/5
-            Process.Start(new ProcessStartInfo(e.Parameter.ToString()));
+            ProcessStartHelper.OpenUrl(e.Parameter.ToString());
             e.Handled = true;
         }
     }

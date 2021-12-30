@@ -23,7 +23,7 @@ namespace ChocolateyGui.Common.Windows.Views
 
         private void HandleMarkdownLink(object sender, ExecutedRoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(e.Parameter.ToString()));
+            ProcessStartHelper.OpenUrl(e.Parameter.ToString());
         }
     }
 }
