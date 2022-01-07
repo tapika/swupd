@@ -123,7 +123,7 @@ namespace chocolatey
         /// </summary>
         public GetChocolatey()
         {
-            LogService.configure();
+            LogService.Instance.configure();
             Bootstrap.initialize();
 #if USE_LOG4NET
             Log.InitializeWith(new AggregateLog(new List<ILog>() { new Log4NetLog(), _logSinkLogger }));
@@ -447,7 +447,7 @@ namespace chocolatey
                     returnValue = function.Invoke(configuration);
                 }
 
-                LogService.adjustLogLevels(configuration.Debug, configuration.Verbose, configuration.Trace);
+                LogService.Instance.adjustLogLevels(configuration.Debug, configuration.Verbose, configuration.Trace);
             }
             finally
             {

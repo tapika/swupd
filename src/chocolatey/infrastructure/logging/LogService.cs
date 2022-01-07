@@ -6,15 +6,55 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace chocolatey.infrastructure.logging
 {
     public class LogService
     {
-        static public Logger console;
-        static public Logger consoleHighlight;
-        static public Logger consoleDebug;
-        static public Logger consoleTrace;
+        public static LogService MainThreadInstance = null;
+        static public ThreadLocal<LogService> _instance = new ThreadLocal<LogService>();
+        
+        /// <summary>
+        /// LogService instance is thread specific.
+        /// </summary>
+        static public LogService Instance
+        {
+            get {
+                return GetInstance(true);
+            }
+        }
+
+        static public LogService GetInstance(bool addConsole)
+        {
+            if (_instance.Value == null)
+            {
+                _instance.Value = new LogService(addConsole);
+            }
+
+            return _instance.Value;
+        }
+
+        /// <summary>
+        /// Logger instance
+        /// </summary>
+        public LogFactory LogFactory;
+
+        /// <summary>
+        /// Main output console
+        /// </summary>
+        public static Logger console
+        {
+            get
+            {
+                return Instance._console;
+            }
+        }
+
+        public Logger _console;
+        Logger consoleHighlight;
+        Logger consoleDebug;
+        Logger consoleTrace;
 
         // Internal implementation names, don't use outside
         const string consoleTargetName = "console";
@@ -25,6 +65,31 @@ namespace chocolatey.infrastructure.logging
         const string fileLoggerName = "chocolog";
         const string fileSummaryLoggerName = "chocolog_summary";
         const string fileSummary2LoggerName = "chocolog_summary2";
+
+        public LogService(bool addConsole = true)
+        {
+            // Main thread may only set global logger instance
+            if (MainThreadInstance == null && Thread.CurrentThread.ManagedThreadId == 1)
+            {
+                MainThreadInstance = this;
+                LogFactory = LogManager.LogFactory;
+            }
+
+            // If we have main application (choco, chocogui) - then MainThreadInstance gets initialized,
+            // and all threads will log to same logfactory, specified by MainThreadInstance.LogFactory
+            if (MainThreadInstance != null)
+            {
+                LogFactory = MainThreadInstance.LogFactory;
+            }
+
+            // In case of unit tests MainThreadInstance will remain null, and each LogService will allocate it's own
+            // log factory.
+            if (LogFactory == null)
+            {
+                LogFactory = new LogFactory();
+                configure(null, addConsole);
+            }
+        }
 
         private static string DisabledName(string s)
         {
@@ -57,9 +122,9 @@ namespace chocolatey.infrastructure.logging
         static string simplifiedLogPatternLayout = "${message}";
 
 
-        static string outputDirectory;
+        string outputDirectory;
 
-        public static void configure(string outputDirectory = null)
+        public void configure(string outputDirectory = null, bool addConsole = true)
         {
 #if !NETFRAMEWORK
             // Disable messages coming from output window:
@@ -69,12 +134,14 @@ namespace chocolatey.infrastructure.logging
 #endif
             if (outputDirectory != null)
             { 
-                LogService.outputDirectory = outputDirectory;
+                this.outputDirectory = outputDirectory;
             }
             string path = Path.Combine(ApplicationParameters.InstallLocation, "nlog.config");
 
+            LoggingConfiguration conf = null;
+
             // Create initial configuration just so it would be easy to modify, and also watch from file system.
-            if (!File.Exists(path))
+            if (addConsole && !File.Exists(path))
             {
                 File.WriteAllText(path,
 @"<nlog throwExceptions='true' autoReload='true'>
@@ -93,9 +160,21 @@ namespace chocolatey.infrastructure.logging
 ");
             }
 
-            var conf = new XmlLoggingConfiguration(path, LogManager.LogFactory);
-            LogManager.ConfigurationReloaded -= LogManager_ConfigurationReloaded;
-            LogManager.ConfigurationReloaded += LogManager_ConfigurationReloaded;
+            if (addConsole)
+            { 
+                conf = new XmlLoggingConfiguration(path, LogFactory);
+
+                LogManager.ConfigurationReloaded -= LogManager_ConfigurationReloaded;
+                LogManager.ConfigurationReloaded += LogManager_ConfigurationReloaded;
+            }
+            else
+            {
+                conf = LogFactory.Configuration;
+                if (conf == null)
+                {
+                    LogFactory.Configuration = conf = new LoggingConfiguration();
+                }
+            }
 
 #if USE_LOG4NET
             const bool clearLogFile = true;
@@ -106,7 +185,7 @@ namespace chocolatey.infrastructure.logging
             //dateFormatString = "";
 #endif
             //bool clearLogFile = ApplicationParameters.LogsAppendToFile;
-            reconfigure(clearLogFile, conf);
+            reconfigure(clearLogFile, conf, addConsole);
             //Console.WriteLine("press any key...");
             //Console.ReadLine();
         }
@@ -115,9 +194,9 @@ namespace chocolatey.infrastructure.logging
         /// Reconfigures additional log file.
         /// </summary>
         /// <param name="path">Path to file</param>
-        public static void configureAdditionalLogFile(string path)
+        public void configureAdditionalLogFile(string path)
         {
-            var conf = LogManager.Configuration;
+            var conf = LogFactory.Configuration;
             var newSummaryTarget = new FileTarget
             {
                 Name = fileSummary2LoggerName,
@@ -136,23 +215,23 @@ namespace chocolatey.infrastructure.logging
                 conf.AddRule(LogLevel.Info, LogLevel.Fatal, newSummaryTarget, name);
             }
 
-            LogManager.ReconfigExistingLoggers();
+            LogFactory.ReconfigExistingLoggers();
         }
 
         /// <summary>
         /// Enables or disables colors (Normally called before adjustLogLevels)
         /// </summary>
         /// <param name="b">true to enable</param>
-        public static void enableColors(bool b = true)
+        public void enableColors(bool b = true)
         {
             colorsEnabled = b;
             configure();
         }
 
-        static bool colorsEnabled = true;
-        static Dictionary<string, LogLevel> defaultLogLevel;
+        bool colorsEnabled = true;
+        Dictionary<string, LogLevel> defaultLogLevel;
 
-        static IEnumerable<string> GetLoggerNames()
+        public static IEnumerable<string> GetLoggerNames()
         {
             yield return normalConsoleLoggerName + "*";
             yield return highlightedConsoleLoggerName;
@@ -160,7 +239,7 @@ namespace chocolatey.infrastructure.logging
         }
 
 
-        static void reconfigure(bool clearLogFile, LoggingConfiguration conf)
+        void reconfigure(bool clearLogFile, LoggingConfiguration conf, bool addConsole = true)
         {
 #if USE_LOG4NET
             string logFile11 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingFile);
@@ -192,57 +271,60 @@ namespace chocolatey.infrastructure.logging
 #endif
             const string console2LoggerName = "console2";
 
-            TargetWithLayoutHeaderAndFooter consoletarget;
-            TargetWithLayoutHeaderAndFooter consoletarget2;
+            TargetWithLayoutHeaderAndFooter consoletarget = null;
+            TargetWithLayoutHeaderAndFooter consoletarget2 = null;
 
-            if (colorsEnabled)
+            if (addConsole)
             {
-                var cct1 = new ColoredConsoleTarget() { Layout = "${message}", Name = consoleTargetName };
-                consoletarget = cct1;
-                var cct2 = new ColoredConsoleTarget() { Layout = "${message}", Name = console2LoggerName };
-                consoletarget2 = cct2;
+                if (colorsEnabled)
+                {
+                    var cct1 = new ColoredConsoleTarget() { Layout = "${message}", Name = consoleTargetName };
+                    consoletarget = cct1;
+                    var cct2 = new ColoredConsoleTarget() { Layout = "${message}", Name = console2LoggerName };
+                    consoletarget2 = cct2;
 
-                ((List<ConsoleRowHighlightingRule>)cct1.RowHighlightingRules).AddRange(new[] {
-                    new ConsoleRowHighlightingRule("level == LogLevel.Fatal", ConsoleOutputColor.White, ConsoleOutputColor.Red),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Error", ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Warn", ConsoleOutputColor.Yellow, ConsoleOutputColor.NoChange),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Info", ConsoleOutputColor.Gray, ConsoleOutputColor.Black),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Debug", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Trace", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-                });
+                    ((List<ConsoleRowHighlightingRule>)cct1.RowHighlightingRules).AddRange(new[] {
+                        new ConsoleRowHighlightingRule("level == LogLevel.Fatal", ConsoleOutputColor.White, ConsoleOutputColor.Red),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Error", ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Warn", ConsoleOutputColor.Yellow, ConsoleOutputColor.NoChange),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Info", ConsoleOutputColor.Gray, ConsoleOutputColor.Black),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Debug", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Trace", ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                    });
 
-                string andHighlightConsole = " and equals(logger, '" + highlightedConsoleLoggerName + "')";
-                string andDebugConsole = " and equals(logger, '" + debugConsoleLoggerName + "')";
-                string andTraceConsole = " and equals(logger, '" + traceConsoleLoggerName + "')";
+                    string andHighlightConsole = " and equals(logger, '" + highlightedConsoleLoggerName + "')";
+                    string andDebugConsole = " and equals(logger, '" + debugConsoleLoggerName + "')";
+                    string andTraceConsole = " and equals(logger, '" + traceConsoleLoggerName + "')";
 
-                ((List<ConsoleRowHighlightingRule>)cct2.RowHighlightingRules).AddRange(new[] {
-                    // Originally copied from NLog, search from DefaultConsoleRowHighlightingRules
-                    new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andHighlightConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Error" + andHighlightConsole, ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andHighlightConsole, ConsoleOutputColor.Magenta, ConsoleOutputColor.NoChange),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Info" + andHighlightConsole, ConsoleOutputColor.Green, ConsoleOutputColor.Black),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andHighlightConsole, ConsoleOutputColor.Blue, ConsoleOutputColor.Gray),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andHighlightConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                    ((List<ConsoleRowHighlightingRule>)cct2.RowHighlightingRules).AddRange(new[] {
+                        // Originally copied from NLog, search from DefaultConsoleRowHighlightingRules
+                        new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andHighlightConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Error" + andHighlightConsole, ConsoleOutputColor.Red, ConsoleOutputColor.NoChange),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andHighlightConsole, ConsoleOutputColor.Magenta, ConsoleOutputColor.NoChange),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Info" + andHighlightConsole, ConsoleOutputColor.Green, ConsoleOutputColor.Black),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andHighlightConsole, ConsoleOutputColor.Blue, ConsoleOutputColor.Gray),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andHighlightConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
 
-                    new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andDebugConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Error" + andDebugConsole, ConsoleOutputColor.Red, ConsoleOutputColor.Black),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andDebugConsole, ConsoleOutputColor.DarkMagenta, ConsoleOutputColor.Black),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Info" + andDebugConsole, ConsoleOutputColor.DarkGreen, ConsoleOutputColor.Black),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andDebugConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andDebugConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andDebugConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Error" + andDebugConsole, ConsoleOutputColor.Red, ConsoleOutputColor.Black),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andDebugConsole, ConsoleOutputColor.DarkMagenta, ConsoleOutputColor.Black),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Info" + andDebugConsole, ConsoleOutputColor.DarkGreen, ConsoleOutputColor.Black),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andDebugConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andDebugConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
 
-                    new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andTraceConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Error" + andTraceConsole, ConsoleOutputColor.Red, ConsoleOutputColor.Black),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andTraceConsole, ConsoleOutputColor.DarkMagenta, ConsoleOutputColor.Black),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Info" + andTraceConsole, ConsoleOutputColor.DarkGreen, ConsoleOutputColor.Black),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andTraceConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-                    new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andTraceConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
-                });
-            }
-            else 
-            { 
-                consoletarget = new ConsoleTarget() { Layout = "${message}", Name = consoleTargetName };
-                consoletarget2 = new ConsoleTarget() { Layout = "${message}", Name = console2LoggerName };
+                        new ConsoleRowHighlightingRule("level == LogLevel.Fatal" + andTraceConsole, ConsoleOutputColor.White, ConsoleOutputColor.Red),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Error" + andTraceConsole, ConsoleOutputColor.Red, ConsoleOutputColor.Black),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Warn" + andTraceConsole, ConsoleOutputColor.DarkMagenta, ConsoleOutputColor.Black),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Info" + andTraceConsole, ConsoleOutputColor.DarkGreen, ConsoleOutputColor.Black),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Debug" + andTraceConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                        new ConsoleRowHighlightingRule("level == LogLevel.Trace" + andTraceConsole, ConsoleOutputColor.DarkBlue, ConsoleOutputColor.Gray),
+                    });
+                }
+                else
+                {
+                    consoletarget = new ConsoleTarget() { Layout = "${message}", Name = consoleTargetName };
+                    consoletarget2 = new ConsoleTarget() { Layout = "${message}", Name = console2LoggerName };
+                }
             }
 
             var targets = conf.AllTargets;
@@ -268,8 +350,15 @@ namespace chocolatey.infrastructure.logging
 
             defaultLogLevel = new Dictionary<string, LogLevel>();
 
-            replaceOrAddTarget(consoletarget);
-            replaceOrAddTarget(consoletarget2);
+            if (consoletarget != null)
+            { 
+                replaceOrAddTarget(consoletarget);
+            }
+            
+            if (consoletarget2 != null)
+            {
+                replaceOrAddTarget(consoletarget2);
+            }
 
             Action<LogLevel, Target, string> addRule = (LogLevel minLogLevel, Target t, string name) =>
             {
@@ -311,14 +400,17 @@ namespace chocolatey.infrastructure.logging
                 }
             }
 
-            //Trace, Debug are excluded
-            addRule(LogLevel.Info, consoletarget, normalConsoleLoggerName + "*");
-            addRule(LogLevel.Info, consoletarget2, highlightedConsoleLoggerName);
-            //only Error and Fatal
-            conf.AddRule(LogLevel.Error, LogLevel.Fatal, consoletarget2, debugConsoleLoggerName);
-            conf.AddRule(LogLevel.Fatal, LogLevel.Fatal, consoletarget2, traceConsoleLoggerName);
+            if (addConsole)
+            {
+                //Trace, Debug are excluded
+                addRule(LogLevel.Info, consoletarget, normalConsoleLoggerName + "*");
+                addRule(LogLevel.Info, consoletarget2, highlightedConsoleLoggerName);
+                //only Error and Fatal
+                conf.AddRule(LogLevel.Error, LogLevel.Fatal, consoletarget2, debugConsoleLoggerName);
+                conf.AddRule(LogLevel.Fatal, LogLevel.Fatal, consoletarget2, traceConsoleLoggerName);
+            }
 
-            if(configureFileLogging)
+            if (configureFileLogging)
             {
                 var filetargetDetailed = new FileTarget
                 {
@@ -357,13 +449,13 @@ namespace chocolatey.infrastructure.logging
                 replaceOrAddTarget(filetargetSummary);
             }
 
-            LogManager.Configuration = conf;
-            LogManager.ReconfigExistingLoggers();
+            LogFactory.Configuration = conf;
+            LogFactory.ReconfigExistingLoggers();
 
-            console = LogManager.GetLogger(normalConsoleLoggerName);
-            consoleHighlight = LogManager.GetLogger(highlightedConsoleLoggerName);
-            consoleDebug = LogManager.GetLogger(debugConsoleLoggerName);
-            consoleTrace = LogManager.GetLogger(traceConsoleLoggerName);
+            _console = LogFactory.GetLogger(normalConsoleLoggerName);
+            consoleHighlight = LogFactory.GetLogger(highlightedConsoleLoggerName);
+            consoleDebug = LogFactory.GetLogger(debugConsoleLoggerName);
+            consoleTrace = LogFactory.GetLogger(traceConsoleLoggerName);
         }
 
         /// <summary>
@@ -380,7 +472,14 @@ namespace chocolatey.infrastructure.logging
                 return;
             }
 
-            reconfigure(false, LogManager.Configuration);
+            var inst = LogService.MainThreadInstance;
+            if (inst == null)
+            {
+                Console.WriteLine($"MainThreadInstance is null, ignoring request");
+                return;
+            }
+
+            inst.reconfigure(false, inst.LogFactory.Configuration);
             Console.WriteLine("- logger configuration file reloaded");
             // Cannot be modified programmatically at the moment (unless re-inherit from XmlLoggingConfiguration and override Initialize/autoReloadDefault)
             if (!((XmlLoggingConfiguration)LogManager.Configuration).AutoReload)
@@ -393,7 +492,7 @@ namespace chocolatey.infrastructure.logging
         /// <summary>
         /// Adjusts logging level options
         /// </summary>
-        public static void adjustLogLevels(bool debug, bool verbose, bool trace)
+        public void adjustLogLevels(bool debug, bool verbose, bool trace)
         {
 #if USE_LOG4NET
             var verboseAppenderName = "{0}LoggingColoredConsoleAppender".format_with(ChocolateyLoggers.Verbose.to_string());
@@ -427,7 +526,7 @@ namespace chocolatey.infrastructure.logging
                 }
             }
 
-            var conf = LogManager.Configuration;
+            var conf = LogFactory.Configuration;
             var rulesList = conf.LoggingRules.ToList();
             for(int i = 0; i < rulesList.Count; i++)
             {
@@ -576,7 +675,7 @@ namespace chocolatey.infrastructure.logging
             }
 
             //conf.LoggingRules.Where(x => x.LoggerNamePattern == normalConsoleLoggerName).Select(x => conf.LoggingRules.Remove(x));
-            LogManager.ReconfigExistingLoggers();
+            LogFactory.ReconfigExistingLoggers();
         }
 
 #if USE_LOG4NET

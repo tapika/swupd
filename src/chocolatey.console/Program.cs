@@ -54,7 +54,7 @@ namespace chocolatey.console
                 //no file system at this point
                 if (!Directory.Exists(loggingLocation)) Directory.CreateDirectory(loggingLocation);
 
-                LogService.configure(loggingLocation);
+                LogService.Instance.configure(loggingLocation);
                 Bootstrap.initialize();
                 Bootstrap.startup();
                 //LogService.Test();
@@ -93,12 +93,12 @@ namespace chocolatey.console
 #else
                 if (config.Features.LogWithoutColor)
                 {
-                    LogService.enableColors(false);
+                    LogService.Instance.enableColors(false);
                 }
 
                 if (!string.IsNullOrWhiteSpace(config.AdditionalLogFileLocation))
                 {
-                    LogService.configureAdditionalLogFile(fileSystem.get_full_path(config.AdditionalLogFileLocation));
+                    LogService.Instance.configureAdditionalLogFile(fileSystem.get_full_path(config.AdditionalLogFileLocation));
                 }
 #endif
 
@@ -142,7 +142,7 @@ namespace chocolatey.console
                     Environment.Exit(config.UnsuccessfulParsing ? 1 : 0);
                 }
 
-                LogService.adjustLogLevels(config.Debug, config.Verbose, config.Trace);
+                LogService.Instance.adjustLogLevels(config.Debug, config.Verbose, config.Trace);
                 "chocolatey".Log().Debug(() => "{0} is running on {1} v {2}".format_with(ApplicationParameters.Name, config.Information.PlatformType, config.Information.PlatformVersion.to_string()));
                 //"chocolatey".Log().Debug(() => "Command Line: {0}".format_with(Environment.CommandLine));
 
