@@ -75,17 +75,21 @@ namespace chocolatey.infrastructure.logging
                 return;
             }
 
-            string actualLine = base.Layout.Render(logEvent);
-            string expectedLine = streamreader.ReadLine();
-            lineN++;
+            string actualLines = base.Layout.Render(logEvent);
 
-            if (actualLine != expectedLine)
+            foreach (var actualLine in actualLines.Replace("\r\n", "\n").Split(new char[] { '\r', '\n' }))
             {
-                throw new Exception(
-                    $"Unexpected {lineN} line {logPath}:\n" +
-                    $"actual line  : '{actualLine}'\n"+
-                    $"expected line: '{expectedLine}'\n"
-                );
+                string expectedLine = streamreader.ReadLine();
+                lineN++;
+
+                if (actualLine != expectedLine)
+                {
+                    throw new Exception(
+                        $"Unexpected {lineN} line {logPath}:\n" +
+                        $"actual line  : '{actualLine}'\n" +
+                        $"expected line: '{expectedLine}'\n"
+                    );
+                }
             }
         }
     }
