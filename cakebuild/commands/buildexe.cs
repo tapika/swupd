@@ -79,7 +79,8 @@ namespace cakebuild.commands
             {
                 ToolVersion = MSBuildToolVersion.VS2019,
                 MSBuildPlatform = MSBuildPlatform.x64,
-                Verbosity = Verbosity.Minimal
+                Verbosity = Verbosity.Minimal,
+                NoLogo = true
             };
 
             Array.ForEach(new string[] { "restore", "build", "publish" }, (x) => { settings.Targets.Add(x); });

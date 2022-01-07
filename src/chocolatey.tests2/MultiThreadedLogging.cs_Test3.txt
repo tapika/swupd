@@ -1,0 +1,9 @@
+Test3 started
+Test3: 0-th iteration
+Test3: 1-th iteration
+Test3: 2-th iteration
+Test3: 3-th iteration
+Test3: 4-th iteration
+Test3: 5-th iteration
+Test3 ended
+end of test

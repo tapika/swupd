@@ -117,14 +117,15 @@ namespace cakebuild.commands
                                 OutputDirectory = outDir,
                                 WorkingDirectory = outDir,
                                 NoBuild = true,
-                                Settings = coverletSettings,
                                 Configuration = "Release",
                                 ResultsDirectory = testResultsDir,
+                                NoLogo = true
                                 //Verbosity = Cake.Common.Tools.DotNet.DotNetVerbosity.Detailed
                             };
 
                             if (enableCodeCoverage)
                             {
+                                testSettings.Settings = coverletSettings;
                                 testSettings.Collectors = new[] { "XPlat Code Coverage" };
                             }
 
