@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace cakebuild.commands
@@ -90,8 +91,38 @@ namespace cakebuild.commands
                 TargetCommitish = commitId
             };
 
-            LogInfo($"- creating new release '{releaseTag}'");
-            release = ghClient.Repository.Release.Create("tapika", repositoryName, newRelease).Result;
+            release = null;
+            for (int retry = 0; retry < 3; retry++)
+            {
+                try
+                {
+                    if (retry == 0)
+                    {
+                        LogInfo($"- creating new release '{releaseTag}'");
+                    }
+                    else
+                    { 
+                        LogInfo($"- Retrying ({retry + 1}) creating new release '{releaseTag}'");
+                    }
+                    release = ghClient.Repository.Release.Create("tapika", repositoryName, newRelease).Result;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
+                    LogInfo($"- failed to create release: '{ex.Message}' ({ex.GetType().FullName})");
+                    Thread.Sleep(1500);
+                }
+            }
+
+            if (release == null)
+            {
+                LogInfo($"- Failed to create new release, aborting gracefully.");
+                return;
+            }
 
             List<Task> tasks = new List<Task>();
             
