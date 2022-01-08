@@ -1,0 +1,11 @@
+Performing upgrade
+upgrade: 0-th iteration
+upgrade: 1-th iteration
+upgrade: 2-th iteration
+upgrade: 3-th iteration
+upgrade: 4-th iteration
+upgrade: 5-th iteration
+upgrade: 6-th iteration
+upgrade: 7-th iteration
+upgrade: 8-th iteration
+Resulting upgrade
