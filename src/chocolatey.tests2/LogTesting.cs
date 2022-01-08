@@ -50,20 +50,8 @@
                 return;
             }
 
-            string path = mi.Item1.GetFilePath(mi.Item2);
-            string testfunc = TestContext.CurrentContext.Test.MethodName;
-
-            var factory = LogService.GetInstance(false).LogFactory;
-            var conf = factory.Configuration;
-            var verifyingLogTarget = new VerifyingLogTarget("verifyingLog", $"{path}_{testfunc}.txt", mi.Item1.CreateLog);
-            conf.AddTarget(verifyingLogTarget);
-
-            foreach (var name in LogService.GetLoggerNames())
-            {
-                conf.AddRule(LogLevel.Info, LogLevel.Fatal, verifyingLogTarget, name);
-            }
-
-            factory.ReconfigExistingLoggers();
+            new VerifyingLog("", mi.Item1.CreateLog,  mi.Item1.FilePath, 
+                TestContext.CurrentContext.Test.MethodName, mi.Item2.DeclaringType.Assembly);
         }
 
 
@@ -81,7 +69,7 @@
                 LogService.console.Info("end of test");
             }
 
-            LogService.Instance.LogFactory.Configuration.RemoveTarget("verifyingLog");
+            LogService.Instance.LogFactory.Configuration.RemoveTarget(VerifyingLog.LogName);
         }
     }
 }

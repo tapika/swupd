@@ -3,6 +3,7 @@ using NLog.Targets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,20 +28,26 @@ namespace chocolatey.infrastructure.logging
     public class VerifyingLog: IDisposable
     {
         Target oldTarget = null;
-        public const string verifyingLogName = nameof(VerifyingLog);
+        public const string LogName = nameof(VerifyingLog);
 
         public VerifyingLog(
             string variantContext = "",
             bool createLog = false, 
             [CallerFilePath] string sourcePath = "", 
-            [CallerMemberName] string func = "")
-        { 
+            [CallerMemberName] string func = "",
+            Assembly asm = null)
+        {
+            if (asm == null)
+            {
+                asm = Assembly.GetCallingAssembly();
+            }
+
             var factory = LogService.GetInstance(false).LogFactory;
             var conf = factory.Configuration;
-            oldTarget = conf.FindTargetByName(verifyingLogName);
-            conf.RemoveTarget(verifyingLogName);
-            string path = CallerFilePathHelper.CallerFilePathToSolutionSourcePath(sourcePath);
-            ApplyTarget(new VerifyingLogTarget(verifyingLogName, $"{path}_{func}{variantContext}.txt", createLog));
+            oldTarget = conf.FindTargetByName(LogName);
+            conf.RemoveTarget(LogName);
+            string path = CallerFilePathHelper.CallerFilePathToSolutionSourcePath(sourcePath, asm);
+            ApplyTarget(new VerifyingLogTarget(LogName, $"{path}_{func}{variantContext}.txt", createLog));
         }
 
         public void Dispose()
