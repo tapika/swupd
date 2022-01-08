@@ -1,10 +1,17 @@
 Test4 started
+Waiting for install task to complete
+Waiting for upgrade task to complete
 Test4: 0-th iteration
+Waiting for upgrade task to complete
 Test4: 1-th iteration
+Waiting for upgrade task to complete
 Test4: 2-th iteration
+Waiting for upgrade task to complete
 Test4: 3-th iteration
 Test4: 4-th iteration
+Waiting for upgrade task to complete
 Test4: 5-th iteration
+Waiting for upgrade task to complete
 Test4: 6-th iteration
 Test4 ended
 end of test

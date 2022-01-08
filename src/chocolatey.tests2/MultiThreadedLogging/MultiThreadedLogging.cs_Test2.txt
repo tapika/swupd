@@ -1,11 +1,21 @@
 Test2 started
+Waiting for upgrade task to complete
 Test2: 0-th iteration
+Waiting for install task to complete
+Waiting for upgrade task to complete
 Test2: 1-th iteration
+Waiting for upgrade task to complete
 Test2: 2-th iteration
+Waiting for install task to complete
+Waiting for upgrade task to complete
 Test2: 3-th iteration
+Waiting for upgrade task to complete
 Test2: 4-th iteration
+Waiting for install task to complete
 Test2: 5-th iteration
+Waiting for upgrade task to complete
 Test2: 6-th iteration
+Waiting for install task to complete
 Test2: 7-th iteration
 Test2 ended
 end of test

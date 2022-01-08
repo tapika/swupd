@@ -1,7 +1,9 @@
 Test1 started
 Test1: 0-th iteration
 Test1: 1-th iteration
+Waiting for upgrade task to complete
 Test1: 2-th iteration
+Waiting for upgrade task to complete
 Test1: 3-th iteration
 Test1 ended
 end of test

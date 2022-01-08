@@ -1,12 +1,22 @@
 Test5 started
+Waiting for upgrade task to complete
 Test5: 0-th iteration
+Waiting for upgrade task to complete
 Test5: 1-th iteration
+Waiting for install task to complete
 Test5: 2-th iteration
+Waiting for install task to complete
+Waiting for upgrade task to complete
 Test5: 3-th iteration
 Test5: 4-th iteration
+Waiting for install task to complete
+Waiting for upgrade task to complete
 Test5: 5-th iteration
 Test5: 6-th iteration
+Waiting for install task to complete
 Test5: 7-th iteration
+Waiting for install task to complete
+Waiting for upgrade task to complete
 Test5: 8-th iteration
 Test5 ended
 end of test

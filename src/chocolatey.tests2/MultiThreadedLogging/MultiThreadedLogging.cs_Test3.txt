@@ -1,8 +1,12 @@
 Test3 started
+Waiting for install task to complete
 Test3: 0-th iteration
+Waiting for upgrade task to complete
 Test3: 1-th iteration
 Test3: 2-th iteration
+Waiting for upgrade task to complete
 Test3: 3-th iteration
+Waiting for upgrade task to complete
 Test3: 4-th iteration
 Test3: 5-th iteration
 Test3 ended
