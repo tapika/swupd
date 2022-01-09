@@ -33,41 +33,24 @@ namespace chocolatey.infrastructure.app
         public static readonly string Name = "Chocolatey";
 
 #if FORCE_CHOCOLATEY_OFFICIAL_KEY
-        // https://github.com/dotnet/runtime/issues/13051
-        public static string InstallLocation = System.IO.Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
-        public static readonly string LicensedAssemblyLocation = _fileSystem.combine_paths(InstallLocation, "extensions", "chocolatey", "chocolatey.licensed.dll");
-#elif DEBUG
-        // Install location is choco.exe or chocolatey.dll
-        public static string InstallLocation = _fileSystem.get_directory_name(_fileSystem.get_current_assembly_path());
-        // when being used as a reference, start by looking next to Chocolatey, then in a subfolder.
-        public static readonly string LicensedAssemblyLocation = _fileSystem.file_exists(_fileSystem.combine_paths(InstallLocation, "chocolatey.licensed.dll")) ? _fileSystem.combine_paths(InstallLocation, "chocolatey.licensed.dll") : _fileSystem.combine_paths(InstallLocation, "extensions", "chocolatey", "chocolatey.licensed.dll");
-#else
-        // Install locations is chocolatey.dll or choco.exe - In Release mode
-        // we might be testing on a server or in the local debugger. Either way,
-        // start from the assembly location and if unfound, head to the machine
-        // locations instead. This is a merge of official and Debug modes.
-        private static IAssembly _assemblyForLocation = Assembly.GetEntryAssembly().UnderlyingType != null ? Assembly.GetEntryAssembly() : Assembly.GetExecutingAssembly();
-        public static readonly string InstallLocation = _fileSystem.file_exists(_fileSystem.combine_paths(_fileSystem.get_directory_name(_assemblyForLocation.CodeBase.Replace("file:///", string.Empty)), "chocolatey.dll")) ||
-                                                        _fileSystem.file_exists(_fileSystem.combine_paths(_fileSystem.get_directory_name(_assemblyForLocation.CodeBase.Replace("file:///", string.Empty)), "choco.exe")) ?
-                _fileSystem.get_directory_name(_assemblyForLocation.CodeBase.Replace("file:///", string.Empty)) :
-                !string.IsNullOrWhiteSpace(System.Environment.GetEnvironmentVariable(ChocolateyInstallEnvironmentVariableName)) ?
-                    System.Environment.GetEnvironmentVariable(ChocolateyInstallEnvironmentVariableName) :
-                    @"C:\ProgramData\Chocolatey"
-            ;
+        public static string InstallLocation
+        {
+            get => InstallContext.Instance.RootLocation;
+            set => InstallContext.Instance.RootLocation = value;
+        }
 
-        // when being used as a reference, start by looking next to Chocolatey, then in a subfolder.
-        public static readonly string LicensedAssemblyLocation = _fileSystem.file_exists(_fileSystem.combine_paths(InstallLocation, "chocolatey.licensed.dll")) ? _fileSystem.combine_paths(InstallLocation, "chocolatey.licensed.dll") : _fileSystem.combine_paths(InstallLocation, "extensions", "chocolatey", "chocolatey.licensed.dll");
+    public static readonly string LicensedAssemblyLocation = _fileSystem.combine_paths(InstallLocation, "extensions", "chocolatey", "chocolatey.licensed.dll");
 #endif
 
         public static readonly string CommonAppDataChocolatey = _fileSystem.combine_paths(System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData), Name);
-        public static string LoggingLocation = _fileSystem.combine_paths(InstallLocation, "logs");
+        public static string LoggingLocation                    { get { return InstallContext.Instance.LoggingLocation; } }
         public static readonly string LoggingFile = @"chocolatey.log";
         public static readonly string LoggingSummaryFile = @"choco.summary.log";
         public static readonly string Log4NetConfigurationAssembly = @"chocolatey";
         public static string Log4NetConfigurationResource = @"chocolatey.infrastructure.logging.log4net.config.xml";
         public static readonly string ChocolateyFileResources = "chocolatey.resources";
         public static readonly string ChocolateyConfigFileResource = @"chocolatey.infrastructure.app.configuration.chocolatey.config";
-        public static string GlobalConfigFileLocation = _fileSystem.combine_paths(InstallLocation, "config", "chocolatey.config");
+        public static string GlobalConfigFileLocation           { get { return InstallContext.Instance.GlobalConfigFileLocation; } }
         public static string LicenseFileLocation = _fileSystem.combine_paths(InstallLocation, "license", "chocolatey.license.xml");
         public static readonly string UserProfilePath = !string.IsNullOrWhiteSpace(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile, System.Environment.SpecialFolderOption.DoNotVerify)) ?
               System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile, System.Environment.SpecialFolderOption.DoNotVerify)
@@ -81,13 +64,18 @@ namespace chocolatey.infrastructure.app
         public static readonly string UnofficialChocolateyPublicKey = "fd112f53c3ab578c";
         public static readonly string OfficialChocolateyPublicKey = "79d02ea9cad655eb";
 
-        public static string PackagesLocation = _fileSystem.combine_paths(InstallLocation, "lib");
-        public static string PackageFailuresLocation = _fileSystem.combine_paths(InstallLocation, "lib-bad");
-        public static string PackageBackupLocation = _fileSystem.combine_paths(InstallLocation, "lib-bkp");
-        public static string ShimsLocation = _fileSystem.combine_paths(InstallLocation, "bin");
-        public static string ChocolateyPackageInfoStoreLocation = _fileSystem.combine_paths(InstallLocation, ".chocolatey");
-        public static readonly string ExtensionsLocation = _fileSystem.combine_paths(InstallLocation, "extensions");
-        public static readonly string TemplatesLocation = _fileSystem.combine_paths(InstallLocation, "templates");
+        public static string PackagesLocation
+        {
+            get => InstallContext.Instance.PackagesLocation;
+            set => InstallContext.Instance.PackagesLocation = value;
+        }
+
+        public static string PackageFailuresLocation            { get { return InstallContext.Instance.PackageFailuresLocation; } }
+        public static string PackageBackupLocation              { get { return InstallContext.Instance.PackageBackupLocation; } }
+        public static string ShimsLocation                      { get { return InstallContext.Instance.ShimsLocation; } }
+        public static string ChocolateyPackageInfoStoreLocation { get { return InstallContext.Instance.ChocolateyPackageInfoStoreLocation; } }
+        public static string ExtensionsLocation                 { get { return InstallContext.Instance.ExtensionsLocation; } }
+        public static string TemplatesLocation                  { get { return InstallContext.Instance.TemplatesLocation; } }
         public static readonly string ChocolateyCommunityFeedPushSourceOld = "https://chocolatey.org/";
         public static readonly string ChocolateyCommunityFeedPushSource = "https://push.chocolatey.org/";
         public static string ChocolateyCommunityFeedSource = "https://chocolatey.org/api/v2/";
@@ -172,8 +160,8 @@ namespace chocolatey.infrastructure.app
             public static string ShimGenExe
             {
                 get
-                { 
-                    return _fileSystem.combine_paths(InstallLocation, "tools", "shimgen.exe");
+                {
+                    return System.IO.Path.Combine(InstallContext.Instance.ToolsLocation, "shimgen.exe");
                 }
             }
         }

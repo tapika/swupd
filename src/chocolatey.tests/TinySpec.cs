@@ -36,10 +36,24 @@ namespace chocolatey.tests
         [OneTimeSetUp]
         public virtual void BeforeEverything()
         {
+            BeforeEverything(true);
+        }
+        
+        public void BeforeEverything(bool useMockLogger)
+        {
             Directory.SetCurrentDirectory(TestContext.CurrentContext.WorkDirectory);
             Environment.SetEnvironmentVariable(ApplicationParameters.ChocolateyInstallEnvironmentVariableName, string.Empty);
-            MockLogger = new MockLogger();
-            Log.InitializeWith(MockLogger);
+            
+            if (useMockLogger)
+            {
+                MockLogger = new MockLogger();
+                Log.InitializeWith(MockLogger);
+            }
+            else
+            {
+                Log.InitializeWith<NLogLog>();
+            }
+            
             // do not log trace messages
             ILogExtensions.LogTraceMessages = false;
         }

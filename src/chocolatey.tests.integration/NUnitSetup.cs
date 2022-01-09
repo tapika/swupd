@@ -44,10 +44,15 @@ namespace chocolatey.tests.integration
 
         public override void BeforeEverything()
         {
+            BeforeEverything(true);
+        }
+        
+        public void BeforeEverything(bool useMockLogger)
+        {
             Container = SimpleInjectorContainer.Container;
             fix_application_parameter_variables(Container);
 
-            base.BeforeEverything();
+            base.BeforeEverything(useMockLogger);
 
             // deep copy so we don't have the same configuration and 
             // don't have to worry about issues using it
@@ -64,7 +69,10 @@ namespace chocolatey.tests.integration
 
             ConfigurationBuilder.set_up_configuration(new List<string>(), config, Container, new ChocolateyLicense(), null);
 
-            MockLogger.reset();
+            if (useMockLogger)
+            { 
+                MockLogger.reset();
+            }
         }
 
         /// <summary>
@@ -81,19 +89,7 @@ namespace chocolatey.tests.integration
 
             ApplicationParameters.LicenseFileLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "license", "chocolatey.license.xml");
 
-            ApplicationParameters.LoggingLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "logs");
-
-            ApplicationParameters.GlobalConfigFileLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "config", "chocolatey.config");
-
             ApplicationParameters.PackagesLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "lib");
-
-            ApplicationParameters.PackageFailuresLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "lib-bad");
-
-            ApplicationParameters.PackageBackupLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "lib-bkp");
-
-            ApplicationParameters.ShimsLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "bin");
-
-            ApplicationParameters.ChocolateyPackageInfoStoreLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, ".chocolatey");
 
             ApplicationParameters.LockTransactionalInstallFiles = false;
 
