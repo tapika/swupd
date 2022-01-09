@@ -36,7 +36,7 @@ namespace chocolatey.tests2
         {
             var newTask = new Task(() =>
             {
-                using (new VerifyingLog("_" + operation))
+                using (new VerifyingLog(operation))
                 {
                     //Random rand = GetRandomForString(operation + "_" + testName);
                     Random rand = GetRandomForString(operation);

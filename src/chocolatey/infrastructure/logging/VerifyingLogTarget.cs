@@ -46,12 +46,6 @@ namespace chocolatey.infrastructure.logging
                 ArchiveOldFileOnStartup = true;
                 MaxArchiveFiles = 1;
             }
-            else
-            {
-                fs = File.OpenRead(path);
-                streamreader = new StreamReader(fs, Encoding.UTF8, true, 4096);
-                lineN = 1;
-            }
         }
 
         //unlike in FileTarget - this one is without [RequiredParameter]
@@ -73,6 +67,15 @@ namespace chocolatey.infrastructure.logging
             { 
                 base.Write(logEvent);
                 return;
+            }
+
+            // It's possible that functionality does not produce any logs and also does not produce
+            // the log file - that why we open file here in case if there is no file.
+            if (fs == null)
+            {
+                fs = File.OpenRead(logPath);
+                streamreader = new StreamReader(fs, Encoding.UTF8, true, 4096);
+                lineN = 1;
             }
 
             string actualLines = base.Layout.Render(logEvent);

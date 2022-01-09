@@ -2,6 +2,7 @@
 using NLog.Targets;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -42,12 +43,20 @@ namespace chocolatey.infrastructure.logging
                 asm = Assembly.GetCallingAssembly();
             }
 
+            if (variantContext.Length != 0)
+            {
+                variantContext = $"_{variantContext}";
+            }
+
             var factory = LogService.GetInstance(false).LogFactory;
             var conf = factory.Configuration;
             oldTarget = conf.FindTargetByName(LogName);
             conf.RemoveTarget(LogName);
-            string path = CallerFilePathHelper.CallerFilePathToSolutionSourcePath(sourcePath, asm);
-            ApplyTarget(new VerifyingLogTarget(LogName, $"{path}_{func}{variantContext}.txt", createLog));
+            string srcpath = CallerFilePathHelper.CallerFilePathToSolutionSourcePath(sourcePath, asm);
+            string srcdir = Path.GetDirectoryName(srcpath);
+            string logdir = Path.Combine(srcdir,Path.GetFileNameWithoutExtension(srcpath));
+            string targetLogPath = Path.Combine(logdir, $"{func}{variantContext}.txt");
+            ApplyTarget(new VerifyingLogTarget(LogName, targetLogPath, createLog));
         }
 
         public void Dispose()
