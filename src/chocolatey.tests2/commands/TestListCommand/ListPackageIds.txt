@@ -1,0 +1,3 @@
+installpackage
+upgradepackage
+end of test

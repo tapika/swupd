@@ -1,0 +1,33 @@
+Installing the following packages:
+installpackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'installpackage 1.0.0'.
+[NuGet] Successfully installed 'installpackage 1.0.0'.
+
+installpackage v1.0.0
+installpackage package files install completed. Performing other installation steps.
+ ShimGen has successfully created a shim for console.exe
+ ShimGen has successfully created a gui shim for graphical.exe
+ The install of installpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+Installing the following packages:
+upgradepackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'upgradepackage 1.0.0'.
+[NuGet] Successfully installed 'upgradepackage 1.0.0'.
+
+upgradepackage v1.0.0
+upgradepackage package files install completed. Performing other installation steps.
+Transforming 'console.exe.config' with the data from 'console.exe.config.install.xdt'
+ ShimGen has successfully created a shim for console.exe
+ ShimGen has successfully created a gui shim for graphical.exe
+ The install of upgradepackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).

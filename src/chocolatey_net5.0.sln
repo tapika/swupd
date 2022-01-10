@@ -48,19 +48,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "..\lib\NuGet-Chocol
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Data.Services.Client", "Microsoft.Data.Services.Client", "{44F5C54A-1D0E-4D33-A354-9BB2C5B7A177}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.Edm", "..\lib\Microsoft.Data.Services.Client\ODataLib\EdmLib\Desktop\.Net4.0\Microsoft.Data.Edm.csproj", "{A934C8C2-9252-453C-9360-54381E4D276A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Data.Edm", "..\lib\Microsoft.Data.Services.Client\ODataLib\EdmLib\Desktop\.Net4.0\Microsoft.Data.Edm.csproj", "{A934C8C2-9252-453C-9360-54381E4D276A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Spatial", "..\lib\Microsoft.Data.Services.Client\ODataLib\Spatial\Desktop\.Net4.0\System.Spatial.csproj", "{D8E09813-D0EA-40EB-8A96-EB30DAC029E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Spatial", "..\lib\Microsoft.Data.Services.Client\ODataLib\Spatial\Desktop\.Net4.0\System.Spatial.csproj", "{D8E09813-D0EA-40EB-8A96-EB30DAC029E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.OData", "..\lib\Microsoft.Data.Services.Client\ODataLib\OData\Desktop\.Net4.0\Microsoft.Data.OData.csproj", "{34B74905-DF66-4BF7-958B-62C50ED1203C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Data.OData", "..\lib\Microsoft.Data.Services.Client\ODataLib\OData\Desktop\.Net4.0\Microsoft.Data.OData.csproj", "{34B74905-DF66-4BF7-958B-62C50ED1203C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Data.Services.Client", "..\lib\Microsoft.Data.Services.Client\WCFDataService\Client\System.Data.Services.Client.csproj", "{B2667D84-F31E-482D-A604-1323905D582F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Data.Services.Client", "..\lib\Microsoft.Data.Services.Client\WCFDataService\Client\System.Data.Services.Client.csproj", "{B2667D84-F31E-482D-A604-1323905D582F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChocolateyGui.Common", "ChocolateyGui.Common\ChocolateyGui.Common.csproj", "{5625DF34-48CD-4957-A54C-E8D835EF2FD8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChocolateyGui.Common.Windows", "ChocolateyGui.Common.Windows\ChocolateyGui.Common.Windows.csproj", "{943F7C14-DCC3-43C5-8ED8-F65AAEDCB893}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChocolateyGui", "ChocolateyGui\ChocolateyGui.csproj", "{FD09DFBB-F4C9-4F7A-A89F-7294C5499A1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chocolatey.tests2", "chocolatey.tests2\chocolatey.tests2.csproj", "{47966427-1793-49FD-8F50-3EB02BF90E5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -428,6 +430,34 @@ Global
 		{FD09DFBB-F4C9-4F7A-A89F-7294C5499A1C}.ReleaseOfficial|Any CPU.Build.0 = Release|Any CPU
 		{FD09DFBB-F4C9-4F7A-A89F-7294C5499A1C}.ReleaseOfficial|x86.ActiveCfg = Release|Any CPU
 		{FD09DFBB-F4C9-4F7A-A89F-7294C5499A1C}.ReleaseOfficial|x86.Build.0 = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Coverage|Any CPU.ActiveCfg = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Coverage|Any CPU.Build.0 = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Coverage|x86.ActiveCfg = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Coverage|x86.Build.0 = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Debug|x86.Build.0 = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Mono Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Mono Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Mono Debug|x86.ActiveCfg = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Mono Debug|x86.Build.0 = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Mono Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Mono Release|Any CPU.Build.0 = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Mono Release|x86.ActiveCfg = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Mono Release|x86.Build.0 = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.NoResources|Any CPU.ActiveCfg = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.NoResources|Any CPU.Build.0 = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.NoResources|x86.ActiveCfg = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.NoResources|x86.Build.0 = Debug|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Release|x86.ActiveCfg = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.Release|x86.Build.0 = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.ReleaseOfficial|Any CPU.ActiveCfg = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.ReleaseOfficial|Any CPU.Build.0 = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.ReleaseOfficial|x86.ActiveCfg = Release|Any CPU
+		{47966427-1793-49FD-8F50-3EB02BF90E5C}.ReleaseOfficial|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -442,6 +472,7 @@ Global
 		{D8E09813-D0EA-40EB-8A96-EB30DAC029E2} = {44F5C54A-1D0E-4D33-A354-9BB2C5B7A177}
 		{34B74905-DF66-4BF7-958B-62C50ED1203C} = {44F5C54A-1D0E-4D33-A354-9BB2C5B7A177}
 		{B2667D84-F31E-482D-A604-1323905D582F} = {44F5C54A-1D0E-4D33-A354-9BB2C5B7A177}
+		{47966427-1793-49FD-8F50-3EB02BF90E5C} = {7656D054-387D-409C-A9FB-62A44599AA77}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {998CAC46-A2B8-447C-B4CC-3B11DC35ED46}

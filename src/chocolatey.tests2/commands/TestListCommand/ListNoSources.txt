@@ -1,0 +1,3 @@
+Unable to search for packages when there are no sources enabled for
+ packages and none were passed as arguments.
+end of test

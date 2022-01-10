@@ -18,7 +18,7 @@
         [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
         public void InitializeFor(string loggerName)
         {
-            _logger = LogManager.GetLogger(loggerName);
+            _logger = LogService.Instance.LogFactory.GetLogger(loggerName);
         }
 
         [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]

@@ -95,7 +95,10 @@ namespace chocolatey.tests.integration
             installConfig.Version = version;
             _service.install_run(installConfig);
 
-            NUnitSetup.MockLogger.Messages.Clear();
+            if (NUnitSetup.MockLogger != null)
+            { 
+                NUnitSetup.MockLogger.Messages.Clear();
+            }
         }
 
         public static void add_files(IEnumerable<Tuple<string, string>> files)
@@ -115,11 +118,16 @@ namespace chocolatey.tests.integration
             _fileSystem.create_directory(directoryPath);
         }
 
-        private static ChocolateyConfiguration baseline_configuration()
+        private static ChocolateyConfiguration baseline_configuration(bool newcopy = false)
         {
             // note that this does not mean an empty configuration. It does get influenced by
             // prior commands, so ensure that all items go back to the default values here
             var config = NUnitSetup.Container.GetInstance<ChocolateyConfiguration>();
+
+            if (newcopy)
+            {
+                config = config.deep_copy();
+            }
 
             config.Information.PlatformType = PlatformType.Windows;
             config.Information.IsInteractive = false;
@@ -205,9 +213,9 @@ namespace chocolatey.tests.integration
             return config;
         }
 
-        public static ChocolateyConfiguration list()
+        public static ChocolateyConfiguration list(bool newcopy = false)
         {
-            var config = baseline_configuration();
+            var config = baseline_configuration(newcopy);
             config.CommandName = "list";
 
             return config;

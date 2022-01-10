@@ -312,6 +312,10 @@ Did you know Pro / Business automatically syncs with Programs and
         /// <remarks>We want it random enough not to be annoying, but informative enough for awareness.</remarks>
         public void randomly_notify_about_pro_business(ChocolateyConfiguration config, string message = null)
         {
+            // Licensing system is not yet ported to .net core 3.1 - also
+            // logging extra message during testing will create random failures during testing
+            return;
+
             if (!config.Information.IsLicensedVersion && config.RegularOutput)
             {
                 // magic numbers! Basically about 10% of the time show a message.
@@ -908,7 +912,7 @@ If a package is failing because it is a dependency of another package
                     successes.Count(),
                     packageResults.Count,
                     (failures > 0) ? failures + " packages failed.": string.Empty,
-                    _fileSystem.combine_paths(ApplicationParameters.LoggingLocation, ApplicationParameters.LoggingFile)
+                    _fileSystem.combine_paths(InstallContext.Instance.DisplayLoggingLocation, ApplicationParameters.LoggingFile)
                     ));
 
             // summarize results when more than 5

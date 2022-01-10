@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\chocolatey.tests.integration\chocolatey.tests.integration.csproj" />
     <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
   </ItemGroup>
 

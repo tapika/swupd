@@ -1,0 +1,5 @@
+exactpackage 1.0.0
+exactpackage 1.0.0-beta1
+exactpackage 0.9.0
+3 packages found.
+end of test

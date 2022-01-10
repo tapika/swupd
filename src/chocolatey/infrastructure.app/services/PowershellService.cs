@@ -131,7 +131,7 @@ namespace chocolatey.infrastructure.app.services
 
         private string get_helpers_folder()
         {
-            return _fileSystem.combine_paths(ApplicationParameters.InstallLocation, "helpers");
+            return _fileSystem.combine_paths(InstallContext.ApplicationInstallLocation, "helpers");
         }
 
         public string wrap_script_with_module(string script, ChocolateyConfiguration config)

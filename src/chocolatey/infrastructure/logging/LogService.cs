@@ -3,6 +3,7 @@ using NLog;
 using NLog.Config;
 using NLog.Targets;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,6 +35,8 @@ namespace chocolatey.infrastructure.logging
 
             return _instance.Value;
         }
+
+        public ConcurrentDictionary<string, ILog> ClassLoggers { get; set; } = new ConcurrentDictionary<string, ILog>();
 
         /// <summary>
         /// Logger instance

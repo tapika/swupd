@@ -13,8 +13,8 @@ namespace chocolatey.infrastructure.app
     /// </summary>
     public class InstallContext
     {
-        static public ThreadLocal<InstallContext> _instance = 
-            new ThreadLocal<InstallContext>( () => { return new InstallContext(); });
+        static public ThreadLocal<InstallContext> _instance =
+            new ThreadLocal<InstallContext>(() => { return new InstallContext(); });
 
         static public InstallContext Instance
         {
@@ -31,6 +31,8 @@ namespace chocolatey.infrastructure.app
                 return Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             }
         }
+
+        public bool ShowShortPaths { get; set; } = false;
 
         string rootLocation;
 
@@ -76,8 +78,20 @@ namespace chocolatey.infrastructure.app
                 packagesLocation = value;
             }
         }
-        
-        public string LoggingLocation                       { get { return Path.Combine(RootLocation, "logs"); } }
+
+        public const string LoggingDirectory = "logs";
+        public string LoggingLocation                       { get { return Path.Combine(RootLocation, LoggingDirectory); } }
+
+        public string DisplayLoggingLocation
+        {
+            get {
+                if (ShowShortPaths)
+                    return LoggingDirectory;
+
+                return LoggingLocation;
+            }
+        }
+
         public string PackageFailuresLocation               { get { return Path.Combine(RootLocation, "lib-bad"); } }
         public string PackageBackupLocation                 { get { return Path.Combine(RootLocation, "lib-bkp"); } }
         public string ShimsLocation                         { get { return Path.Combine(RootLocation, "bin"); } }

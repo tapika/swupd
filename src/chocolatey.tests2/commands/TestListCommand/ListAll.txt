@@ -1,0 +1,4 @@
+installpackage 1.0.0
+upgradepackage 1.0.0
+2 packages installed.
+end of test

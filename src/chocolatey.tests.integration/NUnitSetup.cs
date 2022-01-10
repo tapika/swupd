@@ -47,12 +47,12 @@ namespace chocolatey.tests.integration
             BeforeEverything(true);
         }
         
-        public void BeforeEverything(bool useMockLogger)
+        public void BeforeEverything(bool oldStyleActivation)
         {
             Container = SimpleInjectorContainer.Container;
-            fix_application_parameter_variables(Container);
+            fix_application_parameter_variables(Container, oldStyleActivation);
 
-            base.BeforeEverything(useMockLogger);
+            base.BeforeEverything(oldStyleActivation);
 
             // deep copy so we don't have the same configuration and 
             // don't have to worry about issues using it
@@ -69,7 +69,7 @@ namespace chocolatey.tests.integration
 
             ConfigurationBuilder.set_up_configuration(new List<string>(), config, Container, new ChocolateyLicense(), null);
 
-            if (useMockLogger)
+            if (oldStyleActivation)
             { 
                 MockLogger.reset();
             }
@@ -79,7 +79,7 @@ namespace chocolatey.tests.integration
         ///   Most of the application parameters are already set by runtime and are readonly values.
         ///   They need to be updated, so we can do that with reflection.
         /// </summary>
-        private static void fix_application_parameter_variables(Container container)
+        private static void fix_application_parameter_variables(Container container, bool oldStyleActivation)
         {
             var fileSystem = container.GetInstance<IFileSystem>();
 
@@ -89,7 +89,10 @@ namespace chocolatey.tests.integration
 
             ApplicationParameters.LicenseFileLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "license", "chocolatey.license.xml");
 
-            ApplicationParameters.PackagesLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "lib");
+            if (oldStyleActivation)
+            { 
+                ApplicationParameters.PackagesLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "lib");
+            }
 
             ApplicationParameters.LockTransactionalInstallFiles = false;
 

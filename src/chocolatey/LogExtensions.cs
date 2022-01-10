@@ -28,27 +28,11 @@ namespace chocolatey
     public static class LogExtensions
     {
         /// <summary>
-        ///   Concurrent dictionary that ensures only one instance of a logger for a type.
-        /// </summary>
-        private static readonly Lazy<ConcurrentDictionary<string, ILog>> _dictionary = new Lazy<ConcurrentDictionary<string, ILog>>(() => new ConcurrentDictionary<string, ILog>());
-
-        // /// <summary>
-        // /// Gets the logger for the specified object
-        // /// </summary>
-        // /// <param name="obj">The obj.</param>
-        // /// <returns></returns>
-        // public static ILog Log(this object obj)
-        // {
-        //     string objectName = obj.GetType().FullName;
-        //     return Log(objectName);
-        //}
-
-        /// <summary>
         /// Resets the loggers. This allows switching to a new logger and not reusing old loggers that may be already cached.
         /// </summary>
         public static void ResetLoggers()
         {
-            _dictionary.Value.Clear();
+            LogService.Instance.ClassLoggers.Clear();
         }
 
         /// <summary>
@@ -70,12 +54,13 @@ namespace chocolatey
         /// <returns>Instance of a logger for the object.</returns>
         public static ILog Log(this string objectName)
         {
-            if (!_dictionary.Value.ContainsKey(objectName))
+            var dict = LogService.Instance.ClassLoggers;
+            if (!dict.ContainsKey(objectName))
             {
-                _dictionary.Value.TryAdd(objectName,infrastructure.logging.Log.GetLoggerFor(objectName));
+                dict.TryAdd(objectName,infrastructure.logging.Log.GetLoggerFor(objectName));
             }
 
-            return _dictionary.Value[objectName];
+            return dict[objectName];
         }
     }
 
