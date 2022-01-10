@@ -173,7 +173,7 @@ namespace chocolatey.infrastructure.app.services
  Description: {16}{17}
 ".format_with(
                                 package.Title.escape_curly_braces(),
-                                package.Published.GetValueOrDefault().UtcDateTime.ToShortDateString(),
+                                ApplicationParameters.ShortDateString(package.Published.GetValueOrDefault().UtcDateTime),
                                 package.IsApproved ? "{0} Package approved {1} on {2}.".format_with(
                                         Environment.NewLine,
                                         string.IsNullOrWhiteSpace(package.PackageReviewer) ? "as a trusted package" : "by " + package.PackageReviewer,

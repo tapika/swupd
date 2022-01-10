@@ -127,6 +127,40 @@ namespace chocolatey.tests2.commands
             Service.list_run(conf).ToList();
         }
 
+        // when_searching_packages_with_no_filter_happy_path
+        // when_searching_all_available_packages
+        // almost identical to when_listing_local_packages
+
+        // when_searching_for_a_particular_package
+        [LogTest]
+        public void ListSpecificPackage()
+        {
+            CommonList((conf) =>
+            {
+                conf.Input = conf.PackageNames = "upgradepackage";
+            });
+        }
+
+        // when_searching_all_available_packages
+        [LogTest]
+        public void ListAllPackages()
+        {
+            CommonList((conf) =>
+            {
+                conf.AllVersions = true;
+            });
+        }
+
+        // when_searching_packages_with_verbose
+        [LogTest]
+        public void ListWithVerbose()
+        {
+            CommonList((conf) =>
+            {
+                conf.Verbose = true;
+            });
+        }
+
         // when_listing_local_packages
         [LogTest]
         public void ListAll()

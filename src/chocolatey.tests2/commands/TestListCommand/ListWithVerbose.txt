@@ -1,0 +1,24 @@
+installpackage 1.0.0
+ Title: installpackage | Published: n/a
+ Number of Downloads: n/a | Downloads for this version: n/a
+ Package url
+ Chocolatey Package Source: n/a
+ Tags: installpackage admin
+ Software Site: n/a
+ Software License: n/a
+ Summary: __REPLACE__
+ Description: __REPLACE__
+
+upgradepackage 1.0.0
+ Title: upgradepackage | Published: n/a
+ Number of Downloads: n/a | Downloads for this version: n/a
+ Package url
+ Chocolatey Package Source: n/a
+ Tags: upgradepackage admin
+ Software Site: n/a
+ Software License: n/a
+ Summary: __REPLACE__
+ Description: __REPLACE__
+
+2 packages found.
+end of test

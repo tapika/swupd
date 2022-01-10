@@ -32,6 +32,8 @@ namespace chocolatey.infrastructure.app
         public static readonly string ChocolateyInstallEnvironmentVariableName = "ChocolateyInstall";
         public static readonly string Name = "Chocolatey";
 
+        public static bool runningUnitTesting = false;
+
 #if FORCE_CHOCOLATEY_OFFICIAL_KEY
         public static string InstallLocation
         {
@@ -246,12 +248,12 @@ namespace chocolatey.infrastructure.app
             return isDebug;
         }
 
-        ///// <summary>
-        /////   Are we in Debug Mode?
-        ///// </summary>
-        //public static bool IsDebug
-        //{
-        //    get { return TryGetConfig(() => Config.GetConfigurationSettings().Debug, false); }
-        //}
+        public static string ShortDateString(System.DateTime utcDateTime)
+        {
+            if (runningUnitTesting)
+                return "n/a";
+
+            return utcDateTime.ToShortDateString();
+        }
     }
 }
