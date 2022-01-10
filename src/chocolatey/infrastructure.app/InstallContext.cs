@@ -27,6 +27,12 @@ namespace chocolatey.infrastructure.app
         public static string ApplicationInstallLocation
         {
             get {
+                // Visual studio / .net 4.8 / testhost*.exe
+                if (System.Diagnostics.Process.GetCurrentProcess().ProcessName.StartsWith("testhost"))
+                {
+                    return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                }
+            
                 // See also: https://github.com/dotnet/runtime/issues/13051
                 return Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             }
