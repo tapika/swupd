@@ -9,7 +9,7 @@ using System.Text;
 namespace chocolatey.infrastructure.logging
 {
     [Target("VerifyingLogTarget")]
-    public class VerifyingLogTarget : FileTarget, IDisposable
+    public class VerifyingLogTarget : FileTarget
     {
         FileStream fs;
         StreamReader streamreader;
@@ -18,12 +18,13 @@ namespace chocolatey.infrastructure.logging
         string logPath;
         string lastException = null;
 
-        void IDisposable.Dispose()
+        protected override void CloseTarget()
         {
+            base.CloseTarget();
             fs?.Dispose();
             streamreader?.Dispose();
         }
-    
+
         public VerifyingLogTarget(string name, string path, bool _createNew = false): base(name)
         {
             bool allowToCreatingLog = false;
