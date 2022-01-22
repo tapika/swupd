@@ -14,12 +14,6 @@ using System.Threading.Tasks;
 
 namespace chocolatey.tests2.commands
 {
-    public enum ListFolderNames
-    { 
-        installupdate,
-        exactpackage
-    };
-
     public class ListScenario : LogTesting
     {
         protected IChocolateyPackageService Service;
@@ -28,91 +22,8 @@ namespace chocolatey.tests2.commands
         {
             Service = NUnitSetup.Container.GetInstance<IChocolateyPackageService>();
         }
-
-        static ConcurrentDictionary<string, Task> updaters = new ConcurrentDictionary<string, Task>();
-        
-        /// <summary>
-        /// Gets test folder for testing. If folder does not exists, creates new task which will create specific folder.
-        /// </summary>
-        public string PrepareTestFolder(string folder, ChocolateyConfiguration conf)
-        {
-            string folderPath = Path.Combine(InstallContext.ApplicationInstallLocation, "test_folders", folder);
-            string folderPathOk = Path.Combine(folderPath, $".updated_ok");
-
-            if (Directory.Exists(folderPathOk))
-            {
-                return folderPath;
-            }
-
-            Task newtask;
-
-            switch (folder)
-            {
-                default: throw new Exception($"GetListFolder: {folder} is not known");
-
-                case nameof(ListFolderNames.installupdate):
-                    {
-                        newtask = new Task(() =>
-                        {
-                            InstallContext.Instance.ShowShortPaths = true;
-
-                            using (new VerifyingLog(folder))
-                            {
-                                if (Directory.Exists(folderPath))
-                                {
-                                    Directory.Delete(folderPath, true);
-                                }
-                                Directory.CreateDirectory(folderPath);
-
-                                string oldSources = conf.Sources;
-                                conf.Sources = Path.Combine(InstallContext.ApplicationInstallLocation, "context");
-                                InstallContext.Instance.RootLocation = folderPath;
-                                Scenario.install_package(conf, "installpackage", "1.0.0");
-                                Scenario.install_package(conf, "upgradepackage", "1.0.0");
-
-                                conf.Sources = oldSources;
-                                Directory.CreateDirectory(folderPathOk);
-                            }
-                        });
-                    }
-                    break;
-
-                case nameof(ListFolderNames.exactpackage):
-                    {
-                        newtask = new Task(() =>
-                        {
-                            InstallContext.Instance.ShowShortPaths = true;
-
-                            using (new VerifyingLog(folder))
-                            {
-                                if (Directory.Exists(folderPath))
-                                {
-                                    Directory.Delete(folderPath, true);
-                                }
-                                Directory.CreateDirectory(folderPath);
-
-                                string oldSources = conf.Sources;
-                                InstallContext.Instance.RootLocation = folderPath;
-                                conf.Sources = InstallContext.Instance.PackagesLocation;
-
-                                Scenario.add_packages_to_source_location(conf, "exactpackage*" + Constants.PackageExtension);
-
-                                conf.Sources = oldSources;
-                                Directory.CreateDirectory(folderPathOk);
-                            }
-                        });
-                    }
-                    break;
-            }
-
-            var task = updaters.GetOrAdd(folder, newtask);
-            if (task == newtask)
-                newtask.Start();
-
-            task.Wait();
-            return folderPath;
-        }
-    }
+    };
+    
 
     [Parallelizable(ParallelScope.All)]
     public class TestListCommand: ListScenario
@@ -120,8 +31,7 @@ namespace chocolatey.tests2.commands
         public void CommonList(Action<ChocolateyConfiguration> confPatch)
         {
             var conf = Scenario.list(true);
-            InstallContext.Instance.RootLocation =
-                PrepareTestFolder(nameof(ListFolderNames.installupdate), conf);
+            InstallContext.Instance.RootLocation = PrepareTestFolder(ChocoTestContext.installupdate, conf);
             conf.Sources = InstallContext.Instance.PackagesLocation;
             confPatch(conf);
             Service.list_run(conf).ToList();
@@ -205,8 +115,7 @@ namespace chocolatey.tests2.commands
         public void ExactPackagesList(Action<ChocolateyConfiguration> confPatch)
         {
             var conf = Scenario.list(true);
-            InstallContext.Instance.RootLocation =
-                PrepareTestFolder(nameof(ListFolderNames.exactpackage), conf);
+            InstallContext.Instance.RootLocation = PrepareTestFolder(ChocoTestContext.exactpackage, conf);
             conf.Sources = InstallContext.Instance.PackagesLocation;
             confPatch(conf);
             Service.list_run(conf).ToList();

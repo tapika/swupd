@@ -36,9 +36,17 @@
     <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
   </ItemGroup>
 
+  <!-- 
+    Using xml tags like this can enforce to build unit test on one machine, so same binary can run on another machine -
+    however - double click in test explorer wont work.
+
+    Something to gain, something to loose.
+  -->
+  <!--
   <PropertyGroup>
     <Deterministic>true</Deterministic>
     <DeterministicSourcePaths>true</DeterministicSourcePaths>
     <PathMap>$(SolutionDir)=./src/</PathMap>
   </PropertyGroup>
+  -->
 </Project>

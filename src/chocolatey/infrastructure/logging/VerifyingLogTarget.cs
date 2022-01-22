@@ -16,6 +16,7 @@ namespace chocolatey.infrastructure.logging
         bool verifying;
         int lineN;
         string logPath;
+        string lastException = null;
 
         void IDisposable.Dispose()
         {
@@ -38,6 +39,7 @@ namespace chocolatey.infrastructure.logging
             bool createNew = (!File.Exists(path) && allowToCreatingLog) || _createNew;
             verifying = !createNew;
             logPath = path;
+            lastException = null;
 
             if (createNew)
             {
@@ -78,6 +80,13 @@ namespace chocolatey.infrastructure.logging
                 lineN = 1;
             }
 
+            // Extra guard just in case if last failure was eaten by try-catch handling, we re-raise here 
+            // exception again.
+            if (lastException != null)
+            {
+                throw new Exception(lastException);
+            }
+
             string actualLines = base.Layout.Render(logEvent);
 
             foreach (var actualLine in actualLines.Replace("\r\n", "\n").Split(new char[] { '\r', '\n' }))
@@ -87,11 +96,11 @@ namespace chocolatey.infrastructure.logging
 
                 if (actualLine != expectedLine)
                 {
-                    throw new Exception(
-                        $"Unexpected {lineN} line {logPath}:\n" +
+                    lastException = $"Unexpected {lineN} line {logPath}:\n" +
                         $"actual line  : '{actualLine}'\n" +
-                        $"expected line: '{expectedLine}'\n"
-                    );
+                        $"expected line: '{expectedLine}'\n";
+
+                    throw new Exception(lastException);
                 }
             }
         }
