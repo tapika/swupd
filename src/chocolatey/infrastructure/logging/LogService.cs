@@ -30,7 +30,16 @@ namespace chocolatey.infrastructure.logging
         {
             if (_instance.Value == null)
             {
-                _instance.Value = new LogService(addConsole);
+                // If we have main application (choco, chocogui) - then MainThreadInstance gets initialized,
+                // and all threads will log to same logfactory, specified by MainThreadInstance.LogFactory
+                if (MainThreadInstance != null)
+                {
+                    _instance.Value = MainThreadInstance;
+                }
+                else
+                { 
+                    _instance.Value = new LogService(addConsole);
+                }
             }
 
             return _instance.Value;
@@ -76,13 +85,6 @@ namespace chocolatey.infrastructure.logging
             {
                 MainThreadInstance = this;
                 LogFactory = LogManager.LogFactory;
-            }
-
-            // If we have main application (choco, chocogui) - then MainThreadInstance gets initialized,
-            // and all threads will log to same logfactory, specified by MainThreadInstance.LogFactory
-            if (MainThreadInstance != null)
-            {
-                LogFactory = MainThreadInstance.LogFactory;
             }
 
             // In case of unit tests MainThreadInstance will remain null, and each LogService will allocate it's own
