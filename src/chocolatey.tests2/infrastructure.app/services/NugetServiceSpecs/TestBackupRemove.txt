@@ -1,0 +1,23 @@
+- should_ignore_an_unchanged_file:
+
+- should_backup_a_changed_file:
+copy_file("c:/choco/lib/somelib/license.txt","c:\choco\lib\somelib\license.txt.1.2.3.4",True)
+
+- if_snapshot_not_available_should_backup_files_in_folder:
+copy_file("c:/choco/lib/somelib/myconf.xml","c:\choco\lib\somelib\myconf.xml.1.2.3.4",True)
+
+- should_do_nothing_if_the_directory_no_longer_exists:
+
+- should_remove_an_unchanged_file:
+
+- should_not_delete_a_changed_file:
+
+- should_not_delete_an_unfound_file:
+
+- generated_package_should_be_in_current_directory:
+Chocolatey would have searched for a nuspec file in "c:/choco" and attempted to compile it.
+
+- generated_package_should_be_in_specified_directory:
+Chocolatey would have searched for a nuspec file in "c:/packages" and attempted to compile it.
+
+end of test
