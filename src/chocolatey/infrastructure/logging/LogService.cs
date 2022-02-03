@@ -22,7 +22,7 @@ namespace chocolatey.infrastructure.logging
         static public LogService Instance
         {
             get {
-                return GetInstance(true);
+                return GetInstance(!ApplicationParameters.runningUnitTesting);
             }
         }
 
