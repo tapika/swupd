@@ -156,6 +156,7 @@ namespace chocolatey.tests.integration.scenarios
 
             public override void Because()
             {
+                Configuration.Features.UseShimGenService = true;
                 Results = Service.install_run(Configuration);
                 packageResult = Results.FirstOrDefault().Value;
             }
@@ -3103,6 +3104,7 @@ namespace chocolatey.tests.integration.scenarios
 
             public override void Because()
             {
+                Configuration.Features.UseShimGenService = true;
                 Results = Service.install_run(Configuration);
                 packageResult = Results.FirstOrDefault().Value;
             }
