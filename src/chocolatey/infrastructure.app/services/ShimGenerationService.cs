@@ -76,6 +76,11 @@ namespace chocolatey.infrastructure.app.services
 
         public void install(ChocolateyConfiguration configuration, PackageResult packageResult)
         {
+            if (!configuration.Features.UseShimGenService)
+            {
+                return;
+            }
+        
             _fileSystem.create_directory_if_not_exists(ApplicationParameters.ShimsLocation);
 
             if (packageResult.InstallLocation.is_equal_to(ApplicationParameters.InstallLocation) || packageResult.InstallLocation.is_equal_to(ApplicationParameters.PackagesLocation))

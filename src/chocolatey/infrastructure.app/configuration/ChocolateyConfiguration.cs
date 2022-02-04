@@ -396,6 +396,7 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public bool ExitOnRebootDetected { get; set; }
         public bool LogValidationResultsOnWarnings { get; set; }
         public bool UsePackageRepositoryOptimizations { get; set; }
+        public bool UseShimGenService { get; set; }
     }
 
     //todo: retrofit other command configs this way

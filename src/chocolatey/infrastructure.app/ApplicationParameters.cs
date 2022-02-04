@@ -209,6 +209,7 @@ namespace chocolatey.infrastructure.app
             public static readonly string ExitOnRebootDetected = "exitOnRebootDetected";
             public static readonly string LogValidationResultsOnWarnings = "logValidationResultsOnWarnings";
             public static readonly string UsePackageRepositoryOptimizations = "usePackageRepositoryOptimizations";
+            public static readonly string UseShimGenService = "useShimGenService";
         }
 
         public static class Messages

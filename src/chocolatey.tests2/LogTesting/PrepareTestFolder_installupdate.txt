@@ -6,8 +6,6 @@ By installing you accept licenses for the packages.
 
 installpackage v1.0.0
 installpackage package files install completed. Performing other installation steps.
- ShimGen has successfully created a shim for console.exe
- ShimGen has successfully created a gui shim for graphical.exe
  The install of installpackage was successful.
   Software install location not explicitly set, could be in package or
   default install location if installer.
@@ -23,8 +21,6 @@ By installing you accept licenses for the packages.
 upgradepackage v1.0.0
 upgradepackage package files install completed. Performing other installation steps.
 Transforming 'console.exe.config' with the data from 'console.exe.config.install.xdt'
- ShimGen has successfully created a shim for console.exe
- ShimGen has successfully created a gui shim for graphical.exe
  The install of upgradepackage was successful.
   Software install location not explicitly set, could be in package or
   default install location if installer.
