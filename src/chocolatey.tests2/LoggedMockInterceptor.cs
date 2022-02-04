@@ -49,7 +49,9 @@ namespace chocolatey.tests2
                     else
                     { 
                         sb.Append("\"");
-                        sb.Append(args[i].ToString());
+                        string s = args[i].ToString();
+                        s = s.Replace(System.IO.Path.DirectorySeparatorChar, '/');
+                        sb.Append(s);
                         sb.Append("\"");
                     }
                 }

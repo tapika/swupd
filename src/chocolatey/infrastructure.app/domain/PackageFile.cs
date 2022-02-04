@@ -33,7 +33,34 @@ namespace chocolatey.infrastructure.app.domain
         ///   The path.
         /// </value>
         [XmlAttribute(AttributeName = "path")]
-        public string Path { get; set; }
+        public string _path { get; set; }
+
+        /// <summary>
+        /// Store path in relative form against package location, but appear it as absolute to end-user.
+        /// </summary>
+        [XmlIgnore]
+        public string Path
+        {
+            get {
+                if (System.IO.Path.IsPathRooted(_path))
+                {
+                    return _path;
+                }
+
+                return System.IO.Path.Combine(InstallContext.Instance.PackagesLocation, _path);
+            }
+
+            set {
+                // Force path to become relative.
+                _path = value;
+
+                var pkgLocation = InstallContext.Instance.PackagesLocation;
+                if (_path.StartsWith(pkgLocation))
+                {
+                    _path = value.Substring(pkgLocation.Length + 1);
+                }
+            }
+        }
 
         /// <summary>
         ///   Gets or sets the checksum, currently only md5 because fast computation.

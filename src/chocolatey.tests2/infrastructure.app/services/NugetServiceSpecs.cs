@@ -1,4 +1,5 @@
-﻿using chocolatey.infrastructure.app.configuration;
+﻿using chocolatey.infrastructure.app;
+using chocolatey.infrastructure.app.configuration;
 using chocolatey.infrastructure.app.domain;
 using chocolatey.infrastructure.app.services;
 using chocolatey.infrastructure.filesystem;
@@ -40,10 +41,12 @@ namespace chocolatey.tests2.infrastructure.app.services
 
         [LogTest()]
         public void TestBackupRemove()
-        { 
-            const string filePath = "c:/choco/lib/somelib/license.txt";
-            const string fileConfPath = "c:/choco/lib/somelib/myconf.xml";
-            const string filePath2 = "c:/choco/lib/somelib/license2.txt";
+        {
+            InstallContext.Instance.RootLocation = Path.Combine("c:","choco");
+            string filePath = Path.Combine("c:", "choco", "lib", "somelib", "license.txt");
+            string fileConfPath = Path.Combine("c:", "choco", "lib", "somelib", "myconf.xml");
+            string filePath2 = Path.Combine("c:", "choco", "lib", "somelib", "license2.txt");
+            
             RegistryPackage package = new RegistryPackage();
             package.Id = "Bob";
             package.Version = new SemanticVersion(1,2,3,4);
