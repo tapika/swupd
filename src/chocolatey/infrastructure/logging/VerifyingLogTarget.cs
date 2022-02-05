@@ -4,6 +4,7 @@ using NLog.Targets;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace chocolatey.infrastructure.logging
@@ -89,9 +90,11 @@ namespace chocolatey.infrastructure.logging
             }
 
             string actualLines = base.Layout.Render(logEvent);
+            List<string> lines = actualLines.Replace("\r\n", "\n").Split(new char[] { '\r', '\n' }).ToList();
 
-            foreach (var actualLine in actualLines.Replace("\r\n", "\n").Split(new char[] { '\r', '\n' }))
+            for(int i = 0; i < lines.Count; i++)
             {
+                var actualLine = lines[i]; 
                 string expectedLine = streamreader.ReadLine();
                 lineN++;
 
@@ -100,6 +103,12 @@ namespace chocolatey.infrastructure.logging
                     lastException = $"Unexpected {lineN} line {logPath}:\n" +
                         $"actual line  : '{actualLine}'\n" +
                         $"expected line: '{expectedLine}'\n";
+
+                    string rest = String.Join("\n", lines.Skip(i + 1));
+                    if (!string.IsNullOrEmpty(rest))
+                    {
+                        lastException += $"remaining text: {rest}";
+                    }
 
                     throw new Exception(lastException);
                 }
