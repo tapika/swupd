@@ -118,7 +118,7 @@ namespace chocolatey.tests.integration
             _fileSystem.create_directory(directoryPath);
         }
 
-        private static ChocolateyConfiguration baseline_configuration(bool newcopy = false)
+        public static ChocolateyConfiguration baseline_configuration(bool newcopy = false)
         {
             // note that this does not mean an empty configuration. It does get influenced by
             // prior commands, so ensure that all items go back to the default values here
@@ -177,6 +177,7 @@ namespace chocolatey.tests.integration
             config.Features.ChecksumFiles = true;
             config.OutputDirectory = null;
             config.Features.StopOnFirstPackageFailure = false;
+            config.Features.UseShimGenService = false;
             config.UpgradeCommand.PackageNamesToSkip = string.Empty;
             config.AllowDowngrade = false;
             config.Features.FailOnStandardError = false;
