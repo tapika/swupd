@@ -32,14 +32,12 @@
 
   <!-- .net framework specific references -->
   <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
-    <PackageReference Include="Moq" Version="4.2.1402.2112" />
     <PackageReference Include="StrongNamer" Version="0.2.5" />
   </ItemGroup>
 
   <!-- .net core specific references -->
   <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
     <PackageReference Include="StrongNamer" Version="0.2.5" />
-    <PackageReference Include="Moq" Version="4.8.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
   </ItemGroup>
 
@@ -61,4 +59,5 @@
   </ItemGroup>
 
   <Import Project="..\props\log4net.props" />
+  <Import Project="..\props\Moq.props" />
 </Project>
