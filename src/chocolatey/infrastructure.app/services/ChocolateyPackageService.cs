@@ -350,7 +350,16 @@ Did you know Pro / Business automatically syncs with Programs and
             {
                 if (!config.SkipPackageInstallProvider)
                 {
-                    var installersBefore = _registryService.get_installer_keys();
+                    // With multitasking unit testing can get 'Failed to open subkey named' kind of errors.
+                    // Also overall logic will not work, as there might be two or more concurrent installations ongoing
+                    bool useRegistryBackupService = !ApplicationParameters.runningUnitTesting;
+                    Registry installersBefore = null;
+
+                    if (useRegistryBackupService)
+                    { 
+                        installersBefore = _registryService.get_installer_keys();
+                    }
+
                     var environmentBefore = get_environment_before(config, allowLogging: false);
 
                     var powerShellRan = _powershellService.install(config, packageResult);
@@ -360,21 +369,24 @@ Did you know Pro / Business automatically syncs with Programs and
                         if (config.Information.PlatformType == PlatformType.Windows) CommandExecutor.execute_static(_shutdownExe, "/a", config.CommandExecutionTimeoutSeconds, _fileSystem.get_current_directory(), (s, e) => { }, (s, e) => { }, false, false);
                     }
 
-                    var installersDifferences = _registryService.get_installer_key_differences(installersBefore, _registryService.get_installer_keys());
-                    if (installersDifferences.RegistryKeys.Count != 0)
+                    if (useRegistryBackupService)
                     {
-                        //todo v1 - note keys passed in
-                        pkgInfo.RegistrySnapshot = installersDifferences;
+                        var installersDifferences = _registryService.get_installer_key_differences(installersBefore, _registryService.get_installer_keys());
+                        if (installersDifferences.RegistryKeys.Count != 0)
+                        {
+                            //todo v1 - note keys passed in
+                            pkgInfo.RegistrySnapshot = installersDifferences;
 
-                        var key = installersDifferences.RegistryKeys.FirstOrDefault();
-                        if (key != null && key.HasQuietUninstall)
-                        {
-                            pkgInfo.HasSilentUninstall = true;
-                            this.Log().Info("  {0} can be automatically uninstalled.".format_with(packageResult.Name));
-                        }
-                        else if (key != null)
-                        {
-                            this.Log().Info("  {0} may be able to be automatically uninstalled.".format_with(packageResult.Name));
+                            var key = installersDifferences.RegistryKeys.FirstOrDefault();
+                            if (key != null && key.HasQuietUninstall)
+                            {
+                                pkgInfo.HasSilentUninstall = true;
+                                this.Log().Info("  {0} can be automatically uninstalled.".format_with(packageResult.Name));
+                            }
+                            else if (key != null)
+                            {
+                                this.Log().Info("  {0} may be able to be automatically uninstalled.".format_with(packageResult.Name));
+                            }
                         }
                     }
 
@@ -564,8 +576,15 @@ package '{0}' - stopping further execution".format_with(packageResult.Name));
 
         public virtual ConcurrentDictionary<string, PackageResult> install_run(ChocolateyConfiguration config)
         {
-            this.Log().Info(is_packages_config_file(config.PackageNames) ? @"Installing from config file:" : @"Installing the following packages:");
-            this.Log().Info(ChocolateyLoggers.Important, @"{0}".format_with(config.PackageNames));
+            bool isPackageConfigFile = is_packages_config_file(config.PackageNames);
+            string actionMessage = isPackageConfigFile ? "Installing from config file" : "Installing the following packages";
+            string displayPackageNames = config.PackageNames;
+            if (isPackageConfigFile && ApplicationParameters.runningUnitTesting)
+            { 
+                displayPackageNames = Path.GetFileName(config.PackageNames);
+            }
+            this.Log().Info($"{actionMessage}:");
+            this.Log().Info(ChocolateyLoggers.Important, displayPackageNames);
 
             var packageInstalls = new ConcurrentDictionary<string, PackageResult>();
 
@@ -916,7 +935,8 @@ If a package is failing because it is a dependency of another package
                     ));
 
             // summarize results when more than 5
-            if (packageResults.Count >= 5 && successes.Count() != 0)
+            // unit tests will have it's own summary report.
+            if (!ApplicationParameters.runningUnitTesting && packageResults.Count >= 5 && successes.Count() != 0)
             {
                 this.Log().Info("");
                 this.Log().Warn("{0}{1}:".format_with(actionName.Substring(0,1).ToUpper(), actionName.Substring(1)));
