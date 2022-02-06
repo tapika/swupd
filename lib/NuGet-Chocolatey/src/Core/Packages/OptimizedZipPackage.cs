@@ -2,12 +2,14 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
 using System.Runtime.Versioning;
+using System.Threading;
 using NuGet.Resources;
 
 namespace NuGet
@@ -26,8 +28,21 @@ namespace NuGet
         // file has changed.
         private static readonly ConcurrentDictionary<PackageName, Tuple<string, DateTimeOffset>> _cachedExpandedFolder
             = new ConcurrentDictionary<PackageName, Tuple<string, DateTimeOffset>>();
-        private static readonly IFileSystem _tempFileSystem = new PhysicalFileSystem(
-            Path.Combine(Path.GetTempPath(), "NuGetScratch", Guid.NewGuid().ToString()));
+
+        private static readonly ThreadLocal<IFileSystem> _tempFileSystem = new ThreadLocal<IFileSystem>(
+            () =>
+            {
+                string temp = Path.Combine(Path.GetTempPath(), "NuGetScratch", $"{Process.GetCurrentProcess().Id}_{Thread.CurrentThread.ManagedThreadId}");
+                return new PhysicalFileSystem(temp);
+            }
+        );
+
+        private static IFileSystem TempFileSystem
+        {
+            get {
+                return _tempFileSystem.Value;
+            }
+        }
 
         private Dictionary<string, PhysicalPackageFile> _files;
         private ICollection<FrameworkName> _supportedFrameworks;
@@ -59,7 +74,7 @@ namespace NuGet
             string directory = Path.GetDirectoryName(fullPackagePath);
             _fileSystem = new PhysicalFileSystem(directory);
             _packagePath = Path.GetFileName(fullPackagePath);
-            _expandedFileSystem = _tempFileSystem;
+            _expandedFileSystem = TempFileSystem;
 
             EnsureManifest();
         }
@@ -83,7 +98,7 @@ namespace NuGet
 
             _fileSystem = fileSystem;
             _packagePath = packagePath;
-            _expandedFileSystem = _tempFileSystem;
+            _expandedFileSystem = TempFileSystem;
 
             EnsureManifest();
         }
@@ -228,7 +243,7 @@ namespace NuGet
             var packageName = new PackageName(Id, Version);
 
             // Only use the cache for expanded folders under %temp%, or set from unit tests
-            if (_expandedFileSystem == _tempFileSystem || _forceUseCache)
+            if (_expandedFileSystem == TempFileSystem || _forceUseCache)
             {
                 Tuple<string, DateTimeOffset> cacheValue;
                 DateTimeOffset lastModifiedTime = _fileSystem.GetLastModified(_packagePath);
@@ -320,14 +335,14 @@ namespace NuGet
                     foreach (var valueTuple in _cachedExpandedFolder.Values)
                     {
                         string expandedFolder = valueTuple.Item1;
-                        _tempFileSystem.DeleteDirectorySafe(expandedFolder, recursive: true);
+                        TempFileSystem.DeleteDirectorySafe(expandedFolder, recursive: true);
                     }
 
                     _cachedExpandedFolder.Clear();
                 }
                 else
                 {
-                    _tempFileSystem.DeleteDirectorySafe(_tempFileSystem.Root, recursive: true);
+                    TempFileSystem.DeleteDirectorySafe(TempFileSystem.Root, recursive: true);
                 }
             }
         }
