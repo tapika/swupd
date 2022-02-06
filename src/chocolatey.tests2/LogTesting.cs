@@ -3,7 +3,6 @@
     using NUnit.Framework;
     using System.Reflection;
     using chocolatey.infrastructure.logging;
-    using NLog;
     using NUnit.Framework.Internal;
     using chocolatey.infrastructure.app.configuration;
     using chocolatey.infrastructure.app;
@@ -54,6 +53,9 @@
         [SetUp]
         public void EachSpecSetup()
         {
+            // Tasks might re-use existing thread, cleanup all logging services to start from scratch
+            LogService.Instance = null;
+
             var mi = getTestMethodInfo();
             if (mi.Item1 == null)
             {
@@ -90,23 +92,77 @@
         /// </summary>
         static int LogTestingVersion = LastLineNumber();
 
+
+        /// <summary>
+        /// Copies directory recursively
+        /// </summary>
+        static void CopyDirectory(string sourceDir, string destinationDir, bool recursive = true)
+        {
+            // Get information about the source directory
+            var dir = new DirectoryInfo(sourceDir);
+
+            // Check if the source directory exists
+            if (!dir.Exists)
+                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+            // Cache directories before we start copying
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            // Create the destination directory
+            Directory.CreateDirectory(destinationDir);
+
+            // Get the files in the source directory and copy to the destination directory
+            foreach (FileInfo file in dir.GetFiles())
+            {
+                string targetFilePath = Path.Combine(destinationDir, file.Name);
+                file.CopyTo(targetFilePath);
+            }
+
+            // If recursive and copying subdirectories, recursively call this method
+            if (recursive)
+            {
+                foreach (DirectoryInfo subDir in dirs)
+                {
+                    string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+                    CopyDirectory(subDir.FullName, newDestinationDir, true);
+                }
+            }
+        }
+
         /// <summary>
         /// Gets test folder for testing. If folder does not exists, creates new task which will create specific folder.
         /// </summary>
-        public string PrepareTestFolder(ChocoTestContext testcontext, ChocolateyConfiguration conf)
+        /// <param name="fuction">if not empty - copies shared folder also to isolated folder for modifying</param>
+        public string PrepareTestFolder(
+            ChocoTestContext testcontext, 
+            ChocolateyConfiguration conf,
+            string testFolder = ""
+        )
         {
-            string folderPath = Path.Combine(InstallContext.ApplicationInstallLocation, "test_folders", testcontext.ToString());
+            string folderPath = Path.Combine(InstallContext.SharedPackageFolder, testcontext.ToString());
             string folderPathOk = Path.Combine(folderPath, $".updated_{LogTestingVersion}_ok");
+            string isolatedTestFolder = Path.Combine(InstallContext.IsolatedTestFolder, testFolder);
+
+            if (!String.IsNullOrEmpty(testFolder) && Directory.Exists(isolatedTestFolder))
+            {
+                Directory.Delete(isolatedTestFolder, true);
+            }
 
             if (Directory.Exists(folderPathOk))
             {
+                if (!String.IsNullOrEmpty(testFolder))
+                {
+                    CopyDirectory(folderPath, isolatedTestFolder);
+                    return isolatedTestFolder;
+                }
+
                 return folderPath;
             }
 
             Task newtask;
 
             string oldSources = conf.Sources;
-            conf.Sources = Path.Combine(InstallContext.ApplicationInstallLocation, "context");
+            conf.Sources = InstallContext.TestPackagesFolder;
 
             newtask = new Task(() =>
             {
@@ -116,12 +172,12 @@
                 }
                 Directory.CreateDirectory(folderPath);
 
-                InstallContext.Instance.ShowShortPaths = true;
                 InstallContext.Instance.RootLocation = folderPath;
 
                 using (new VerifyingLog(testcontext.ToString()))
                 {
                     PrepareTestContext(testcontext, conf);
+                    LogService.console.Info("shared context ends");
                 }
 
                 Directory.CreateDirectory(folderPathOk);
@@ -133,6 +189,13 @@
 
             task.Wait();
             conf.Sources = oldSources;
+
+            if (!String.IsNullOrEmpty(testFolder))
+            {
+                CopyDirectory(folderPath, isolatedTestFolder);
+                return isolatedTestFolder;
+            }
+
             return folderPath;
         }
 
@@ -153,6 +216,9 @@
 
                         Scenario.add_packages_to_source_location(conf, "exactpackage*" + Constants.PackageExtension);
                     }
+                    break;
+
+                case ChocoTestContext.empty:
                     break;
             }
         }

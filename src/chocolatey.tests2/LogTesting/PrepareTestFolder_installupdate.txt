@@ -31,3 +31,4 @@ Transforming 'console.exe.config' with the data from 'console.exe.config.install
 
 Chocolatey installed 1/1 packages. 
  See the log for details (logs\chocolatey.log).
+shared context ends

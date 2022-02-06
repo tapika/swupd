@@ -7,6 +7,7 @@ namespace chocolatey.tests2
     public enum ChocoTestContext
     {
         installupdate,
-        exactpackage
+        exactpackage,
+        empty
     };
 }
