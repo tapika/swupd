@@ -1,0 +1,5 @@
+Chocolatey would have used NuGet to install packages (if they are not already installed):
+somethingnonexisting
+somethingnonexisting not installed. The package was not found with the source(s) listed.
+=> folder was not updated
+end of test

@@ -1,0 +1,120 @@
+Installing from config file:
+testing.packages.config
+By installing you accept licenses for the packages.
+Installing the following packages:
+installpackage
+hasdependency
+missingpackage
+upgradepackage
+[NuGet] Installing 'installpackage 1.0.0'.
+[NuGet] Successfully installed 'installpackage 1.0.0'.
+
+installpackage v1.0.0
+installpackage package files install completed. Performing other installation steps.
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
+ The install of installpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Attempting to resolve dependency 'isexactversiondependency (= 1.0.0)'.
+[NuGet] Attempting to resolve dependency 'isdependency (≥ 1.0.0 && < 2.0.0.0)'.
+[NuGet] Installing 'isexactversiondependency 1.0.0'.
+[NuGet] Successfully installed 'isexactversiondependency 1.0.0'.
+
+isexactversiondependency v1.0.0
+isexactversiondependency package files install completed. Performing other installation steps.
+isexactversiondependency 1.0.0 Installed
+ The install of isexactversiondependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'isdependency 1.1.0'.
+[NuGet] Successfully installed 'isdependency 1.1.0'.
+
+isdependency v1.1.0
+isdependency package files install completed. Performing other installation steps.
+isdependency 1.1.0 Installed
+ The install of isdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'hasdependency 1.0.0'.
+[NuGet] Successfully installed 'hasdependency 1.0.0'.
+
+hasdependency v1.0.0
+hasdependency package files install completed. Performing other installation steps.
+hasdependency 1.0.0 Installed
+ The install of hasdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+missingpackage not installed. The package was not found with the source(s) listed.
+[NuGet] Installing 'upgradepackage 1.0.0'.
+[NuGet] Successfully installed 'upgradepackage 1.0.0'.
+
+upgradepackage v1.0.0
+upgradepackage package files install completed. Performing other installation steps.
+upgradepackage 1.0.0 Installed
+Transforming 'console.exe.config' with the data from 'console.exe.config.install.xdt'
+ The install of upgradepackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 5/6 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+
+Failures
+ - missingpackage - missingpackage not installed. The package was not found with the source(s) listed.
+=> install result for hasdependency/1.0.0: succeeded
+=> install result for installpackage/1.0.0: succeeded
+=> install result for isdependency/1.1.0: succeeded
+=> install result for isexactversiondependency/1.0.0: succeeded
+=> install result for missingpackage/: FAILED
+  Error: 
+  - missingpackage not installed. The package was not found with the source(s) listed.
+=> install result for upgradepackage/1.0.0: succeeded
+=> added new files:
+.chocolatey\hasdependency.1.0.0\.arguments
+.chocolatey\hasdependency.1.0.0\.files
+.chocolatey\installpackage.1.0.0\.arguments
+.chocolatey\installpackage.1.0.0\.files
+.chocolatey\isdependency.1.1.0\.arguments
+.chocolatey\isdependency.1.1.0\.files
+.chocolatey\isexactversiondependency.1.0.0\.arguments
+.chocolatey\isexactversiondependency.1.0.0\.files
+.chocolatey\upgradepackage.1.0.0\.arguments
+.chocolatey\upgradepackage.1.0.0\.files
+lib\hasdependency\hasdependency.nupkg
+lib\hasdependency\hasdependency.nuspec
+lib\hasdependency\tools\chocolateyinstall.ps1
+lib\hasdependency\tools\chocolateyuninstall.ps1
+lib\installpackage\installpackage.nupkg
+lib\installpackage\installpackage.nuspec
+lib\installpackage\tools\casemismatch.exe
+lib\installpackage\tools\Casemismatch.exe.ignore
+lib\installpackage\tools\chocolateyBeforeModify.ps1
+lib\installpackage\tools\chocolateyinstall.ps1
+lib\installpackage\tools\chocolateyuninstall.ps1
+lib\installpackage\tools\console.exe
+lib\installpackage\tools\graphical.exe
+lib\installpackage\tools\graphical.exe.gui
+lib\installpackage\tools\not.installed.exe
+lib\installpackage\tools\not.installed.exe.ignore
+lib\installpackage\tools\simplefile.txt
+lib\isdependency\isdependency.nupkg
+lib\isdependency\isdependency.nuspec
+lib\isdependency\tools\chocolateyinstall.ps1
+lib\isdependency\tools\chocolateyuninstall.ps1
+lib\isexactversiondependency\isexactversiondependency.nupkg
+lib\isexactversiondependency\isexactversiondependency.nuspec
+lib\isexactversiondependency\tools\chocolateyinstall.ps1
+lib\isexactversiondependency\tools\chocolateyuninstall.ps1
+lib\upgradepackage\tools\chocolateyBeforeModify.ps1
+lib\upgradepackage\tools\chocolateyinstall.ps1
+lib\upgradepackage\tools\chocolateyuninstall.ps1
+lib\upgradepackage\tools\console.exe
+lib\upgradepackage\tools\console.exe.config
+lib\upgradepackage\tools\console.exe.config.install.xdt
+lib\upgradepackage\tools\graphical.exe
+lib\upgradepackage\tools\graphical.exe.gui
+lib\upgradepackage\upgradepackage.nupkg
+lib\upgradepackage\upgradepackage.nuspec
+end of test

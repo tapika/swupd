@@ -1,0 +1,19 @@
+Chocolatey would have used NuGet to install packages (if they are not already installed):
+installpackage
+[NuGet] Installing 'installpackage 1.0.0'.
+[NuGet] Successfully installed 'installpackage 1.0.0'.
+
+installpackage v1.0.0
+Would have run 'chocolateyinstall.ps1':
+$toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
+"simple file" | Out-File "$toolsDir\simplefile.txt" -force
+
+Write-Output "This is $packageName v$packageVersion being installed"
+Write-Host "Ya!"
+Write-Debug "A debug message"
+Write-Verbose "Yo!"
+Write-Warning "A warning!"
+
+Write-Output "$packageName v$packageVersion has been installed"
+=> folder was not updated
+end of test
