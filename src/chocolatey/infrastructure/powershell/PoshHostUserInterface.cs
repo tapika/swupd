@@ -37,10 +37,22 @@ namespace chocolatey.infrastructure.powershell
         private const int TIMEOUT_IN_SECONDS = 30;
 
         public bool StandardErrorWritten { get; set; }
+        LogService _logservice;
 
-        public PoshHostUserInterface(ChocolateyConfiguration configuration)
+        public PoshHostUserInterface(ChocolateyConfiguration configuration, LogService logservice)
         {
             _configuration = configuration;
+            _logservice = logservice;
+        }
+
+        public ILog Log()
+        {
+            if (LogService.IsInitialized())
+            {
+                LogService.Instance = _logservice;
+            }
+
+            return LogExtensions.Log<PoshHostUserInterface>(this);
         }
 
         /// <summary>
@@ -151,7 +163,7 @@ namespace chocolatey.infrastructure.powershell
 
         public override void WriteVerboseLine(string message)
         {
-            this.Log().Info(ChocolateyLoggers.Verbose, "VERBOSE: " + message.escape_curly_braces());
+            this.Log().Debug(ChocolateyLoggers.Verbose, "VERBOSE: " + message.escape_curly_braces());
         }
 
         public override void WriteWarningLine(string message)

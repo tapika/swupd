@@ -15,7 +15,15 @@ namespace chocolatey.infrastructure.logging
     {
         public static LogService MainThreadInstance = null;
         static public ThreadLocal<LogService> _instance = new ThreadLocal<LogService>();
-        
+
+        /// <summary>
+        /// Returns true if LogService.Instance was initialized.
+        /// </summary>
+        static public bool IsInitialized()
+        {
+            return _instance.IsValueCreated;
+        }
+
         /// <summary>
         /// LogService instance is thread specific.
         /// </summary>
@@ -23,6 +31,10 @@ namespace chocolatey.infrastructure.logging
         {
             get {
                 return GetInstance(!ApplicationParameters.runningUnitTesting);
+            }
+
+            set {
+                _instance.Value = value;
             }
         }
 

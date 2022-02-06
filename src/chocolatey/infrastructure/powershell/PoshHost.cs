@@ -23,6 +23,7 @@ namespace chocolatey.infrastructure.powershell
     using app.configuration;
     using app.domain;
     using app.services;
+    using chocolatey.infrastructure.logging;
 
     public class PoshHost : PSHost
     {
@@ -51,7 +52,7 @@ namespace chocolatey.infrastructure.powershell
         {
             ExitCode = -1;
             _configuration = configuration;
-            _psUI = new PoshHostUserInterface(configuration);
+            _psUI = new PoshHostUserInterface(configuration, LogService.Instance);
             _version = get_current_version();
         }
 

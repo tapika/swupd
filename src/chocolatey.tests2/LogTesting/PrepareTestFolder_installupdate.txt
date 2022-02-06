@@ -6,6 +6,9 @@ By installing you accept licenses for the packages.
 
 installpackage v1.0.0
 installpackage package files install completed. Performing other installation steps.
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
  The install of installpackage was successful.
   Software install location not explicitly set, could be in package or
   default install location if installer.
@@ -20,6 +23,7 @@ By installing you accept licenses for the packages.
 
 upgradepackage v1.0.0
 upgradepackage package files install completed. Performing other installation steps.
+upgradepackage 1.0.0 Installed
 Transforming 'console.exe.config' with the data from 'console.exe.config.install.xdt'
  The install of upgradepackage was successful.
   Software install location not explicitly set, could be in package or

@@ -265,8 +265,12 @@ namespace chocolatey.infrastructure.app.services
 
                     try
                     {
+                        var loginstance = LogService.Instance;
                         result = configuration.Features.UsePowerShellHost
-                                    ? Execute.with_timeout(configuration.CommandExecutionTimeoutSeconds).command(() => run_host(configuration, chocoPowerShellScript), result)
+                                    ? Execute.with_timeout(configuration.CommandExecutionTimeoutSeconds).command(() => {
+                                        LogService.Instance = loginstance;
+                                        return run_host(configuration, chocoPowerShellScript);
+                                    } , result)
                                     : run_external_powershell(configuration, chocoPowerShellScript);
                     }
                     catch (Exception ex)
