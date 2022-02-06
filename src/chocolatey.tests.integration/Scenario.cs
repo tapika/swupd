@@ -146,7 +146,8 @@ namespace chocolatey.tests.integration
             config.AllowMultipleVersions = false;
             config.AllowUnofficialBuild = true;
             config.CacheLocation = _fileSystem.get_full_path(_fileSystem.combine_paths(get_top_level(), "cache"));
-            config.CommandExecutionTimeoutSeconds = 2700;
+            config.CommandExecutionTimeoutSeconds = 10000;  //Default was 2700, but if we are running multitasking installation,
+                                                            //need also bigger value so would not reach timeout too quickly.
             config.ContainsLegacyPackageInstalls = false;
             config.Force = false;
             config.ForceDependencies = false;
