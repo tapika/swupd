@@ -486,6 +486,12 @@ Version was specified as '{0}'. It is possible that version
 @"
 Please see https://chocolatey.org/docs/troubleshooting for more 
  assistance.");
+                    
+                    if (ApplicationParameters.runningUnitTesting)
+                    {
+                        logMessage = $"{packageName} not installed. The package was not found with the source(s) listed.";
+                    }
+
                     this.Log().Error(ChocolateyLoggers.Important, logMessage);
                     var noPkgResult = packageInstalls.GetOrAdd(packageName, new PackageResult(packageName, version.to_string(), null));
                     noPkgResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
