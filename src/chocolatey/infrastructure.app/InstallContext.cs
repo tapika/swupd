@@ -38,8 +38,6 @@ namespace chocolatey.infrastructure.app
             }
         }
 
-        public bool ShowShortPaths { get; set; } = false;
-
         string rootLocation;
 
         /// <summary>
@@ -63,6 +61,8 @@ namespace chocolatey.infrastructure.app
             
             set
             {
+                // Setting RootLocation will also reset package location to default one.
+                packagesLocation = null;
                 rootLocation = value;
             }
         }
@@ -91,7 +91,7 @@ namespace chocolatey.infrastructure.app
         public string DisplayLoggingLocation
         {
             get {
-                if (ShowShortPaths)
+                if (ApplicationParameters.runningUnitTesting)
                     return LoggingDirectory;
 
                 return LoggingLocation;
@@ -109,6 +109,12 @@ namespace chocolatey.infrastructure.app
      
         // Unlike rest of directories - tools will always resides against application location
         public string ToolsLocation                         { get { return Path.Combine(ApplicationInstallLocation, "tools"); } }
+
+        // Used by test applications only
+        public static string TestPackagesFolder             { get { return Path.Combine(ApplicationInstallLocation, "context"); } }
+        public static string SharedPackageFolder            { get { return Path.Combine(ApplicationInstallLocation, "tests_shared"); } }
+        public static string IsolatedTestFolder             { get { return Path.Combine(ApplicationInstallLocation, "tests"); } }
+
     }
 }
 
