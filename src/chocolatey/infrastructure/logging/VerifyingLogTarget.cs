@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace chocolatey.infrastructure.logging
@@ -65,6 +66,9 @@ namespace chocolatey.infrastructure.logging
             }
         }
 
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int MessageBox(IntPtr hWnd, String text, String caption, uint type);
+
         protected override void Write(LogEventInfo logEvent)
         {
             if (!verifying)
@@ -79,7 +83,7 @@ namespace chocolatey.infrastructure.logging
             {
                 fs = File.OpenRead(logPath);
                 streamreader = new StreamReader(fs, Encoding.UTF8, true, 4096);
-                lineN = 1;
+                lineN = 0;
             }
 
             // Extra guard just in case if last failure was eaten by try-catch handling, we re-raise here 
@@ -109,6 +113,9 @@ namespace chocolatey.infrastructure.logging
                     {
                         lastException += $"remaining text: {rest}";
                     }
+
+                    // Uncomment to troubleshoot multitasking problems when difficult to catch the problem.
+                    //MessageBox(IntPtr.Zero, lastException, "exception halt", 0);
 
                     throw new Exception(lastException);
                 }
