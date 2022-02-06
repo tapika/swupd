@@ -168,7 +168,17 @@ namespace chocolatey.infrastructure.app.services
             return argument.to_string().Replace("\"", "\\\"");
         }
 
+        static object locker = new object();
+
         public bool run_action(ChocolateyConfiguration configuration, PackageResult packageResult, CommandNameType command)
+        {
+            lock(locker)    //Installation uses environment variables, which do work only per process.
+            { 
+                return _run_action(configuration, packageResult, command);
+            }
+        }
+
+        bool _run_action(ChocolateyConfiguration configuration, PackageResult packageResult, CommandNameType command)
         {
             var installerRun = false;
 
