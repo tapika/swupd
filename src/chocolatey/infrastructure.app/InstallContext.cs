@@ -13,14 +13,23 @@ namespace chocolatey.infrastructure.app
     /// </summary>
     public class InstallContext
     {
-        static public ThreadLocal<InstallContext> _instance =
-            new ThreadLocal<InstallContext>(() => { return new InstallContext(); });
+        static public AsyncLocal<InstallContext> _instance = new AsyncLocal<InstallContext>();
 
         static public InstallContext Instance
         {
             get
             {
+                if (_instance.Value == null)
+                {
+                    _instance.Value = new InstallContext();
+                }
+
                 return _instance.Value;
+            }
+
+            set
+            {
+                _instance.Value = null;
             }
         }
 

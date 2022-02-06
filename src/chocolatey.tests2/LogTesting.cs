@@ -55,6 +55,7 @@
         {
             // Tasks might re-use existing thread, cleanup all logging services to start from scratch
             LogService.Instance = null;
+            InstallContext.Instance = null;
 
             var mi = getTestMethodInfo();
             if (mi.Item1 == null)

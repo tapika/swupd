@@ -14,14 +14,14 @@ namespace chocolatey.infrastructure.logging
     public class LogService
     {
         public static LogService MainThreadInstance = null;
-        static public ThreadLocal<LogService> _instance = new ThreadLocal<LogService>();
+        static public AsyncLocal<LogService> _instance = new AsyncLocal<LogService>();
 
         /// <summary>
         /// Returns true if LogService.Instance was initialized.
         /// </summary>
         static public bool IsInitialized()
         {
-            return _instance.IsValueCreated;
+            return _instance.Value != null;
         }
 
         /// <summary>

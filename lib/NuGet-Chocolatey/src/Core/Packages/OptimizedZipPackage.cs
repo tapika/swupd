@@ -29,17 +29,18 @@ namespace NuGet
         private static readonly ConcurrentDictionary<PackageName, Tuple<string, DateTimeOffset>> _cachedExpandedFolder
             = new ConcurrentDictionary<PackageName, Tuple<string, DateTimeOffset>>();
 
-        private static readonly ThreadLocal<IFileSystem> _tempFileSystem = new ThreadLocal<IFileSystem>(
-            () =>
-            {
-                string temp = Path.Combine(Path.GetTempPath(), "NuGetScratch", $"{Process.GetCurrentProcess().Id}_{Thread.CurrentThread.ManagedThreadId}");
-                return new PhysicalFileSystem(temp);
-            }
-        );
+        private static readonly AsyncLocal<IFileSystem> _tempFileSystem = new AsyncLocal<IFileSystem>();
 
         private static IFileSystem TempFileSystem
         {
-            get {
+            get
+            {
+                if (_tempFileSystem.Value == null)
+                {
+                    string temp = Path.Combine(Path.GetTempPath(), "NuGetScratch", $"{Process.GetCurrentProcess().Id}_{Thread.CurrentThread.ManagedThreadId}");
+                    _tempFileSystem.Value = new PhysicalFileSystem(temp);
+                }
+
                 return _tempFileSystem.Value;
             }
         }

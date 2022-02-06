@@ -30,6 +30,7 @@ namespace chocolatey.infrastructure.logging
     {
         Target oldTarget = null;
         public const string LogName = nameof(VerifyingLog);
+        string oldLoggerName;
 
         public VerifyingLog(
             string variantContext = "",
@@ -48,23 +49,53 @@ namespace chocolatey.infrastructure.logging
                 variantContext = $"_{variantContext}";
             }
 
-            var factory = LogService.GetInstance(false).LogFactory;
-            var conf = factory.Configuration;
+            var conf = LogService.Instance.LogFactory.Configuration;
             oldTarget = conf.FindTargetByName(LogName);
-            conf.RemoveTarget(LogName);
+
+            // If we have some logging active - we remove all rules to that specific target - and this will disable 
+            // logging, but will keep VerifyingLogTarget alive. Later on in Dispose we restore VerifyingLogTarget
+            // name and rules.
+            if (oldTarget != null)
+            {
+                var list = conf.AllTargets.ToList();
+                for (int i = 1; ; i++)
+                {
+                    oldLoggerName = $"{LogName}_old_{i}"; // Rename VerifyingLogTarget =>
+                                                          // VerifyingLogTarget_old_1, VerifyingLogTarget_old_2 and so on...
+                    if (list.Where(x => x.Name == oldLoggerName).FirstOrDefault() == null)
+                    {
+                        break;
+                    }
+                }
+
+                oldTarget.Name = oldLoggerName;
+
+                var loggingRules = conf.LoggingRules;
+                for (int i = 0; i < loggingRules.Count; i++)
+                {
+                    if (loggingRules[i].Targets.Contains(oldTarget))
+                    {
+                        loggingRules.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                }
+            }
+
             string srcpath = CallerFilePathHelper.CallerFilePathToSolutionSourcePath(sourcePath, asm);
             string srcdir = Path.GetDirectoryName(srcpath);
             string logdir = Path.Combine(srcdir,Path.GetFileNameWithoutExtension(srcpath));
             string targetLogPath = Path.Combine(logdir, $"{func}{variantContext}.txt");
-            ApplyTarget(new VerifyingLogTarget(LogName, targetLogPath, createLog));
+            ApplyTarget(new VerifyingLogTarget(LogName, targetLogPath, createLog), false);
         }
 
         public void Dispose()
         {
-            ApplyTarget(oldTarget);
+            LogService.Instance.LogFactory.Configuration.RemoveTarget(LogName);
+            ApplyTarget(oldTarget, true);
         }
 
-        void ApplyTarget(Target logTarget)
+        void ApplyTarget(Target logTarget, bool restoreOld)
         {
             if (logTarget == null)
             {
@@ -73,12 +104,25 @@ namespace chocolatey.infrastructure.logging
 
             var factory = LogService.GetInstance(false).LogFactory;
             var conf = factory.Configuration;
-            conf.AddTarget(logTarget);
-
-            foreach (var name in LogService.GetLoggerNames())
+            if (!restoreOld)
             {
-                conf.AddRule(LogLevel.Info, LogLevel.Fatal, logTarget, name);
+                conf.AddTarget(logTarget);
+
+                foreach (var name in LogService.GetLoggerNames())
+                {
+                    conf.AddRule(LogLevel.Info, LogLevel.Fatal, logTarget, name);
+                }
             }
+            else
+            {
+                oldTarget.Name = LogName;
+
+                foreach (var name in LogService.GetLoggerNames())
+                {
+                    conf.AddRule(LogLevel.Info, LogLevel.Fatal, logTarget, name);
+                }
+            }
+
             factory.ReconfigExistingLoggers();
         }
     }
