@@ -60,7 +60,6 @@ namespace chocolatey.tests.integration
             config.Information.PlatformType = PlatformType.Windows;
             config.Information.IsInteractive = false;
             config.PromptForConfirmation = false;
-            config.Force = true;
 
             Commands = Container.GetAllInstances<ICommand>().ToArray();
 
