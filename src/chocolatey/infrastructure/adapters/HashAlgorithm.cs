@@ -22,6 +22,11 @@ namespace chocolatey.infrastructure.adapters
     {
         private readonly System.Security.Cryptography.HashAlgorithm _algorithm;
 
+        // System.Security.Cryptography.HashAlgorithm.ComputeHash function call 
+        // throws exception: SafeHandle cannot be null. (Parameter 'pHandle')
+        // when using with multitasking
+        static object locker = new object();
+
         public HashAlgorithm(System.Security.Cryptography.HashAlgorithm algorithm)
         {
             _algorithm = algorithm;
@@ -29,12 +34,18 @@ namespace chocolatey.infrastructure.adapters
 
         public byte[] ComputeHash(byte[] buffer)
         {
-            return _algorithm.ComputeHash(buffer);
+            lock (locker)
+            { 
+                return _algorithm.ComputeHash(buffer);
+            }
         }
 
         public byte[] ComputeHash(Stream stream)
         {
-            return _algorithm.ComputeHash(stream);
+            lock (locker)
+            {
+                return _algorithm.ComputeHash(stream);
+            }
         }
     }
 }
