@@ -116,6 +116,13 @@ namespace chocolatey.tests2.commands
             foreach (var f in addedFiles)
             { 
                 console.Info(f);
+
+                if (Path.GetExtension(f) == Constants.PackageExtension)
+                {
+                    string nupkgPath = Path.Combine(InstallContext.Instance.RootLocation, f);
+                    var package = new OptimizedZipPackage(nupkgPath);
+                    console.Info("  version: " + package.Version.Version.to_string());
+                }
             }
         }
 

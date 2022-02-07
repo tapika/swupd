@@ -83,10 +83,12 @@ Failures
 .chocolatey\upgradepackage.1.0.0\.arguments
 .chocolatey\upgradepackage.1.0.0\.files
 lib\hasdependency\hasdependency.nupkg
+  version: 1.0.0.0
 lib\hasdependency\hasdependency.nuspec
 lib\hasdependency\tools\chocolateyinstall.ps1
 lib\hasdependency\tools\chocolateyuninstall.ps1
 lib\installpackage\installpackage.nupkg
+  version: 1.0.0.0
 lib\installpackage\installpackage.nuspec
 lib\installpackage\tools\casemismatch.exe
 lib\installpackage\tools\Casemismatch.exe.ignore
@@ -100,10 +102,12 @@ lib\installpackage\tools\not.installed.exe
 lib\installpackage\tools\not.installed.exe.ignore
 lib\installpackage\tools\simplefile.txt
 lib\isdependency\isdependency.nupkg
+  version: 1.1.0.0
 lib\isdependency\isdependency.nuspec
 lib\isdependency\tools\chocolateyinstall.ps1
 lib\isdependency\tools\chocolateyuninstall.ps1
 lib\isexactversiondependency\isexactversiondependency.nupkg
+  version: 1.0.0.0
 lib\isexactversiondependency\isexactversiondependency.nuspec
 lib\isexactversiondependency\tools\chocolateyinstall.ps1
 lib\isexactversiondependency\tools\chocolateyuninstall.ps1
@@ -116,5 +120,6 @@ lib\upgradepackage\tools\console.exe.config.install.xdt
 lib\upgradepackage\tools\graphical.exe
 lib\upgradepackage\tools\graphical.exe.gui
 lib\upgradepackage\upgradepackage.nupkg
+  version: 1.0.0.0
 lib\upgradepackage\upgradepackage.nuspec
 end of test

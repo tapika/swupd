@@ -20,6 +20,7 @@ Chocolatey installed 1/1 packages.
 .chocolatey\installpackage.1.0.0\.arguments
 .chocolatey\installpackage.1.0.0\.files
 lib\installpackage\installpackage.nupkg
+  version: 1.0.0.0
 lib\installpackage\installpackage.nuspec
 lib\installpackage\tools\casemismatch.exe
 lib\installpackage\tools\Casemismatch.exe.ignore
