@@ -252,7 +252,7 @@ namespace chocolatey.tests2.commands
         }
 
         // when_force_installing_an_already_installed_package_with_a_read_and_delete_share_locked_file
-        [LogTest(true)]
+        [LogTest()]
         public void InstallOnLockedFile()
         {
             FileStream fileStream = null;
