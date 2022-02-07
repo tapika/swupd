@@ -251,6 +251,24 @@ namespace chocolatey.tests2.commands
             InstalledPackageIs_1_0();
         }
 
+        // when_force_installing_an_already_installed_package_with_a_read_and_delete_share_locked_file
+        [LogTest(true)]
+        public void InstallOnLockedFile()
+        {
+            FileStream fileStream = null;
+    
+            InstallOnInstall((conf) =>
+            {
+                conf.Force = true;
+                string modifiedFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                fileStream = new FileStream(modifiedFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read | FileShare.Delete);
+            }
+            );
+
+            ListUpdates();
+            fileStream.Close();
+            InstalledPackageIs_1_0();
+        }
 
 
     }

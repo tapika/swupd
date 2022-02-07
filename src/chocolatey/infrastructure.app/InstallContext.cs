@@ -135,6 +135,21 @@ namespace chocolatey.infrastructure.app
         public static string SharedPackageFolder            { get { return Path.Combine(ApplicationInstallLocation, "tests_shared"); } }
         public static string IsolatedTestFolder             { get { return Path.Combine(ApplicationInstallLocation, "tests"); } }
 
+
+        /// <summary>
+        /// Normalizes message by removing any references to absolute root path.
+        /// </summary>
+        /// <returns>message without absolute path references</returns>
+        public static string NormalizeMessage(string message)
+        {
+            if (ApplicationParameters.runningUnitTesting)
+            {
+                return message.Replace(InstallContext.Instance.RootLocation + System.IO.Path.DirectorySeparatorChar, "");
+            }
+
+            return message;
+        }
+
     }
 }
 

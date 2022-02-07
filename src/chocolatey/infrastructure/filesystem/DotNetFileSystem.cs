@@ -26,6 +26,7 @@ namespace chocolatey.infrastructure.filesystem
     using System.Text;
     using System.Threading;
     using adapters;
+    using chocolatey.infrastructure.app;
     using logging;
     using platforms;
     using tolerance;
@@ -497,7 +498,8 @@ namespace chocolatey.infrastructure.filesystem
             }
             catch (Exception ex)
             {
-                this.Log().Warn(ChocolateyLoggers.Verbose, "Move failed with message:{0} {1}{0} Attempting backup move method.".format_with(Environment.NewLine, ex.Message));
+                this.Log().Warn(ChocolateyLoggers.Verbose, "Move failed with message:{0} {1}{0} Attempting backup move method.".format_with(
+                    Environment.NewLine, InstallContext.NormalizeMessage(ex.Message)));
 
                 create_directory_if_not_exists(newDirectoryPath, ignoreError: true);
                 foreach (var file in get_files(directoryPath, "*.*", SearchOption.AllDirectories).or_empty_list_if_null())

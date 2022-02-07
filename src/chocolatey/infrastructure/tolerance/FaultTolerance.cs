@@ -18,6 +18,7 @@ namespace chocolatey.infrastructure.tolerance
 {
     using System;
     using System.Threading;
+    using chocolatey.infrastructure.app;
     using configuration;
     using logging;
 
@@ -107,7 +108,7 @@ namespace chocolatey.infrastructure.tolerance
 
                     "chocolatey".Log().Warn(logLocation, "This is try {3}/{4}. Retrying after {2} milliseconds.{0} Error converted to warning:{0} {1}".format_with(
                         Environment.NewLine,
-                        exceptionMessage,
+                        InstallContext.NormalizeMessage(exceptionMessage),
                         retryWait,
                         i, 
                         numberOfTries));

@@ -1,0 +1,32 @@
+Installing the following packages:
+installpackage
+By installing you accept licenses for the packages.
+installpackage v1.0.0 already installed. Forcing reinstall of version '1.0.0'. 
+ Please use upgrade if you meant to upgrade to a new version.
+This is try 1/2. Retrying after 300 milliseconds.
+ Error converted to warning:
+ Access to the path 'lib\installpackage' is denied.
+Maximum tries of 2 reached. Throwing error.
+Move failed with message:
+ Access to the path 'lib\installpackage' is denied.
+ Attempting backup move method.
+[NuGet] Uninstalling 'installpackage 1.0.0'.
+[NuGet] Successfully uninstalled 'installpackage 1.0.0'.
+[NuGet] Installing 'installpackage 1.0.0'.
+[NuGet] Successfully installed 'installpackage 1.0.0'.
+
+installpackage v1.0.0 (forced)
+installpackage package files install completed. Performing other installation steps.
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
+ The install of installpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for installpackage/1.0.0: succeeded
+=> added new files:
+lib-bkp\installpackage\tools\chocolateyinstall.ps1
+end of test
