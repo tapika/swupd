@@ -934,9 +934,14 @@ If a package is failing because it is a dependency of another package
                     _fileSystem.combine_paths(InstallContext.Instance.DisplayLoggingLocation, ApplicationParameters.LoggingFile)
                     ));
 
-            // summarize results when more than 5
             // unit tests will have it's own summary report.
-            if (!ApplicationParameters.runningUnitTesting && packageResults.Count >= 5 && successes.Count() != 0)
+            if (ApplicationParameters.runningUnitTesting)
+            {
+                return failures;
+            }
+
+            // summarize results when more than 5
+            if (packageResults.Count >= 5 && successes.Count() != 0)
             {
                 this.Log().Info("");
                 this.Log().Warn("{0}{1}:".format_with(actionName.Substring(0,1).ToUpper(), actionName.Substring(1)));

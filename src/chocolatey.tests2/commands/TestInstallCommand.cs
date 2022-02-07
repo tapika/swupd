@@ -27,7 +27,7 @@ namespace chocolatey.tests2.commands
         }
     };
 
-    [Parallelizable(ParallelScope.All)]
+    [Parallelizable(ParallelScope.All), FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class TestInstallCommand: InstallScenario
     {
         static List<string> GetFilesAndFolders(string path)
@@ -38,14 +38,16 @@ namespace chocolatey.tests2.commands
         }
 
         List<string> addedFiles;
+        ChocolateyConfiguration conf;
 
-        public void InstallOnEmpty(
+        public void InstallOn(
+            ChocoTestContext testcontext,
             Action<ChocolateyConfiguration> confPatch = null,
             [CallerMemberName] string testFolder = ""
         )
         {
-            var conf = Scenario.baseline_configuration(true);
-            string rootDirBefore = PrepareTestFolder(ChocoTestContext.empty, conf, testFolder);
+            conf = Scenario.baseline_configuration(true);
+            string rootDirBefore = PrepareTestFolder(testcontext, conf, testFolder);
             InstallContext.Instance.RootLocation = rootDirBefore;
             conf.Sources = InstallContext.TestPackagesFolder;
             conf.PackageNames = conf.Input = "installpackage";
@@ -126,6 +128,14 @@ namespace chocolatey.tests2.commands
             }
         }
 
+        public void InstallOnEmpty(
+            Action<ChocolateyConfiguration> confPatch = null,
+            [CallerMemberName] string testFolder = ""
+        )
+        {
+            InstallOn(ChocoTestContext.empty, confPatch, testFolder);
+        }
+
         // when_noop_installing_a_package
         [LogTest()]
         public void NoInstall()
@@ -175,6 +185,48 @@ namespace chocolatey.tests2.commands
                 conf.PackageNames = conf.Input = packagesConfig;
             });
             ListUpdates();
+        }
+
+        public void InstallOnInstall(
+            Action<ChocolateyConfiguration> confPatch = null,
+            [CallerMemberName] string testFolder = ""
+        )
+        {
+            InstallOn(ChocoTestContext.install, confPatch, testFolder);
+        }
+
+        void InstalledPackageIs_1_0()
+        {
+            var packageFile = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, conf.PackageNames + Constants.PackageExtension);
+            var package = new OptimizedZipPackage(packageFile);
+            Assert.AreEqual(package.Version.Version.to_string(), "1.0.0.0");
+        }
+
+        // when_installing_an_already_installed_package
+        [LogTest()]
+        public void InstallOnAlreadyInstalled()
+        {
+            InstallOnInstall((conf) => { });
+            ListUpdates();
+            InstalledPackageIs_1_0();
+        }
+
+        // when_force_installing_an_already_installed_package
+        [LogTest()]
+        public void ForceInstallOnAlreadyInstalled()
+        {
+            string modifiedFilePath = null;
+            string modifiedContent = "bob";
+            InstallOnInstall((conf) => 
+                { 
+                    conf.Force = true;
+                    modifiedFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                    File.WriteAllText(modifiedFilePath, modifiedContent);
+                }
+            );
+            ListUpdates();
+            Assert.AreNotEqual(File.ReadAllText(modifiedFilePath), modifiedContent);
+            InstalledPackageIs_1_0();
         }
 
     }

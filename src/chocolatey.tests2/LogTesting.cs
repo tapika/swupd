@@ -124,6 +124,10 @@
             {
                 foreach (DirectoryInfo subDir in dirs)
                 {
+                    // Special kind of folder just to indicate that it's ready, no need to copy.
+                    if (subDir.Name.StartsWith(".updated_") && subDir.Name.EndsWith("_ok"))
+                        continue;
+                
                     string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
                     CopyDirectory(subDir.FullName, newDestinationDir, true);
                 }
@@ -204,6 +208,12 @@
         {
             switch (testcontext)
             {
+                case ChocoTestContext.install:
+                    {
+                        Scenario.install_package(conf, "installpackage", "1.0.0");
+                    }
+                    break;
+
                 case ChocoTestContext.installupdate:
                     {
                         Scenario.install_package(conf, "installpackage", "1.0.0");

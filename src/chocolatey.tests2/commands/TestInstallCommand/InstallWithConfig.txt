@@ -60,9 +60,6 @@ Transforming 'console.exe.config' with the data from 'console.exe.config.install
 
 Chocolatey installed 5/6 packages. 1 packages failed.
  See the log for details (logs\chocolatey.log).
-
-Failures
- - missingpackage - missingpackage not installed. The package was not found with the source(s) listed.
 => install result for hasdependency/1.0.0: succeeded
 => install result for installpackage/1.0.0: succeeded
 => install result for isdependency/1.1.0: succeeded

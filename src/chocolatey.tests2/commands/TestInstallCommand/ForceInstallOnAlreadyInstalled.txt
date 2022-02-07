@@ -1,0 +1,25 @@
+Installing the following packages:
+installpackage
+By installing you accept licenses for the packages.
+installpackage v1.0.0 already installed. Forcing reinstall of version '1.0.0'. 
+ Please use upgrade if you meant to upgrade to a new version.
+[NuGet] Uninstalling 'installpackage 1.0.0'.
+[NuGet] Skipping 'installpackage\tools\chocolateyinstall.ps1' because it was modified.
+[NuGet] Successfully uninstalled 'installpackage 1.0.0'.
+[NuGet] Installing 'installpackage 1.0.0'.
+[NuGet] Successfully installed 'installpackage 1.0.0'.
+
+installpackage v1.0.0 (forced)
+installpackage package files install completed. Performing other installation steps.
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
+ The install of installpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for installpackage/1.0.0: succeeded
+=> folder was not updated
+end of test
