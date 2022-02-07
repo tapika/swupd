@@ -1,0 +1,51 @@
+Installing the following packages:
+installpackage
+By installing you accept licenses for the packages.
+installpackage v1.0.0 already installed. Forcing reinstall of version '1.0.0'. 
+ Please use upgrade if you meant to upgrade to a new version.
+This is try 1/2. Retrying after 300 milliseconds.
+ Error converted to warning:
+ Access to the path 'lib\installpackage' is denied.
+Maximum tries of 2 reached. Throwing error.
+Move failed with message:
+ Access to the path 'lib\installpackage' is denied.
+ Attempting backup move method.
+This is try 1/2. Retrying after 300 milliseconds.
+ Error converted to warning:
+ The process cannot access the file because it is being used by another process.
+Maximum tries of 2 reached. Throwing error.
+Error during backup (move phase):
+ The process cannot access the file because it is being used by another process.
+Error computing hash for 'lib\installpackage\tools\chocolateyinstall.ps1'
+ Hash will be special code for locked file or file too big instead.
+ Captured error:
+  The process cannot access the file 'lib\installpackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+This is try 1/2. Retrying after 300 milliseconds.
+ Error converted to warning:
+ The process cannot access the file 'lib\installpackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+Maximum tries of 2 reached. Throwing error.
+Error backing up changed file:
+ The process cannot access the file 'lib\installpackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+There was an error accessing files. This could mean there is a 
+ process locking the folder or files. Please make sure nothing is 
+ running that would lock the files or folders in this directory prior 
+ to upgrade. If the package fails to upgrade, this is likely the cause.
+[NuGet] Uninstalling 'installpackage 1.0.0'.
+Unable to remove existing package prior to forced reinstall:
+ The process cannot access the file 'lib\installpackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+[NuGet] 'installpackage 1.0.0' already installed.
+
+Chocolatey installed 0/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for installpackage/1.0.0: succeeded
+  Inconclusive: 
+  - Unable to remove existing package prior to forced reinstall:
+ The process cannot access the file 'lib\installpackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+=> added new files:
+lib-bkp\installpackage\installpackage.nupkg
+  version: 1.0.0.0
+lib-bkp\installpackage\installpackage.nuspec
+lib-bkp\installpackage\tools\casemismatch.exe
+lib-bkp\installpackage\tools\Casemismatch.exe.ignore
+lib-bkp\installpackage\tools\chocolateyBeforeModify.ps1
+end of test

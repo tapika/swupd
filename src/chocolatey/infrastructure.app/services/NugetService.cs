@@ -518,6 +518,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     catch (Exception ex)
                     {
                         string logMessage = "{0}:{1} {2}".format_with("Unable to remove existing package prior to forced reinstall", Environment.NewLine, ex.Message);
+                        logMessage = InstallContext.NormalizeMessage(logMessage);
                         this.Log().Warn(logMessage);
                         forcedResult.Messages.Add(new ResultMessage(ResultType.Inconclusive, logMessage));
                     }

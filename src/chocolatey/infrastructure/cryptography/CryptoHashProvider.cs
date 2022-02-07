@@ -110,7 +110,8 @@ namespace chocolatey.infrastructure.cryptography
             }
             catch (IOException ex)
             {
-                this.Log().Warn(() => "Error computing hash for '{0}'{1} Hash will be special code for locked file or file too big instead.{1} Captured error:{1}  {2}".format_with(filePath, Environment.NewLine, ex.Message));
+                this.Log().Warn(() => "Error computing hash for '{0}'{1} Hash will be special code for locked file or file too big instead.{1} Captured error:{1}  {2}".format_with(
+                    InstallContext.NormalizeMessage(filePath), Environment.NewLine, InstallContext.NormalizeMessage(ex.Message)));
 
                 if (file_is_locked(ex))
                 {
