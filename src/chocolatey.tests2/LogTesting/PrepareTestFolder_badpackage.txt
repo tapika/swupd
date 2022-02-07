@@ -1,0 +1,15 @@
+Installing the following packages:
+badpackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'badpackage 1.0'.
+[NuGet] Successfully installed 'badpackage 1.0'.
+
+badpackage v1.0
+badpackage package files install completed. Performing other installation steps.
+ The install of badpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+shared context ends
