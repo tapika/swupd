@@ -131,7 +131,7 @@ namespace chocolatey.infrastructure.app.services
 
         private string get_helpers_folder()
         {
-            return _fileSystem.combine_paths(InstallContext.ApplicationInstallLocation, "helpers");
+            return InstallContext.HelpersLocation;
         }
 
         public string wrap_script_with_module(string script, ChocolateyConfiguration config)
@@ -303,8 +303,7 @@ namespace chocolatey.infrastructure.app.services
                         this.Log().Warn(
                             () =>
                             @"Only an exit code of non-zero will fail the package by default. Set 
- `--failonstderr` if you want error messages to also fail a script. See 
- `choco -h` for details.");
+ `--failonstderr` if you want error messages to also fail a script.");
                     }
 
 
@@ -333,6 +332,11 @@ namespace chocolatey.infrastructure.app.services
 
                     if (failure)
                     {
+                        if (ApplicationParameters.runningUnitTesting)
+                        {
+                            chocoPowerShellScript = chocoPowerShellScript.Replace(InstallContext.Instance.RootLocation + Path.DirectorySeparatorChar, "");
+                        }
+
                         packageResult.Messages.Add(new ResultMessage(ResultType.Error, "Error while running '{0}'.{1} See log for details.".format_with(chocoPowerShellScript, Environment.NewLine)));
                     }
                     packageResult.Messages.Add(new ResultMessage(ResultType.Note, "Ran '{0}'".format_with(chocoPowerShellScript)));
@@ -661,7 +665,16 @@ try {
                                 if (!string.IsNullOrWhiteSpace(scriptError)) errorStackTrace = scriptError;
                             }
                         }
-                        this.Log().Error("ERROR: {0}{1}".format_with(ex.Message.escape_curly_braces(), !config.Debug ? string.Empty : "{0} {1}".format_with(Environment.NewLine, errorStackTrace.escape_curly_braces())));
+
+                        // When running unit tests we prefer not to expose absolute paths
+                        string errorStack = errorStackTrace.escape_curly_braces();
+                        if (ApplicationParameters.runningUnitTesting)
+                        {
+                            errorStack = errorStack.Replace(InstallContext.HelpersLocation + Path.DirectorySeparatorChar, "helpers");
+                            errorStack = errorStack.Replace(InstallContext.Instance.PackagesLocation + Path.DirectorySeparatorChar, "");
+                        }
+
+                        this.Log().Error("ERROR: {0}{1}".format_with(ex.Message.escape_curly_braces(), !config.Debug ? string.Empty : "{0} {1}".format_with(Environment.NewLine, errorStack)));
                     }
                     catch (Exception ex)
                     {

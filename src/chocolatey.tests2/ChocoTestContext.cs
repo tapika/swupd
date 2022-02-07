@@ -9,6 +9,7 @@ namespace chocolatey.tests2
         install,
         installupdate,
         exactpackage,
+        badpackage,
         empty
     };
 }

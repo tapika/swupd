@@ -229,6 +229,30 @@ namespace chocolatey.tests2.commands
             InstalledPackageIs_1_0();
         }
 
+        // when_force_installing_an_already_installed_package_that_errors
+        [LogTest()]
+        public void ForceInstallOnErrorPackage()
+        {
+            string modifiedFilePath = null;
+            string modifiedContent = "bob";
+
+            InstallOn(
+                ChocoTestContext.badpackage,
+                (conf) =>
+                {
+                    conf.PackageNames = conf.Input = "badpackage";
+                    conf.Force = true;
+                    modifiedFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                    File.WriteAllText(modifiedFilePath, modifiedContent);
+                });
+        
+            ListUpdates();
+            Assert.AreEqual(File.ReadAllText(modifiedFilePath), modifiedContent);
+            InstalledPackageIs_1_0();
+        }
+
+
+
     }
 }
 

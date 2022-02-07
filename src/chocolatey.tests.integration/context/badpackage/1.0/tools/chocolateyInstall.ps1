@@ -3,7 +3,7 @@
 try {
   "simple file" | Out-File "$toolsDir\simplefile.txt" -force
 
-  Write-Output "This is $packageName v$packageVersion being installed to `n '$packageFolder'."
+  Write-Output "This is $packageName v$packageVersion being installed"
   Write-Host "PowerShell Version is '$($PSVersionTable.PSVersion)' and CLR Version is '$($PSVersionTable.CLRVersion)'."
   Write-Host "Execution Policy is '$(Get-ExecutionPolicy)'."
   Write-Host "PSScriptRoot is '$PSScriptRoot'."
@@ -15,6 +15,5 @@ try {
 
   Write-ChocolateySuccess "$packageName"
 } catch {
-  Write-ChocolateyFailure "$packageName" "$($_.Exception.Message)"
-  throw
+  throw "$($_.Exception.Message)"
 }

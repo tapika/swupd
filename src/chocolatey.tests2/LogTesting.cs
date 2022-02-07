@@ -208,6 +208,14 @@
         {
             switch (testcontext)
             {
+                case ChocoTestContext.badpackage:
+                    {
+                        conf.SkipPackageInstallProvider = true;
+                        Scenario.install_package(conf, "badpackage", "1.0.0");
+                        conf.SkipPackageInstallProvider = false;
+                    }
+                    break;
+
                 case ChocoTestContext.install:
                     {
                         Scenario.install_package(conf, "installpackage", "1.0.0");

@@ -46,6 +46,17 @@ namespace chocolatey.infrastructure.app
                 return Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
             }
         }
+        
+        /// <summary>
+        /// choco's .ps1 helper functions
+        /// </summary>
+        public static string HelpersLocation
+        {
+            get
+            { 
+                return Path.Combine(InstallContext.ApplicationInstallLocation, "helpers");
+            }
+        }
 
         string rootLocation;
 
