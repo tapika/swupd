@@ -38,6 +38,7 @@ namespace chocolatey.tests2.commands
         }
 
         List<string> addedFiles;
+        List<string> removedFiles;
         ChocolateyConfiguration conf;
 
         public void InstallOn(
@@ -95,6 +96,7 @@ namespace chocolatey.tests2.commands
             }
             var listAfterUpdate = GetFilesAndFolders(rootDir);
             addedFiles = new List<string>();
+            removedFiles = new List<string>();
 
             foreach (var file in listAfterUpdate)
             {
@@ -103,29 +105,53 @@ namespace chocolatey.tests2.commands
                     addedFiles.Add(file.Substring(rootDir.Length + 1));
                 }
             }
-            
+
+            foreach (var file in listBeforeUpdate)
+            {
+                if (!listAfterUpdate.Contains(file))
+                {
+                    removedFiles.Add(file.Substring(rootDir.Length + 1));
+                }
+            }
+
             ListUpdates();
         }
 
+        /// <summary>
+        /// Lists what updates were performed to folder.
+        /// </summary>
         void ListUpdates()
         {
             var console = LogService.console;
-            if (addedFiles.Count == 0)
+            List<string>[] lists = new List<string>[2] { addedFiles, removedFiles };
+            string[] listName = new[] { "added new", "removed" };
+
+            for (int iList = 0; iList < 2; iList++)
             {
-                console.Info("=> folder was not updated");
-                return;
-            }
+                var list = lists[iList];
+                var name = listName[iList];
 
-            console.Info("=> added new files:");
-            foreach (var f in addedFiles)
-            { 
-                console.Info(f);
-
-                if (Path.GetExtension(f) == Constants.PackageExtension)
+                if (list.Count == 0)
                 {
-                    string nupkgPath = Path.Combine(InstallContext.Instance.RootLocation, f);
-                    var package = new OptimizedZipPackage(nupkgPath);
-                    console.Info("  version: " + package.Version.Version.to_string());
+                    if (iList == 0)
+                    { 
+                        console.Info("=> folder was not updated");
+                    }
+                }
+                else
+                {
+                    console.Info($"=> {name} files:");
+                    foreach (var f in list)
+                    {
+                        console.Info(f);
+
+                        if (Path.GetExtension(f) == Constants.PackageExtension && iList == 0)
+                        {
+                            string nupkgPath = Path.Combine(InstallContext.Instance.RootLocation, f);
+                            var package = new OptimizedZipPackage(nupkgPath);
+                            console.Info("  version: " + package.Version.Version.to_string());
+                        }
+                    }
                 }
             }
         }
@@ -342,6 +368,16 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        // when_switching_a_normal_package_to_a_side_by_side_package
+        [LogTest()]
+        public void SwitchToSideBySide()
+        {
+            InstallOnInstall((conf) =>
+            {
+                conf.AllowMultipleVersions = true;
+                conf.Force = true;
+            });
+        }
     }
 }
 

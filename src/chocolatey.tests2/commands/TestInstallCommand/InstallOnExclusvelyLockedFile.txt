@@ -48,4 +48,8 @@ lib-bkp\installpackage\installpackage.nuspec
 lib-bkp\installpackage\tools\casemismatch.exe
 lib-bkp\installpackage\tools\Casemismatch.exe.ignore
 lib-bkp\installpackage\tools\chocolateyBeforeModify.ps1
+=> removed files:
+lib\installpackage\tools\casemismatch.exe
+lib\installpackage\tools\Casemismatch.exe.ignore
+lib\installpackage\tools\chocolateyBeforeModify.ps1
 end of test

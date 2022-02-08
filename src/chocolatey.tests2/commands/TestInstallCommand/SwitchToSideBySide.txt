@@ -1,0 +1,56 @@
+Installing the following packages:
+installpackage
+By installing you accept licenses for the packages.
+installpackage v1.0.0 already installed. Forcing reinstall of version '1.0.0'. 
+ Please use upgrade if you meant to upgrade to a new version.
+[NuGet] Uninstalling 'installpackage 1.0.0'.
+[NuGet] Successfully uninstalled 'installpackage 1.0.0'.
+[NuGet] Uninstalling 'installpackage 1.0.0'.
+[NuGet] Successfully uninstalled 'installpackage 1.0.0'.
+[NuGet] Installing 'installpackage 1.0.0'.
+[NuGet] Successfully installed 'installpackage 1.0.0'.
+
+installpackage v1.0.0 (forced)
+installpackage package files install completed. Performing other installation steps.
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
+ The install of installpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for installpackage/1.0.0: succeeded
+=> added new files:
+.chocolatey\installpackage.1.0.0\.files.backup
+.chocolatey\installpackage.1.0.0\.sxs
+lib\installpackage.1.0.0\installpackage.1.0.0.nupkg
+  version: 1.0.0.0
+lib\installpackage.1.0.0\installpackage.1.0.0.nuspec
+lib\installpackage.1.0.0\tools\casemismatch.exe
+lib\installpackage.1.0.0\tools\Casemismatch.exe.ignore
+lib\installpackage.1.0.0\tools\chocolateyBeforeModify.ps1
+lib\installpackage.1.0.0\tools\chocolateyinstall.ps1
+lib\installpackage.1.0.0\tools\chocolateyuninstall.ps1
+lib\installpackage.1.0.0\tools\console.exe
+lib\installpackage.1.0.0\tools\graphical.exe
+lib\installpackage.1.0.0\tools\graphical.exe.gui
+lib\installpackage.1.0.0\tools\not.installed.exe
+lib\installpackage.1.0.0\tools\not.installed.exe.ignore
+lib\installpackage.1.0.0\tools\simplefile.txt
+=> removed files:
+lib\installpackage\installpackage.nupkg
+lib\installpackage\installpackage.nuspec
+lib\installpackage\tools\casemismatch.exe
+lib\installpackage\tools\Casemismatch.exe.ignore
+lib\installpackage\tools\chocolateyBeforeModify.ps1
+lib\installpackage\tools\chocolateyinstall.ps1
+lib\installpackage\tools\chocolateyuninstall.ps1
+lib\installpackage\tools\console.exe
+lib\installpackage\tools\graphical.exe
+lib\installpackage\tools\graphical.exe.gui
+lib\installpackage\tools\not.installed.exe
+lib\installpackage\tools\not.installed.exe.ignore
+lib\installpackage\tools\simplefile.txt
+end of test
