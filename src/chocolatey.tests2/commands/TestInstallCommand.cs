@@ -383,8 +383,9 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void SwitchSxsToNormal()
         {
-            InstallOn(ChocoTestContext.install_sxs,(conf) =>
+            InstallOn(ChocoTestContext.install_sxs, (conf) =>
             {
+                conf.AllowMultipleVersions = false;
                 conf.Force = true;
             });
         }
