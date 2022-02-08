@@ -332,6 +332,16 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        // when_installing_a_side_by_side_package
+        [LogTest()]
+        public void InstallSideBySide()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.AllowMultipleVersions = true;
+            });
+        }
+
     }
 }
 
