@@ -1,0 +1,26 @@
+Installing the following packages:
+nonterminatingerror
+By installing you accept licenses for the packages.
+[NuGet] Installing 'nonterminatingerror 1.0'.
+[NuGet] Successfully installed 'nonterminatingerror 1.0'.
+
+nonterminatingerror v1.0
+nonterminatingerror package files install completed. Performing other installation steps.
+Oh no! An error
+Only an exit code of non-zero will fail the package by default. Set 
+ `--failonstderr` if you want error messages to also fail a script.
+ The install of nonterminatingerror was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for nonterminatingerror/1.0: succeeded
+=> added new files:
+.chocolatey\nonterminatingerror.1.0\.arguments
+.chocolatey\nonterminatingerror.1.0\.files
+lib\nonterminatingerror\nonterminatingerror.nupkg
+  version: 1.0.0.0
+lib\nonterminatingerror\nonterminatingerror.nuspec
+lib\nonterminatingerror\tools\chocolateyInstall.ps1
+end of test

@@ -320,6 +320,17 @@ namespace chocolatey.tests2.commands
             //maybe should not create ".chocolatey\badpackage.2.0\.files" file
         }
 
+        // when_installing_a_package_that_has_nonterminating_errors
+        [LogTest()]
+        public void InstallNonTerminatingPackage()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.PackageNames = conf.Input = "nonterminatingerror";
+            });
+            ListUpdates();
+        }
+
     }
 }
 
