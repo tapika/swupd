@@ -1,0 +1,12 @@
+Installing the following packages:
+nonexisting
+By installing you accept licenses for the packages.
+nonexisting not installed. The package was not found with the source(s) listed.
+
+Chocolatey installed 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> install result for nonexisting/: FAILED
+  Error: 
+  - nonexisting not installed. The package was not found with the source(s) listed.
+=> folder was not updated
+end of test

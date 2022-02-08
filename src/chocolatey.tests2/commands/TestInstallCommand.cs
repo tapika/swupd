@@ -296,6 +296,18 @@ namespace chocolatey.tests2.commands
             ListUpdates();
         }
 
+        // when_installing_a_package_that_does_not_exist
+        [LogTest()]
+        public void InstallPackageDoesNotExists()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.PackageNames = conf.Input = "nonexisting";
+            });
+            ListUpdates();
+        }
+
+
     }
 }
 
