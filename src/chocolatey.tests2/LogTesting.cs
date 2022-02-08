@@ -222,6 +222,13 @@
                     }
                     break;
 
+                case ChocoTestContext.install_sxs:
+                    {
+                        conf.AllowMultipleVersions = true;
+                        Scenario.install_package(conf, "installpackage", "1.0.0");
+                    }
+                    break;
+
                 case ChocoTestContext.installupdate:
                     {
                         Scenario.install_package(conf, "installpackage", "1.0.0");

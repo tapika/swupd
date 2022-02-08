@@ -378,6 +378,16 @@ namespace chocolatey.tests2.commands
                 conf.Force = true;
             });
         }
+
+        // when_switching_a_side_by_side_package_to_a_normal_package
+        [LogTest()]
+        public void SwitchSxsToNormal()
+        {
+            InstallOn(ChocoTestContext.install_sxs,(conf) =>
+            {
+                conf.Force = true;
+            });
+        }
     }
 }
 

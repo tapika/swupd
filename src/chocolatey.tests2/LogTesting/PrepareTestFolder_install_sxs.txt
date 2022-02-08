@@ -1,0 +1,18 @@
+Installing the following packages:
+installpackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'installpackage 1.0.0'.
+[NuGet] Successfully installed 'installpackage 1.0.0'.
+
+installpackage v1.0.0
+installpackage package files install completed. Performing other installation steps.
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
+ The install of installpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+shared context ends
