@@ -103,6 +103,8 @@ namespace chocolatey.tests2.commands
                     addedFiles.Add(file.Substring(rootDir.Length + 1));
                 }
             }
+            
+            ListUpdates();
         }
 
         void ListUpdates()
@@ -144,7 +146,6 @@ namespace chocolatey.tests2.commands
             {
                 conf.Noop = true;
             });
-            ListUpdates();
         }
 
         // when_noop_installing_a_package_that_does_not_exist
@@ -156,7 +157,6 @@ namespace chocolatey.tests2.commands
                 conf.PackageNames = conf.Input = "somethingnonexisting";
                 conf.Noop = true;
             });
-            ListUpdates();
         }
 
         // when_installing_a_package_happy_path
@@ -167,7 +167,6 @@ namespace chocolatey.tests2.commands
             {
                 //conf.Features.UseShimGenService = true;
             });
-            ListUpdates();
 
             // not ported:
             //should_have_a_console_shim_that_is_set_for_non_gui_access
@@ -184,7 +183,6 @@ namespace chocolatey.tests2.commands
                 var packagesConfig = "{0}\\context\\testing.packages.config".format_with(Scenario.get_top_level());
                 conf.PackageNames = conf.Input = packagesConfig;
             });
-            ListUpdates();
         }
 
         public void InstallOnInstall(
@@ -207,7 +205,6 @@ namespace chocolatey.tests2.commands
         public void InstallOnAlreadyInstalled()
         {
             InstallOnInstall((conf) => { });
-            ListUpdates();
             InstalledPackageIs_1_0();
         }
 
@@ -224,7 +221,6 @@ namespace chocolatey.tests2.commands
                     File.WriteAllText(modifiedFilePath, modifiedContent);
                 }
             );
-            ListUpdates();
             Assert.AreNotEqual(File.ReadAllText(modifiedFilePath), modifiedContent);
             InstalledPackageIs_1_0();
         }
@@ -246,7 +242,6 @@ namespace chocolatey.tests2.commands
                     File.WriteAllText(modifiedFilePath, modifiedContent);
                 });
         
-            ListUpdates();
             Assert.AreEqual(File.ReadAllText(modifiedFilePath), modifiedContent);
             InstalledPackageIs_1_0();
         }
@@ -263,7 +258,6 @@ namespace chocolatey.tests2.commands
             }, testFolder
             );
 
-            ListUpdates();
             fileStream.Close();
             InstalledPackageIs_1_0();
         }
@@ -293,7 +287,6 @@ namespace chocolatey.tests2.commands
             {
                 conf.Version = "1.0.1";
             });
-            ListUpdates();
         }
 
         // when_installing_a_package_that_does_not_exist
@@ -304,7 +297,6 @@ namespace chocolatey.tests2.commands
             {
                 conf.PackageNames = conf.Input = "nonexisting";
             });
-            ListUpdates();
         }
 
         // when_installing_a_package_that_errors
@@ -315,7 +307,6 @@ namespace chocolatey.tests2.commands
             {
                 conf.PackageNames = conf.Input = "badpackage";
             });
-            ListUpdates();
 
             //maybe should not create ".chocolatey\badpackage.2.0\.files" file
         }
@@ -328,7 +319,6 @@ namespace chocolatey.tests2.commands
             {
                 conf.PackageNames = conf.Input = "nonterminatingerror";
             });
-            ListUpdates();
         }
 
         // when_installing_a_package_that_has_nonterminating_errors_with_fail_on_stderr
@@ -340,7 +330,6 @@ namespace chocolatey.tests2.commands
                 conf.PackageNames = conf.Input = "nonterminatingerror";
                 conf.Features.FailOnStandardError = true;
             });
-            ListUpdates();
         }
 
     }
