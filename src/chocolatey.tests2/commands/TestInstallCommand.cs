@@ -285,6 +285,17 @@ namespace chocolatey.tests2.commands
             // "Force install with file locked leaves inconsistent state - GH-114"
         }
 
+        // when_installing_a_package_that_exists_but_a_version_that_does_not_exist
+        [LogTest()]
+        public void InstallPackageVersionDoesNotExists()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.Version = "1.0.1";
+            });
+            ListUpdates();
+        }
+
     }
 }
 
