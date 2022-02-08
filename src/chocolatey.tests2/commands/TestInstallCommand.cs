@@ -388,6 +388,16 @@ namespace chocolatey.tests2.commands
                 conf.Force = true;
             });
         }
+
+        // when_installing_a_package_with_dependencies_happy
+        [LogTest()]
+        public void InstallWithDependencies()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.PackageNames = conf.Input = "hasdependency";
+            });
+        }
     }
 }
 

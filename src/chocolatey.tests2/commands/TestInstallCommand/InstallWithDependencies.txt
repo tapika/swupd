@@ -1,0 +1,61 @@
+Installing the following packages:
+hasdependency
+By installing you accept licenses for the packages.
+[NuGet] Attempting to resolve dependency 'isdependency (≥ 2.0.0)'.
+[NuGet] Attempting to resolve dependency 'isexactversiondependency (= 2.0.0)'.
+[NuGet] Installing 'isdependency 2.1.0'.
+[NuGet] Successfully installed 'isdependency 2.1.0'.
+
+isdependency v2.1.0
+isdependency package files install completed. Performing other installation steps.
+isdependency 2.1.0 Installed
+ The install of isdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'isexactversiondependency 2.0.0'.
+[NuGet] Successfully installed 'isexactversiondependency 2.0.0'.
+
+isexactversiondependency v2.0.0
+isexactversiondependency package files install completed. Performing other installation steps.
+isexactversiondependency 2.0.0 Installed
+ The install of isexactversiondependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'hasdependency 2.1.0'.
+[NuGet] Successfully installed 'hasdependency 2.1.0'.
+
+hasdependency v2.1.0
+hasdependency package files install completed. Performing other installation steps.
+hasdependency 2.1.0 Installed
+ The install of hasdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 3/3 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for hasdependency/2.1.0: succeeded
+=> install result for isdependency/2.1.0: succeeded
+=> install result for isexactversiondependency/2.0.0: succeeded
+=> added new files:
+.chocolatey\hasdependency.2.1.0\.arguments
+.chocolatey\hasdependency.2.1.0\.files
+.chocolatey\isdependency.2.1.0\.arguments
+.chocolatey\isdependency.2.1.0\.files
+.chocolatey\isexactversiondependency.2.0.0\.arguments
+.chocolatey\isexactversiondependency.2.0.0\.files
+lib\hasdependency\hasdependency.nupkg
+  version: 2.1.0.0
+lib\hasdependency\hasdependency.nuspec
+lib\hasdependency\tools\chocolateyinstall.ps1
+lib\hasdependency\tools\chocolateyuninstall.ps1
+lib\isdependency\isdependency.nupkg
+  version: 2.1.0.0
+lib\isdependency\isdependency.nuspec
+lib\isdependency\tools\chocolateyinstall.ps1
+lib\isdependency\tools\chocolateyuninstall.ps1
+lib\isexactversiondependency\isexactversiondependency.nupkg
+  version: 2.0.0.0
+lib\isexactversiondependency\isexactversiondependency.nuspec
+lib\isexactversiondependency\tools\chocolateyinstall.ps1
+lib\isexactversiondependency\tools\chocolateyuninstall.ps1
+end of test
