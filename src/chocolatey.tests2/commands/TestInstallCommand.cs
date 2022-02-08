@@ -331,6 +331,18 @@ namespace chocolatey.tests2.commands
             ListUpdates();
         }
 
+        // when_installing_a_package_that_has_nonterminating_errors_with_fail_on_stderr
+        [LogTest()]
+        public void InstallTerminatingPackage()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.PackageNames = conf.Input = "nonterminatingerror";
+                conf.Features.FailOnStandardError = true;
+            });
+            ListUpdates();
+        }
+
     }
 }
 

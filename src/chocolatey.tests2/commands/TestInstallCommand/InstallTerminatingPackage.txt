@@ -1,0 +1,27 @@
+Installing the following packages:
+nonterminatingerror
+By installing you accept licenses for the packages.
+[NuGet] Installing 'nonterminatingerror 1.0'.
+[NuGet] Successfully installed 'nonterminatingerror 1.0'.
+
+nonterminatingerror v1.0
+nonterminatingerror package files install completed. Performing other installation steps.
+Oh no! An error
+The install of nonterminatingerror was NOT successful.
+Error while running 'lib\nonterminatingerror\tools\chocolateyInstall.ps1'.
+ See log for details.
+
+Chocolatey installed 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> install result for nonterminatingerror/1.0: FAILED
+  Error: 
+  - Error while running 'lib\nonterminatingerror\tools\chocolateyInstall.ps1'.
+ See log for details.
+=> added new files:
+.chocolatey\nonterminatingerror.1.0\.files
+lib-bad\nonterminatingerror\.chocolateyPending
+lib-bad\nonterminatingerror\nonterminatingerror.nupkg
+  version: 1.0.0.0
+lib-bad\nonterminatingerror\nonterminatingerror.nuspec
+lib-bad\nonterminatingerror\tools\chocolateyInstall.ps1
+end of test
