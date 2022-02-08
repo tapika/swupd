@@ -1,0 +1,34 @@
+Installing the following packages:
+badpackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'badpackage 2.0'.
+[NuGet] Successfully installed 'badpackage 2.0'.
+
+badpackage v2.0
+badpackage package files install completed. Performing other installation steps.
+This is badpackage v2.0 being installed
+WARNING: A warning!
+Oh no! An error
+ERROR: We had an error captain!
+ at <ScriptBlock>, badpackage\tools\chocolateyInstall.ps1: line 15
+at <ScriptBlock>, helperschocolateyScriptRunner.ps1: line 49
+at <ScriptBlock>, <No file>: line 1
+The install of badpackage was NOT successful.
+Error while running 'lib\badpackage\tools\chocolateyInstall.ps1'.
+ See log for details.
+
+Chocolatey installed 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> install result for badpackage/2.0: FAILED
+  Error: 
+  - Error while running 'lib\badpackage\tools\chocolateyInstall.ps1'.
+ See log for details.
+=> added new files:
+.chocolatey\badpackage.2.0\.files
+lib-bad\badpackage\.chocolateyPending
+lib-bad\badpackage\badpackage.nupkg
+  version: 2.0.0.0
+lib-bad\badpackage\badpackage.nuspec
+lib-bad\badpackage\tools\chocolateyInstall.ps1
+lib-bad\badpackage\tools\chocolateyUninstall.ps1
+end of test

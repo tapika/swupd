@@ -307,6 +307,18 @@ namespace chocolatey.tests2.commands
             ListUpdates();
         }
 
+        // when_installing_a_package_that_errors
+        [LogTest()]
+        public void InstallBadPackage()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.PackageNames = conf.Input = "badpackage";
+            });
+            ListUpdates();
+
+            //maybe should not create ".chocolatey\badpackage.2.0\.files" file
+        }
 
     }
 }
