@@ -1,0 +1,19 @@
+Installing the following packages:
+hasdependency
+By installing you accept licenses for the packages.
+[NuGet] Attempting to resolve dependency 'isdependency (≥ 2.0.0)'.
+hasdependency not installed. An error occurred during installation:
+ Unable to resolve dependency 'isdependency (≥ 2.0.0)'.
+hasdependency package files install completed. Performing other installation steps.
+The install of hasdependency was NOT successful.
+hasdependency not installed. An error occurred during installation:
+ Unable to resolve dependency 'isdependency (≥ 2.0.0)'.
+
+Chocolatey installed 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> install result for hasdependency/: FAILED
+  Error: 
+  - hasdependency not installed. An error occurred during installation:
+ Unable to resolve dependency 'isdependency (≥ 2.0.0)'.
+=> folder was not updated
+end of test

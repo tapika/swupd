@@ -318,6 +318,17 @@ namespace chocolatey.tests2.commands
                 conf.IgnoreDependencies = true;
             }, ChocoTestContext.packages_for_dependency_testing3);
         }
+
+        // when_installing_a_package_with_dependencies_and_dependency_cannot_be_found
+        [LogTest()]
+        public void InstallMissingDependencies()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.PackageNames = conf.Input = "hasdependency";
+            }, ChocoTestContext.pack_hasdependency_2_1_0);
+        }
+
     }
 }
 
