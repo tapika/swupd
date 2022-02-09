@@ -1,0 +1,25 @@
+Installing the following packages:
+hasdependency
+By installing you accept licenses for the packages.
+[NuGet] Installing 'hasdependency 2.1.0'.
+[NuGet] Successfully installed 'hasdependency 2.1.0'.
+
+hasdependency v2.1.0
+hasdependency package files install completed. Performing other installation steps.
+hasdependency 2.1.0 Installed
+ The install of hasdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for hasdependency/2.1.0: succeeded
+=> added new files:
+.chocolatey\hasdependency.2.1.0\.arguments
+.chocolatey\hasdependency.2.1.0\.files
+lib\hasdependency\hasdependency.nupkg
+  version: 2.1.0.0
+lib\hasdependency\hasdependency.nuspec
+lib\hasdependency\tools\chocolateyinstall.ps1
+lib\hasdependency\tools\chocolateyuninstall.ps1
+end of test
