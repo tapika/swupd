@@ -13,6 +13,7 @@ namespace chocolatey.tests2
         install,
         install_sxs,
         installupdate,
+        isdependency,
         hasdependency,
         exactpackage,
         badpackage,
@@ -22,6 +23,7 @@ namespace chocolatey.tests2
         packages_for_dependency_testing,
         packages_for_dependency_testing2,
         packages_for_dependency_testing3,
+        packages_for_dependency_testing4,
 
         pack_badpackage_1_0,
         pack_hasdependency_1_0_0,

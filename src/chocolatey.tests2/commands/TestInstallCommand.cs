@@ -86,7 +86,7 @@ namespace chocolatey.tests2.commands
 
         void InstalledPackageIs_1_0()
         {
-            var packageFile = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, conf.PackageNames + Constants.PackageExtension);
+            var packageFile = Path.Combine(InstallContext.Instance.PackagesLocation, lastconf.PackageNames, lastconf.PackageNames + Constants.PackageExtension);
             var package = new OptimizedZipPackage(packageFile);
             Assert.AreEqual(package.Version.Version.to_string(), "1.0.0.0");
         }
@@ -339,6 +339,17 @@ namespace chocolatey.tests2.commands
                 conf.IgnoreDependencies = true;
             }, ChocoTestContext.pack_hasdependency_2_1_0);
         }
+
+        // when_installing_a_package_that_depends_on_a_newer_version_of_an_installed_dependency
+        [LogTest()]
+        public void InstallPackageDependOnNeverVersion()
+        {
+            InstallOn(ChocoTestContext.isdependency, (conf) =>
+            {
+                conf.PackageNames = conf.Input = "hasdependency";
+            }, ChocoTestContext.packages_for_dependency_testing4);
+        }
+
     }
 }
 

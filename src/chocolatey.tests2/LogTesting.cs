@@ -157,7 +157,11 @@
 
         public List<string> addedFiles;
         public List<string> removedFiles;
-        public ChocolateyConfiguration conf;
+
+        /// <summary>
+        /// Last configuration used for installation
+        /// </summary>
+        public ChocolateyConfiguration lastconf = null;
 
         public void InstallOn(
             ChocoTestContext testcontext,
@@ -166,7 +170,7 @@
             [CallerMemberName] string testFolder = ""
         )
         {
-            conf = Scenario.baseline_configuration(true);
+            ChocolateyConfiguration conf = Scenario.baseline_configuration(true);
             if (testcontext != ChocoTestContext.skipcontextinit)
             {
                 string dir = PrepareTestFolder(testcontext, conf, testFolder);
@@ -246,6 +250,8 @@
             }
 
             ListUpdates();
+
+            lastconf = conf;
         }
 
         /// <summary>
@@ -438,6 +444,20 @@
                     );
                     break;
 
+                case ChocoTestContext.packages_for_dependency_testing4:
+                    PrepageMultiPackageFolder(
+                        ChocoTestContext.pack_badpackage_1_0,
+                        ChocoTestContext.pack_hasdependency_1_6_0,
+                        ChocoTestContext.pack_installpackage_1_0_0,
+                        ChocoTestContext.pack_isdependency_1_0_0,
+                        ChocoTestContext.pack_isdependency_1_1_0,
+                        ChocoTestContext.pack_isexactversiondependency_1_0_0,
+                        ChocoTestContext.pack_isexactversiondependency_1_0_1,
+                        ChocoTestContext.pack_isexactversiondependency_1_1_0,
+                        ChocoTestContext.pack_isexactversiondependency_2_0_0
+                    );
+                    break;
+
                 case ChocoTestContext.badpackage:
                     {
                         conf.SkipPackageInstallProvider = true;
@@ -476,6 +496,15 @@
                     }
                     break;
 
+                case ChocoTestContext.isdependency:
+                    {
+                        InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
+                        {
+                            conf2.PackageNames = conf.Input = "isdependency";
+                            conf2.Version = "1.0.0";
+                        }, ChocoTestContext.packages_for_dependency_testing4);
+                    }
+                    break;
 
                 case ChocoTestContext.exactpackage:
                     {

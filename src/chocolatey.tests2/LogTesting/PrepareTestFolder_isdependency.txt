@@ -1,0 +1,25 @@
+Installing the following packages:
+isdependency
+By installing you accept licenses for the packages.
+[NuGet] Installing 'isdependency 1.0.0'.
+[NuGet] Successfully installed 'isdependency 1.0.0'.
+
+isdependency v1.0.0
+isdependency package files install completed. Performing other installation steps.
+isdependency 1.0.0 Installed
+ The install of isdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for isdependency/1.0.0: succeeded
+=> added new files:
+.chocolatey\isdependency.1.0.0\.arguments
+.chocolatey\isdependency.1.0.0\.files
+lib\isdependency\isdependency.nupkg
+  version: 1.0.0.0
+lib\isdependency\isdependency.nuspec
+lib\isdependency\tools\chocolateyinstall.ps1
+lib\isdependency\tools\chocolateyuninstall.ps1
+shared context ends
