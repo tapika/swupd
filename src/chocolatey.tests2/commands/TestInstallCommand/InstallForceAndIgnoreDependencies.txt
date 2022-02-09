@@ -1,0 +1,35 @@
+Installing the following packages:
+hasdependency
+By installing you accept licenses for the packages.
+hasdependency v1.0.0 already installed. Forcing reinstall of version '1.0.0'. 
+ Please use upgrade if you meant to upgrade to a new version.
+[NuGet] Uninstalling 'hasdependency 1.0.0'.
+[NuGet] Successfully uninstalled 'hasdependency 1.0.0'.
+[NuGet] Uninstalling 'isdependency 1.0.0'.
+[NuGet] Successfully uninstalled 'isdependency 1.0.0'.
+[NuGet] Uninstalling 'isexactversiondependency 1.0.0'.
+[NuGet] Successfully uninstalled 'isexactversiondependency 1.0.0'.
+[NuGet] Installing 'hasdependency 1.0.0'.
+[NuGet] Successfully installed 'hasdependency 1.0.0'.
+
+hasdependency v1.0.0 (forced)
+hasdependency package files install completed. Performing other installation steps.
+hasdependency 1.0.0 Installed
+ The install of hasdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for hasdependency/1.0.0: succeeded
+=> folder was not updated
+=> removed files:
+lib\isdependency\isdependency.nupkg
+lib\isdependency\isdependency.nuspec
+lib\isdependency\tools\chocolateyinstall.ps1
+lib\isdependency\tools\chocolateyuninstall.ps1
+lib\isexactversiondependency\isexactversiondependency.nupkg
+lib\isexactversiondependency\isexactversiondependency.nuspec
+lib\isexactversiondependency\tools\chocolateyinstall.ps1
+lib\isexactversiondependency\tools\chocolateyuninstall.ps1
+end of test
