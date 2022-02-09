@@ -14,10 +14,24 @@
     using NuGet;
     using System.Collections.Concurrent;
     using System.Runtime.CompilerServices;
+    using System.Collections.Generic;
+    using chocolatey.infrastructure.app.services;
+    using System.Linq;
+    using chocolatey.infrastructure.results;
+    using chocolatey;
+    using System.Text.RegularExpressions;
+    using chocolatey.infrastructure.app.commands;
 
     [TestFixture]
     public class LogTesting
     {
+        protected IChocolateyPackageService Service;
+
+        public LogTesting()
+        {
+            Service = chocolatey.tests.integration.NUnitSetup.Container.GetInstance<IChocolateyPackageService>();
+        }
+
         /// <summary>
         /// Accesses private class type via reflection.
         /// </summary>
@@ -134,6 +148,142 @@
             }
         }
 
+        static List<string> GetFilesAndFolders(string path)
+        {
+            var list = Directory.GetFiles(path, "*", SearchOption.AllDirectories).ToList();
+            list.Sort();
+            return list;
+        }
+
+        public List<string> addedFiles;
+        public List<string> removedFiles;
+        public ChocolateyConfiguration conf;
+
+        public void InstallOn(
+            ChocoTestContext testcontext,
+            Action<ChocolateyConfiguration> confPatch = null,
+            ChocoTestContext packagesContext = ChocoTestContext.packages_default,
+            [CallerMemberName] string testFolder = ""
+        )
+        {
+            conf = Scenario.baseline_configuration(true);
+            string dir = PrepareTestFolder(testcontext, conf, testFolder);
+            InstallContext.Instance.RootLocation = dir;
+
+            if (packagesContext == ChocoTestContext.packages_default)
+            {
+                conf.Sources = InstallContext.TestPackagesFolder;
+            }
+            else
+            {
+                conf.Sources = PrepareTestFolder(packagesContext, conf);
+            }
+
+            conf.PackageNames = conf.Input = "installpackage";
+            if (confPatch != null)
+            {
+                confPatch(conf);
+            }
+
+            string rootDir = InstallContext.Instance.RootLocation;
+            var listBeforeUpdate = GetFilesAndFolders(rootDir);
+
+            if (conf.Noop)
+            {
+                Service.install_noop(conf);
+            }
+            else
+            {
+                var results = Service.install_run(conf);
+                var packages = results.Keys.ToList();
+                packages.Sort();
+                var console = LogService.console;
+
+                foreach (var package in packages)
+                {
+                    var pkgresult = results[package];
+                    console.Info($"=> install result for {pkgresult.Name}/{pkgresult.Version}: "
+                        + ((pkgresult.Success) ? "succeeded" : "FAILED"));
+
+                    foreach (var resultType in new[] { ResultType.Error, ResultType.Warn, ResultType.Inconclusive })
+                    {
+                        var msgs = pkgresult.Messages.Where(x => x.MessageType == resultType).ToList();
+
+                        if (msgs.Count == 0)
+                        {
+                            continue;
+                        }
+
+                        console.Info($"  {resultType}: ");
+                        foreach (var msg in msgs)
+                        {
+                            console.Info($"  - {msg.Message}");
+                        }
+                    }
+                }
+            }
+            var listAfterUpdate = GetFilesAndFolders(rootDir);
+            addedFiles = new List<string>();
+            removedFiles = new List<string>();
+
+            foreach (var file in listAfterUpdate)
+            {
+                if (!listBeforeUpdate.Contains(file))
+                {
+                    addedFiles.Add(file.Substring(rootDir.Length + 1));
+                }
+            }
+
+            foreach (var file in listBeforeUpdate)
+            {
+                if (!listAfterUpdate.Contains(file))
+                {
+                    removedFiles.Add(file.Substring(rootDir.Length + 1));
+                }
+            }
+
+            ListUpdates();
+        }
+
+        /// <summary>
+        /// Lists what updates were performed to folder.
+        /// </summary>
+        void ListUpdates()
+        {
+            var console = LogService.console;
+            List<string>[] lists = new List<string>[2] { addedFiles, removedFiles };
+            string[] listName = new[] { "added new", "removed" };
+
+            for (int iList = 0; iList < 2; iList++)
+            {
+                var list = lists[iList];
+                var name = listName[iList];
+
+                if (list.Count == 0)
+                {
+                    if (iList == 0)
+                    {
+                        console.Info("=> folder was not updated");
+                    }
+                }
+                else
+                {
+                    console.Info($"=> {name} files:");
+                    foreach (var f in list)
+                    {
+                        console.Info(f);
+
+                        if (Path.GetExtension(f) == Constants.PackageExtension && iList == 0)
+                        {
+                            string nupkgPath = Path.Combine(InstallContext.Instance.RootLocation, f);
+                            var package = new OptimizedZipPackage(nupkgPath);
+                            console.Info("  version: " + package.Version.Version.to_string());
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Gets test folder for testing. If folder does not exists, creates new task which will create specific folder.
         /// </summary>
@@ -168,6 +318,7 @@
 
             string oldSources = conf.Sources;
             conf.Sources = InstallContext.TestPackagesFolder;
+            string rootDir = InstallContext.Instance.RootLocation;
 
             newtask = new Task(() =>
             {
@@ -181,8 +332,10 @@
 
                 using (new VerifyingLog(testcontext.ToString()))
                 {
-                    PrepareTestContext(testcontext, conf);
-                    LogService.console.Info("shared context ends");
+                    if (PrepareTestContext(testcontext, conf))
+                    { 
+                       LogService.console.Info("shared context ends");
+                    }
                 }
 
                 Directory.CreateDirectory(folderPathOk);
@@ -191,9 +344,16 @@
             var task = updaters.GetOrAdd(testcontext.ToString(), newtask);
             if (task == newtask)
                 newtask.Start();
+            else
+                rootDir = null;
 
             task.Wait();
             conf.Sources = oldSources;
+
+            if (rootDir != null)
+            {
+                InstallContext.Instance.RootLocation = rootDir;
+            }
 
             if (!String.IsNullOrEmpty(testFolder))
             {
@@ -204,10 +364,60 @@
             return folderPath;
         }
 
-        void PrepareTestContext(ChocoTestContext testcontext, ChocolateyConfiguration conf)
+        static Regex rePack = new Regex("pack_(.*?)_(.*)");
+
+        /// <returns>true if log needs to be created, false if not</returns>
+        bool PrepareTestContext(ChocoTestContext testcontext, ChocolateyConfiguration conf)
         {
+            // Generic nupkg creation.
+            var re = rePack.Match(testcontext.ToString());
+            if (re.Success)
+            {
+                string package = re.Groups[1].Value;
+                string version = re.Groups[2].Value.Replace('_','.').Replace(".beta", "-beta");
+
+                string nuspecMatch = $"{Path.DirectorySeparatorChar}{package}{Path.DirectorySeparatorChar}{version}";
+                var nuspecs = Directory.GetFiles(InstallContext.TestPackagesFolder, "*.nuspec", SearchOption.AllDirectories).Where(x => Path.GetDirectoryName(x).EndsWith(nuspecMatch)).ToList();
+
+                if (nuspecs.Count != 1)
+                {
+                    throw new Exception($"Package .nuspec not found: {nuspecMatch}");
+                }
+
+                var command = chocolatey.tests.integration.NUnitSetup.Commands.OfType<ChocolateyPackCommand>().Single();
+                var packConf = Scenario.pack(true);
+                packConf.Input = nuspecs[0];
+                packConf.QuietOutput = true;
+                packConf.OutputDirectory = InstallContext.Instance.RootLocation;
+                command.run(packConf);
+                return false;
+            }
+            
             switch (testcontext)
             {
+                case ChocoTestContext.packages_for_dependency_testing:
+                    ChocoTestContext[] packcontexts = {
+                            ChocoTestContext.pack_badpackage_1_0,
+                            ChocoTestContext.pack_hasdependency_1_0_0,
+                            ChocoTestContext.pack_installpackage_1_0_0,
+                            ChocoTestContext.pack_isdependency_1_0_0,
+                            ChocoTestContext.pack_isexactversiondependency_1_0_0,
+                            ChocoTestContext.pack_isexactversiondependency_1_0_1,
+                            ChocoTestContext.pack_isexactversiondependency_1_1_0,
+                            ChocoTestContext.pack_isexactversiondependency_2_0_0,
+                    };
+
+                    string[] folders = packcontexts.Select(x => PrepareTestFolder(x, conf)).ToArray();
+                    foreach (var folder in folders)
+                    {
+                        foreach (var nupkg in Directory.GetFiles(folder, "*" + Constants.PackageExtension))
+                        {
+                            string destPath = Path.Combine(InstallContext.Instance.RootLocation, Path.GetFileName(nupkg));
+                            File.Copy(nupkg, destPath, true);
+                        }
+                    }
+                    break;
+
                 case ChocoTestContext.badpackage:
                     {
                         conf.SkipPackageInstallProvider = true;
@@ -247,6 +457,8 @@
                 case ChocoTestContext.empty:
                     break;
             }
+
+            return true;
         }
 
         static int _LastLineNumber([CallerLineNumber] int line = 0)

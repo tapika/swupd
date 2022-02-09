@@ -14,19 +14,8 @@ using System.Threading.Tasks;
 
 namespace chocolatey.tests2.commands
 {
-    public class ListScenario : LogTesting
-    {
-        protected IChocolateyPackageService Service;
-
-        public ListScenario()
-        {
-            Service = NUnitSetup.Container.GetInstance<IChocolateyPackageService>();
-        }
-    };
-    
-
     [Parallelizable(ParallelScope.All)]
-    public class TestListCommand: ListScenario
+    public class TestListCommand: LogTesting
     {
         public void CommonList(Action<ChocolateyConfiguration> confPatch)
         {

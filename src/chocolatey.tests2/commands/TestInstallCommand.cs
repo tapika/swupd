@@ -17,151 +17,16 @@ using System.Threading.Tasks;
 
 namespace chocolatey.tests2.commands
 {
-    public class InstallScenario : LogTesting
-    {
-        protected IChocolateyPackageService Service;
-
-        public InstallScenario()
-        {
-            Service = NUnitSetup.Container.GetInstance<IChocolateyPackageService>();
-        }
-    };
-
     [Parallelizable(ParallelScope.All), FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-    public class TestInstallCommand: InstallScenario
+    public class TestInstallCommand: LogTesting
     {
-        static List<string> GetFilesAndFolders(string path)
-        {
-            var list = Directory.GetFiles(path, "*", SearchOption.AllDirectories).ToList();
-            list.Sort();
-            return list;
-        }
-
-        List<string> addedFiles;
-        List<string> removedFiles;
-        ChocolateyConfiguration conf;
-
-        public void InstallOn(
-            ChocoTestContext testcontext,
-            Action<ChocolateyConfiguration> confPatch = null,
-            [CallerMemberName] string testFolder = ""
-        )
-        {
-            conf = Scenario.baseline_configuration(true);
-            string rootDirBefore = PrepareTestFolder(testcontext, conf, testFolder);
-            InstallContext.Instance.RootLocation = rootDirBefore;
-            conf.Sources = InstallContext.TestPackagesFolder;
-            conf.PackageNames = conf.Input = "installpackage";
-            if (confPatch != null)
-            { 
-                confPatch(conf);
-            }
-
-            string rootDir = InstallContext.Instance.RootLocation;
-            var listBeforeUpdate = GetFilesAndFolders(rootDir);
-
-            if (conf.Noop)
-            {
-                Service.install_noop(conf);
-            }
-            else
-            { 
-                var results = Service.install_run(conf);
-                var packages = results.Keys.ToList();
-                packages.Sort();
-                var console = LogService.console;
-
-                foreach (var package in packages)
-                {
-                    var pkgresult = results[package];
-                    console.Info($"=> install result for {pkgresult.Name}/{pkgresult.Version}: "
-                        + ((pkgresult.Success) ? "succeeded" : "FAILED"));
-
-                    foreach (var resultType in new[] { ResultType.Error, ResultType.Warn, ResultType.Inconclusive })
-                    {
-                        var msgs = pkgresult.Messages.Where(x => x.MessageType == resultType).ToList();
-
-                        if (msgs.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        console.Info($"  {resultType}: ");
-                        foreach (var msg in msgs)
-                        { 
-                            console.Info($"  - {msg.Message}");
-                        }
-                    }
-                }
-            }
-            var listAfterUpdate = GetFilesAndFolders(rootDir);
-            addedFiles = new List<string>();
-            removedFiles = new List<string>();
-
-            foreach (var file in listAfterUpdate)
-            {
-                if (!listBeforeUpdate.Contains(file))
-                {
-                    addedFiles.Add(file.Substring(rootDir.Length + 1));
-                }
-            }
-
-            foreach (var file in listBeforeUpdate)
-            {
-                if (!listAfterUpdate.Contains(file))
-                {
-                    removedFiles.Add(file.Substring(rootDir.Length + 1));
-                }
-            }
-
-            ListUpdates();
-        }
-
-        /// <summary>
-        /// Lists what updates were performed to folder.
-        /// </summary>
-        void ListUpdates()
-        {
-            var console = LogService.console;
-            List<string>[] lists = new List<string>[2] { addedFiles, removedFiles };
-            string[] listName = new[] { "added new", "removed" };
-
-            for (int iList = 0; iList < 2; iList++)
-            {
-                var list = lists[iList];
-                var name = listName[iList];
-
-                if (list.Count == 0)
-                {
-                    if (iList == 0)
-                    { 
-                        console.Info("=> folder was not updated");
-                    }
-                }
-                else
-                {
-                    console.Info($"=> {name} files:");
-                    foreach (var f in list)
-                    {
-                        console.Info(f);
-
-                        if (Path.GetExtension(f) == Constants.PackageExtension && iList == 0)
-                        {
-                            string nupkgPath = Path.Combine(InstallContext.Instance.RootLocation, f);
-                            var package = new OptimizedZipPackage(nupkgPath);
-                            console.Info("  version: " + package.Version.Version.to_string());
-                        }
-                    }
-                }
-            }
-        }
-
         public void InstallOnEmpty(
             Action<ChocolateyConfiguration> confPatch = null,
+            ChocoTestContext packagesContext = ChocoTestContext.packages_default,
             [CallerMemberName] string testFolder = ""
         )
         {
-            InstallOn(ChocoTestContext.empty, confPatch, testFolder);
+            InstallOn(ChocoTestContext.empty, confPatch, packagesContext, testFolder);
         }
 
         // when_noop_installing_a_package
@@ -216,7 +81,7 @@ namespace chocolatey.tests2.commands
             [CallerMemberName] string testFolder = ""
         )
         {
-            InstallOn(ChocoTestContext.install, confPatch, testFolder);
+            InstallOn(ChocoTestContext.install, confPatch, ChocoTestContext.packages_default, testFolder);
         }
 
         void InstalledPackageIs_1_0()
@@ -397,8 +262,9 @@ namespace chocolatey.tests2.commands
             InstallOnEmpty((conf) =>
             {
                 conf.PackageNames = conf.Input = "hasdependency";
-            });
+            }, ChocoTestContext.packages_for_dependency_testing );
         }
+
     }
 }
 

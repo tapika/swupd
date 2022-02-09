@@ -11,6 +11,26 @@ namespace chocolatey.tests2
         installupdate,
         exactpackage,
         badpackage,
-        empty
+        empty,
+
+        packages_default,
+        packages_for_dependency_testing,
+
+        pack_badpackage_1_0,
+        pack_hasdependency_1_0_0,
+        pack_hasdependency_1_0_1,
+        pack_hasdependency_1_1_0,
+        pack_hasdependency_1_5_0,
+        pack_hasdependency_1_6_0,
+        pack_installpackage_1_0_0,
+        pack_isdependency_1_0_0,
+        pack_isdependency_1_0_1,
+        pack_isdependency_1_1_0,
+        pack_isdependency_2_0_0,
+        pack_isdependency_2_1_0,
+        pack_isexactversiondependency_1_0_0,
+        pack_isexactversiondependency_1_0_1,
+        pack_isexactversiondependency_1_1_0,
+        pack_isexactversiondependency_2_0_0,
     };
 }

@@ -231,9 +231,9 @@ namespace chocolatey.tests.integration
             return config;
         }
 
-        public static ChocolateyConfiguration pack()
+        public static ChocolateyConfiguration pack(bool newcopy = false)
         {
-            var config = baseline_configuration();
+            var config = baseline_configuration(newcopy);
             config.CommandName = "pack";
 
             return config;
