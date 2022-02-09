@@ -292,6 +292,20 @@ namespace chocolatey.tests2.commands
             InstalledPackageIs_1_0();
         }
 
+        // when_force_installing_an_already_installed_package_ignoring_dependencies
+        [LogTest()]
+        public void InstallIgnoreDependencies()
+        {
+            InstallOn(ChocoTestContext.hasdependency, (conf) =>
+            {
+                conf.PackageNames = conf.Input = "hasdependency";
+                conf.Force = true;
+                conf.IgnoreDependencies = true;
+            }, ChocoTestContext.packages_for_dependency_testing3);
+
+            InstalledPackageIs_1_0();
+        }
+
     }
 }
 
