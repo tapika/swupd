@@ -316,8 +316,12 @@
 
             Task newtask;
 
-            string oldSources = conf.Sources;
-            conf.Sources = InstallContext.TestPackagesFolder;
+            string oldSources = null;
+            if (conf != null)
+            {
+                oldSources = conf.Sources;
+                conf.Sources = InstallContext.TestPackagesFolder;
+            }
             string rootDir = InstallContext.Instance.RootLocation;
 
             newtask = new Task(() =>
@@ -348,7 +352,10 @@
                 rootDir = null;
 
             task.Wait();
-            conf.Sources = oldSources;
+            if (oldSources != null)
+            { 
+                conf.Sources = oldSources;
+            }
 
             if (rootDir != null)
             {
@@ -396,26 +403,36 @@
             switch (testcontext)
             {
                 case ChocoTestContext.packages_for_dependency_testing:
-                    ChocoTestContext[] packcontexts = {
-                            ChocoTestContext.pack_badpackage_1_0,
-                            ChocoTestContext.pack_hasdependency_1_0_0,
-                            ChocoTestContext.pack_installpackage_1_0_0,
-                            ChocoTestContext.pack_isdependency_1_0_0,
-                            ChocoTestContext.pack_isexactversiondependency_1_0_0,
-                            ChocoTestContext.pack_isexactversiondependency_1_0_1,
-                            ChocoTestContext.pack_isexactversiondependency_1_1_0,
-                            ChocoTestContext.pack_isexactversiondependency_2_0_0,
-                    };
+                    PrepageMultiPackageFolder( 
+                        ChocoTestContext.pack_badpackage_1_0,
+                        ChocoTestContext.pack_hasdependency_1_0_0,
+                        ChocoTestContext.pack_installpackage_1_0_0,
+                        ChocoTestContext.pack_isdependency_1_0_0,
+                        ChocoTestContext.pack_isexactversiondependency_1_0_0,
+                        ChocoTestContext.pack_isexactversiondependency_1_0_1,
+                        ChocoTestContext.pack_isexactversiondependency_1_1_0,
+                        ChocoTestContext.pack_isexactversiondependency_2_0_0
+                    );
+                    break;
 
-                    string[] folders = packcontexts.Select(x => PrepareTestFolder(x, conf)).ToArray();
-                    foreach (var folder in folders)
-                    {
-                        foreach (var nupkg in Directory.GetFiles(folder, "*" + Constants.PackageExtension))
-                        {
-                            string destPath = Path.Combine(InstallContext.Instance.RootLocation, Path.GetFileName(nupkg));
-                            File.Copy(nupkg, destPath, true);
-                        }
-                    }
+                case ChocoTestContext.packages_for_dependency_testing2:
+                    PrepageMultiPackageFolder(
+                        ChocoTestContext.packages_for_dependency_testing,
+                        ChocoTestContext.pack_hasdependency_1_0_1,
+                        ChocoTestContext.pack_hasdependency_1_1_0,
+                        ChocoTestContext.pack_hasdependency_1_5_0,
+                        ChocoTestContext.pack_hasdependency_1_6_0
+                    );
+                    break;
+
+                case ChocoTestContext.packages_for_dependency_testing3:
+                    PrepageMultiPackageFolder(
+                        ChocoTestContext.packages_for_dependency_testing2,
+                        ChocoTestContext.pack_isdependency_1_0_1,
+                        ChocoTestContext.pack_isdependency_1_1_0,
+                        ChocoTestContext.pack_isdependency_2_0_0,
+                        ChocoTestContext.pack_isdependency_2_1_0
+                    );
                     break;
 
                 case ChocoTestContext.badpackage:
@@ -458,7 +475,28 @@
                     break;
             }
 
+            if (testcontext.ToString().StartsWith("packages_"))
+            {
+                return false;
+            }
+
             return true;
+        }
+
+        /// <summary>
+        /// Prepares separate folder for multiple nuget packages in same folder.
+        /// </summary>
+        private void PrepageMultiPackageFolder(params ChocoTestContext[] packcontexts)
+        {
+            string[] folders = packcontexts.Select(x => PrepareTestFolder(x, null)).ToArray();
+            foreach (var folder in folders)
+            {
+                foreach (var nupkg in Directory.GetFiles(folder, "*" + Constants.PackageExtension))
+                {
+                    string destPath = Path.Combine(InstallContext.Instance.RootLocation, Path.GetFileName(nupkg));
+                    File.Copy(nupkg, destPath, true);
+                }
+            }
         }
 
         static int _LastLineNumber([CallerLineNumber] int line = 0)
