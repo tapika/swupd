@@ -167,8 +167,11 @@
         )
         {
             conf = Scenario.baseline_configuration(true);
-            string dir = PrepareTestFolder(testcontext, conf, testFolder);
-            InstallContext.Instance.RootLocation = dir;
+            if (testcontext != ChocoTestContext.skipcontextinit)
+            {
+                string dir = PrepareTestFolder(testcontext, conf, testFolder);
+                InstallContext.Instance.RootLocation = dir;
+            }
 
             if (packagesContext == ChocoTestContext.packages_default)
             {
@@ -462,6 +465,17 @@
                         Scenario.install_package(conf, "upgradepackage", "1.0.0");
                     }
                     break;
+
+                case ChocoTestContext.hasdependency:
+                    {
+                        InstallOn(ChocoTestContext.skipcontextinit, (conf) =>
+                        {
+                            conf.PackageNames = conf.Input = "hasdependency";
+                            conf.Version = "1.0.0";
+                        }, ChocoTestContext.packages_for_dependency_testing2);
+                    }
+                    break;
+
 
                 case ChocoTestContext.exactpackage:
                     {

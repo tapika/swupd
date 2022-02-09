@@ -6,9 +6,14 @@ namespace chocolatey.tests2
 {
     public enum ChocoTestContext
     {
+        /// <summary>
+        /// Skips root folder initialization
+        /// </summary>
+        skipcontextinit,
         install,
         install_sxs,
         installupdate,
+        hasdependency,
         exactpackage,
         badpackage,
         empty,

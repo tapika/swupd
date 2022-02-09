@@ -265,6 +265,19 @@ namespace chocolatey.tests2.commands
             }, ChocoTestContext.packages_for_dependency_testing );
         }
 
+        // when_force_installing_an_already_installed_package_with_dependencies
+        [LogTest()]
+        public void InstallWithDependenciesOnInstalled()
+        {
+            InstallOn(ChocoTestContext.hasdependency, (conf) =>
+            {
+                conf.PackageNames = conf.Input = "hasdependency";
+                conf.Force = true;
+            }, ChocoTestContext.packages_for_dependency_testing3);
+
+            InstalledPackageIs_1_0();
+        }
+
     }
 }
 
