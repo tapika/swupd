@@ -1,19 +1,13 @@
 ﻿using chocolatey.infrastructure.app;
 using chocolatey.infrastructure.app.configuration;
-using chocolatey.infrastructure.app.services;
 using chocolatey.infrastructure.logging;
-using chocolatey.infrastructure.results;
 using chocolatey.tests.integration;
 using logtesting;
 using NuGet;
 using NUnit.Framework;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Xml.XPath;
 
 namespace chocolatey.tests2.commands
