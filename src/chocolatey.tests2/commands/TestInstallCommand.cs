@@ -359,6 +359,17 @@ namespace chocolatey.tests2.commands
                 conf.PackageNames = conf.Input = "hasdependency";
             }, ChocoTestContext.packages_for_dependency_testing4);
         }
+
+        // when_installing_a_package_that_depends_on_an_unavailable_newer_version_of_an_installed_dependency_ignoring_dependencies
+        [LogTest()]
+        public void InstallPackageDependOnNonExistingVersionIgnoreDependencies()
+        {
+            InstallOn(ChocoTestContext.isdependency, (conf) =>
+            {
+                conf.PackageNames = conf.Input = "hasdependency";
+                conf.IgnoreDependencies = true;
+            }, ChocoTestContext.packages_for_dependency_testing4);
+        }
     }
 }
 
