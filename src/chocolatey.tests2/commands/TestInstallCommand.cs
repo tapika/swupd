@@ -383,6 +383,19 @@ namespace chocolatey.tests2.commands
             ListPackageVersions("isdependency");
         }
 
+        // when_installing_a_package_with_dependencies_on_a_newer_version_of_a_package_than_are_allowed_by_an_existing_package_with_that_dependency
+        [LogTest()]
+        public void InstallPackageWithDependenciesOnNewerVesion2()
+        {
+            InstallOn(ChocoTestContext.isdependency_hasdependency_2, (conf) =>
+            {
+                conf.PackageNames = conf.Input = "conflictingdependency";
+            }, ChocoTestContext.packages_for_dependency_testing7);
+
+            ListPackageVersions("isdependency", "isexactversiondependency");
+
+            // Old test has many [Pending], most probably broken.
+        }
     }
 }
 
