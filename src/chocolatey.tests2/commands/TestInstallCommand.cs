@@ -399,6 +399,16 @@ namespace chocolatey.tests2.commands
                 conf.Features.UseShimGenService = true;
             });
         }
+
+        // when_installing_a_package_with_no_sources_enabled
+        [LogTest()]
+        public void InstallNoSources()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.Sources = null;
+            });
+        }
     }
 }
 

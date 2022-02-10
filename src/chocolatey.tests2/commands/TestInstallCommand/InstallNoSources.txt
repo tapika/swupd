@@ -1,0 +1,6 @@
+Installing the following packages:
+installpackage
+Installation was NOT successful. There are no sources enabled for
+ packages and none were passed as arguments.
+=> folder was not updated
+end of test
