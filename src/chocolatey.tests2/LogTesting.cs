@@ -446,15 +446,21 @@
 
                 case ChocoTestContext.packages_for_dependency_testing4:
                     PrepageMultiPackageFolder(
-                        ChocoTestContext.pack_badpackage_1_0,
                         ChocoTestContext.pack_hasdependency_1_6_0,
-                        ChocoTestContext.pack_installpackage_1_0_0,
                         ChocoTestContext.pack_isdependency_1_0_0,
-                        ChocoTestContext.pack_isdependency_1_1_0,
                         ChocoTestContext.pack_isexactversiondependency_1_0_0,
                         ChocoTestContext.pack_isexactversiondependency_1_0_1,
                         ChocoTestContext.pack_isexactversiondependency_1_1_0,
                         ChocoTestContext.pack_isexactversiondependency_2_0_0
+                    );
+                    break;
+
+                case ChocoTestContext.packages_for_dependency_testing5:
+                    PrepageMultiPackageFolder(
+                        ChocoTestContext.packages_for_dependency_testing4,
+                        ChocoTestContext.pack_badpackage_1_0,
+                        ChocoTestContext.pack_installpackage_1_0_0,
+                        ChocoTestContext.pack_isdependency_1_1_0
                     );
                     break;
 
@@ -502,7 +508,7 @@
                         {
                             conf2.PackageNames = conf.Input = "isdependency";
                             conf2.Version = "1.0.0";
-                        }, ChocoTestContext.packages_for_dependency_testing4);
+                        }, ChocoTestContext.packages_for_dependency_testing5);
                     }
                     break;
 

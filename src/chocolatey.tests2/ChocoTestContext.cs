@@ -24,6 +24,7 @@ namespace chocolatey.tests2
         packages_for_dependency_testing2,
         packages_for_dependency_testing3,
         packages_for_dependency_testing4,
+        packages_for_dependency_testing5,
 
         pack_badpackage_1_0,
         pack_hasdependency_1_0_0,
