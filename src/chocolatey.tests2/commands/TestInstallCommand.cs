@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Xml.XPath;
 
 namespace chocolatey.tests2.commands
 {
@@ -398,6 +399,27 @@ namespace chocolatey.tests2.commands
                 conf.PackageNames = conf.Input = path;
                 conf.Features.UseShimGenService = true;
             });
+        }
+
+        // when_installing_a_package_with_config_transforms
+        [LogTest()]
+        public void InstallWithConfigTransforms()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.PackageNames = conf.Input = "upgradepackage";
+            }, ChocoTestContext.pack_upgradepackage_1_0_0);
+
+            string xmlFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, lastconf.PackageNames, "tools", "console.exe.config");
+            var xmlDocument = new XPathDocument(xmlFilePath);
+            var xPathNavigator = xmlDocument.CreateNavigator();
+            var console = LogService.console;
+            console.Info("=> tools/console.exe.config values:");
+            foreach (string tag in new[] { "test", "testReplace", "insert" })
+            {
+                string value = xPathNavigator.SelectSingleNode($"//configuration/appSettings/add[@key='{tag}']/@value").TypedValue.to_string();
+                console.Info($"  {tag}: {value}");
+            }
         }
 
         // when_installing_a_package_with_no_sources_enabled

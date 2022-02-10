@@ -50,5 +50,6 @@ namespace chocolatey.tests2
         pack_isexactversiondependency_1_0_1,
         pack_isexactversiondependency_1_1_0,
         pack_isexactversiondependency_2_0_0,
+        pack_upgradepackage_1_0_0,
     };
 }

@@ -1,0 +1,36 @@
+Installing the following packages:
+upgradepackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'upgradepackage 1.0.0'.
+[NuGet] Successfully installed 'upgradepackage 1.0.0'.
+
+upgradepackage v1.0.0
+upgradepackage package files install completed. Performing other installation steps.
+upgradepackage 1.0.0 Installed
+Transforming 'console.exe.config' with the data from 'console.exe.config.install.xdt'
+ The install of upgradepackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for upgradepackage/1.0.0: succeeded
+=> added new files:
+.chocolatey\upgradepackage.1.0.0\.arguments
+.chocolatey\upgradepackage.1.0.0\.files
+lib\upgradepackage\tools\chocolateyBeforeModify.ps1
+lib\upgradepackage\tools\chocolateyinstall.ps1
+lib\upgradepackage\tools\chocolateyuninstall.ps1
+lib\upgradepackage\tools\console.exe
+lib\upgradepackage\tools\console.exe.config
+lib\upgradepackage\tools\console.exe.config.install.xdt
+lib\upgradepackage\tools\graphical.exe
+lib\upgradepackage\tools\graphical.exe.gui
+lib\upgradepackage\upgradepackage.nupkg
+  version: 1.0.0.0
+lib\upgradepackage\upgradepackage.nuspec
+=> tools/console.exe.config values:
+  test: default 1.0.0
+  testReplace: 1.0.0
+  insert: 1.0.0
+end of test
