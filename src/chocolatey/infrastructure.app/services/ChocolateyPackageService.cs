@@ -579,9 +579,17 @@ package '{0}' - stopping further execution".format_with(packageResult.Name));
             bool isPackageConfigFile = is_packages_config_file(config.PackageNames);
             string actionMessage = isPackageConfigFile ? "Installing from config file" : "Installing the following packages";
             string displayPackageNames = config.PackageNames;
-            if (isPackageConfigFile && ApplicationParameters.runningUnitTesting)
-            { 
-                displayPackageNames = Path.GetFileName(config.PackageNames);
+            if (ApplicationParameters.runningUnitTesting)
+            {
+                if (isPackageConfigFile)
+                { 
+                    displayPackageNames = Path.GetFileName(config.PackageNames);
+                }
+
+                if (Path.IsPathRooted(displayPackageNames) && Path.GetExtension(displayPackageNames).to_lower() == Constants.PackageExtension)
+                { 
+                    displayPackageNames = Path.GetFileName(config.PackageNames);
+                }
             }
             this.Log().Info($"{actionMessage}:");
             this.Log().Info(ChocolateyLoggers.Important, displayPackageNames);

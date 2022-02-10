@@ -384,17 +384,20 @@ namespace chocolatey.tests2.commands
         }
 
         // when_installing_a_package_with_dependencies_on_a_newer_version_of_a_package_than_are_allowed_by_an_existing_package_with_that_dependency
+        // when_installing_a_package_with_dependencies_on_an_older_version_of_a_package_than_is_already_installed
+        // when_installing_a_package_with_a_dependent_package_that_also_depends_on_a_less_constrained_but_still_valid_dependency_of_the_same_package
+        // - All tests ignored ([Pending])
+
+        // when_installing_a_package_from_a_nupkg_file
         [LogTest()]
-        public void InstallPackageWithDependenciesOnNewerVesion2()
+        public void InstallByPath()
         {
-            InstallOn(ChocoTestContext.isdependency_hasdependency_2, (conf) =>
+            InstallOnEmpty((conf) =>
             {
-                conf.PackageNames = conf.Input = "conflictingdependency";
-            }, ChocoTestContext.packages_for_dependency_testing7);
-
-            ListPackageVersions("isdependency", "isexactversiondependency");
-
-            // Old test has many [Pending], most probably broken.
+                string path = Path.Combine(conf.Sources, "installpackage.1.0.0.nupkg");
+                conf.PackageNames = conf.Input = path;
+                conf.Features.UseShimGenService = true;
+            });
         }
     }
 }
