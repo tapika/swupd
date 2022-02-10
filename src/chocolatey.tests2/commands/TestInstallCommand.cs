@@ -370,6 +370,19 @@ namespace chocolatey.tests2.commands
                 conf.IgnoreDependencies = true;
             }, ChocoTestContext.packages_for_dependency_testing4);
         }
+
+        // when_installing_a_package_with_dependencies_on_a_newer_version_of_a_package_than_an_existing_package_has_with_that_dependency
+        [LogTest()]
+        public void InstallPackageWithDependenciesOnNewerVesion()
+        {
+            InstallOn(ChocoTestContext.isdependency_hasdependency, (conf) =>
+            {
+                conf.PackageNames = conf.Input = "conflictingdependency";
+            }, ChocoTestContext.packages_for_dependency_testing6);
+
+            ListPackageVersions("isdependency");
+        }
+
     }
 }
 

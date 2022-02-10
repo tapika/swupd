@@ -163,6 +163,19 @@
         /// </summary>
         public ChocolateyConfiguration lastconf = null;
 
+        /// <summary>
+        /// Installs specific package - can be used only within this file
+        /// </summary>
+        private void Install(string package, string version, ChocoTestContext packagesContext = ChocoTestContext.packages_default)
+        {
+            InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
+            {
+                conf2.PackageNames = conf2.Input = package;
+                conf2.Version = version;
+            }, ChocoTestContext.packages_for_dependency_testing6);
+        }
+
+
         public void InstallOn(
             ChocoTestContext testcontext,
             Action<ChocolateyConfiguration> confPatch = null,
@@ -294,6 +307,24 @@
         }
 
         /// <summary>
+        /// Lists additional package versions
+        /// </summary>
+        /// <param name="packageNames">package names</param>
+        public void ListPackageVersions(params string[] packageNames)
+        {
+            var console = LogService.console;
+
+            console.Info("=> additional version information:");
+
+            foreach (string packageName in packageNames)
+            {
+                string nupkg = Path.Combine(InstallContext.Instance.PackagesLocation, packageName, packageName + Constants.PackageExtension);
+                var package = new OptimizedZipPackage(nupkg);
+                console.Info($"  {packageName} version: " + package.Version.Version.to_string());
+            }
+        }
+
+        /// <summary>
         /// Gets test folder for testing. If folder does not exists, creates new task which will create specific folder.
         /// </summary>
         /// <param name="fuction">if not empty - copies shared folder also to isolated folder for modifying</param>
@@ -412,7 +443,7 @@
             switch (testcontext)
             {
                 case ChocoTestContext.packages_for_dependency_testing:
-                    PrepageMultiPackageFolder( 
+                    PrepareMultiPackageFolder( 
                         ChocoTestContext.pack_badpackage_1_0,
                         ChocoTestContext.pack_hasdependency_1_0_0,
                         ChocoTestContext.pack_installpackage_1_0_0,
@@ -425,7 +456,7 @@
                     break;
 
                 case ChocoTestContext.packages_for_dependency_testing2:
-                    PrepageMultiPackageFolder(
+                    PrepareMultiPackageFolder(
                         ChocoTestContext.packages_for_dependency_testing,
                         ChocoTestContext.pack_hasdependency_1_0_1,
                         ChocoTestContext.pack_hasdependency_1_1_0,
@@ -435,7 +466,7 @@
                     break;
 
                 case ChocoTestContext.packages_for_dependency_testing3:
-                    PrepageMultiPackageFolder(
+                    PrepareMultiPackageFolder(
                         ChocoTestContext.packages_for_dependency_testing2,
                         ChocoTestContext.pack_isdependency_1_0_1,
                         ChocoTestContext.pack_isdependency_1_1_0,
@@ -445,7 +476,7 @@
                     break;
 
                 case ChocoTestContext.packages_for_dependency_testing4:
-                    PrepageMultiPackageFolder(
+                    PrepareMultiPackageFolder(
                         ChocoTestContext.pack_hasdependency_1_6_0,
                         ChocoTestContext.pack_isdependency_1_0_0,
                         ChocoTestContext.pack_isexactversiondependency_1_0_0,
@@ -456,11 +487,24 @@
                     break;
 
                 case ChocoTestContext.packages_for_dependency_testing5:
-                    PrepageMultiPackageFolder(
+                    PrepareMultiPackageFolder(
                         ChocoTestContext.packages_for_dependency_testing4,
                         ChocoTestContext.pack_badpackage_1_0,
                         ChocoTestContext.pack_installpackage_1_0_0,
                         ChocoTestContext.pack_isdependency_1_1_0
+                    );
+                    break;
+
+                case ChocoTestContext.packages_for_dependency_testing6:
+                    PrepareMultiPackageFolder(
+                        ChocoTestContext.pack_hasdependency_1_0_0,
+                        ChocoTestContext.pack_conflictingdependency_1_0_1,
+                        ChocoTestContext.pack_isdependency_1_0_0,
+                        ChocoTestContext.pack_isdependency_1_0_1,
+                        ChocoTestContext.pack_isexactversiondependency_1_0_0,
+                        ChocoTestContext.pack_isexactversiondependency_1_0_1,
+                        ChocoTestContext.pack_isexactversiondependency_1_1_0,
+                        ChocoTestContext.pack_isexactversiondependency_2_0_0
                     );
                     break;
 
@@ -512,6 +556,13 @@
                     }
                     break;
 
+                case ChocoTestContext.isdependency_hasdependency:
+                    {
+                        Install("isdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing6);
+                        Install("hasdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing6);
+                    }
+                    break;
+
                 case ChocoTestContext.exactpackage:
                     {
                         conf.Sources = InstallContext.Instance.PackagesLocation;
@@ -535,7 +586,7 @@
         /// <summary>
         /// Prepares separate folder for multiple nuget packages in same folder.
         /// </summary>
-        private void PrepageMultiPackageFolder(params ChocoTestContext[] packcontexts)
+        private void PrepareMultiPackageFolder(params ChocoTestContext[] packcontexts)
         {
             string[] folders = packcontexts.Select(x => PrepareTestFolder(x, null)).ToArray();
             foreach (var folder in folders)

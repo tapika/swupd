@@ -1,0 +1,41 @@
+Installing the following packages:
+conflictingdependency
+By installing you accept licenses for the packages.
+[NuGet] Attempting to resolve dependency 'isdependency (≥ 1.0.1)'.
+[NuGet] Attempting to resolve dependency 'isexactversiondependency (= 1.0.0)'.
+[NuGet] Installing 'isdependency 1.0.1'.
+[NuGet] Successfully installed 'isdependency 1.0.1'.
+
+isdependency v1.0.1
+isdependency package files install completed. Performing other installation steps.
+isdependency 1.0.1 Installed
+ The install of isdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'conflictingdependency 1.0.1'.
+[NuGet] Successfully installed 'conflictingdependency 1.0.1'.
+
+conflictingdependency v1.0.1
+conflictingdependency package files install completed. Performing other installation steps.
+conflictingdependency 1.0.1 Installed
+ The install of conflictingdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 2/2 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for conflictingdependency/1.0.1: succeeded
+=> install result for isdependency/1.0.1: succeeded
+=> added new files:
+.chocolatey\conflictingdependency.1.0.1\.arguments
+.chocolatey\conflictingdependency.1.0.1\.files
+.chocolatey\isdependency.1.0.1\.arguments
+.chocolatey\isdependency.1.0.1\.files
+lib\conflictingdependency\conflictingdependency.nupkg
+  version: 1.0.1.0
+lib\conflictingdependency\conflictingdependency.nuspec
+lib\conflictingdependency\tools\chocolateyinstall.ps1
+lib\conflictingdependency\tools\chocolateyuninstall.ps1
+=> additional version information:
+  isdependency version: 1.0.1.0
+end of test
