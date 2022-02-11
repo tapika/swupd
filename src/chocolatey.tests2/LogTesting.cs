@@ -148,7 +148,7 @@
             }
         }
 
-        static List<string> GetFilesAndFolders(string path)
+        static List<string> GetFileListing(string path)
         {
             var list = Directory.GetFiles(path, "*", SearchOption.AllDirectories).ToList();
             list.Sort();
@@ -206,7 +206,7 @@
             }
 
             string rootDir = InstallContext.Instance.RootLocation;
-            var listBeforeUpdate = GetFilesAndFolders(rootDir);
+            var listBeforeUpdate = GetFileListing(rootDir);
 
             if (conf.Noop)
             {
@@ -242,7 +242,7 @@
                     }
                 }
             }
-            var listAfterUpdate = GetFilesAndFolders(rootDir);
+            var listAfterUpdate = GetFileListing(rootDir);
             addedFiles = new List<string>();
             removedFiles = new List<string>();
 
