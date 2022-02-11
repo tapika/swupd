@@ -113,7 +113,7 @@ There is also possibility that developer has added `try-catch` block to guard ag
 public void MyTest()
 {
     try{
-	    LogService.logger("1");   // < first exception will be thrown here
+	  LogService.logger("1");   // < first exception will be thrown here
     } catch(Exception)
     {
     }
@@ -173,6 +173,14 @@ for(int i = 0; i < 20; i++)
 {
     Assert.AreEqual(multiply_by_two(i), expectedResult[i]);
 }
+
+or:
+    Assert.AreEqual(multiply_by_two(0), 0);
+    Assert.AreEqual(multiply_by_two(1), 2);
+    Assert.AreEqual(multiply_by_two(2), 4);
+    Assert.AreEqual(multiply_by_two(3), 6);
+    Assert.AreEqual(multiply_by_two(4), 8);
+...
 ```
 
 With verifying logging same functionality can be just logged out:
