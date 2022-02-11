@@ -1,6 +1,21 @@
 # Overview
 
-[TOC]
+- [Overview](#overview)
+- [Chocolatey unit testing](#chocolatey-unit-testing)
+  * [Normal unit testing](#normal-unit-testing)
+  * [Verifying log testing](#verifying-log-testing)
+    + [What can be placed in log file?](#what-can-be-placed-in-log-file)
+    + [How to construct your first test case ?](#how-to-construct-your-first-test-case-)
+    + [From where logging can be performed ?](#from-where-logging-can-be-performed-)
+    + [What happens when log line does not match to logged line ?](#what-happens-when-log-line-does-not-match-to-logged-line-)
+      - [Post mortem debugging versus alive debugging](#post-mortem-debugging-versus-alive-debugging)
+    + [Using for/while loops](#using-forwhile-loops)
+    + [Developer is responsible for what log file contains](#developer-is-responsible-for-what-log-file-contains)
+      - [Large scale code refactoring](#large-scale-code-refactoring)
+    + [Multitasking](#multitasking)
+    + [Unit test code amount](#unit-test-code-amount)
+    + [Verifying log performance and usability](#verifying-log-performance-and-usability)
+    + [Mocking and verifying log](#mocking-and-verifying-log)
 
 # Chocolatey unit testing
 
