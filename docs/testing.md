@@ -266,3 +266,5 @@ See also `LoggedMock.cs / LoggedMockInterceptor.cs`.
 
 Proxying existing interfaces is useful when you want to know all function calls which were performed without logging instrumentation.
 
+Once logging is enabled for mock - there is no need to use `.Verify()` anymore, as logging of function calls and it's argument should be sufficient.
+
