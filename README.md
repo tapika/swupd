@@ -62,3 +62,6 @@ Solution: Create `global.json` file with following content:
 
 Open issue, see ticket:  [dotnet runtime #62453](https://github.com/dotnet/runtime/issues/62453).
 
+### Testing
+
+Documented in [here](docs/testing.md)
