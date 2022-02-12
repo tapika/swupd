@@ -127,7 +127,7 @@ public void MyTest()
 
 #### Post mortem debugging versus alive debugging
 
-With normal unit testing you're typically dealing with post mortem debugging - meaning functionality was executed and ended - you're comparing the results of execution. If code is rather complex or you don't understand how it works - then read code until you understand - so it's bit difficult - as always when you're dealing with post mortem debugging.
+With normal unit testing you're typically dealing with post mortem debugging - meaning functionality was executed and ended - you're comparing the results of last execution round. If code is rather complex or you don't understand how it works - then read code until you understand - so it's bit difficult - as always when you're dealing with post mortem debugging.
 
 
 
@@ -227,11 +227,11 @@ All folder names are determined by either test method name, or when test is comm
 
 Unit tests written with verifying logging concept are normally 2-6 times smaller.
 
-Even when we deal with installation - we are typically interested on whether install application created new folder - this kind of check can be done using 
+For example - when we deal with installation - we are typically interested on whether install application created new folder - this kind of check can be done using 
 
 `Directory.Exists(packageDir).Should().BeTrue();`.
 
-With logging - you don't care about whether folder was created or not - you can just list of folders. Of course listing everything will pollute log file a lot - that's why it makes sense to perform comparison and log only changes in file system.
+With logging - you don't care about whether folder was created or not - you can just list folders. Of course listing everything will pollute log file a lot - that's why it makes sense to perform comparison and log only file system changes.
 
 ```
 var listBeforeUpdate = GetFileListing(rootDir);
@@ -257,9 +257,11 @@ Verifying log testing brings also simplicity to testing - normally two times sma
 
 Of course if you instrument everything - it will dramatically slow down executed functionality - but quite often it's sufficient to instrument key function calls in code.
 
+See also [Benchmarking 5 popular .NET logging libraries](https://www.loggly.com/blog/benchmarking-5-popular-net-logging-libraries/).
+
 ### Mocking and verifying log
 
-You can also use `new Mock<I>` to create mocked object, where you can use `.Setup()` to set up custom mocked function, and `.Verify()` to verify that some specific function was or was not executed. `.Verify()` works in similar manner to normal unit testing - so verification of function call and it's arguments are performed after call was performed - again post mortem diagnostic. To cross connect our mock and logging - it's possible to use like this:
+You can also use `new Mock<I>` to create mocked object, where you can use `.Setup()` to set up custom mocked function, and `.Verify()` to verify that some specific function was or was not executed. `.Verify()` works in similar manner to normal unit testing - so verification of function call and it's arguments are performed after function call - again post mortem diagnostic. To cross connect our mock and logging - it's possible to use like this:
 
 ```c#
 Mock<ISomeAPI> mock = new Mock<ISomeAPI>().Logged(
@@ -276,3 +278,4 @@ Proxying existing interfaces is useful when you want to know all function calls 
 
 Once logging is enabled for mock - there is no need to use `.Verify()` anymore, as logging of function calls and it's argument should be sufficient.
 
+Post mortem debugging is also changed to live debugging via logging.
