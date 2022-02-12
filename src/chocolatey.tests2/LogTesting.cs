@@ -172,7 +172,7 @@
             {
                 conf2.PackageNames = conf2.Input = package;
                 conf2.Version = version;
-            }, ChocoTestContext.packages_for_dependency_testing6);
+            }, packagesContext);
         }
 
 
@@ -414,7 +414,7 @@
         static Regex rePack = new Regex("pack_(.*?)_(.*)");
 
         /// <returns>true if log needs to be created, false if not</returns>
-        bool PrepareTestContext(ChocoTestContext testcontext, ChocolateyConfiguration conf)
+        bool PrepareTestContext(ChocoTestContext testcontext, ChocolateyConfiguration _conf)
         {
             // Generic nupkg creation.
             var re = rePack.Match(testcontext.ToString());
@@ -526,49 +526,49 @@
 
                 case ChocoTestContext.badpackage:
                     {
-                        conf.SkipPackageInstallProvider = true;
-                        Scenario.install_package(conf, "badpackage", "1.0.0");
-                        conf.SkipPackageInstallProvider = false;
+                        _conf.SkipPackageInstallProvider = true;
+                        Scenario.install_package(_conf, "badpackage", "1.0.0");
+                        _conf.SkipPackageInstallProvider = false;
                     }
                     break;
 
                 case ChocoTestContext.install:
                     {
-                        Scenario.install_package(conf, "installpackage", "1.0.0");
+                        Scenario.install_package(_conf, "installpackage", "1.0.0");
                     }
                     break;
 
                 case ChocoTestContext.install_sxs:
                     {
-                        conf.AllowMultipleVersions = true;
-                        Scenario.install_package(conf, "installpackage", "1.0.0");
+                        _conf.AllowMultipleVersions = true;
+                        Scenario.install_package(_conf, "installpackage", "1.0.0");
                     }
                     break;
 
                 case ChocoTestContext.installupdate:
                     {
-                        Scenario.install_package(conf, "installpackage", "1.0.0");
-                        Scenario.install_package(conf, "upgradepackage", "1.0.0");
+                        Scenario.install_package(_conf, "installpackage", "1.0.0");
+                        Scenario.install_package(_conf, "upgradepackage", "1.0.0");
+                    }
+                    break;
+
+                case ChocoTestContext.installed_5_packages:
+                    {
+                        Install("installpackage", "1.0.0");
+                        Install("upgradepackage", "1.0.0");
+                        Install("hasdependency", "1.0.0");
                     }
                     break;
 
                 case ChocoTestContext.hasdependency:
                     {
-                        InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
-                        {
-                            conf2.PackageNames = conf2.Input = "hasdependency";
-                            conf2.Version = "1.0.0";
-                        }, ChocoTestContext.packages_for_dependency_testing2);
+                        Install("hasdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing2);
                     }
                     break;
 
                 case ChocoTestContext.isdependency:
                     {
-                        InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
-                        {
-                            conf2.PackageNames = conf2.Input = "isdependency";
-                            conf2.Version = "1.0.0";
-                        }, ChocoTestContext.packages_for_dependency_testing5);
+                        Install("isdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing5);
                     }
                     break;
 
@@ -588,9 +588,9 @@
 
                 case ChocoTestContext.exactpackage:
                     {
-                        conf.Sources = InstallContext.Instance.PackagesLocation;
+                        _conf.Sources = InstallContext.Instance.PackagesLocation;
 
-                        Scenario.add_packages_to_source_location(conf, "exactpackage*" + Constants.PackageExtension);
+                        Scenario.add_packages_to_source_location(_conf, "exactpackage*" + Constants.PackageExtension);
                     }
                     break;
 

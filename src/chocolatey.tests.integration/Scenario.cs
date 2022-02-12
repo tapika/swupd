@@ -223,9 +223,9 @@ namespace chocolatey.tests.integration
             return config;
         }
 
-        public static ChocolateyConfiguration pin()
+        public static ChocolateyConfiguration pin(bool newcopy = false)
         {
-            var config = baseline_configuration();
+            var config = baseline_configuration(newcopy);
             config.CommandName = "pin";
 
             return config;

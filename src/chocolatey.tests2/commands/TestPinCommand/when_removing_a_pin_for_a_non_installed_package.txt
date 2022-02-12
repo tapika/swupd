@@ -1,0 +1,2 @@
+ApplicationException: Unable to find package named 'whatisthis' to pin. Please check to ensure it is installed.
+end of test

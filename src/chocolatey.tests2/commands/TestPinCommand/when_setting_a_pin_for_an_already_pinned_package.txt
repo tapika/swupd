@@ -1,0 +1,4 @@
+Successfully added a pin for upgradepackage v1.0.0.
+Nothing to change. Pin already set or removed.
+upgradepackage|1.0.0
+end of test

@@ -184,7 +184,6 @@ If you find other exit codes that we have not yet documented, please
         public virtual void set_pin(IPackageManager packageManager, ChocolateyConfiguration config)
         {
             var addingAPin = config.PinCommand.Command == PinCommandType.add;
-            this.Log().Info("Trying to {0} a pin for {1}".format_with(config.PinCommand.Command.to_string(), config.PinCommand.Name));
             var versionUnspecified = string.IsNullOrWhiteSpace(config.Version);
             SemanticVersion semanticVersion = versionUnspecified ? null : new SemanticVersion(config.Version);
             IPackage installedPackage = packageManager.LocalRepository.FindPackage(config.PinCommand.Name, semanticVersion);

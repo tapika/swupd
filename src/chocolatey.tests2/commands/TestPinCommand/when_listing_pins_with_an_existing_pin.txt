@@ -1,0 +1,3 @@
+Successfully added a pin for upgradepackage v1.0.0.
+upgradepackage|1.0.0
+end of test
