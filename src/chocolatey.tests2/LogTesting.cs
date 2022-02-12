@@ -554,10 +554,10 @@
 
                 case ChocoTestContext.hasdependency:
                     {
-                        InstallOn(ChocoTestContext.skipcontextinit, (conf) =>
+                        InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
                         {
-                            conf.PackageNames = conf.Input = "hasdependency";
-                            conf.Version = "1.0.0";
+                            conf2.PackageNames = conf2.Input = "hasdependency";
+                            conf2.Version = "1.0.0";
                         }, ChocoTestContext.packages_for_dependency_testing2);
                     }
                     break;
@@ -566,7 +566,7 @@
                     {
                         InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
                         {
-                            conf2.PackageNames = conf.Input = "isdependency";
+                            conf2.PackageNames = conf2.Input = "isdependency";
                             conf2.Version = "1.0.0";
                         }, ChocoTestContext.packages_for_dependency_testing5);
                     }

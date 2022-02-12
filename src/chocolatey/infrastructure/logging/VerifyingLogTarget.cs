@@ -32,7 +32,7 @@ namespace chocolatey.infrastructure.logging
             bool allowToCreatingLog = false;
 
             // On official build machine this will be not allowed (just in case if developer forgets to commit his log changes)
-            #if DEBUG
+            #if DEBUG || RELWITHDEBINFO
             allowToCreatingLog = true;
             #endif
 

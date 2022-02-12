@@ -37,6 +37,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
+    <Configurations>Debug;Release;RelWithDebInfo</Configurations>
     <!-- Save temporary files in here -->  
     <IntermediateOutputPath>$(SolutionDir)obj\$(TargetFramework)-$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(SolutionDir)bin\$(TargetFramework)-$(Configuration)</OutputPath>
@@ -63,6 +64,13 @@
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='RelWithDebInfo'">
+    <DefineConstants>$(DefineConstants);RELWITHDEBINFO</DefineConstants>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
 </Project>
