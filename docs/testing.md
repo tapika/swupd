@@ -47,11 +47,13 @@ public void MyTest()
 
 
 
-Normal unit testing allows access to topmost public API's - however if you're interested in accessing lower layers of application - then you're dealing with either logging or Mock:ing lower layer API. 
+Normal unit testing allows access to topmost public API's - however if you're interested in accessing lower layers of application - then you're dealing with either logging or Mock:ing of lower layer API's. 
 
 ## Verifying log testing
 
-If verifying log case - test is executed once - it's execution will get recorded into `.txt` log file and subsequent executions will be compared against first run.
+Besides normal unit testing, you can use also verifying log testing.
+
+Verifying logging works so that test is executed once - it's execution will get recorded into `.txt` log file and subsequent executions will be compared against first run.
 
 ```c#
 test.cs:
@@ -83,6 +85,8 @@ You can use normal unit testing for simple classes, more complex / integration l
 Any text, which does not change from execution round can be used. Anything else what changes cannot be logged - this includes for instance current date / time or absolute file / directory paths. If you're dealing with paths - extracting only filename could result in same string.
 
 If you add any bigger listings - then maybe makes sense to sort them by name, just to get them in same order.
+
+To not pollute log files too much - it's recommended to log just what you need - not everything.
 
 ### How to construct your first test case ?
 
