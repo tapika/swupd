@@ -53,7 +53,7 @@ Normal unit testing allows access to topmost public API's - however if you're in
 
 Besides normal unit testing, you can use also verifying log testing.
 
-Verifying logging works so that test is executed once - it's execution will get recorded into `.txt` log file and subsequent executions will be compared against first run.
+Verifying logging works so that test gets executed, test performs logging and logs gets saved into `.txt` log file and subsequent executions will be compared against first test run.
 
 ```c#
 test.cs:
@@ -82,7 +82,7 @@ You can use normal unit testing for simple classes, more complex / integration l
 
 ### What can be placed in log file?
 
-Any text, which does not change from execution round can be used. Anything else what changes cannot be logged - this includes for instance current date / time or absolute file / directory paths. If you're dealing with paths - extracting only filename could result in same string.
+Any text, which does not change from execution round can be used. Anything else what changes cannot be logged - this includes for example current date / time or absolute file / directory paths. If you're dealing with paths - extracting only filename can result in same string, which in a turn can be used for verifying log testing.
 
 If you add any bigger listings - then maybe makes sense to sort them by name, just to get them in same order.
 
@@ -94,21 +94,23 @@ If you just created new test case - you can switch it to always create log file 
 
 `[LogTest(true)]`
 
-This attribute works in `Debug` configuration only - for release builds (and build machines) setting this flag is disabled. (See `VerifyingLogTarget`class, `allowToCreatingLog` variable `#if DEBUG` protection).
-
 Log files must be committed into git as well, next to source codes - they represent golden recording of application flow.
+
+`LogTest` attribute works in `Debug or RelWithDebug` configurations only - for release builds (and build machines) setting this flag is disabled. (See `VerifyingLogTarget`class, `allowToCreatingLog` variable `#if DEBUG` protection). This is done to prevent log recording on build machine.
 
 ### From where logging can be performed ?
 
 Compared to normal unit testing - logging can be performed from any part of application.
 
-At the moment anything that is logged on levels `Info, Warn, Error, Fatal` will be logged / recorded and on levels `Debug, Trace` will be not.
+At the moment log levels `Info, Warn, Error, Fatal` will be logged and on levels `Debug, Trace` will be not.
 
 In future it's possible to improve filtering based on logger name and/or log level - at this moment there were no such need. In chocolatey all loggers are named according to their own class name, where all resides in `chocolatey` namespace. That's why we have as a filtering rule `chocolatey.*` - it will pick up all chocolatey classes.
 
+Logging from lower layers is ok if functionality is relatively complex, and you want to make sure that lower layers are executed correctly. If you want to log from lower layers - maybe makes sense to create separate unit test, especially focusing on that lower layer.
+
 ### What happens when log line does not match to logged line ?
 
-Exception will be thrown from place where logging was done. Exception is thrown only during unit testing, not for normal application.
+Exception will be thrown from place where logging was done causing test to fail. Exception is thrown only during unit testing, not for normal application.
 
 There is also possibility that developer has added `try-catch` block to guard against exception - then in this case same exception will be thrown from next logged line, in worst case scenario - at the end of test.
 
@@ -125,21 +127,27 @@ public void MyTest()
 }
 ```
 
-(Using generic exception handling is also bad from error handling perspective)
+Using generic exception handling is also bad from error handling perspective - in case above it's recommended to use more specific exception type than generic `Exception`-type.
 
 
 
 #### Post mortem debugging versus alive debugging
 
-With normal unit testing you're typically dealing with post mortem debugging - meaning functionality was executed and ended - you're comparing the results of last execution round. If code is rather complex or you don't understand how it works - then read code until you understand - so it's bit difficult - as always when you're dealing with post mortem debugging.
+With normal unit testing you're typically dealing with post mortem debugging - meaning functionality was executed and ended - you're comparing the results of last execution round. If code is rather complex or you don't understand how it works - then read code until you understand - so it's bit difficult - as always - when you're dealing with post mortem debugging.
 
 
 
 With verifying log it's possible to do alive functionality debugging - for example you can even halt code in place where you want to bugfix or change it's behavior.
 
+For exampe:
+
+```c#
 ... somewhere in code ...
 
-`console.Info(Path.Combine("a", "b"))`
+console.Info(Path.Combine("a", "b"))
+```
+
+
 
 Like you probably guess for windows this will output path with backslash (`\`), for linux with normal slash (`/`). For verifying log - this is not portable solution to have same unit test - as it will behave differently in each OS.
 
@@ -159,6 +167,8 @@ Then go into source code `VerifyingLogTarget.cs`, find line `Unexpected {lineN} 
 Running debugger will halt you in place where that log line is logged out.
 
 Generally when dealing with paths - you can either remove absolute path and just replace back slashes with front slashes. (`.Replace('\\', '/')`)
+
+Using approach like this allow to debug alive functionality from point where execution is different.
 
 
 
@@ -227,15 +237,27 @@ Common / reusable folders are stored in `tests_shared` folder and normal tests a
 
 All folder names are determined by either test method name, or when test is common / reusable - it's located in `LogTesting.cs/PrepareTestContext function` and it's name is determined by `ChocoTestContext` enumeration.  Common / reused test has also it's own separate log (See `using (new VerifyingLog`).
 
+
+
+When creating new tasks, they needs to be connected to same log factory as parent task - this can be done by backuping log factory in parent task:
+
+`var loginstance = LogService.Instance;`
+
+and restoring it's value in child task:
+
+`LogService.Instance = loginstance;`
+
+In main application `LogService.Instance` will be the same for all tasks.
+
 ### Unit test code amount
 
-Unit tests written with verifying logging concept are normally 2-6 times smaller.
+Verifying logging tests are normally 2-6 times smaller.
 
 For example - when we deal with installation - we are typically interested on whether install application created new folder - this kind of check can be done using 
 
 `Directory.Exists(packageDir).Should().BeTrue();`.
 
-With logging - you don't care about whether folder was created or not - you can just list folders. Of course listing everything will pollute log file a lot - that's why it makes sense to perform comparison and log only file system changes.
+With verifying test logging - you don't care about whether folder was created or not - you can just list folders. Of course listing everything will pollute log file a lot - that's why it makes sense to perform comparison and log only file system changes.
 
 ```
 var listBeforeUpdate = GetFileListing(rootDir);
@@ -257,7 +279,7 @@ Verifying log testing in a turn uses smarter cache folder handling and uses mult
 
 Conversion of one set of integration test from old to new approach gave ~ 4.1 times faster results with 3.1 times smaller code.
 
-Verifying log testing brings also simplicity to testing - normally two times smaller amount of code to write and gives opportunity to debug and troubleshoot functionality in live, quite often really close to failing point.
+Verifying log testing brings also simplicity to testing - normally two times smaller amount of code to write and also gives an opportunity to debug and troubleshoot functionality in live, quite often really close to failing point.
 
 Of course if you instrument everything - it will dramatically slow down executed functionality - but quite often it's sufficient to instrument key function calls in code.
 
