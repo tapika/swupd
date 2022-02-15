@@ -9,10 +9,6 @@
 
   <ItemGroup>
     <None Remove="infrastructure.app\configuration\chocolatey.config" />
-    <None Remove="infrastructure\logging\log4net.config.xml" />
-    <None Remove="infrastructure\logging\log4net.mono.config.xml" />
-    <None Remove="infrastructure\logging\log4net.mono.nocolor.config.xml" />
-    <None Remove="infrastructure\logging\log4net.nocolor.config.xml" />
   </ItemGroup>
 
   <!-- .net framework specific references -->
@@ -36,7 +32,6 @@
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
   </ItemGroup>
 
-  <!--<Import Project="..\props\log4net.props" />-->
   <Import Project="..\props\nlog.props" />
 
   <ItemGroup>
@@ -72,10 +67,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="infrastructure.app\configuration\chocolatey.config" />
-    <EmbeddedResource Include="infrastructure\logging\log4net.config.xml" />
-    <EmbeddedResource Include="infrastructure\logging\log4net.mono.config.xml" />
-    <EmbeddedResource Include="infrastructure\logging\log4net.mono.nocolor.config.xml" />
-    <EmbeddedResource Include="infrastructure\logging\log4net.nocolor.config.xml" />
   </ItemGroup>
 
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />

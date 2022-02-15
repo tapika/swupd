@@ -7,13 +7,11 @@
     // ReSharper disable InconsistentNaming
 
     /// <summary>
-    ///   Log4net logger implementing special ILog class
+    ///   NLog logger implementing special ILog class
     /// </summary>
     public sealed class NLogLog : ILog, ILog<NLogLog>
     {
         private Logger _logger;
-        // ignore Log4NetLog in the call stack
-        private static readonly Type _declaringType = typeof(NLogLog);
 
         [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
         public void InitializeFor(string loggerName)

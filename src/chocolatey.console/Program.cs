@@ -79,18 +79,6 @@ namespace chocolatey.console
                      warning => { warnings.Add(warning); }
                      );
 
-#if USE_LOG4NET
-                if (config.Features.LogWithoutColor)
-                {
-                    ApplicationParameters.Log4NetConfigurationResource = @"chocolatey.infrastructure.logging.log4net.nocolor.config.xml";
-                    Log4NetAppenderConfiguration.configure(loggingLocation, excludeLoggerNames: ChocolateyLoggers.Trace.to_string());
-                }
-
-                if (!string.IsNullOrWhiteSpace(config.AdditionalLogFileLocation))
-                {
-                  Log4NetAppenderConfiguration.configure_additional_log_file(fileSystem.get_full_path(config.AdditionalLogFileLocation));
-                }
-#else
                 if (config.Features.LogWithoutColor)
                 {
                     LogService.Instance.enableColors(false);
@@ -100,7 +88,6 @@ namespace chocolatey.console
                 {
                     LogService.Instance.configureAdditionalLogFile(fileSystem.get_full_path(config.AdditionalLogFileLocation));
                 }
-#endif
 
                 report_version_and_exit_if_requested(args, config);
 

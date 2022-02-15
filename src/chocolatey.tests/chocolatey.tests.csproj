@@ -41,6 +41,5 @@
     <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
   </ItemGroup>
 
-  <Import Project="..\props\log4net.props" />
   <Import Project="..\props\Moq.props" />
 </Project>

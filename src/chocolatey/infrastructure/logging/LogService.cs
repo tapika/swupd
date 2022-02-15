@@ -113,22 +113,6 @@ namespace chocolatey.infrastructure.logging
             return "#" + s;
         }
 
-#if USE_LOG4NET
-        public static void TraceAll(string loggerName)
-        {
-            var log = LogManager.GetLogger(loggerName);
-            ILog log2 = loggerName.Log();
-            log.Fatal("- Printing using logger '" + loggerName + "'");log2.Fatal("- Printing using logger '" + loggerName + "'");
-            Console.WriteLine();
-            log.Trace("trace 1");log2.Trace("trace 1");
-            log.Debug("debug 2 ");log2.Debug("debug 2 ");
-            log.Info("info 3");log2.Info("info 3");
-            log.Warn("warn 4");log2.Warn("warn 4");
-            log.Error("error 5");log2.Error("error 5");
-            log.Fatal("fatal 6");log2.Fatal("fatal 6");
-        }
-#endif
-
         static string dateFormatString = @"${date:format=yyyy-MM-dd HH\:mm\:ss,fff} ";
         static string fileLogPatternLayout = @"${processid} [${uppercase:${level:padding=-5:alignmentOnTruncation=left}}] - ${message}";
         const string fileLogDebugPatternLayout = @"${processid}:${threadid} [${uppercase:${level:padding=-5:alignmentOnTruncation=left}}] - ${message} - " +
@@ -193,14 +177,10 @@ namespace chocolatey.infrastructure.logging
                 }
             }
 
-#if USE_LOG4NET
-            const bool clearLogFile = true;
-#else
             const bool clearLogFile = false;
 
             // If you wish to disable date/time formatting
             //dateFormatString = "";
-#endif
             //bool clearLogFile = ApplicationParameters.LogsAppendToFile;
             reconfigure(clearLogFile, conf, addConsole);
             //Console.WriteLine("press any key...");
@@ -258,13 +238,7 @@ namespace chocolatey.infrastructure.logging
 
         void reconfigure(bool clearLogFile, LoggingConfiguration conf, bool addConsole = true)
         {
-#if USE_LOG4NET
-            string logFile11 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingFile);
-            string logFile12 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingSummaryFile);
-            const string logSuffix = "_2";
-#else
             const string logSuffix = "";
-#endif
             bool configureFileLogging = outputDirectory != null;
 
             string logFile21 = null;
@@ -275,17 +249,10 @@ namespace chocolatey.infrastructure.logging
                 logFile21 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingFile + logSuffix);
                 logFile22 = Path.Combine(Path.GetFullPath(outputDirectory), ApplicationParameters.LoggingSummaryFile + logSuffix);
 
-#if USE_LOG4NET
-                if (clearLogFile && File.Exists(logFile11)) { File.Delete(logFile11); }
-                if (clearLogFile && File.Exists(logFile12)) { File.Delete(logFile12); }
-#endif
                 if (clearLogFile && File.Exists(logFile21)) { File.Delete(logFile21); }
                 if (clearLogFile && File.Exists(logFile22)) { File.Delete(logFile22); }
             }
 
-#if USE_LOG4NET
-            Log4NetAppenderConfiguration.configure(outputDirectory, ChocolateyLoggers.Trace.to_string());
-#endif
             const string console2LoggerName = "console2";
 
             TargetWithLayoutHeaderAndFooter consoletarget = null;
@@ -511,14 +478,6 @@ namespace chocolatey.infrastructure.logging
         /// </summary>
         public void adjustLogLevels(bool debug, bool verbose, bool trace)
         {
-#if USE_LOG4NET
-            var verboseAppenderName = "{0}LoggingColoredConsoleAppender".format_with(ChocolateyLoggers.Verbose.to_string());
-            var traceAppenderName = "{0}LoggingColoredConsoleAppender".format_with(ChocolateyLoggers.Trace.to_string());
-
-            Log4NetAppenderConfiguration.set_logging_level_debug_when_debug(debug, verboseAppenderName, traceAppenderName);
-            Log4NetAppenderConfiguration.set_verbose_logger_when_verbose(verbose, debug, verboseAppenderName);
-            Log4NetAppenderConfiguration.set_trace_logger_when_trace(trace, traceAppenderName);
-#endif
             LogLevel minLogLevelDebug = null;
 
             if (trace)
@@ -694,31 +653,6 @@ namespace chocolatey.infrastructure.logging
             //conf.LoggingRules.Where(x => x.LoggerNamePattern == normalConsoleLoggerName).Select(x => conf.LoggingRules.Remove(x));
             LogFactory.ReconfigExistingLoggers();
         }
-
-#if USE_LOG4NET
-        public static void Test()
-        {
-            //adjustLogLevels(true, false, false);
-            for (int i = 0; i < 8; i++)
-            {
-                bool debug = (i & 1) == 1;
-                bool verbose = (i & 2) == 2;
-                bool trace = (i & 4) == 4;
-                string s = i + ") Adjusting levels to debug=" + debug + " verbose=" + verbose + " trace=" + trace;
-                console.Fatal(s); "chocolatey".Log().Fatal(s);
-                adjustLogLevels(debug, verbose, trace);
-
-                TraceAll(normalConsoleLoggerName);
-                TraceAll(highlightedConsoleLoggerName);
-                TraceAll(debugConsoleLoggerName);
-                TraceAll(traceConsoleLoggerName);
-                TraceAll("chocolatey.infrastructure.logging.LogService");
-                TraceAll("chocolatey.infrastructure.logging.LogService2");
-            }
-
-            Environment.Exit(2);
-        }
-#endif
 
     }
 }

@@ -29,7 +29,6 @@ Chocolatey GUI uses the following awesome frameworks:
 * [Fizzler](https://github.com/atifaziz/Fizzler)
 * [IconPacks](https://github.com/MahApps/MahApps.Metro.IconPacks)
 * [LiteDB](https://www.litedb.org/)
-* [log4net](http://logging.apache.org/log4net/)
 * [MahApps.Metro](http://mahapps.com/)
 * [Markdig](https://github.com/lunet-io/markdig)
 * [Markdig.Wpf](https://github.com/Kryptos-FR/markdig.wpf)

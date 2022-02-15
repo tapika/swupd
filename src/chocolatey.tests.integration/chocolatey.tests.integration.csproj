@@ -58,6 +58,5 @@
     </None>
   </ItemGroup>
 
-  <Import Project="..\props\log4net.props" />
   <Import Project="..\props\Moq.props" />
 </Project>

@@ -18,34 +18,20 @@ namespace chocolatey.infrastructure.registration
 {
     using System;
     using app;
-#if USE_LOG4NET
-    using log4net;
-#else
     using NLog;
-#endif
     using logging;
-#if USE_LOG4NET
-    using ILog = log4net.ILog;
-#endif
 
     /// <summary>
     ///   Application bootstrapping - sets up logging and errors for the app domain
     /// </summary>
     public sealed class Bootstrap
     {
-#if USE_LOG4NET
-        private static readonly ILog _logger = LogManager.GetLogger(typeof (Bootstrap));
-#endif
         /// <summary>
         ///   Initializes this instance.
         /// </summary>
         public static void initialize()
         {
-#if USE_LOG4NET
-            Log.InitializeWith<Log4NetLog>();
-#else
             Log.InitializeWith<NLogLog>();
-#endif
         }
 
         /// <summary>
@@ -73,12 +59,8 @@ namespace chocolatey.infrastructure.registration
             {
                 exceptionMessage = ex.ToString();
             }
-#if !USE_LOG4NET
             var _logger = LogService.console;
             _logger.Error(
-#else
-            _logger.ErrorFormat(
-#endif
                 "{0} had an error on {1} (with user {2}):{3}{4}",
                                 ApplicationParameters.Name,
                                 Environment.MachineName,

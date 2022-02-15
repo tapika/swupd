@@ -30,9 +30,6 @@ namespace chocolatey
     using infrastructure.logging;
     using infrastructure.registration;
     using infrastructure.synchronization;
-#if USE_LOG4NET
-    using log4net;
-#endif
 #if !NoResources
     using resources;
 #endif
@@ -125,11 +122,7 @@ namespace chocolatey
         {
             LogService.Instance.configure();
             Bootstrap.initialize();
-#if USE_LOG4NET
-            Log.InitializeWith(new AggregateLog(new List<ILog>() { new Log4NetLog(), _logSinkLogger }));
-#else
             Log.InitializeWith(new AggregateLog(new List<ILog>() { new NLogLog(), _logSinkLogger }));
-#endif
 
 #if NETFRAMEWORK
             _license = License.validate_license();
