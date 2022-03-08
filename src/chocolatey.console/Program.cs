@@ -28,7 +28,6 @@ namespace chocolatey.console
     using infrastructure.commandline;
     using infrastructure.configuration;
     using infrastructure.extractors;
-    using infrastructure.licensing;
     using infrastructure.logging;
     using infrastructure.registration;
     using infrastructure.tolerance;
@@ -58,10 +57,6 @@ namespace chocolatey.console
                 Bootstrap.initialize();
                 Bootstrap.startup();
                 //LogService.Test();
-                ChocolateyLicense license = null;
-#if NETFRAMEWORK
-                license = License.validate_license();
-#endif
                 var container = SimpleInjectorContainer.Container;
 
                 "LogFileOnly".Log().Info(() => "".PadRight(60, '='));
@@ -75,7 +70,6 @@ namespace chocolatey.console
                      args,
                      config,
                      container,
-                     license,
                      warning => { warnings.Add(warning); }
                      );
 
@@ -97,17 +91,10 @@ namespace chocolatey.console
 
                 if (config.RegularOutput)
                 {
-                    string licenseType = "";
-
-                    if (license != null && license.is_licensed_version())
-                    {
-                        licenseType = license.LicenseType.ToString();
-                    } 
-
 #if DEBUG
                     "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0} v{1}{2} (DEBUG BUILD)".format_with(ApplicationParameters.Name, config.Information.ChocolateyProductVersion, licenseType));
 #else
-                    "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0} v{1}{2}".format_with(ApplicationParameters.Name, config.Information.ChocolateyProductVersion, licenseType));
+                    "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0} v{1}".format_with(ApplicationParameters.Name, config.Information.ChocolateyProductVersion));
 #endif
                     if (args.Length == 0)
                     {

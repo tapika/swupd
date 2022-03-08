@@ -112,8 +112,7 @@ namespace chocolatey.infrastructure.app.commands
 
             if (configuration.NewCommand.Name.StartsWith("-file", StringComparison.OrdinalIgnoreCase) || configuration.NewCommand.Name.StartsWith("--file", StringComparison.OrdinalIgnoreCase))
             {
-                throw new ApplicationException(@"Automatic package creation from installer files only available in Business
- edition. See https://chocolatey.org/compare for details.");
+                throw new ApplicationException(@"Automatic package creation from installer is not available in this version");
             }
         }
 
@@ -140,14 +139,6 @@ Possible properties to pass:
 NOTE: Starting in 0.9.10, you can pass arbitrary property value pairs
  through to templates. This really unlocks your ability to create
  packages automatically!
-
-NOTE: Chocolatey for Business can create complete packages by just
- pointing the new command to native installers!
-
-NOTE: Chocolatey for Business can also download and internalize remote
- resources from existing packages so that existing packages can be used 
- without being tied to the internet.
- This is called automatic recompile.
 ");
 
             "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");

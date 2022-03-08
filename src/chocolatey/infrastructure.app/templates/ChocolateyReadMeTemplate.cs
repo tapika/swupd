@@ -115,14 +115,6 @@ Some environment variables are set based on options that are passed, configurati
  * ChocolateyResponseTimeout - How long to wait for a download to complete? Set by config `commandExecutionTimeoutSeconds` (CHECK)
  * ChocolateyPowerShellHost - Are we using the built-in PowerShell host? Set by `--use-system-powershell` or the feature `powershellHost` (0.9.10+)
 
-#### Business Edition Variables
-
- * ChocolateyInstallArgumentsSensitive - Encrypted arguments passed from command line `--install-arguments-sensitive` that are not logged anywhere. (0.10.1+ and licensed editions 1.6.0+)
- * ChocolateyPackageParametersSensitive - Package parameters passed from command line `--package-parameters-senstivite` that are not logged anywhere.  (0.10.1+ and licensed editions 1.6.0+)
- * ChocolateyLicensedVersion - What version is the licensed edition on?
- * ChocolateyLicenseType - What edition / type of the licensed edition is installed?
- * USER_CONTEXT - The original user context - different when self-service is used (Licensed v1.10.0+)
-
 #### Experimental Environment Variables
 The following are experimental or use not recommended:
 

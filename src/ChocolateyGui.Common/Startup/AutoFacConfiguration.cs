@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Autofac;
 using chocolatey.infrastructure.information;
-using chocolatey.infrastructure.licensing;
 using chocolatey.infrastructure.registration;
 
 namespace ChocolateyGui.Common.Startup
@@ -24,30 +23,6 @@ namespace ChocolateyGui.Common.Startup
         {
             var builder = new ContainerBuilder();
             builder.RegisterAssemblyModules(System.Reflection.Assembly.GetCallingAssembly());
-
-#if NETFRAMEWORK
-            var license = License.validate_license();
-            if (license.IsValid)
-            {
-                if (File.Exists(licensedGuiAssemblyLocation))
-                {
-                    var licensedGuiAssembly = AssemblyResolution.resolve_or_load_assembly(
-                        chocolateyGuiAssemblySimpleName,
-                        chocolatey.infrastructure.app.ApplicationParameters.OfficialChocolateyPublicKey,
-                        licensedGuiAssemblyLocation);
-
-                    if (licensedGuiAssembly != null)
-                    {
-                        license.AssemblyLoaded = true;
-                        license.Assembly = licensedGuiAssembly;
-                        license.Version = VersionInformation.get_current_informational_version(licensedGuiAssembly);
-
-                        builder.RegisterAssemblyModules(licensedGuiAssembly.UnderlyingType);
-                    }
-                }
-            }
-#endif
-
             return builder.Build();
         }
     }

@@ -53,49 +53,6 @@ namespace chocolatey.infrastructure.app.services
         private readonly IConfigTransformService _configTransformService;
         private readonly IDictionary<string, FileStream> _pendingLocks = new Dictionary<string, FileStream>();
 
-        private readonly IList<string> _proBusinessMessages = new List<string> {
-@"
-Are you ready for the ultimate experience? Check out Pro / Business!
- https://chocolatey.org/compare"
-,
-@"
-Enjoy using Chocolatey? Explore more amazing features to take your
-experience to the next level at
- https://chocolatey.org/compare"
-,
-@"
-Did you know the proceeds of Pro (and some proceeds from other
- licensed editions) go into bettering the community infrastructure?
- Your support ensures an active community, keeps Chocolatey tip top,
- plus it nets you some awesome features!
- https://chocolatey.org/compare",
-@"
-Did you know some organizations use Chocolatey completely internally
- without using the community repository or downloads from the internet?
- Wait until you see how Package Builder and Package Internalizer can
- help you achieve more, quicker and easier! Get your trial started
- today at https://chocolatey.org/compare",
-@"
-An organization needed total software management life cycle automation.
- They evaluated Chocolatey for Business. You won't believe what happens
- next!
- https://chocolatey.org/compare",
-@"
-Did you know that Package Synchronizer and AutoUninstaller enhancements
- in licensed versions are up to 95% effective in removing system
- installed software without an uninstall script? Find out more at
- https://chocolatey.org/compare",
-@"
-Did you know Chocolatey goes to eleven? And it turns great developers /
- system admins into something amazing! Singlehandedly solve your
- organization's struggles with software management and save the day!
- https://chocolatey.org/compare"
-};
-        private const string PRO_BUSINESS_LIST_MESSAGE = @"
-Did you know Pro / Business automatically syncs with Programs and
- Features? Learn more about Package Synchronizer at
- https://chocolatey.org/compare";
-
         private readonly string _shutdownExe = Environment.ExpandEnvironmentVariables("%systemroot%\\System32\\shutdown.exe");
 
         // Hold a list of exit codes that are known to be related to reboots
@@ -161,7 +118,6 @@ Did you know Pro / Business automatically syncs with Programs and
         public void list_noop(ChocolateyConfiguration config)
         {
             perform_source_runner_action(config, r => r.list_noop(config));
-            randomly_notify_about_pro_business(config, PRO_BUSINESS_LIST_MESSAGE);
         }
 
         public virtual IEnumerable<PackageResult> list_run(ChocolateyConfiguration config)
@@ -204,8 +160,6 @@ Did you know Pro / Business automatically syncs with Programs and
                     }
                 }
             }
-
-            randomly_notify_about_pro_business(config, PRO_BUSINESS_LIST_MESSAGE);
         }
 
         private IEnumerable<PackageResult> report_registry_programs(ChocolateyConfiguration config, IEnumerable<IPackage> list)
@@ -248,7 +202,6 @@ Did you know Pro / Business automatically syncs with Programs and
             }
 
             _nugetService.pack_noop(config);
-            randomly_notify_about_pro_business(config);
         }
 
         public virtual void pack_run(ChocolateyConfiguration config)
@@ -260,7 +213,6 @@ Did you know Pro / Business automatically syncs with Programs and
             }
 
             _nugetService.pack_run(config);
-            randomly_notify_about_pro_business(config);
         }
 
         public void push_noop(ChocolateyConfiguration config)
@@ -272,7 +224,6 @@ Did you know Pro / Business automatically syncs with Programs and
             }
 
             _nugetService.push_noop(config);
-            randomly_notify_about_pro_business(config);
         }
 
         public virtual void push_run(ChocolateyConfiguration config)
@@ -284,7 +235,6 @@ Did you know Pro / Business automatically syncs with Programs and
             }
 
             _nugetService.push_run(config);
-            randomly_notify_about_pro_business(config);
         }
 
         public void install_noop(ChocolateyConfiguration config)
@@ -299,41 +249,6 @@ Did you know Pro / Business automatically syncs with Programs and
                 }
 
                 perform_source_runner_action(packageConfig, r => r.install_noop(packageConfig, action));
-            }
-
-            randomly_notify_about_pro_business(config);
-        }
-
-        /// <summary>
-        /// Once every 10 runs or so, Chocolatey FOSS should inform the user of the Pro / Business versions.
-        /// </summary>
-        /// <param name="config">The configuration.</param>
-        /// <param name="message">The message to send.</param>
-        /// <remarks>We want it random enough not to be annoying, but informative enough for awareness.</remarks>
-        public void randomly_notify_about_pro_business(ChocolateyConfiguration config, string message = null)
-        {
-            // Licensing system is not yet ported to .net core 3.1 - also
-            // logging extra message during testing will create random failures during testing
-            return;
-
-            if (!config.Information.IsLicensedVersion && config.RegularOutput)
-            {
-                // magic numbers! Basically about 10% of the time show a message.
-                if (new Random().Next(1, 10) == 3)
-                {
-                    if (string.IsNullOrWhiteSpace(message))
-                    {
-                        // Choose a message at random to display. It is
-                        // specifically done like this as sometimes Random
-                        // doesn't like to grab the max value.
-                        var messageCount = _proBusinessMessages.Count;
-                        var chosenMessage = new Random().Next(0, messageCount);
-                        if (chosenMessage >= messageCount) chosenMessage = messageCount -1;
-                        message = _proBusinessMessages[chosenMessage];
-                    }
-
-                    this.Log().Warn(ChocolateyLoggers.Important, message);
-                }
             }
         }
 
@@ -633,8 +548,6 @@ package '{0}' - stopping further execution".format_with(packageResult.Name));
                 {
                     Environment.ExitCode = 1;
                 }
-
-                randomly_notify_about_pro_business(config);
             }
 
             return packageInstalls;
@@ -692,8 +605,6 @@ Would have determined packages that are out of date based on what is
             {
                 Environment.ExitCode = 2;
             }
-
-            randomly_notify_about_pro_business(config);
         }
 
         private IEnumerable<ChocolateyConfiguration> set_config_from_package_names_and_packages_config(ChocolateyConfiguration config, ConcurrentDictionary<string, PackageResult> packageInstalls)
@@ -775,8 +686,6 @@ Would have determined packages that are out of date based on what is
             {
                 var noopFailures = report_action_summary(noopUpgrades, "can upgrade");
             }
-
-            randomly_notify_about_pro_business(config);
         }
 
         public virtual ConcurrentDictionary<string, PackageResult> upgrade_run(ChocolateyConfiguration config)
@@ -826,8 +735,6 @@ Would have determined packages that are out of date based on what is
                 {
                     Environment.ExitCode = 1;
                 }
-
-                randomly_notify_about_pro_business(config);
             }
 
             return packageUpgrades;
@@ -854,7 +761,6 @@ Would have determined packages that are out of date based on what is
             }
 
             perform_source_runner_action(config, r => r.uninstall_noop(config, action));
-            randomly_notify_about_pro_business(config);
         }
 
         public virtual ConcurrentDictionary<string, PackageResult> uninstall_run(ChocolateyConfiguration config)
@@ -918,8 +824,6 @@ If a package is failing because it is a dependency of another package
  only be used as a last resort.
  ");
                 }
-
-                randomly_notify_about_pro_business(config);
             }
 
             return packageUninstalls;

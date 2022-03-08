@@ -192,10 +192,6 @@ NOTE: Starting in 0.9.10+, the Automatic Uninstaller (AutoUninstaller)
 
     choco feature disable -n autoUninstaller
 
-NOTE: Chocolatey Pro / Business automatically synchronizes with
- Programs and Features, ensuring manually removed apps are
- automatically removed from Chocolatey's repository.
-
 NOTE: Synchronizer and AutoUninstaller enhancements in licensed
  versions of Chocolatey ensure that Autouninstaller is up to 95%
  effective at removing software without an uninstall script. This is

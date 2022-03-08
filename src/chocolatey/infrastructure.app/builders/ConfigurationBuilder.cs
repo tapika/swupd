@@ -31,7 +31,6 @@ namespace chocolatey.infrastructure.app.builders
     using information;
     using infrastructure.commands;
     using infrastructure.services;
-    using licensing;
     using logging;
     using nuget;
     using platforms;
@@ -67,26 +66,16 @@ namespace chocolatey.infrastructure.app.builders
         /// <param name="container">The container.</param>
         /// <param name="license">The license.</param>
         /// <param name="notifyWarnLoggingAction">Notify warn logging action</param>
-        public static void set_up_configuration(IList<string> args, ChocolateyConfiguration config, Container container, ChocolateyLicense license, Action<string> notifyWarnLoggingAction)
+        public static void set_up_configuration(IList<string> args, ChocolateyConfiguration config, Container container, Action<string> notifyWarnLoggingAction)
         {
             var fileSystem = container.GetInstance<IFileSystem>();
             var xmlService = container.GetInstance<IXmlService>();
             var configFileSettings = get_config_file_settings(fileSystem, xmlService);
-            // must be done prior to setting the file configuration
-            if (license != null)
-            { 
-                add_or_remove_licensed_source(license, configFileSettings);
-            }
             set_file_configuration(config, configFileSettings, fileSystem, notifyWarnLoggingAction);
             ConfigurationOptions.reset_options();
             set_global_options(args, config, container);
             set_environment_options(config);
             EnvironmentSettings.set_environment_variables(config);
-            // must be done last for overrides
-            if (license != null)
-            {
-                set_licensed_options(config, license, configFileSettings);
-            }
             // save all changes if there are any
             set_config_file_settings(configFileSettings, xmlService, config);
             set_hash_provider(config, container);
@@ -111,42 +100,6 @@ namespace chocolatey.infrastructure.app.builders
                 "Error updating '{0}'. Please ensure you have permissions to do so".format_with(globalConfigPath),
                 logDebugInsteadOfError: true,
                 isSilent:shouldLogSilently);
-        }
-
-        private static void add_or_remove_licensed_source(ChocolateyLicense license, ConfigFileSettings configFileSettings)
-        {
-            // do not enable or disable the source, in case the user has disabled it
-            var addOrUpdate = license.IsValid;
-            var sources = configFileSettings.Sources.or_empty_list_if_null().ToList();
-
-            var configSource = new ConfigFileSourceSetting
-            {
-                Id = ApplicationParameters.ChocolateyLicensedFeedSourceName,
-                Value = ApplicationParameters.ChocolateyLicensedFeedSource,
-                UserName = "customer",
-                Password = NugetEncryptionUtility.EncryptString(license.Id),
-                Priority = 10,
-                BypassProxy = false,
-                AllowSelfService = false,
-                VisibleToAdminsOnly = false,
-            };
-
-            if (addOrUpdate && !sources.Any(s =>
-                    s.Id.is_equal_to(ApplicationParameters.ChocolateyLicensedFeedSourceName)
-                    && NugetEncryptionUtility.DecryptString(s.Password).is_equal_to(license.Id)
-                    )
-                )
-            {
-                configFileSettings.Sources.Add(configSource);
-            }
-
-            if (!addOrUpdate)
-            {
-                configFileSettings.Sources.RemoveWhere(s => s.Id.is_equal_to(configSource.Id));
-            }
-
-            // ensure only one licensed source - helpful when moving between licenses
-            configFileSettings.Sources.RemoveWhere(s => s.Id.is_equal_to(configSource.Id) && !NugetEncryptionUtility.DecryptString(s.Password).is_equal_to(license.Id));
         }
 
         private static void set_file_configuration(ChocolateyConfiguration config, ConfigFileSettings configFileSettings, IFileSystem fileSystem, Action<string> notifyWarnLoggingAction)
@@ -647,56 +600,6 @@ Following these scripting best practices will ensure your scripts work
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("no_proxy")) && string.IsNullOrWhiteSpace(config.Proxy.BypassList))
             {
                 config.Proxy.BypassList = Environment.GetEnvironmentVariable("no_proxy");
-            }
-        }
-
-        private static void set_licensed_options(ChocolateyConfiguration config, ChocolateyLicense license, ConfigFileSettings configFileSettings)
-        {
-            config.Information.IsLicensedVersion = license.is_licensed_version();
-            config.Information.LicenseType = license.LicenseType.get_description_or_value();
-
-            if (license.AssemblyLoaded)
-            {
-                Type licensedConfigBuilder = license.Assembly.GetType(ApplicationParameters.LicensedConfigurationBuilder, throwOnError: false, ignoreCase: true);
-
-                if (licensedConfigBuilder == null)
-                {
-                    if (config.RegularOutput) "chocolatey".Log().Warn(ChocolateyLoggers.Important,
-                        @"Unable to set licensed configuration. Please upgrade to a newer
- licensed version (choco upgrade chocolatey.extension).");
-                    return;
-                }
-                try
-                {
-                    object componentClass = Activator.CreateInstance(licensedConfigBuilder);
-
-                    licensedConfigBuilder.InvokeMember(
-                        SET_CONFIGURATION_METHOD,
-                        BindingFlags.InvokeMethod,
-                        null,
-                        componentClass,
-                        new Object[] { config, configFileSettings }
-                        );
-                }
-                catch (Exception ex)
-                {
-                    var isDebug = ApplicationParameters.is_debug_mode_cli_primitive();
-                    if (config.Debug) isDebug = true;
-                    var message = isDebug ? ex.ToString() : ex.Message;
-
-                    if (isDebug && ex.InnerException != null)
-                    {
-                        message += "{0}{1}".format_with(Environment.NewLine, ex.InnerException.ToString());
-                    }
-
-                    "chocolatey".Log().Error(
-                        ChocolateyLoggers.Important,
-                        @"Error when setting configuration for '{0}':{1} {2}".format_with(
-                            licensedConfigBuilder.FullName,
-                            Environment.NewLine,
-                            message
-                            ));
-                }
             }
         }
 

@@ -129,60 +129,6 @@ namespace chocolatey.infrastructure.app.configuration
             if (config.Features.UsePowerShellHost) Environment.SetEnvironmentVariable(ApplicationParameters.Environment.ChocolateyPowerShellHost, "true");
             if (config.Force) Environment.SetEnvironmentVariable(ApplicationParameters.Environment.ChocolateyForce, "true");
             if (config.Features.ExitOnRebootDetected) Environment.SetEnvironmentVariable(ApplicationParameters.Environment.ChocolateyExitOnRebootDetected, "true");
-            set_licensed_environment(config);
-        }
-
-        private static void set_licensed_environment(ChocolateyConfiguration config)
-        {
-            if (!config.Information.IsLicensedVersion) return;
-
-            Environment.SetEnvironmentVariable("ChocolateyLicenseType", config.Information.LicenseType);
-
-            var licenseAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.is_equal_to("chocolatey.licensed"));
-
-            if (licenseAssembly != null)
-            {
-                Type licensedEnvironmentSettings = licenseAssembly.GetType(ApplicationParameters.LicensedEnvironmentSettings, throwOnError: false, ignoreCase: true);
-
-                if (licensedEnvironmentSettings == null)
-                {
-                    if (config.RegularOutput) "chocolatey".Log().Warn(
-                        ChocolateyLoggers.Important, @"Unable to set licensed environment settings. Please upgrade to a newer
- licensed version (choco upgrade chocolatey.extension).");
-                    return;
-                }
-                try
-                {
-                    object componentClass = Activator.CreateInstance(licensedEnvironmentSettings);
-
-                    licensedEnvironmentSettings.InvokeMember(
-                        SET_ENVIRONMENT_METHOD,
-                        BindingFlags.InvokeMethod,
-                        null,
-                        componentClass,
-                        new Object[] { config }
-                        );
-                }
-                catch (Exception ex)
-                {
-                    var isDebug = ApplicationParameters.is_debug_mode_cli_primitive();
-                    if (config.Debug) isDebug = true;
-                    var message = isDebug ? ex.ToString() : ex.Message;
-
-                    if (isDebug && ex.InnerException != null)
-                    {
-                        message += "{0}{1}".format_with(Environment.NewLine, ex.InnerException.ToString());
-                    }
-
-                    "chocolatey".Log().Error(
-                        ChocolateyLoggers.Important,
-                        @"Error when setting environment for '{0}':{1} {2}".format_with(
-                            licensedEnvironmentSettings.FullName,
-                            Environment.NewLine,
-                            message
-                            ));
-                }
-            }
         }
 
         /// <summary>

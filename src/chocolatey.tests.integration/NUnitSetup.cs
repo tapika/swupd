@@ -28,7 +28,6 @@ namespace chocolatey.tests.integration
     using chocolatey.infrastructure.app.configuration;
     using chocolatey.infrastructure.commands;
     using chocolatey.infrastructure.filesystem;
-    using chocolatey.infrastructure.licensing;
     using chocolatey.infrastructure.platforms;
     using chocolatey.infrastructure.registration;
     using NUnit.Framework;
@@ -66,7 +65,7 @@ namespace chocolatey.tests.integration
             unpack_self(Container, config);
             build_packages(Container, config);
 
-            ConfigurationBuilder.set_up_configuration(new List<string>(), config, Container, new ChocolateyLicense(), null);
+            ConfigurationBuilder.set_up_configuration(new List<string>(), config, Container, null);
 
             if (oldStyleActivation)
             { 

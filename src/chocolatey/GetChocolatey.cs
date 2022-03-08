@@ -19,7 +19,6 @@ namespace chocolatey
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using infrastructure.licensing;
     using SimpleInjector;
     using infrastructure.app;
     using infrastructure.app.builders;
@@ -111,7 +110,6 @@ namespace chocolatey
     public class GetChocolatey
     {
         private readonly Container _container;
-        private readonly ChocolateyLicense _license;
         private readonly LogSinkLog _logSinkLogger = new LogSinkLog();
         private Action<ChocolateyConfiguration> _propConfig;
 
@@ -123,12 +121,6 @@ namespace chocolatey
             LogService.Instance.configure();
             Bootstrap.initialize();
             Log.InitializeWith(new AggregateLog(new List<ILog>() { new NLogLog(), _logSinkLogger }));
-
-#if NETFRAMEWORK
-            _license = License.validate_license();
-#else
-            _license = null;
-#endif
             _container = SimpleInjectorContainer.Container;
         }
 
@@ -467,7 +459,6 @@ namespace chocolatey
                 args,
                 configuration,
                 _container,
-                _license,
                 null);
 
             configuration.PromptForConfirmation = false;
