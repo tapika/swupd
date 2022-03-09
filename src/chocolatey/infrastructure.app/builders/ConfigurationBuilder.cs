@@ -351,9 +351,6 @@ namespace chocolatey.infrastructure.app.builders
                         .Add("c=|cache=|cachelocation=|cache-location=",
                              "CacheLocation - Location for download cache, defaults to %TEMP% or value in chocolatey.config file.",
                              option => config.CacheLocation = option.remove_surrounding_quotes())
-                        .Add("allowunofficial|allow-unofficial|allowunofficialbuild|allow-unofficial-build",
-                             "AllowUnofficialBuild - When not using the official build you must set this flag for choco to continue.",
-                             option => config.AllowUnofficialBuild = option != null)
                         .Add("failstderr|failonstderr|fail-on-stderr|fail-on-standard-error|fail-on-error-output",
                              "FailOnStandardError - Fail on standard error output (stderr), typically received when running external commands during install providers. This overrides the feature failOnStandardError.",
                              option => config.Features.FailOnStandardError = option != null)

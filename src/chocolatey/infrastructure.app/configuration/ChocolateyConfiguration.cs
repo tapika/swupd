@@ -50,9 +50,6 @@ namespace chocolatey.infrastructure.app.configuration
             PinCommand = new PinCommandConfiguration();
             OutdatedCommand = new OutdatedCommandConfiguration();
             Proxy = new ProxyConfiguration();
-#if DEBUG
-            AllowUnofficialBuild = true;
-#endif
         }
 
         // overrides
@@ -182,7 +179,6 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public bool QuietOutput { get; set; }
         public bool PromptForConfirmation { get; set; }
         public bool AcceptLicense { get; set; }
-        public bool AllowUnofficialBuild { get; set; }
         public string AdditionalLogFileLocation { get; set; }
 
         /// <summary>

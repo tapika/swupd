@@ -79,10 +79,6 @@ namespace chocolatey.infrastructure.app.runners
 
                 if (isConsole && (config.HelpRequested || config.UnsuccessfulParsing))
                 {
-#if DEBUG
-                    Console.WriteLine("Press enter to continue...");
-                    Console.ReadKey();
-#endif
                     Environment.Exit(config.UnsuccessfulParsing? 1 : 0);
                 }
             }
