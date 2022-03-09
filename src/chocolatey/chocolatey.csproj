@@ -72,11 +72,6 @@
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
 
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);FORCE_CHOCOLATEY_OFFICIAL_KEY</DefineConstants>
-  </PropertyGroup>
-
-
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>$(ProjectDir)..\..\chocolatey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 </Project>

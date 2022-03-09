@@ -47,8 +47,6 @@ namespace chocolatey.console
         {
             try
             {
-                add_assembly_resolver();
-
                 string loggingLocation = ApplicationParameters.LoggingLocation;
                 //no file system at this point
                 if (!Directory.Exists(loggingLocation)) Directory.CreateDirectory(loggingLocation);
@@ -173,51 +171,6 @@ namespace chocolatey.console
             {
                 if (config.RegularOutput) "chocolatey".Log().Warn("The use of .nupkg or .nuspec in for package name or source is known to cause issues. Please use the package id from the nuspec `<id />` with `-s .` (for local folder where nupkg is found).");
             }
-        }
-
-        private static ResolveEventHandler _handler = null;
-        private static void add_assembly_resolver()
-        {
-            _handler = (sender, args) =>
-            {
-                var requestedAssembly = new AssemblyName(args.Name);
-
-#if FORCE_CHOCOLATEY_OFFICIAL_KEY
-                var chocolateyPublicKey = ApplicationParameters.OfficialChocolateyPublicKey;
-#else
-                var chocolateyPublicKey = ApplicationParameters.UnofficialChocolateyPublicKey;
-#endif
-
-                // There are things that are ILMerged into Chocolatey. Anything with
-                // the right public key except licensed should use the choco/chocolatey assembly
-                if (requestedAssembly.get_public_key_token().is_equal_to(chocolateyPublicKey)
-                    && !requestedAssembly.Name.is_equal_to(ApplicationParameters.LicensedChocolateyAssemblySimpleName)
-                    && !requestedAssembly.Name.EndsWith(".resources", StringComparison.OrdinalIgnoreCase))
-                {
-                    return typeof(ConsoleApplication).Assembly;
-                }
-
-                try
-                {
-                    if (requestedAssembly.get_public_key_token().is_equal_to(chocolateyPublicKey)
-                        && requestedAssembly.Name.is_equal_to(ApplicationParameters.LicensedChocolateyAssemblySimpleName))
-                    {
-                        "chocolatey".Log().Debug(() => "Resolving reference to chocolatey.licensed...");
-                        return AssemblyResolution.resolve_or_load_assembly(
-                            ApplicationParameters.LicensedChocolateyAssemblySimpleName,
-                            requestedAssembly.get_public_key_token(),
-                            ApplicationParameters.LicensedAssemblyLocation).UnderlyingType;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    "chocolatey".Log().Warn("Unable to load chocolatey.licensed assembly. {0}".format_with(ex.Message));
-                }
-
-                return null;
-            };
-
-            AppDomain.CurrentDomain.AssemblyResolve += _handler;
         }
 
         private static void report_version_and_exit_if_requested(string[] args, ChocolateyConfiguration config)

@@ -43,58 +43,12 @@ namespace chocolatey
     {
         private static GetChocolatey set_up()
         {
-            add_assembly_resolver();
-
             return new GetChocolatey();
         }
 
         public static GetChocolatey GetChocolatey()
         {
             return GlobalMutex.enter(() => set_up(), 10);
-        }
-
-        private static ResolveEventHandler _handler = null;
-        private static void add_assembly_resolver()
-        {
-            _handler = (sender, args) =>
-            {
-                var requestedAssembly = new AssemblyName(args.Name);
-
-                // There are things that are ILMerged into Chocolatey. Anything with
-                // the right public key except licensed should use the choco/chocolatey assembly
-#if FORCE_CHOCOLATEY_OFFICIAL_KEY
-                var chocolateyPublicKey = ApplicationParameters.OfficialChocolateyPublicKey;
-#else
-                var chocolateyPublicKey = ApplicationParameters.UnofficialChocolateyPublicKey;
-#endif
-                if (requestedAssembly.get_public_key_token().is_equal_to(chocolateyPublicKey)
-                    && !requestedAssembly.Name.is_equal_to(ApplicationParameters.LicensedChocolateyAssemblySimpleName)
-                    && !requestedAssembly.Name.EndsWith(".resources", StringComparison.OrdinalIgnoreCase))
-                {
-                    return typeof(Lets).Assembly;
-                }
-
-                try
-                {
-                    if (requestedAssembly.get_public_key_token().is_equal_to(chocolateyPublicKey)
-                        && requestedAssembly.Name.is_equal_to(ApplicationParameters.LicensedChocolateyAssemblySimpleName))
-                    {
-                        //_logger.Debug("Resolving reference to chocolatey.licensed...");
-                        return AssemblyResolution.resolve_or_load_assembly(
-                            ApplicationParameters.LicensedChocolateyAssemblySimpleName,
-                            requestedAssembly.get_public_key_token(),
-                            ApplicationParameters.LicensedAssemblyLocation).UnderlyingType;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    "chocolatey".Log().Warn("Unable to load chocolatey.licensed assembly. {0}".format_with(ex.Message));
-                }
-
-                return null;
-            };
-
-            AppDomain.CurrentDomain.AssemblyResolve += _handler;
         }
     }
 
