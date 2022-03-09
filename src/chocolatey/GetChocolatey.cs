@@ -29,9 +29,7 @@ namespace chocolatey
     using infrastructure.logging;
     using infrastructure.registration;
     using infrastructure.synchronization;
-#if !NoResources
     using resources;
-#endif
     using Assembly = infrastructure.adapters.Assembly;
     using IFileSystem = infrastructure.filesystem.IFileSystem;
     using ILog = infrastructure.logging.ILog;
@@ -503,7 +501,6 @@ namespace chocolatey
                 "tools"
             };
 
-#if !NoResources
             try
             {
                 AssemblyFileExtractor.extract_all_resources_to_relative_directory(_container.GetInstance<IFileSystem>(), Assembly.GetAssembly(typeof(ChocolateyResourcesAssembly)), ApplicationParameters.InstallLocation, folders, ApplicationParameters.ChocolateyFileResources);
@@ -513,7 +510,6 @@ namespace chocolatey
                 this.Log().Warn(ChocolateyLoggers.Important, "Please ensure that ChocolateyInstall environment variable is set properly and you've run once as an administrator to ensure all resources are extracted.");
                 this.Log().Error("Unable to extract resources. Please ensure the ChocolateyInstall environment variable is set properly. You may need to run once as an admin to ensure all resources are extracted. Details:{0} {1}".format_with(Environment.NewLine, ex.ToString()));
             }
-#endif
         }
     }
 
