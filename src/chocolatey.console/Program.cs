@@ -31,9 +31,7 @@ namespace chocolatey.console
     using infrastructure.logging;
     using infrastructure.registration;
     using infrastructure.tolerance;
-#if !NoResources
     using resources;
-#endif
     using Assembly = infrastructure.adapters.Assembly;
     using Console = System.Console;
     using Environment = System.Environment;
@@ -129,9 +127,7 @@ namespace chocolatey.console
                         "redirects",
                         "tools"
                     };
-#if !NoResources
                 AssemblyFileExtractor.extract_all_resources_to_relative_directory(fileSystem, Assembly.GetAssembly(typeof(ChocolateyResourcesAssembly)), ApplicationParameters.InstallLocation, folders, ApplicationParameters.ChocolateyFileResources, throwError: false);
-#endif
                 var application = new ConsoleApplication();
                 application.run(args, config, container);
             }
