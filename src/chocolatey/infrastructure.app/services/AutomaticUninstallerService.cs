@@ -214,15 +214,6 @@ namespace chocolatey.infrastructure.app.services
 
             if (!key.HasQuietUninstall && installer.GetType() == typeof(CustomInstaller))
             {
-                if (!config.Information.IsLicensedVersion)
-                {
-                    this.Log().Warn(@"
-  Did you know licensed versions of Chocolatey are 95% effective with 
-   Automatic Uninstaller due to licensed enhancements and Package 
-   Synchronizer?
-");
-                }
-
                 var skipUninstaller = true;
 
                 var timeout = config.PromptForConfirmation ? 0 : 30;

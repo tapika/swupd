@@ -359,8 +359,6 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public bool IsUserRemoteDesktop { get; set; }
         public bool IsUserRemote { get; set; }
         public bool IsProcessElevated { get; set; }
-        public bool IsLicensedVersion { get; set; }
-        public string LicenseType { get; set; }
         public string CurrentDirectory { get; set; }
     }
 

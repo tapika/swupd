@@ -126,11 +126,6 @@ namespace chocolatey.infrastructure.app.nuget
                 results = results.Where(p => p.IsDownloadCacheAvailable);
             }
 
-            if (configuration.ListCommand.NotBroken)
-            {
-                results = results.Where(p => (p.IsDownloadCacheAvailable && configuration.Information.IsLicensedVersion) || p.PackageTestResultStatus != "Failing");
-            }
-
             if (configuration.AllVersions || !string.IsNullOrWhiteSpace(configuration.Version))
             {
                 if (isServiceBased)

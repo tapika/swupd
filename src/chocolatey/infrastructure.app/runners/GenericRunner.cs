@@ -95,16 +95,6 @@ namespace chocolatey.infrastructure.app.runners
             this.Log().Debug(() => "The source '{0}' evaluated to a '{1}' source type".format_with(config.Sources, sourceType.to_string()));
         }
 
-        public void fail_when_license_is_missing_or_invalid_if_requested(ChocolateyConfiguration config)
-        {
-            if (!config.Features.FailOnInvalidOrMissingLicense ||
-                config.CommandName.trim_safe().is_equal_to("feature") ||
-                config.CommandName.trim_safe().is_equal_to("features")
-            ) return;
-
-            if (!config.Information.IsLicensedVersion) throw new ApplicationException("License is missing or invalid.");
-        }
-
         public void run(ChocolateyConfiguration config, Container container, bool isConsole, Action<ICommand> parseArgs)
         {
             var tasks = container.GetAllInstances<ITask>();
@@ -113,7 +103,6 @@ namespace chocolatey.infrastructure.app.runners
                 task.initialize();
             }
 
-            fail_when_license_is_missing_or_invalid_if_requested(config);
             SecurityProtocol.set_protocol(config, provideWarning:true);
             EventManager.publish(new PreRunMessage(config));
 
@@ -196,7 +185,6 @@ namespace chocolatey.infrastructure.app.runners
                 task.initialize();
             }
 
-            fail_when_license_is_missing_or_invalid_if_requested(config);
             SecurityProtocol.set_protocol(config, provideWarning: true);
             EventManager.publish(new PreRunMessage(config));
 
@@ -232,7 +220,6 @@ namespace chocolatey.infrastructure.app.runners
 
         public int count(ChocolateyConfiguration config, Container container, bool isConsole, Action<ICommand> parseArgs)
         {
-            fail_when_license_is_missing_or_invalid_if_requested(config);
             SecurityProtocol.set_protocol(config, provideWarning: true);
 
             var command = find_command(config, container, isConsole, parseArgs) as IListCommand;

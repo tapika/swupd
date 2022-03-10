@@ -141,7 +141,6 @@ namespace chocolatey.tests.integration
             config.Information.IsInteractive = false;
             config.Information.IsUserAdministrator = true;
             config.Information.IsProcessElevated = true;
-            config.Information.IsLicensedVersion = false;
             config.AcceptLicense = true;
             config.AllowMultipleVersions = false;
             config.CacheLocation = _fileSystem.get_full_path(_fileSystem.combine_paths(get_top_level(), "cache"));

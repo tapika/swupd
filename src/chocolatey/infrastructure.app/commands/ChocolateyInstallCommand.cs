@@ -209,22 +209,6 @@ namespace chocolatey.infrastructure.app.commands
                 throw new ApplicationException("Force dependencies can only be used with force also turned on.");
             }
 
-            if (!string.IsNullOrWhiteSpace(configuration.Input))
-            {
-                var unparsedOptionsAndPackages = configuration.Input.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-                if (!configuration.Information.IsLicensedVersion)
-                {
-                    foreach (var argument in unparsedOptionsAndPackages.or_empty_list_if_null())
-                    {
-                        var arg = argument.to_lower();
-                        if (arg.StartsWith("-dir") || arg.StartsWith("--dir") || arg.StartsWith("-install") || arg.StartsWith("--install"))
-                        {
-                            throw new ApplicationException("It appears you are attempting to use options that may be only available in licensed versions of Chocolatey ('{0}'). There may be ways in the open source edition to achieve what you are looking to do. Please remove the argument and consult the documentation.".format_with(arg));
-                        }
-                    }
-                }
-            }
-
             if (!string.IsNullOrWhiteSpace(configuration.SourceCommand.Username) && string.IsNullOrWhiteSpace(configuration.SourceCommand.Password))
             {
                 this.Log().Debug(ChocolateyLoggers.LogFileOnly, "Username '{0}' provided. Asking for password.".format_with(configuration.SourceCommand.Username));
