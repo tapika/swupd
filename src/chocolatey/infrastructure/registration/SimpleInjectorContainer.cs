@@ -67,6 +67,7 @@ namespace chocolatey.infrastructure.registration
         private static Container initialize()
         {
             var container = new Container();
+            ApplicationManager.Instance.Container = container;
             container.Options.AllowOverridingRegistrations = true;
             var originalConstructorResolutionBehavior = container.Options.ConstructorResolutionBehavior;
             container.Options.ConstructorResolutionBehavior = new SimpleInjectorContainerResolutionBehavior(originalConstructorResolutionBehavior);
