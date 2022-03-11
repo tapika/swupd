@@ -87,11 +87,7 @@ namespace chocolatey.console
 
                 if (config.RegularOutput)
                 {
-#if DEBUG
-                    "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0} v{1} (DEBUG BUILD)".format_with(ApplicationParameters.Name, config.Information.ChocolateyProductVersion));
-#else
                     "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0} v{1}".format_with(ApplicationParameters.Name, config.Information.ChocolateyProductVersion));
-#endif
                     if (args.Length == 0)
                     {
                         "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "Please run 'choco -?' or 'choco <command> -?' for help menu.");
@@ -108,7 +104,6 @@ namespace chocolatey.console
 
                 if (config.HelpRequested || config.UnsuccessfulParsing)
                 {
-                    pause_execution_if_debug();
                     Environment.Exit(config.UnsuccessfulParsing ? 1 : 0);
                 }
 
@@ -151,10 +146,9 @@ namespace chocolatey.console
             finally
             {
                 "chocolatey".Log().Debug(() => "Exiting with {0}".format_with(Environment.ExitCode));
-#if DEBUG
+#if DEBUG || RELWITHDEBINFO
                 "chocolatey".Log().Info(() => "Exiting with {0}".format_with(Environment.ExitCode));
 #endif
-                pause_execution_if_debug();
                 Bootstrap.shutdown();
                 Environment.Exit(Environment.ExitCode);
             }
@@ -177,7 +171,6 @@ namespace chocolatey.console
             if (firstArg.is_equal_to("-v") || firstArg.is_equal_to("--version"))
             {
                 "chocolatey".Log().Info(ChocolateyLoggers.Important, () => "{0}".format_with(config.Information.ChocolateyProductVersion));
-                pause_execution_if_debug();
                 "chocolatey".Log().Debug(() => "Exiting with 0");
                 Environment.Exit(0);
             }
@@ -202,14 +195,6 @@ namespace chocolatey.console
                 logDebugInsteadOfError: false,
                 isSilent: true
                 );
-        }
-
-        private static void pause_execution_if_debug()
-        {
-//#if DEBUG
-//            Console.WriteLine("Press enter to continue...");
-//            Console.ReadKey();
-//#endif
         }
     }
 }
