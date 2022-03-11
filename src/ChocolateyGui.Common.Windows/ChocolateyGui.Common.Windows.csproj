@@ -18,7 +18,8 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
+  <Import Project="..\..\ProjectsCommon.props" />
+  <Import Project="..\props\systemreactive.props" />
 
   <ItemGroup Condition=" '$(UseWPF)' != 'true' ">
     <Compile Remove="**/*.cs" />
@@ -69,7 +70,6 @@
     <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
     <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
     <PackageReference Include="SimpleInjector" Version="2.5.0" />
-    <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
     <PackageReference Include="System.Reactive.Windows.Threading" Version="3.1.1" />
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.1.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.1" />
@@ -80,7 +80,6 @@
     <PackageReference Include="Caliburn.Micro" Version="4.0.173" />
     <PackageReference Include="Caliburn.Micro.Core" Version="4.0.173" />
     <PackageReference Include="SimpleInjector" Version="5.2.1" />
-    <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="5.0.3" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
   </ItemGroup>

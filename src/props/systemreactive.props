@@ -1,0 +1,18 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- 
+    This is some odd constant which needs to be present 
+    for .net core 3.1 platform - otherwise netstandard2.0\System.Reactive.dll gets selected over 
+    netcoreapp3.1\System.Reactive.dll - resulting in further exceptions
+  -->
+  <PropertyGroup>
+    <UseWindowsRxVersion>true</UseWindowsRxVersion>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
+    <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
+    <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
+  </ItemGroup>
+</Project>

@@ -17,7 +17,6 @@
     <PackageReference Include="Microsoft.Web.Xdt" Version="2.1.1" />
     <PackageReference Include="PublishedApplications" Version="2.4.0" />
     <PackageReference Include="SimpleInjector" Version="2.5.0" />
-    <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
@@ -29,10 +28,12 @@
     <PackageReference Include="Microsoft.Web.Xdt" Version="3.1.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="SimpleInjector" Version="5.2.1" />
-    <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
   </ItemGroup>
 
+  <Import Project="..\..\ProjectsCommon.props" />
   <Import Project="..\props\nlog.props" />
+  <Import Project="..\props\configurationmanager.props" />
+  <Import Project="..\props\systemreactive.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\NuGet-Chocolatey\src\Core\Core.csproj" />
@@ -68,8 +69,6 @@
   <ItemGroup>
     <EmbeddedResource Include="infrastructure.app\configuration\chocolatey.config" />
   </ItemGroup>
-
-  <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
 
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>$(ProjectDir)..\..\chocolatey.snk</AssemblyOriginatorKeyFile>
