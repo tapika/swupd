@@ -63,9 +63,9 @@ namespace chocolatey.infrastructure.app.runners
             runner.run(config, container, isConsole: true, parseArgs: command =>
                 {
                     ConfigurationOptions.parse_arguments_and_update_configuration(
+                        command,
                         commandArgs,
                         config,
-                        (optionSet) => command.configure_argument_parser(optionSet, config),
                         (unparsedArgs) => {
                             // if debug is bundled with local options, it may not get picked up when global
                             // options are parsed. Attempt to set it again once local options are set.
@@ -107,8 +107,7 @@ namespace chocolatey.infrastructure.app.runners
                                 // is not required in the exception.
                                 throw new ApplicationException("");
                             }
-                        },
-                        () => command.help_message(config));
+                        });
                 });
         }
 

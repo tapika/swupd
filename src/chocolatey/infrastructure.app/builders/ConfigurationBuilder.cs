@@ -301,9 +301,9 @@ namespace chocolatey.infrastructure.app.builders
         private static void set_global_options(IList<string> args, ChocolateyConfiguration config, Container container)
         {
             ConfigurationOptions.parse_arguments_and_update_configuration(
+                new ChocolateyMainCommand(),
                 args,
                 config,
-                (optionSet) => new ChocolateyMainCommand().configure_argument_parser(optionSet, config),
                 (unparsedArgs) =>
                 {
                     if (!string.IsNullOrWhiteSpace(config.CommandName))
@@ -313,11 +313,7 @@ namespace chocolatey.infrastructure.app.builders
                         config.UnsuccessfulParsing = false;
                     }
                 },
-                () => { },
-                () =>
-                {
-                    ChocolateyHelpCommand.display_help_message(container);
-                });
+                () => { });
         }
 
         private static void set_environment_options(ChocolateyConfiguration config)

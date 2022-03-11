@@ -22,6 +22,7 @@ namespace chocolatey.infrastructure.app.configuration
     using System.Linq;
     using System.Text.RegularExpressions;
     using adapters;
+    using chocolatey.infrastructure.commands;
     using commandline;
     using Console = adapters.Console;
 
@@ -55,18 +56,18 @@ namespace chocolatey.infrastructure.app.configuration
         /// <summary>
         ///   Parses arguments and updates the configuration
         /// </summary>
+        /// <param name="command">Command being executed</param>
         /// <param name="args">The arguments.</param>
         /// <param name="configuration">The configuration</param>
         /// <param name="setOptions">The set options.</param>
         /// <param name="afterParse">Actions to take after parsing</param>
         /// <param name="validateConfiguration">Validate the configuration</param>
-        /// <param name="helpMessage">The help message.</param>
-        public static void parse_arguments_and_update_configuration(ICollection<string> args,
+        public static void parse_arguments_and_update_configuration(
+                                                                    ICommand command,
+                                                                    ICollection<string> args,
                                                                     ChocolateyConfiguration configuration,
-                                                                    Action<OptionSet> setOptions,
                                                                     Action<IList<string>> afterParse,
-                                                                    Action validateConfiguration,
-                                                                    Action helpMessage)
+                                                                    Action validateConfiguration)
         {
             IList<string> unparsedArguments = new List<string>();
 
@@ -79,10 +80,7 @@ namespace chocolatey.infrastructure.app.configuration
                          option => configuration.HelpRequested = option != null);
             }
 
-            if (setOptions != null)
-            {
-                setOptions(_optionSet);
-            }
+            command.configure_argument_parser(_optionSet, configuration);
 
             try
             {
@@ -90,7 +88,7 @@ namespace chocolatey.infrastructure.app.configuration
             }
             catch (OptionException)
             {
-                show_help(_optionSet, helpMessage);
+                show_help(command, configuration);
                 configuration.UnsuccessfulParsing = true;
             }
 
@@ -120,7 +118,7 @@ namespace chocolatey.infrastructure.app.configuration
 
             if (configuration.HelpRequested)
             {
-                show_help(_optionSet, helpMessage);
+                show_help(command, configuration);
             }
             else
             {
@@ -135,14 +133,10 @@ namespace chocolatey.infrastructure.app.configuration
         ///   Shows the help menu and prints the options
         /// </summary>
         /// <param name="optionSet">The option_set.</param>
-        private static void show_help(OptionSet optionSet, Action helpMessage)
+        private static void show_help(ICommand command, ChocolateyConfiguration config)
         {
-            if (helpMessage != null)
-            {
-                helpMessage.Invoke();
-            }
-
-            optionSet.WriteOptionDescriptions(Console.Out);
+            command.help_message(config);
+            _optionSet.WriteOptionDescriptions(Console.Out);
         }
     }
 }

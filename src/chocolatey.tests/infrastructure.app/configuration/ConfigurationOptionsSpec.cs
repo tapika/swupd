@@ -37,7 +37,6 @@ namespace chocolatey.tests.infrastructure.app.configuration
             protected Action<OptionSet> setOptions;
             protected Action<IList<string>> afterParse;
             protected Action validateConfiguration;
-            protected Action helpMessage;
 
             protected Mock<IConsole> console = new Mock<IConsole>();
             protected static StringBuilder helpMessageContents = new StringBuilder();
@@ -56,7 +55,8 @@ namespace chocolatey.tests.infrastructure.app.configuration
 
             public override void Because()
             {
-                because = () => ConfigurationOptions.parse_arguments_and_update_configuration(args, config, setOptions, afterParse, validateConfiguration, helpMessage);
+                because = () => ConfigurationOptions.parse_arguments_and_update_configuration(
+                    new DummyTestCommand() { SetOptions = setOptions }, args, config, afterParse, validateConfiguration);
             }
 
             public override void BeforeEachSpec()
@@ -66,7 +66,6 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 setOptions = set => { };
                 afterParse = list => { };
                 validateConfiguration = () => { };
-                helpMessage = () => { };
                 helpMessageContents.Clear();
                 ConfigurationOptions.reset_options();
             }
@@ -327,5 +326,42 @@ namespace chocolatey.tests.infrastructure.app.configuration
                 config.UnsuccessfulParsing.Should().BeTrue();
             }
         }
+
+        public class DummyTestCommand : chocolatey.infrastructure.commands.ICommand
+        {
+            public Action<OptionSet> SetOptions;
+
+            public void configure_argument_parser(OptionSet optionSet, ChocolateyConfiguration configuration)
+            {
+                SetOptions.Invoke(optionSet);
+            }
+
+            public void handle_additional_argument_parsing(IList<string> unparsedArguments, ChocolateyConfiguration configuration)
+            {
+            }
+
+            public void handle_validation(ChocolateyConfiguration configuration)
+            {
+            }
+
+            public void help_message(ChocolateyConfiguration configuration)
+            {
+            }
+
+            public bool may_require_admin_access()
+            {
+                return false;
+            }
+
+            public void noop(ChocolateyConfiguration configuration)
+            {
+            }
+
+            public void run(ChocolateyConfiguration config)
+            {
+            }
+        }
+
+
     }
 }
