@@ -12,7 +12,8 @@ namespace chocolatey.infrastructure.app
 {
     public class ApplicationManager
     {
-        static public AsyncLocal<ApplicationManager> _instance = new AsyncLocal<ApplicationManager>();
+        static ApplicationManager _mainThreadInstance = null;
+        static AsyncLocal<ApplicationManager> _instance = new AsyncLocal<ApplicationManager>();
 
         /// <summary>
         /// Returns true if ApplicationManager.Instance was initialized.
@@ -31,7 +32,25 @@ namespace chocolatey.infrastructure.app
             {
                 if (_instance.Value == null)
                 {
-                    _instance.Value = new ApplicationManager();
+                    //
+                    // If we have main application (choco, chocogui) - then _mainThreadInstance gets initialized,
+                    // and all threads will log to same ApplicationManager instance.
+                    //
+                    // When unit testing - there will be separate / independent ApplicationManager instance for each testing task.
+                    //
+                    if (_mainThreadInstance != null)
+                    {
+                        _instance.Value = _mainThreadInstance;
+                    }
+                    else
+                    { 
+                        _instance.Value = new ApplicationManager();
+
+                        if (_mainThreadInstance == null && Thread.CurrentThread.ManagedThreadId == 1)
+                        {
+                            _mainThreadInstance = _instance.Value;
+                        }
+                    }
                 }
 
                 return _instance.Value;
