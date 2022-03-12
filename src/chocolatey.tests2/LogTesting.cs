@@ -431,7 +431,7 @@
                     throw new Exception($"Package .nuspec not found: {nuspecMatch}");
                 }
 
-                var command = chocolatey.tests.integration.NUnitSetup.Commands.OfType<ChocolateyPackCommand>().Single();
+                var command = ApplicationManager.Instance.Commands.OfType<ChocolateyPackCommand>().Single();
                 var packConf = Scenario.pack(true);
                 packConf.Input = nuspecs[0];
                 packConf.QuietOutput = true;

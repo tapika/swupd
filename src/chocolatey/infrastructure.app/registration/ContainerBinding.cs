@@ -74,31 +74,9 @@ namespace chocolatey.infrastructure.app.registration
             container.Register<ICommandExecutor, CommandExecutor>(Lifestyle.Singleton);
             container.Register(() => new CustomString(string.Empty));
 
-            //todo:refactor - this should be autowired
             container.Register<IEnumerable<ICommand>>(() =>
                 {
-                    var list = new List<ICommand>
-                        {
-                            new ChocolateyListCommand(container.GetInstance<IChocolateyPackageService>()),
-                            new ChocolateyHelpCommand(container),
-                            new ChocolateyInfoCommand(container.GetInstance<IChocolateyPackageService>()),
-                            new ChocolateyInstallCommand(container.GetInstance<IChocolateyPackageService>()),
-                            new ChocolateyPinCommand(container.GetInstance<IChocolateyPackageInformationService>(), container.GetInstance<ILogger>(), container.GetInstance<INugetService>()),
-                            new ChocolateyOutdatedCommand(container.GetInstance<IChocolateyPackageService>()),
-                            new ChocolateyUpgradeCommand(container.GetInstance<IChocolateyPackageService>()),
-                            new ChocolateyUninstallCommand(container.GetInstance<IChocolateyPackageService>()),
-                            new ChocolateyPackCommand(container.GetInstance<IChocolateyPackageService>()),
-                            new ChocolateyPushCommand(container.GetInstance<IChocolateyPackageService>(), container.GetInstance<IChocolateyConfigSettingsService>()),
-                            new ChocolateyNewCommand(container.GetInstance<ITemplateService>()),
-                            new ChocolateySourceCommand(container.GetInstance<IChocolateyConfigSettingsService>()),
-                            new ChocolateyConfigCommand(container.GetInstance<IChocolateyConfigSettingsService>()),
-                            new ChocolateyFeatureCommand(container.GetInstance<IChocolateyConfigSettingsService>()),
-                            new ChocolateyApiKeyCommand(container.GetInstance<IChocolateyConfigSettingsService>()),
-                            new ChocolateyUnpackSelfCommand(container.GetInstance<IFileSystem>()),
-                            new ChocolateyVersionCommand(container.GetInstance<IChocolateyPackageService>()),
-                            new ChocolateyUpdateCommand(container.GetInstance<IChocolateyPackageService>())
-                        };
-                    return list.AsReadOnly();
+                    return ApplicationManager.Instance.Commands.AsReadOnly();
                 }, Lifestyle.Singleton);
 
             container.Register<IEnumerable<ISourceRunner>>(() =>

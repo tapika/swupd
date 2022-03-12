@@ -21,8 +21,7 @@ namespace chocolatey.tests2.commands
 
         public TestPinCommand()
         {
-            var commands = NUnitSetup.Container.GetAllInstances<ICommand>();
-            pincmd = (ChocolateyPinCommand)commands.Where(x => x is ChocolateyPinCommand).FirstOrDefault();
+            pincmd = ApplicationManager.Instance.Commands.OfType<ChocolateyPinCommand>().Single();
         }
 
         public void PinContext(

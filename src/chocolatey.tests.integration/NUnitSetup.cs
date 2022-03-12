@@ -39,7 +39,6 @@ namespace chocolatey.tests.integration
     public class NUnitSetup : tests.NUnitSetup
     {
         public static Container Container { get; set; }
-        public static ICommand[] Commands { get; set; }
 
         public override void BeforeEverything()
         {
@@ -59,8 +58,6 @@ namespace chocolatey.tests.integration
             config.Information.PlatformType = PlatformType.Windows;
             config.Information.IsInteractive = false;
             config.PromptForConfirmation = false;
-
-            Commands = Container.GetAllInstances<ICommand>().ToArray();
 
             unpack_self(Container, config);
             build_packages(Container, config);
@@ -105,7 +102,7 @@ namespace chocolatey.tests.integration
 
         private void unpack_self(Container container, ChocolateyConfiguration config)
         {
-            var unpackCommand = Commands.OfType<ChocolateyUnpackSelfCommand>().Single();
+            var unpackCommand = ApplicationManager.Instance.Commands.OfType<ChocolateyUnpackSelfCommand>().Single();
             unpackCommand.run(config);
         }
 
@@ -123,7 +120,7 @@ namespace chocolatey.tests.integration
 
             var files = fileSystem.get_files(contextDir, "*.nuspec", SearchOption.AllDirectories);
 
-            var command = Commands.OfType<ChocolateyPackCommand>().Single();
+            var command = ApplicationManager.Instance.Commands.OfType<ChocolateyPackCommand>().Single();
             foreach (var file in files.or_empty_list_if_null())
             {
                 config.Input = file;

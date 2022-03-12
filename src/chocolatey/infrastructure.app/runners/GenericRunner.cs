@@ -40,47 +40,34 @@ namespace chocolatey.infrastructure.app.runners
     {
         private ICommand find_command(ChocolateyConfiguration config, Container container, bool isConsole, Action<ICommand> parseArgs)
         {
-            var commands = container.GetAllInstances<ICommand>();
-            var command = commands.Where((c) =>
-                {
-                    var attributes = c.GetType().GetCustomAttributes(typeof(CommandForAttribute), false);
-                    return attributes.Cast<CommandForAttribute>().Any(attribute => attribute.CommandName.is_equal_to(config.CommandName));
-                }).FirstOrDefault();
-
-            if (command == null)
+            if (string.IsNullOrWhiteSpace(config.CommandName))
             {
-                //todo add a search among other location/extensions for the command
-                if (!string.IsNullOrWhiteSpace(config.CommandName))
-                {
-                    throw new Exception(@"Could not find a command registered that meets '{0}'.
- Try choco -? for command reference/help.".format_with(config.CommandName));
-                }
-
                 if (isConsole) Environment.ExitCode = 1;
+                return null;
             }
-            else
+        
+            var command = ApplicationManager.Instance.FindCommand(config.CommandName);
+            
+            if (parseArgs != null)
             {
-                if (parseArgs != null)
-                {
-                    parseArgs.Invoke(command);
-                }
+                parseArgs.Invoke(command);
+            }
 
-                if (command.may_require_admin_access())
-                {
-                    warn_when_admin_needs_elevation(config);
-                }
+            if (command.may_require_admin_access())
+            {
+                warn_when_admin_needs_elevation(config);
+            }
 
-                set_source_type(config);
-                // guaranteed that all settings are set.
-                EnvironmentSettings.set_environment_variables(config);
+            set_source_type(config);
+            // guaranteed that all settings are set.
+            EnvironmentSettings.set_environment_variables(config);
 
-                this.Log().Debug(() => "Configuration: {0}".format_with(config.ToString()));
+            this.Log().Debug(() => "Configuration: {0}".format_with(config.ToString()));
 
 
-                if (isConsole && (config.HelpRequested || config.UnsuccessfulParsing))
-                {
-                    Environment.Exit(config.UnsuccessfulParsing? 1 : 0);
-                }
+            if (isConsole && (config.HelpRequested || config.UnsuccessfulParsing))
+            {
+                Environment.Exit(config.UnsuccessfulParsing? 1 : 0);
             }
 
             return command;
