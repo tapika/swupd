@@ -83,7 +83,6 @@ namespace chocolatey.infrastructure.app
         /// Finds command by name
         /// </summary>
         /// <param name="commandName">command name</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">thrown when command was not found</exception>
         public ICommand FindCommand(string commandName)
         {
