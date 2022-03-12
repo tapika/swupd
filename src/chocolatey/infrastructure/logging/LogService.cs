@@ -181,8 +181,7 @@ namespace chocolatey.infrastructure.logging
 
             // If you wish to disable date/time formatting
             //dateFormatString = "";
-            //bool clearLogFile = ApplicationParameters.LogsAppendToFile;
-            reconfigure(clearLogFile, conf, addConsole);
+            reconfigure(ApplicationParameters.ClearLogFiles, conf, addConsole);
             //Console.WriteLine("press any key...");
             //Console.ReadLine();
         }
@@ -403,8 +402,6 @@ namespace chocolatey.infrastructure.logging
                     Layout = dateFormatString + fileLogPatternLayout,
                     CreateDirs = true,
                     AutoFlush = true,
-                    ArchiveOldFileOnStartup = true,
-                    MaxArchiveFiles = 1
                 };
 
                 var filetargetSummary = new FileTarget
@@ -414,8 +411,6 @@ namespace chocolatey.infrastructure.logging
                     Layout = dateFormatString + fileLogPatternLayout,
                     CreateDirs = true,
                     AutoFlush = true,
-                    ArchiveOldFileOnStartup = true,
-                    MaxArchiveFiles = 1
                 };
 
                 foreach (var name in GetLoggerNames())

@@ -66,8 +66,8 @@ namespace chocolatey.infrastructure.app.configuration
                                                                     ICommand command,
                                                                     ICollection<string> args,
                                                                     ChocolateyConfiguration configuration,
-                                                                    Action<IList<string>> afterParse,
-                                                                    Action validateConfiguration)
+                                                                    Action<IList<string>> afterParse = null,
+                                                                    Action validateConfiguration = null)
         {
             IList<string> unparsedArguments = new List<string>();
 

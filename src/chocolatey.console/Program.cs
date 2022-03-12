@@ -21,6 +21,7 @@ namespace chocolatey.console
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using chocolatey.infrastructure.app.commands;
     using infrastructure.app;
     using infrastructure.app.builders;
     using infrastructure.app.configuration;
@@ -45,8 +46,10 @@ namespace chocolatey.console
         {
             try
             {
+                var config = Config.get_configuration_settings();
+                ConfigurationOptions.parse_arguments_and_update_configuration(new ChocolateyStartupCommand(), args, config);
+
                 string loggingLocation = ApplicationParameters.LoggingLocation;
-                //no file system at this point
                 if (!Directory.Exists(loggingLocation)) Directory.CreateDirectory(loggingLocation);
 
                 LogService.Instance.configure(loggingLocation);
@@ -57,7 +60,6 @@ namespace chocolatey.console
 
                 "LogFileOnly".Log().Info(() => "".PadRight(60, '='));
 
-                var config = Config.get_configuration_settings();
                 var fileSystem = container.GetInstance<IFileSystem>();
 
                 var warnings = new List<string>();

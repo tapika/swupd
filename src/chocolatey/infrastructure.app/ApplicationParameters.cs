@@ -91,6 +91,8 @@ namespace chocolatey.infrastructure.app
             }
         }
 
+        public static bool ClearLogFiles = false;
+
         public static class Environment
         {
             public static readonly string Path = "Path";

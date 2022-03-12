@@ -10,6 +10,8 @@
     {
         public virtual void configure_argument_parser(OptionSet optionSet, ChocolateyConfiguration config)
         {
+            ChocolateyStartupCommand.configureStartupOptions(optionSet);
+
             optionSet
                 .Add("d|debug",
                      "Debug - Show debug messaging.",
