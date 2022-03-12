@@ -22,6 +22,7 @@ namespace chocolatey.infrastructure.app.configuration
     using System.Linq;
     using System.Text.RegularExpressions;
     using adapters;
+    using chocolatey.infrastructure.app.commands;
     using chocolatey.infrastructure.commands;
     using commandline;
     using Console = adapters.Console;
@@ -135,8 +136,11 @@ namespace chocolatey.infrastructure.app.configuration
         /// <param name="optionSet">The option_set.</param>
         private static void show_help(ICommand command, ChocolateyConfiguration config)
         {
-            command.help_message(config);
-            _optionSet.WriteOptionDescriptions(Console.Out);
+            if (!(command is ChocolateyStartupCommand))   // When starting / initializing - we don't show yet help.
+            {
+                command.help_message(config);
+                _optionSet.WriteOptionDescriptions(Console.Out);
+            }
         }
     }
 }
