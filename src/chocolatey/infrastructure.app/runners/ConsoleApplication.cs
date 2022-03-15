@@ -62,52 +62,28 @@ namespace chocolatey.infrastructure.app.runners
             var runner = new GenericRunner();
             runner.run(config, container, isConsole: true, parseArgs: command =>
                 {
-                    ConfigurationOptions.parse_arguments_and_update_configuration(
-                        command,
-                        commandArgs,
-                        config,
-                        (unparsedArgs) => {
-                            // if debug is bundled with local options, it may not get picked up when global
-                            // options are parsed. Attempt to set it again once local options are set.
-                            // This does mean some output from debug will be missed (but not much)
-                            if (config.Debug) LogService.Instance.adjustLogLevels(config.Debug, config.Verbose, config.Trace);
-                            command.handle_additional_argument_parsing(unparsedArgs, config);
+                    if (!ChocolateyOptionSet.Instance.Parse(commandArgs, command, config))
+                    {
+                        this.Log().Debug(() => "Performing validation checks.");
+                        command.handle_validation(config);
 
-                            if (!config.Features.IgnoreInvalidOptionsSwitches)
-                            {
-                                // all options / switches should be parsed,
-                                //  so show help menu if there are any left
-                                foreach (var unparsedArg in unparsedArgs.or_empty_list_if_null())
-                                {
-                                    if (unparsedArg.StartsWith("-") || unparsedArg.StartsWith("/"))
-                                    {
-                                        config.HelpRequested = true;
-                                        config.UnsuccessfulParsing = true;
-                                    }
-                                }
-                            }
-                        },
-                        () => {
-                            this.Log().Debug(() => "Performing validation checks.");
-                            command.handle_validation(config);
+                        var validationResults = new List<ValidationResult>();
+                        var validationChecks = container.GetAllInstances<IValidation>();
+                        foreach (var validationCheck in validationChecks)
+                        {
+                            validationResults.AddRange(validationCheck.validate(config));
+                        }
 
-                            var validationResults = new List<ValidationResult>();
-                            var validationChecks = container.GetAllInstances<IValidation>();
-                            foreach (var validationCheck in validationChecks)
-                            {
-                                validationResults.AddRange(validationCheck.validate(config));
-                            }
+                        var validationErrors = report_validation_summary(validationResults, config);
 
-                            var validationErrors = report_validation_summary(validationResults, config);
-
-                            if (validationErrors != 0)
-                            {
-                                // NOTE: This is intentionally left blank, as the reason for throwing is
-                                // documented in the report_validation_summary above, and a duplication
-                                // is not required in the exception.
-                                throw new ApplicationException("");
-                            }
-                        });
+                        if (validationErrors != 0)
+                        {
+                            // NOTE: This is intentionally left blank, as the reason for throwing is
+                            // documented in the report_validation_summary above, and a duplication
+                            // is not required in the exception.
+                            throw new ApplicationException("");
+                        }
+                    }
                 });
         }
 

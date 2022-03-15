@@ -817,15 +817,9 @@ namespace chocolatey.infrastructure.commandline
 			if (ParseBool (argument, n, c))
 				return true;
 			// is it a bundled option?
-		    try
-		    {
-                if (ParseBundledValue(f, string.Concat(n + s + v), c))
-                    return true;
-		    }
-		    catch (Exception ex)
-		    {
-                "chocolatey".Log().Warn("Parsing {0} resulted in error (converted to warning):{1} {2}".format_with(argument, Environment.NewLine, ex.Message));
-		    }
+
+            if (ParseBundledValue(f, string.Concat(n + s + v), c))
+                return true;
             
 			return false;
 		}

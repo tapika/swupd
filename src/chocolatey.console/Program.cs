@@ -46,8 +46,17 @@ namespace chocolatey.console
         {
             try
             {
+                Action failLogInit = () =>
+                {
+                    Log.InitializeWith<NLogLog>();
+                    LogService.Instance.configure();
+                };
+
                 var config = Config.get_configuration_settings();
-                ConfigurationOptions.parse_arguments_and_update_configuration(new ChocolateyStartupCommand(), args, config);
+                if (new ChocolateyOptionSet().Parse(args, new ChocolateyStartupCommand(), config, failLogInit))
+                {
+                    Environment.Exit(config.UnsuccessfulParsing ? 1 : 0);
+                }
 
                 string loggingLocation = ApplicationParameters.LoggingLocation;
                 if (!Directory.Exists(loggingLocation)) Directory.CreateDirectory(loggingLocation);
@@ -64,12 +73,15 @@ namespace chocolatey.console
 
                 var warnings = new List<string>();
 
-                ConfigurationBuilder.set_up_configuration(
+                if (!ConfigurationBuilder.set_up_configuration(
                      args,
                      config,
                      container,
                      warning => { warnings.Add(warning); }
-                     );
+                     ))
+                { 
+                    Environment.Exit(config.UnsuccessfulParsing ? 1 : 0);
+                }
 
                 if (config.Features.LogWithoutColor)
                 {

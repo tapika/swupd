@@ -17,16 +17,12 @@
 
         public static void configureStartupOptions(OptionSet optionSet)
         {
-            // For some reason not empty when called for second time via Lets.GetChocolatey()
-            if (!optionSet.Contains("root"))
-            {
-                optionSet
-                    .Add("root=", "Sets root location",
-                        option => InstallContext.Instance.RootLocation = option.remove_surrounding_quotes())
-                    .Add("clearlogs|clearlog", "Removes logs if any is present",
-                        option => ApplicationParameters.ClearLogFiles = option != null)
-                ;
-            }
+            optionSet
+                .Add("root=", "Sets root location",
+                    option => InstallContext.Instance.RootLocation = option.remove_surrounding_quotes())
+                .Add("clearlogs|clearlog", "Removes logs if any is present",
+                    option => ApplicationParameters.ClearLogFiles = option != null)
+            ;
         }
     }
 }

@@ -68,19 +68,25 @@ namespace chocolatey.infrastructure.app.builders
         /// <param name="container">The container.</param>
         /// <param name="license">The license.</param>
         /// <param name="notifyWarnLoggingAction">Notify warn logging action</param>
-        public static void set_up_configuration(IList<string> args, ChocolateyConfiguration config, Container container, Action<string> notifyWarnLoggingAction)
+        /// <returns>false if command line argument was incorrect, true if succeeded</returns>
+        public static bool set_up_configuration(IList<string> args, ChocolateyConfiguration config, Container container, Action<string> notifyWarnLoggingAction)
         {
             var fileSystem = container.GetInstance<IFileSystem>();
             var xmlService = container.GetInstance<IXmlService>();
             var configFileSettings = get_config_file_settings(fileSystem, xmlService);
             set_file_configuration(config, configFileSettings, fileSystem, notifyWarnLoggingAction);
-            ConfigurationOptions.reset_options();
-            set_global_options(args, config, container);
+            ChocolateyOptionSet.Instance.Clear();
+            if (ChocolateyOptionSet.Instance.Parse(args, new ChocolateyMainCommand(), config))
+            {
+                return false;
+            }
+
             set_environment_options(config);
             EnvironmentSettings.set_environment_variables(config);
             // save all changes if there are any
             set_config_file_settings(configFileSettings, xmlService, config);
             set_hash_provider(config, container);
+            return true;
         }
 
         private static ConfigFileSettings get_config_file_settings(IFileSystem fileSystem, IXmlService xmlService)
@@ -252,7 +258,7 @@ namespace chocolatey.infrastructure.app.builders
             config.Features.LogEnvironmentValues = set_feature_flag(ApplicationParameters.Features.LogEnvironmentValues, configFileSettings, defaultEnabled: false, description: "Log Environment Values - will log values of environment before and after install (could disclose sensitive data). Available in 0.9.10+.");
             config.Features.VirusCheck = set_feature_flag(ApplicationParameters.Features.VirusCheck, configFileSettings, defaultEnabled: false, description: "Virus Check - perform virus checking on downloaded files. Available in 0.9.10+. Licensed versions only.");
             config.Features.FailOnInvalidOrMissingLicense = set_feature_flag(ApplicationParameters.Features.FailOnInvalidOrMissingLicense, configFileSettings, defaultEnabled: false, description: "Fail On Invalid Or Missing License - allows knowing when a license is expired or not applied to a machine. Available in 0.9.10+.");
-            config.Features.IgnoreInvalidOptionsSwitches = set_feature_flag(ApplicationParameters.Features.IgnoreInvalidOptionsSwitches, configFileSettings, defaultEnabled: true, description: "Ignore Invalid Options/Switches - If a switch or option is passed that is not recognized, should choco fail? Available in 0.9.10+.");
+            config.Features.IgnoreInvalidOptionsSwitches = set_feature_flag(ApplicationParameters.Features.IgnoreInvalidOptionsSwitches, configFileSettings, defaultEnabled: false, description: "Ignore Invalid Options/Switches - If a switch or option is passed that is not recognized, should choco fail? Available in 0.9.10+.");
             config.Features.UsePackageExitCodes = set_feature_flag(ApplicationParameters.Features.UsePackageExitCodes, configFileSettings, defaultEnabled: true, description: "Use Package Exit Codes - Package scripts can provide exit codes. With this on, package exit codes will be what choco uses for exit when non-zero (this value can come from a dependency package). Chocolatey defines valid exit codes as 0, 1605, 1614, 1641, 3010. With this feature off, choco will exit with 0, 1, or -1 (matching previous behavior). Available in 0.9.10+.");
             config.Features.UseEnhancedExitCodes = set_feature_flag(ApplicationParameters.Features.UseEnhancedExitCodes, configFileSettings, defaultEnabled: false, description: "Use Enhanced Exit Codes - Chocolatey is able to provide enhanced exit codes surrounding list, search, info, outdated and other commands that don't deal directly with package operations. To see enhanced exit codes and their meanings, please run `choco [cmdname] -?`. With this feature off, choco will exit with 0, 1, or -1  (matching previous behavior). Available in 0.10.12+.");
             config.Features.ExitOnRebootDetected = set_feature_flag(ApplicationParameters.Features.ExitOnRebootDetected, configFileSettings, defaultEnabled: false, description: "Exit On Reboot Detected - Stop running install, upgrade, or uninstall when a reboot request is detected. Requires '{0}' feature to be turned on. Will exit with either {1} or {2}. When it exits with {1}, it means pending reboot discovered prior to running operation. When it exits with {2}, it means some work completed prior to reboot request being detected. Available in 0.10.12+.".format_with(ApplicationParameters.Features.UsePackageExitCodes, ApplicationParameters.ExitCodes.ErrorFailNoActionReboot, ApplicationParameters.ExitCodes.ErrorInstallSuspend));
@@ -297,24 +303,6 @@ namespace chocolatey.infrastructure.app.builders
             feature.Description = description;
 
             return feature != null ? feature.Enabled : defaultEnabled;
-        }
-
-        private static void set_global_options(IList<string> args, ChocolateyConfiguration config, Container container)
-        {
-            ConfigurationOptions.parse_arguments_and_update_configuration(
-                new ChocolateyMainCommand(),
-                args,
-                config,
-                (unparsedArgs) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(config.CommandName))
-                    {
-                        // save help for next menu
-                        config.HelpRequested = false;
-                        config.UnsuccessfulParsing = false;
-                    }
-                },
-                () => { });
         }
 
         private static void set_environment_options(ChocolateyConfiguration config)
