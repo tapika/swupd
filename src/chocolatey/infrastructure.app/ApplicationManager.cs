@@ -99,6 +99,34 @@ namespace chocolatey.infrastructure.app
         }
 
         /// <summary>
+        /// Gets types of all commands.
+        /// </summary>
+        public Type[] CommandTypes
+        {
+            get
+            {
+                return new[] {
+                    typeof(ChocolateyListCommand),
+                    typeof(ChocolateyHelpCommand),
+                    typeof(ChocolateyInfoCommand),
+                    typeof(ChocolateyInstallCommand),
+                    typeof(ChocolateyUpgradeCommand),
+                    typeof(ChocolateyUninstallCommand),
+                    typeof(ChocolateyPackCommand),
+                    typeof(ChocolateyPushCommand),
+                    typeof(ChocolateyNewCommand),
+                    typeof(ChocolateySourceCommand),
+                    typeof(ChocolateyConfigCommand),
+                    typeof(ChocolateyFeatureCommand),
+                    typeof(ChocolateyApiKeyCommand),
+                    typeof(ChocolateyUnpackSelfCommand),
+                    typeof(ChocolateyVersionCommand),
+                    typeof(ChocolateyUpdateCommand),
+                };
+            }
+        }
+
+        /// <summary>
         /// Finds command by name
         /// </summary>
         /// <param name="commandName">command name</param>
@@ -113,7 +141,7 @@ namespace chocolatey.infrastructure.app
 
             if (command == null)
             {
-                throw new ArgumentException(@$"Could not find a command registered that meets '{commandName}'.
+                throw new ArgumentException($@"Could not find a command registered that meets '{commandName}'.
  Try choco -? for command reference/help.");
             }
 

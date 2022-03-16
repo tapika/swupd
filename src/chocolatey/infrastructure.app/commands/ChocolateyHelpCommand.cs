@@ -71,6 +71,8 @@ namespace chocolatey.infrastructure.app.commands
 
         public static void display_help_message(Container container = null)
         {
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
             var commandsLog = new StringBuilder();
             if (null == container)
             {
@@ -92,31 +94,27 @@ namespace chocolatey.infrastructure.app.commands
                 }
             }
 
-            "chocolatey".Log().Info(@"This is a listing of all of the different things you can pass to choco.
+            console.Info(@"This is a listing of all of the different things you can pass to choco.
 ");
 
-            "chocolatey".Log().Warn(ChocolateyLoggers.Important, "DEPRECATION NOTICE");
-            "chocolatey".Log().Warn(@"
-The shims `chocolatey`, `cinst`, `clist`, `cpush`, `cuninst` and `cup` are deprecated.
-We recommend updating all scripts to use their full command equivalent as these will be
-removed in v2.0.0 of Chocolatey.
-");
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
 
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Options and Switches");
+            console.Info(@"
  -v, --version
      Version - Prints out the Chocolatey version. Available in 0.9.9+.
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Commands");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Commands");
+            console.Info(@"
 {0}
 
 Please run chocolatey with `choco command -help` for specific help on
  each command.
 ".format_with(commandsLog.ToString()));
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, @"How To Pass Options / Switches");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info(@"How To Pass Options / Switches");
+            console.Info(@"
 You can pass options and switches in the following ways:
 
  * Unless stated otherwise, an option/switch should only be passed one
@@ -153,8 +151,8 @@ You can pass options and switches in the following ways:
    package passed. So please split out multiple package calls when
    wanting to pass specific options.
 ");
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, @"Scripting / Integration - Best Practices / Style Guide");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info(@"Scripting / Integration - Best Practices / Style Guide");
+            console.Info(@"
 When writing scripts, such as PowerShell scripts passing options and
 switches, there are some best practices to follow to ensure that you
 don't run into issues later. This also applies to integrations that
@@ -264,7 +262,7 @@ Following these scripting best practices will ensure your scripts work
  everywhere they are used and with newer versions of Chocolatey.
 
 ");
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Default Options and Switches");
+            hiconsole.Info("Default Options and Switches");
         }
     }
 }

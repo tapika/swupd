@@ -18,6 +18,7 @@ namespace chocolatey.infrastructure.app.configuration
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using System.Text;
     using domain;
@@ -55,18 +56,33 @@ namespace chocolatey.infrastructure.app.configuration
         // overrides
         public override string ToString()
         {
+            if (string.IsNullOrEmpty(CommandName))
+            {
+                return "Empty config";
+            }
+
+            return $"{CommandName}-config";
+        }
+
+        public string ToStringFull()
+        {
             var properties = new StringBuilder();
 
             this.Log().Debug(ChocolateyLoggers.Important, @"
 NOTE: Hiding sensitive configuration data! Please double and triple
  check to be sure no sensitive data is shown, especially if copying
  output to a gist for review.");
-            output_tostring(properties, GetType().GetProperties(), this, "");
-            return properties.ToString();
-
+            return CompareWith(null);
         }
 
-        private void output_tostring(StringBuilder propertyValues, IEnumerable<PropertyInfo> properties, object obj, string prepend)
+        public string CompareWith(ChocolateyConfiguration second)
+        {
+            var properties = new StringBuilder();
+            output_tostring(properties, GetType().GetProperties(), this, second, "");
+            return properties.ToString();
+        }
+
+        private void output_tostring(StringBuilder propertyValues, IEnumerable<PropertyInfo> properties, object obj, object secondobj, string prepend)
         {
             foreach (var propertyInfo in properties.or_empty_list_if_null())
             {
@@ -77,11 +93,24 @@ NOTE: Hiding sensitive configuration data! Please double and triple
                 }
 
                 var objectValue = propertyInfo.GetValue(obj, null);
+                object secondObjectValue = null;
+                if (secondobj != null)
+                {
+                    secondObjectValue = propertyInfo.GetValue(secondobj, null);
+                }
+
                 if (propertyInfo.PropertyType.is_built_in_system_type())
                 {
-                    if (!string.IsNullOrWhiteSpace(objectValue.to_string()))
+                    bool doAppend = !string.IsNullOrWhiteSpace(objectValue.to_string());
+
+                    if (doAppend)
                     {
-                        var output = "{0}{1}='{2}'|".format_with(
+                        doAppend = !Object.Equals(objectValue, secondObjectValue);
+                    }
+                    
+                    if (doAppend)
+                    {
+                        var output = "{0}{1}='{2}'".format_with(
                             string.IsNullOrWhiteSpace(prepend) ? "" : prepend + ".",
                             propertyInfo.Name,
                             objectValue.to_string());
@@ -91,10 +120,18 @@ NOTE: Hiding sensitive configuration data! Please double and triple
                 }
                 else if (propertyInfo.PropertyType.is_collections_type())
                 {
-                    var list = objectValue as IDictionary<string, string>;
-                    foreach (var item in list.or_empty_list_if_null())
+                    var list = (objectValue as IDictionary<string, string>).or_empty_list_if_null().ToList();
+                    var secondlist = (secondObjectValue as IDictionary<string, string>).or_empty_list_if_null().ToList();
+                                        
+                    for(int i = 0; i < list.Count; i++)
                     {
-                        var output = "{0}{1}.{2}='{3}'|".format_with(
+                        if (i < secondlist.Count && Object.Equals(list[i], secondlist[i]))
+                        {
+                            continue;
+                        }
+
+                        var item = list[i];
+                        var output = "{0}{1}.{2}='{3}'".format_with(
                             string.IsNullOrWhiteSpace(prepend) ? "" : prepend + ".",
                             propertyInfo.Name,
                             item.Key,
@@ -105,7 +142,7 @@ NOTE: Hiding sensitive configuration data! Please double and triple
                 }
                 else
                 {
-                    output_tostring(propertyValues, propertyInfo.PropertyType.GetProperties(), objectValue, propertyInfo.Name);
+                    output_tostring(propertyValues, propertyInfo.PropertyType.GetProperties(), objectValue,secondObjectValue, propertyInfo.Name);
                 }
             }
         }
@@ -115,17 +152,18 @@ NOTE: Hiding sensitive configuration data! Please double and triple
 
         private void append_output(StringBuilder propertyValues, string append)
         {
+            if (_currentLineLength != 0)
+            {
+                propertyValues.Append(",");     // Separator
+            }
+
             _currentLineLength += append.Length;
-
-            propertyValues.AppendFormat("{0}{1}{2}",
-                   _currentLineLength < MAX_CONSOLE_LINE_LENGTH ? string.Empty : Environment.NewLine,
-                   append,
-                   append.Length < MAX_CONSOLE_LINE_LENGTH ? string.Empty : Environment.NewLine);
-
             if (_currentLineLength > MAX_CONSOLE_LINE_LENGTH)
             {
-                _currentLineLength = append.Length;
+                propertyValues.Append(Environment.NewLine);
+                _currentLineLength = 0;
             }
+            propertyValues.Append(append);
         }
 
         /// <summary>

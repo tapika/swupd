@@ -1,0 +1,47 @@
+> 
+Please run 'choco -?' or 'choco <command> -?' for help menu.
+
+> -?
+This is a listing of all of the different things you can pass to choco.
+
+chocoArgsParse: return on main
+
+> list --root subfolder
+config:
+CommandName='list',Input='list'
+ensure_source_app_installed(list-config)
+list_run(list-config)
+
+> list --root
+- logInit called.
+Error: Missing required value for option '--root'.
+chocoArgsParse: return on startup
+
+> list -d -lo
+config:
+CommandName='list',Debug='True',Input='list',ListCommand.LocalOnly='True'
+ensure_source_app_installed(list-config)
+list_run(list-config)
+
+> list
+config:
+CommandName='list',Input='list'
+ensure_source_app_installed(list-config)
+list_run(list-config)
+
+> list -?
+List/Search Command
+
+> list -lo
+config:
+CommandName='list',Input='list',ListCommand.LocalOnly='True'
+ensure_source_app_installed(list-config)
+list_run(list-config)
+
+> list -lo --noop
+config:
+CommandName='list',Noop='True',Input='list',ListCommand.LocalOnly='True'
+_ Chocolatey:ChocolateyListCommand - Noop Mode _
+list_noop(list-config)
+
+end of test

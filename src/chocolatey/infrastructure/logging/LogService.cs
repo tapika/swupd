@@ -79,12 +79,40 @@ namespace chocolatey.infrastructure.logging
         Logger consoleHighlight;
         Logger consoleDebug;
         Logger consoleTrace;
+        Logger nullLogger;
+
+        public Logger HighlightedConsole
+        {
+            get { 
+                return consoleHighlight;
+            }
+        }
+
+        public (Logger, Logger) HelpLoggers
+        {
+            get
+            { 
+                return (HighlightedConsole, _console);
+            }
+        }
+
+        /// <summary>
+        /// Null logger is by design not connected anywhere. (Log messages are discarded)
+        /// </summary>
+        public Logger NullLogger
+        {
+            get
+            {
+                return nullLogger;
+            }
+        }
 
         // Internal implementation names, don't use outside
         const string consoleTargetName = "console";
         const string normalConsoleLoggerName = "chocolatey";
         const string highlightedConsoleLoggerName = "Important";
         const string debugConsoleLoggerName = "Verbose";
+        const string nullConsoleLoggerName = "Null";
         const string traceConsoleLoggerName = "Trace";
         const string fileLoggerName = "chocolog";
         const string fileSummaryLoggerName = "chocolog_summary";
@@ -435,6 +463,8 @@ namespace chocolatey.infrastructure.logging
             consoleHighlight = LogFactory.GetLogger(highlightedConsoleLoggerName);
             consoleDebug = LogFactory.GetLogger(debugConsoleLoggerName);
             consoleTrace = LogFactory.GetLogger(traceConsoleLoggerName);
+            consoleTrace = LogFactory.GetLogger(traceConsoleLoggerName);
+            nullLogger = LogFactory.GetLogger(nullConsoleLoggerName);
         }
 
         /// <summary>

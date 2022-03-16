@@ -127,12 +127,35 @@ namespace chocolatey.infrastructure.app.configuration
                 var sb = new StringBuilder();
                 var stringWriter = new StringWriter(sb);
                 WriteOptionDescriptions(stringWriter);
-                "chocolatey".Log().Info(sb.ToString());
+                if (!ApplicationParameters.runningUnitTesting)
+                {
+                    "chocolatey".Log().Info(sb.ToString());
+                }
                 return true;
             }
 
             return false;
         }
+
+        /// <summary>
+        /// Splits command line arguments.
+        /// </summary>
+        /// <param name="commandLineArguments">command line arguments</param>
+        /// <returns></returns>
+        public static string[] SplitArgs( string commandLineArguments)
+        {
+            // Parse command line arguments: https://stackoverflow.com/a/19091999/2338477
+            var re = @"\G(""((""""|[^""])+)""|(\S+)) *";
+            var ms = Regex.Matches(commandLineArguments, re);
+            var args = ms.Cast<System.Text.RegularExpressions.Match>()
+                         .Select(m => Regex.Replace(
+                             m.Groups[2].Success
+                                 ? m.Groups[2].Value
+                                 : m.Groups[4].Value, @"""""", @"""")).ToArray();
+
+            return args;
+        }
+
     }
 
 
