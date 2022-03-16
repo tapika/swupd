@@ -20,7 +20,7 @@ namespace chocolatey.tests2.infrastructure.app.configuration
         /// Here we try to mimic what is happening in choco application itself.
         /// Logic is the same, only resides in different places of code.
         /// </summary>
-        public void _chocoArgsParse(string cmdLine)
+        public ChocolateyOptionSet _chocoArgsParse(string cmdLine)
         {
             var console = LogService.console;
 
@@ -37,7 +37,7 @@ namespace chocolatey.tests2.infrastructure.app.configuration
                 ))
             { 
                 console.Info("chocoArgsParse: return on startup");
-                return;
+                return parser;
             }
             
             parser = new ChocolateyOptionSet();
@@ -45,7 +45,7 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             if (parser.Parse(args, new ChocolateyMainCommand(), config))
             {
                 console.Info("chocoArgsParse: return on main");
-                return;
+                return parser;
             }
 
             if (args.Length == 0)
@@ -105,15 +105,17 @@ namespace chocolatey.tests2.infrastructure.app.configuration
                     }
                 }
             }
+            return parser;
         }
 
-        public void chocoArgsParse(string cmdLine)
+        public ChocolateyOptionSet chocoArgsParse(string cmdLine)
         {
-            _chocoArgsParse(cmdLine);
+            var parser = _chocoArgsParse(cmdLine);
             LogService.console.Info("");
+            return parser;
         }
 
-        [LogTest()]
+        [LogTest]
         public void basic_commands()
         {
             chocoArgsParse("");
@@ -125,6 +127,8 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             chocoArgsParse("list -?");
             chocoArgsParse("list -lo");
             chocoArgsParse("list -lo --noop");
+            chocoArgsParse("-d");
+            chocoArgsParse("-d list");
         }
 
     }

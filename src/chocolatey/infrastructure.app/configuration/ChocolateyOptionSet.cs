@@ -42,6 +42,7 @@ namespace chocolatey.infrastructure.app.configuration
 
             command.configure_argument_parser(this, config);
             List<string> unparsedArguments;
+            var console = LogService.console;
 
             try
             {
@@ -54,12 +55,17 @@ namespace chocolatey.infrastructure.app.configuration
                 {
                     unparsedArguments = args.ToList();
                     failLogInit();
-                    "chocolatey".Log().Info($"Error: {ex.Message}");
+                    console.Info($"Error: {ex.Message}");
                     config.UnsuccessfulParsing = true;
                     return true;
                 }
 
                 throw ex;
+            }
+
+            if (command is ChocolateyStartupCommand)
+            {
+                return false;
             }
 
             // the command argument
@@ -76,14 +82,9 @@ namespace chocolatey.infrastructure.app.configuration
                 }
                 else
                 {
-                    config.HelpRequested = true;
+                    console.Info($"Error: Command not specified and argument is not known: {unparsedArguments.First()}");
                     config.UnsuccessfulParsing = true;
                 }
-            }
-
-            if (command is ChocolateyStartupCommand)
-            {
-                return false;
             }
 
             if (command is ChocolateyMainCommand)
@@ -110,7 +111,7 @@ namespace chocolatey.infrastructure.app.configuration
                     {
                         if (unparsedArg.StartsWith("-") || unparsedArg.StartsWith("/"))
                         {
-                            "chocolatey".Log().Info($"Error: Unknown command line option: {unparsedArg}\n" +
+                            console.Info($"Error: Unknown command line option: {unparsedArg}\n" +
                             "   Ignoring unknown command line argument can be enabled via:\n" +
                             "   choco feature enable -n=ignoreInvalidOptionsSwitches");
                             config.UnsuccessfulParsing = true;

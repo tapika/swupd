@@ -44,4 +44,8 @@ CommandName='list',Noop='True',Input='list',ListCommand.LocalOnly='True'
 _ Chocolatey:ChocolateyListCommand - Noop Mode _
 list_noop(list-config)
 
+> -d
+
+> -d list
+
 end of test
