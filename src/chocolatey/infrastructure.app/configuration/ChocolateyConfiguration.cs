@@ -79,7 +79,7 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         {
             var properties = new StringBuilder();
             output_tostring(properties, GetType().GetProperties(), this, second, "");
-            return properties.ToString();
+            return InstallContext.NormalizeMessage(properties.ToString());
         }
 
         private void output_tostring(StringBuilder propertyValues, IEnumerable<PropertyInfo> properties, object obj, object secondobj, string prepend)
@@ -150,7 +150,7 @@ NOTE: Hiding sensitive configuration data! Please double and triple
             }
         }
 
-        private const int MAX_CONSOLE_LINE_LENGTH = 72;
+        private const int MAX_CONSOLE_LINE_LENGTH = 80;
         private int _currentLineLength = 0;
 
         private void append_output(StringBuilder propertyValues, string append)
@@ -160,11 +160,13 @@ NOTE: Hiding sensitive configuration data! Please double and triple
                 propertyValues.Append(",");     // Separator
             }
 
+            bool startOfLine = _currentLineLength == 0;
+
             _currentLineLength += append.Length;
-            if (_currentLineLength > MAX_CONSOLE_LINE_LENGTH)
+            if (!startOfLine && _currentLineLength > MAX_CONSOLE_LINE_LENGTH)
             {
                 propertyValues.Append(Environment.NewLine);
-                _currentLineLength = 0;
+                _currentLineLength = append.Length;
             }
             propertyValues.Append(append);
         }

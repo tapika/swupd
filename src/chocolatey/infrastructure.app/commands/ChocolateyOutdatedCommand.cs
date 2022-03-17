@@ -92,21 +92,27 @@ namespace chocolatey.infrastructure.app.commands
 
         public virtual void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "Outdated Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("Outdated Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 Returns a list of outdated packages.
 
 NOTE: Available with 0.9.9.6+.
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Usage");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Usage");
+            console.Info(@"
     choco outdated [<options/switches>]
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Examples");
+            console.Info(@"
     choco outdated
     choco outdated -s https://somewhere/out/there
     choco outdated -s ""'https://somewhere/protected'"" -u user -p pass
@@ -120,8 +126,8 @@ NOTE: See scripting in the command reference (`choco -?`) for how to
 
 ");
            
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Exit Codes");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Exit Codes");
+            console.Info(@"
 Exit codes that normally result from running this command.
 
 Normal:
@@ -143,13 +149,13 @@ If you find other exit codes that we have not yet documented, please
 
 ".format_with(ApplicationParameters.Features.UseEnhancedExitCodes));
            
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "See It In Action");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("See It In Action");
+            console.Info(@"
 choco outdated: https://raw.githubusercontent.com/wiki/chocolatey/choco/images/gifs/choco_outdated.gif
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
+            hiconsole.Info("Options and Switches");
         }
 
         public virtual void noop(ChocolateyConfiguration configuration)

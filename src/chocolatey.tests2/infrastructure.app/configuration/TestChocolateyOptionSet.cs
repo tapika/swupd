@@ -176,7 +176,7 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             commandNames.Remove("update");      //depricated
             commandNames.Remove("version");     //depricated
 
-            //commandNames = new[] { "apikey" }.ToList();
+            //commandNames = new[] { "pin" }.ToList();
 
             foreach (string cmd in commandNames)
             {

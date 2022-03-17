@@ -110,6 +110,8 @@ namespace chocolatey.infrastructure.app
                     typeof(ChocolateyHelpCommand),
                     typeof(ChocolateyInfoCommand),
                     typeof(ChocolateyInstallCommand),
+                    typeof(ChocolateyPinCommand),
+                    typeof(ChocolateyOutdatedCommand),
                     typeof(ChocolateyUpgradeCommand),
                     typeof(ChocolateyUninstallCommand),
                     typeof(ChocolateyPackCommand),

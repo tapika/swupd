@@ -1,0 +1,30 @@
+> outdated -?
+Outdated Command
+
+> outdated --s 1
+config: Sources='1'
+
+> outdated --u 1
+config: SourceCommand.Username='1'
+
+> outdated --p 1
+config: SourceCommand.Password='1'
+
+> outdated --cert 1
+config: SourceCommand.Certificate='1'
+
+> outdated --cp 1
+config: SourceCommand.CertificatePassword='1'
+
+> outdated --pre
+config: Prerelease='True'
+
+> outdated --ignore-pinned
+config: OutdatedCommand.IgnorePinned='True'
+
+> outdated --ignore-unfound
+config: Features.IgnoreUnfoundPackagesOnUpgradeOutdated='True'
+
+> outdated --disable-repository-optimizations
+config: 
+

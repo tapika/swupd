@@ -23,8 +23,7 @@ config: Verbose='True',ListCommand.Exact='True',SourceCommand.Password='1'
 config: Verbose='True',ListCommand.Exact='True',SourceCommand.Certificate='1'
 
 > info --cp 1
-config: Verbose='True',ListCommand.Exact='True',
-SourceCommand.CertificatePassword='1'
+config: Verbose='True',ListCommand.Exact='True',SourceCommand.CertificatePassword='1'
 
 > info --disable-repository-optimizations
 config: Verbose='True',ListCommand.Exact='True'
