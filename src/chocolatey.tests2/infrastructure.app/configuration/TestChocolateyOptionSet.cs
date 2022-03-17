@@ -2,12 +2,14 @@
 using chocolatey.infrastructure.app.attributes;
 using chocolatey.infrastructure.app.commands;
 using chocolatey.infrastructure.app.configuration;
+using chocolatey.infrastructure.commandline;
 using chocolatey.infrastructure.commands;
 using chocolatey.infrastructure.logging;
 using logtesting;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -20,7 +22,7 @@ namespace chocolatey.tests2.infrastructure.app.configuration
         /// Here we try to mimic what is happening in choco application itself.
         /// Logic is the same, only resides in different places of code.
         /// </summary>
-        public ChocolateyOptionSet _chocoArgsParse(string cmdLine)
+        public IEnumerable<Option> _chocoArgsParse(string cmdLine, int diffLevel = 3, bool logCalls = false)
         {
             var console = LogService.console;
 
@@ -30,6 +32,7 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             ChocolateyConfiguration original = config.deep_copy();
             ChocolateyOptionSet parser = new ChocolateyOptionSet();
 
+            if(diffLevel == 1) original = config.deep_copy();
             if (parser.Parse(args, new ChocolateyStartupCommand(), config, () =>
                  {
                      console.Info("- logInit called.");
@@ -41,12 +44,15 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             }
             
             parser = new ChocolateyOptionSet();
-            
+
+            if (diffLevel == 2) original = config.deep_copy();
             if (parser.Parse(args, new ChocolateyMainCommand(), config))
             {
                 console.Info("chocoArgsParse: return on main");
                 return parser;
             }
+
+            int genericOptions = parser.Count;
 
             if (args.Length == 0)
             {
@@ -70,22 +76,29 @@ namespace chocolatey.tests2.infrastructure.app.configuration
                     Mock mock = (Mock)Activator.CreateInstance(mockType);
                     var loggedGeneric = typeof(MockExtensions).GetMethod("Logged", BindingFlags.Public | BindingFlags.Static);
 
-                    // Corresponds to: MockExtensions.Logged(mock)
-                    var logged = loggedGeneric.MakeGenericMethod(ctorTypes[i]);
-                    var loggedMock = logged.Invoke(null, new object[] { mock, new string[] { } });
-                    ctorArgs[i] = ((Mock)loggedMock).Object;
+                    if (!logCalls)
+                    {
+                        ctorArgs[i] = mock.Object;
+                    }
+                    else
+                    {
+                        // Corresponds to: MockExtensions.Logged(mock)
+                        var logged = loggedGeneric.MakeGenericMethod(ctorTypes[i]);
+                        var loggedMock = logged.Invoke(null, new object[] { mock, new string[] { } });
+                        ctorArgs[i] = ((Mock)loggedMock).Object;
+                    }
                 }
 
                 ICommand command = (ICommand)ctorInfo.Invoke(ctorArgs);
 
                 LogService.Instance.adjustLogLevels(config.Debug, config.Verbose, config.Trace);
 
-                if (!parser.Parse(args, command, config))
+                if (diffLevel == 3) original = config.deep_copy();
+                if (!parser.Parse(args.Skip(1), command, config))
                 {
                     command.handle_validation(config);
 
-                    console.Info("config:");
-                    console.Info(config.CompareWith(original));
+                    console.Info("config: " + config.CompareWith(original));
 
                     // GenericRunner.run logic, see after line:
                     // var command = find_command(config, container, isConsole, parseArgs);
@@ -105,30 +118,63 @@ namespace chocolatey.tests2.infrastructure.app.configuration
                     }
                 }
             }
-            return parser;
+            return parser.Skip(genericOptions);
         }
 
-        public ChocolateyOptionSet chocoArgsParse(string cmdLine)
+        public IEnumerable<Option> chocoArgsParse(string cmdLine)
         {
-            var parser = _chocoArgsParse(cmdLine);
+            var opts = _chocoArgsParse(cmdLine);
             LogService.console.Info("");
-            return parser;
+            return opts;
         }
+
+        public IEnumerable<Option> chocoArgsBasicParse(string cmdLine)
+        {
+            var opts = _chocoArgsParse(cmdLine, 1, true);
+            LogService.console.Info("");
+            return opts;
+        }
+
 
         [LogTest]
         public void basic_commands()
         {
-            chocoArgsParse("");
-            chocoArgsParse("-?");
-            chocoArgsParse("list --root subfolder");
-            chocoArgsParse("list --root");
-            chocoArgsParse("list -d -lo");
-            chocoArgsParse("list");
-            chocoArgsParse("list -?");
-            chocoArgsParse("list -lo");
-            chocoArgsParse("list -lo --noop");
-            chocoArgsParse("-d");
-            chocoArgsParse("-d list");
+            chocoArgsBasicParse("");
+            chocoArgsBasicParse("-?");
+            chocoArgsBasicParse("list --root subfolder");
+            chocoArgsBasicParse("list --root");
+            chocoArgsBasicParse("list -d -lo");
+            chocoArgsBasicParse("list");
+            chocoArgsBasicParse("list -?");
+            chocoArgsBasicParse("list -lo");
+            chocoArgsBasicParse("list -lo --noop");
+            chocoArgsBasicParse("-d");
+            chocoArgsBasicParse("-d list");
+        }
+
+        [LogTest]
+        public void list()
+        {
+            testCommand(nameof(list));
+        }
+
+        public void testCommand(string command)
+        {
+            // Prevent password prompt queries
+            ApplicationParameters.AllowPrompts = false;
+            var args = chocoArgsParse($"{command} -?").ToList();
+
+            foreach (var arg in args)
+            {
+                string cmd = $"{command} --{arg.GetNames()[0]}";
+
+                if (arg.OptionValueType != OptionValueType.None)
+                {
+                    cmd += " 1";       
+                }
+                
+                chocoArgsParse(cmd);
+            }
         }
 
     }

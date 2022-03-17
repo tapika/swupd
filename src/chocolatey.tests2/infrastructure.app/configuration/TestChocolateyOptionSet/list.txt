@@ -1,0 +1,73 @@
+> list -?
+List/Search Command
+
+> list --s 1
+config: Sources='1'
+
+> list --l
+config: ListCommand.LocalOnly='True'
+
+> list --idonly
+config: ListCommand.IdOnly='True'
+
+> list --pre
+config: Prerelease='True'
+
+> list --i
+config: ListCommand.IncludeRegistryPrograms='True'
+
+> list --a
+config: AllVersions='True'
+
+> list --version 1
+config: Version='1'
+
+> list --u 1
+config: SourceCommand.Username='1'
+
+> list --p 1
+config: 
+
+> list --cert 1
+config: SourceCommand.Certificate='1'
+
+> list --cp 1
+config: 
+
+> list --page 1
+config: ListCommand.Page='1'
+
+> list --page-size 1
+config: ListCommand.PageSize='1'
+
+> list --e
+config: ListCommand.Exact='True'
+
+> list --by-id-only
+config: ListCommand.ByIdOnly='True'
+
+> list --by-tag-only
+config: ListCommand.ByTagOnly='True'
+
+> list --id-starts-with
+config: ListCommand.IdStartsWith='True'
+
+> list --order-by-popularity
+config: ListCommand.OrderByPopularity='True'
+
+> list --approved-only
+config: ListCommand.ApprovedOnly='True'
+
+> list --download-cache
+config: ListCommand.DownloadCacheAvailable='True'
+
+> list --not-broken
+config: ListCommand.NotBroken='True'
+
+> list --detail
+config: Verbose='True'
+
+> list --disable-repository-optimizations
+config: 
+
+end of test
