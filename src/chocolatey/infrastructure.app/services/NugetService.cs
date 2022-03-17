@@ -996,7 +996,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
             var originalConfig = config.deep_copy();
             // this changes config globally
-            ConfigurationOptions.OptionSet.Parse(packageArguments);
+            ChocolateyOptionSet.Instance.Parse(packageArguments);
 
             // there may be overrides from the user running upgrade
             if (!string.IsNullOrWhiteSpace(originalConfig.SourceCommand.Username)) config.SourceCommand.Username = originalConfig.SourceCommand.Username;
