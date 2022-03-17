@@ -62,7 +62,7 @@ namespace chocolatey.infrastructure.app.runners
             // guaranteed that all settings are set.
             EnvironmentSettings.set_environment_variables(config);
 
-            this.Log().Debug(() => "Configuration: {0}".format_with(config.ToString()));
+            this.Log().Debug(() => "Configuration: {0}".format_with(config.ToStringFull()));
 
 
             if (isConsole && (config.HelpRequested || config.UnsuccessfulParsing))
