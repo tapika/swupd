@@ -26,13 +26,13 @@ config: Version='1'
 config: SourceCommand.Username='1'
 
 > list --p 1
-config: 
+config: SourceCommand.Password='1'
 
 > list --cert 1
 config: SourceCommand.Certificate='1'
 
 > list --cp 1
-config: 
+config: SourceCommand.CertificatePassword='1'
 
 > list --page 1
 config: ListCommand.Page='1'
@@ -70,4 +70,3 @@ config: Verbose='True'
 > list --disable-repository-optimizations
 config: 
 
-end of test

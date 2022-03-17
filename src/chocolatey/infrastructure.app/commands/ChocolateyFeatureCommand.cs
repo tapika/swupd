@@ -81,18 +81,24 @@ namespace chocolatey.infrastructure.app.commands
 
         public virtual void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "Feature Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("Feature Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 Chocolatey will allow you to interact with features.
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Usage");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Usage");
+            console.Info(@"
     choco feature [list]|disable|enable [<options/switches>]
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Examples");
+            console.Info(@"
     choco feature
     choco feature list
     choco feature disable -n=bob
@@ -103,8 +109,8 @@ NOTE: See scripting in the command reference (`choco -?`) for how to
 
 ");
             
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Exit Codes");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Exit Codes");
+            console.Info(@"
 Exit codes that normally result from running this command.
 
 Normal:
@@ -117,7 +123,7 @@ If you find other exit codes that we have not yet documented, please
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
+            hiconsole.Info("Options and Switches");
         }
 
         public virtual void noop(ChocolateyConfiguration configuration)

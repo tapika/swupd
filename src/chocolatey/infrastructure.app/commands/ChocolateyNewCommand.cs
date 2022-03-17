@@ -118,13 +118,19 @@ namespace chocolatey.infrastructure.app.commands
 
         public virtual void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "New Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("New Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 Chocolatey will generate package specification files for a new package.
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Usage");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Usage");
+            console.Info(@"
     choco new <name> [<options/switches>] [<property=value> <propertyN=valueN>]
 
 Possible properties to pass:
@@ -141,8 +147,8 @@ NOTE: Starting in 0.9.10, you can pass arbitrary property value pairs
  packages automatically!
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Examples");
+            console.Info(@"
     choco new bob
     choco new bob -a --version 1.2.0 maintainername=""'This guy'""
     choco new bob silentargs=""'/S'"" url=""'https://somewhere/out/there.msi'""
@@ -153,8 +159,8 @@ NOTE: See scripting in the command reference (`choco -?`) for how to
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Exit Codes");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Exit Codes");
+            console.Info(@"
 Exit codes that normally result from running this command.
 
 Normal:
@@ -167,7 +173,7 @@ If you find other exit codes that we have not yet documented, please
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
+            hiconsole.Info("Options and Switches");
         }
 
         public virtual void noop(ChocolateyConfiguration configuration)

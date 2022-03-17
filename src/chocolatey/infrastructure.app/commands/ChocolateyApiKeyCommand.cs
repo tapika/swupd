@@ -75,22 +75,28 @@ namespace chocolatey.infrastructure.app.commands
 
         public virtual void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "ApiKey Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("ApiKey Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 This lists api keys that are set or sets an api key for a particular   
  source so it doesn't need to be specified every time.
 
 Anything that doesn't contain source and key will list api keys.
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Usage");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Usage");
+            console.Info(@"
     choco apikey [<options/switches>]
     choco setapikey [<options/switches>]
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Examples");
+            console.Info(@"
     choco apikey
     choco apikey -s https://somewhere/out/there
     choco apikey -s=""https://somewhere/out/there/"" -k=""value""
@@ -116,8 +122,8 @@ NOTE: See scripting in the command reference (`choco -?`) for how to
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Connecting to Chocolatey.org (Community Package Repository)");
-            "chocolatey".Log().Info(() => @"
+            hiconsole.Info("Connecting to Chocolatey.org (Community Package Repository)");
+            console.Info(() => @"
 In order to save your API key for {0}, 
  log in (or register, confirm and then log in) to
  {0}, go to {0}account, 
@@ -127,8 +133,8 @@ In order to save your API key for {0},
 
 ".format_with(ApplicationParameters.ChocolateyCommunityFeedPushSource));
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Exit Codes");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Exit Codes");
+            console.Info(@"
 Exit codes that normally result from running this command.
 
 Normal:
@@ -140,7 +146,7 @@ If you find other exit codes that we have not yet documented, please
  https://github.com/chocolatey/choco/issues/new/choose.
 
 ");
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
+            hiconsole.Info("Options and Switches");
         }
 
         public virtual void noop(ChocolateyConfiguration configuration)

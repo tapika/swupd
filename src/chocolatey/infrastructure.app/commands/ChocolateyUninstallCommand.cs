@@ -152,8 +152,14 @@ namespace chocolatey.infrastructure.app.commands
 
         public virtual void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "Uninstall Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("Uninstall Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 Uninstalls a package or a list of packages. Some may prefer to use
  `cuninst` as a shortcut for `choco uninstall`.
 
@@ -200,8 +206,8 @@ NOTE: Synchronizer and AutoUninstaller enhancements in licensed
  to determine how to automatically uninstall software.
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Usage");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Usage");
+            console.Info(@"
     choco uninstall <pkg|all> [pkg2 pkgN] [options/switches]
     cuninst <pkg|all> [pkg2 pkgN] [options/switches]
 
@@ -209,14 +215,14 @@ NOTE: `all` is a special package keyword that will allow you to
  uninstall all packages.
 
 ");
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "See It In Action");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("See It In Action");
+            console.Info(@"
 choco uninstall: https://raw.githubusercontent.com/wiki/chocolatey/choco/images/gifs/choco_uninstall.gif
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Examples");
+            console.Info(@"
     choco uninstall git
     choco uninstall notepadplusplus googlechrome atom 7zip
     choco uninstall notepadplusplus googlechrome atom 7zip -dv
@@ -228,8 +234,8 @@ NOTE: See scripting in the command reference (`choco -?`) for how to
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Exit Codes");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Exit Codes");
+            console.Info(@"
 Exit codes that normally result from running this command.
 
 Normal:
@@ -257,8 +263,8 @@ In addition to the above exit codes, you may also see reboot exit codes
  Available in v0.10.12+.
 ".format_with(ApplicationParameters.Features.UsePackageExitCodes, ApplicationParameters.Features.ExitOnRebootDetected));
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Options and Switches");
+            console.Info(@"
 NOTE: Options and switches apply to all items passed, so if you are
  installing multiple packages, and you use `--version=1.0.0`, it is
  going to look for and try to install version 1.0.0 of every package

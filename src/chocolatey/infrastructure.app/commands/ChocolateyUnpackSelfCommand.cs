@@ -66,8 +66,14 @@ namespace chocolatey.infrastructure.app.commands
 
         public virtual void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "UnpackSelf Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("UnpackSelf Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 This will unpack files needed by choco. It will overwrite existing
  files only if --force is specified.
 
@@ -76,7 +82,7 @@ NOTE: This command should only be used when installing Chocolatey, not
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
+            hiconsole.Info("Options and Switches");
         }
 
         public virtual void noop(ChocolateyConfiguration configuration)

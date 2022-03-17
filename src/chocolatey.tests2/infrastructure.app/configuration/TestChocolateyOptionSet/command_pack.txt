@@ -1,0 +1,9 @@
+> pack -?
+Pack Command
+
+> pack --version 1
+config: Version='1'
+
+> pack --out 1
+config: OutputDirectory='1'
+

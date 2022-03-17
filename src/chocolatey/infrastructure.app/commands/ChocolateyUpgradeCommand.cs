@@ -251,8 +251,14 @@ namespace chocolatey.infrastructure.app.commands
 
         public virtual void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "Upgrade Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("Upgrade Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 Upgrades a package or a list of packages. Some may prefer to use `cup`
  as a shortcut for `choco upgrade`. If you do not have a package
  installed, upgrade will install it.
@@ -263,8 +269,8 @@ NOTE: 100% compatible with older Chocolatey client (0.9.8.x and below)
  dash (`-`). For more details, see the command reference (`choco -?`).
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Usage");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Usage");
+            console.Info(@"
     choco upgrade <pkg|all> [<pkg2> <pkgN>] [<options/switches>]
     cup <pkg|all> [<pkg2> <pkgN>] [<options/switches>]
 
@@ -275,8 +281,8 @@ Skip upgrading certain packages with `choco pin` or with the option
  `--except`.
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Examples");
+            console.Info(@"
     choco upgrade chocolatey
     choco upgrade notepadplusplus googlechrome atom 7zip
     choco upgrade notepadplusplus googlechrome atom 7zip -dvfy
@@ -296,8 +302,8 @@ NOTE: See scripting in the command reference (`choco -?`) for how to
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Exit Codes");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Exit Codes");
+            console.Info(@"
 Exit codes that normally result from running this command.
 
 Normal:
@@ -324,14 +330,14 @@ In addition to the above exit codes, you may also see reboot exit codes
  Available in v0.10.12+.
 ".format_with(ApplicationParameters.Features.UsePackageExitCodes, ApplicationParameters.Features.ExitOnRebootDetected));
             
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "See It In Action");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("See It In Action");
+            console.Info(@"
 choco upgrade: https://raw.githubusercontent.com/wiki/chocolatey/choco/images/gifs/choco_upgrade.gif
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Options and Switches");
+            console.Info(@"
 NOTE: Options and switches apply to all items passed, so if you are
  installing multiple packages, and you use `--version=1.0.0`, it is
  going to look for and try to install version 1.0.0 of every package

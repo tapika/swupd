@@ -1,0 +1,129 @@
+> upgrade -?
+Upgrade Command
+
+> upgrade --s 1 pkg
+config: Sources='1',Input='pkg',PackageNames='pkg'
+
+> upgrade --version 1 pkg
+config: Input='pkg',Version='1',PackageNames='pkg'
+
+> upgrade --pre pkg
+config: Input='pkg',PackageNames='pkg',Prerelease='True'
+
+> upgrade --x86 pkg
+config: Input='pkg',PackageNames='pkg',ForceX86='True'
+
+> upgrade --ia 1 pkg
+config: Input='pkg',PackageNames='pkg',InstallArguments='1'
+
+> upgrade --o pkg
+config: Input='pkg',PackageNames='pkg',OverrideArguments='True'
+
+> upgrade --notsilent pkg
+config: Input='pkg',PackageNames='pkg',NotSilent='True'
+
+> upgrade --params 1 pkg
+config: Input='pkg',PackageNames='pkg',PackageParameters='1'
+
+> upgrade --argsglobal pkg
+config: Input='pkg',PackageNames='pkg',ApplyInstallArgumentsToDependencies='True'
+
+> upgrade --paramsglobal pkg
+config: Input='pkg',PackageNames='pkg',ApplyPackageParametersToDependencies='True'
+
+> upgrade --allowdowngrade pkg
+config: Input='pkg',PackageNames='pkg',AllowDowngrade='True'
+
+> upgrade --m pkg
+config: Input='pkg',PackageNames='pkg',AllowMultipleVersions='True'
+
+> upgrade --i pkg
+config: Input='pkg',PackageNames='pkg',IgnoreDependencies='True'
+
+> upgrade --n pkg
+config: Input='pkg',SkipPackageInstallProvider='True',PackageNames='pkg'
+
+> upgrade --failonunfound pkg
+config: Input='pkg',PackageNames='pkg',UpgradeCommand.FailOnUnfound='True'
+
+> upgrade --ignore-unfound pkg
+config: Input='pkg',PackageNames='pkg',
+Features.IgnoreUnfoundPackagesOnUpgradeOutdated='True'
+
+> upgrade --failonnotinstalled pkg
+config: Input='pkg',PackageNames='pkg',UpgradeCommand.FailOnNotInstalled='True'
+
+> upgrade --u 1 pkg
+config: Input='pkg',PackageNames='pkg',SourceCommand.Username='1'
+
+> upgrade --p 1 pkg
+config: Input='pkg',PackageNames='pkg',SourceCommand.Password='1'
+
+> upgrade --cert 1 pkg
+config: Input='pkg',PackageNames='pkg',SourceCommand.Certificate='1'
+
+> upgrade --cp 1 pkg
+config: Input='pkg',PackageNames='pkg',SourceCommand.CertificatePassword='1'
+
+> upgrade --ignorechecksum pkg
+config: Input='pkg',PackageNames='pkg'
+
+> upgrade --allowemptychecksum pkg
+config: Input='pkg',PackageNames='pkg',Features.AllowEmptyChecksums='True'
+
+> upgrade --allowemptychecksumsecure pkg
+config: Input='pkg',PackageNames='pkg',Features.AllowEmptyChecksumsSecure='True'
+
+> upgrade --requirechecksum pkg
+config: Input='pkg',PackageNames='pkg'
+
+> upgrade --checksum 1 pkg
+config: Input='pkg',PackageNames='pkg',DownloadChecksum='1'
+
+> upgrade --checksum64 1 pkg
+config: Input='pkg',PackageNames='pkg',DownloadChecksum64='1'
+
+> upgrade --checksumtype 1 pkg
+config: Input='pkg',PackageNames='pkg',DownloadChecksumType='1'
+
+> upgrade --checksumtype64 1 pkg
+config: Input='pkg',PackageNames='pkg',DownloadChecksumType64='1'
+
+> upgrade --ignorepackagecodes pkg
+config: Input='pkg',PackageNames='pkg'
+
+> upgrade --usepackagecodes pkg
+config: Input='pkg',PackageNames='pkg',Features.UsePackageExitCodes='True'
+
+> upgrade --except 1 pkg
+config: Input='pkg',PackageNames='pkg',UpgradeCommand.PackageNamesToSkip='1'
+
+> upgrade --stoponfirstfailure pkg
+config: Input='pkg',PackageNames='pkg',Features.StopOnFirstPackageFailure='True'
+
+> upgrade --skip-if-not-installed pkg
+config: Input='pkg',PackageNames='pkg',
+Features.SkipPackageUpgradesWhenNotInstalled='True'
+
+> upgrade --install-if-not-installed pkg
+config: Input='pkg',PackageNames='pkg'
+
+> upgrade --exclude-pre pkg
+config: Input='pkg',PackageNames='pkg',UpgradeCommand.ExcludePrerelease='True'
+
+> upgrade --userememberedargs pkg
+config: Input='pkg',PackageNames='pkg',
+Features.UseRememberedArgumentsForUpgrades='True'
+
+> upgrade --ignorerememberedargs pkg
+config: Input='pkg',PackageNames='pkg'
+
+> upgrade --exitwhenrebootdetected pkg
+config: Input='pkg',PackageNames='pkg',Features.ExitOnRebootDetected='True'
+
+> upgrade --ignoredetectedreboot pkg
+config: Input='pkg',PackageNames='pkg'
+
+> upgrade --disable-repository-optimizations pkg
+config: Input='pkg',PackageNames='pkg'
+

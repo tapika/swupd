@@ -1,0 +1,31 @@
+> info -?
+Info Command
+
+> info --s 1
+config: Sources='1',Verbose='True',ListCommand.Exact='True'
+
+> info --l
+config: Verbose='True',ListCommand.LocalOnly='True',ListCommand.Exact='True'
+
+> info --version 1
+config: Verbose='True',Version='1',ListCommand.Exact='True'
+
+> info --pre
+config: Verbose='True',Prerelease='True',ListCommand.Exact='True'
+
+> info --u 1
+config: Verbose='True',ListCommand.Exact='True',SourceCommand.Username='1'
+
+> info --p 1
+config: Verbose='True',ListCommand.Exact='True',SourceCommand.Password='1'
+
+> info --cert 1
+config: Verbose='True',ListCommand.Exact='True',SourceCommand.Certificate='1'
+
+> info --cp 1
+config: Verbose='True',ListCommand.Exact='True',
+SourceCommand.CertificatePassword='1'
+
+> info --disable-repository-optimizations
+config: Verbose='True',ListCommand.Exact='True'
+

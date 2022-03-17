@@ -18,6 +18,15 @@ namespace chocolatey.tests2.infrastructure.app.configuration
     [Parallelizable(ParallelScope.All)]
     public class TestChocolateyOptionSet : LogTesting
     {
+        List<string> CommandNames
+        {
+            get {
+                var cmdTypes = ApplicationManager.Instance.CommandTypes;
+                var names = cmdTypes.Select(x => x.GetCustomAttributes<CommandForAttribute>().First().CommandName).ToList();
+                return names;
+            }
+        }
+
         /// <summary>
         /// Here we try to mimic what is happening in choco application itself.
         /// Logic is the same, only resides in different places of code.
@@ -60,7 +69,7 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             }
 
             var cmdTypes = ApplicationManager.Instance.CommandTypes;
-            var names = cmdTypes.Select(x => x.GetCustomAttributes<CommandForAttribute>().First().CommandName ).ToList();
+            var names = CommandNames;
             int index =  names.IndexOf(config.CommandName);
             if (index != -1)
             {
@@ -96,7 +105,14 @@ namespace chocolatey.tests2.infrastructure.app.configuration
                 if (diffLevel == 3) original = config.deep_copy();
                 if (!parser.Parse(args.Skip(1), command, config))
                 {
-                    command.handle_validation(config);
+                    try
+                    {
+                        command.handle_validation(config);
+                    }
+                    catch (ApplicationException ex)
+                    { 
+                        console.Info("validation failure: " + ex.Message);
+                    }
 
                     console.Info("config: " + config.CompareWith(original));
 
@@ -152,10 +168,23 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             chocoArgsBasicParse("-d list");
         }
 
-        [LogTest]
-        public void list()
+        [Test]
+        public void command()
         {
-            testCommand(nameof(list));
+            List<string> commandNames = CommandNames;
+            commandNames.Remove("help");
+            commandNames.Remove("update");      //depricated
+            commandNames.Remove("version");     //depricated
+
+            //commandNames = new[] { "apikey" }.ToList();
+
+            foreach (string cmd in commandNames)
+            {
+                using (new VerifyingLog(cmd))
+                {
+                    testCommand(cmd);
+                }
+            }
         }
 
         public void testCommand(string command)
@@ -163,16 +192,42 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             // Prevent password prompt queries
             ApplicationParameters.AllowPrompts = false;
             var args = chocoArgsParse($"{command} -?").ToList();
+            string extraArg = "";
+
+            switch (command)
+            {
+                case "install":
+                case "new":
+                case "uninstall":
+                case "upgrade":
+                    extraArg = " pkg";
+                    break;
+
+            }
 
             foreach (var arg in args)
             {
-                string cmd = $"{command} --{arg.GetNames()[0]}";
+                string argSwitch = arg.GetNames()[0];
+                string cmd = command;
+                string value = "1";
 
-                if (arg.OptionValueType != OptionValueType.None)
+                if (command == "push" && argSwitch == "s")
                 {
-                    cmd += " 1";       
+                    cmd += " -key mykey";
+                    value = "http://www.google.com";
+                }
+
+                if (arg.OptionValueType == OptionValueType.None)
+                { 
+                    cmd += $" --{argSwitch}";
+                }
+                else
+                {
+                    cmd += $" --{argSwitch} {value}";       
                 }
                 
+                cmd += extraArg;
+
                 chocoArgsParse(cmd);
             }
         }

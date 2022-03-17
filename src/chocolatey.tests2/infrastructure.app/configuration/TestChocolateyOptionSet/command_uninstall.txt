@@ -1,0 +1,66 @@
+> uninstall -?
+Uninstall Command
+
+> uninstall --s 1 pkg
+config: Sources='1',Input='pkg',PackageNames='pkg'
+
+> uninstall --version 1 pkg
+config: Input='pkg',Version='1',PackageNames='pkg'
+
+> uninstall --a pkg
+config: Input='pkg',AllVersions='True',PackageNames='pkg'
+
+> uninstall --ua 1 pkg
+config: Input='pkg',PackageNames='pkg',InstallArguments='1'
+
+> uninstall --o pkg
+config: Input='pkg',PackageNames='pkg',OverrideArguments='True'
+
+> uninstall --notsilent pkg
+config: Input='pkg',PackageNames='pkg',NotSilent='True'
+
+> uninstall --params 1 pkg
+config: Input='pkg',PackageNames='pkg',PackageParameters='1'
+
+> uninstall --argsglobal pkg
+config: Input='pkg',PackageNames='pkg',ApplyInstallArgumentsToDependencies='True'
+
+> uninstall --paramsglobal pkg
+config: Input='pkg',PackageNames='pkg',ApplyPackageParametersToDependencies='True'
+
+> uninstall --m pkg
+config: Input='pkg',PackageNames='pkg',AllowMultipleVersions='True'
+
+> uninstall --x pkg
+config: Input='pkg',PackageNames='pkg',ForceDependencies='True'
+
+> uninstall --n pkg
+config: Input='pkg',SkipPackageInstallProvider='True',PackageNames='pkg'
+
+> uninstall --ignorepackagecodes pkg
+config: Input='pkg',PackageNames='pkg'
+
+> uninstall --usepackagecodes pkg
+config: Input='pkg',PackageNames='pkg',Features.UsePackageExitCodes='True'
+
+> uninstall --autouninstaller pkg
+config: Input='pkg',PackageNames='pkg',Features.AutoUninstaller='True'
+
+> uninstall --skipautouninstaller pkg
+config: Input='pkg',PackageNames='pkg'
+
+> uninstall --failonautouninstaller pkg
+config: Input='pkg',PackageNames='pkg',Features.FailOnAutoUninstaller='True'
+
+> uninstall --ignoreautouninstallerfailure pkg
+config: Input='pkg',PackageNames='pkg'
+
+> uninstall --stoponfirstfailure pkg
+config: Input='pkg',PackageNames='pkg',Features.StopOnFirstPackageFailure='True'
+
+> uninstall --exitwhenrebootdetected pkg
+config: Input='pkg',PackageNames='pkg',Features.ExitOnRebootDetected='True'
+
+> uninstall --ignoredetectedreboot pkg
+config: Input='pkg',PackageNames='pkg'
+

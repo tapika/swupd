@@ -1,0 +1,103 @@
+> install -?
+Install Command
+
+> install --s 1 pkg
+config: Sources='1',Input='pkg',PackageNames='pkg'
+
+> install --version 1 pkg
+config: Input='pkg',Version='1',PackageNames='pkg'
+
+> install --pre pkg
+config: Input='pkg',PackageNames='pkg',Prerelease='True'
+
+> install --x86 pkg
+config: Input='pkg',PackageNames='pkg',ForceX86='True'
+
+> install --ia 1 pkg
+config: Input='pkg',PackageNames='pkg',InstallArguments='1'
+
+> install --o pkg
+config: Input='pkg',PackageNames='pkg',OverrideArguments='True'
+
+> install --notsilent pkg
+config: Input='pkg',PackageNames='pkg',NotSilent='True'
+
+> install --params 1 pkg
+config: Input='pkg',PackageNames='pkg',PackageParameters='1'
+
+> install --argsglobal pkg
+config: Input='pkg',PackageNames='pkg',ApplyInstallArgumentsToDependencies='True'
+
+> install --paramsglobal pkg
+config: Input='pkg',PackageNames='pkg',ApplyPackageParametersToDependencies='True'
+
+> install --allowdowngrade pkg
+config: Input='pkg',PackageNames='pkg',AllowDowngrade='True'
+
+> install --m pkg
+config: Input='pkg',PackageNames='pkg',AllowMultipleVersions='True'
+
+> install --i pkg
+config: Input='pkg',PackageNames='pkg',IgnoreDependencies='True'
+
+> install --x pkg
+validation failure: Force dependencies can only be used with force also turned on.
+config: Input='pkg',PackageNames='pkg',ForceDependencies='True'
+
+> install --n pkg
+config: Input='pkg',SkipPackageInstallProvider='True',PackageNames='pkg'
+
+> install --u 1 pkg
+config: Input='pkg',PackageNames='pkg',SourceCommand.Username='1'
+
+> install --p 1 pkg
+config: Input='pkg',PackageNames='pkg',SourceCommand.Password='1'
+
+> install --cert 1 pkg
+config: Input='pkg',PackageNames='pkg',SourceCommand.Certificate='1'
+
+> install --cp 1 pkg
+config: Input='pkg',PackageNames='pkg',SourceCommand.CertificatePassword='1'
+
+> install --ignorechecksum pkg
+config: Input='pkg',PackageNames='pkg'
+
+> install --allowemptychecksum pkg
+config: Input='pkg',PackageNames='pkg',Features.AllowEmptyChecksums='True'
+
+> install --allowemptychecksumsecure pkg
+config: Input='pkg',PackageNames='pkg',Features.AllowEmptyChecksumsSecure='True'
+
+> install --requirechecksum pkg
+config: Input='pkg',PackageNames='pkg'
+
+> install --checksum 1 pkg
+config: Input='pkg',PackageNames='pkg',DownloadChecksum='1'
+
+> install --checksum64 1 pkg
+config: Input='pkg',PackageNames='pkg',DownloadChecksum64='1'
+
+> install --checksumtype 1 pkg
+config: Input='pkg',PackageNames='pkg',DownloadChecksumType='1'
+
+> install --checksumtype64 1 pkg
+config: Input='pkg',PackageNames='pkg',DownloadChecksumType64='1'
+
+> install --ignorepackagecodes pkg
+config: Input='pkg',PackageNames='pkg'
+
+> install --usepackagecodes pkg
+config: Input='pkg',PackageNames='pkg',Features.UsePackageExitCodes='True'
+
+> install --stoponfirstfailure pkg
+config: Input='pkg',PackageNames='pkg',Features.StopOnFirstPackageFailure='True'
+
+> install --exitwhenrebootdetected pkg
+config: Input='pkg',PackageNames='pkg',Features.ExitOnRebootDetected='True'
+
+> install --ignoredetectedreboot pkg
+config: Input='pkg',PackageNames='pkg'
+
+> install --disable-repository-optimizations pkg
+config: Input='pkg',PackageNames='pkg'
+

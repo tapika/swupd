@@ -219,8 +219,14 @@ namespace chocolatey.infrastructure.app.commands
 
         public virtual void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "Install Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("Install Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 Installs a package or a list of packages (sometimes specified as a
  packages.config). Some may prefer to use `cinst` as a shortcut for
  `choco install`.
@@ -231,8 +237,8 @@ NOTE: 100% compatible with older chocolatey client (0.9.8.32 and below)
  dash (`-`). For more details, see the command reference (`choco -?`).
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Usage");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Usage");
+            console.Info(@"
     choco install <pkg|packages.config> [<pkg2> <pkgN>] [<options/switches>]
     cinst <pkg|packages.config> [<pkg2> <pkgN>] [<options/switches>]
 
@@ -244,8 +250,8 @@ NOTE: Any package name ending with .config is considered a
  'packages.config' file. Please see https://bit.ly/packages_config
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Examples");
+            console.Info(@"
     choco install sysinternals
     choco install notepadplusplus googlechrome atom 7zip
     choco install notepadplusplus --force --force-dependencies
@@ -285,8 +291,8 @@ NOTE: See scripting in the command reference (`choco -?`) for how to
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Exit Codes");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Exit Codes");
+            console.Info(@"
 Exit codes that normally result from running this command.
 
 Normal:
@@ -313,8 +319,8 @@ In addition to the above exit codes, you may also see reboot exit codes
  Available in v0.10.12+.
 ".format_with(ApplicationParameters.Features.UsePackageExitCodes, ApplicationParameters.Features.ExitOnRebootDetected));
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "See It In Action");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("See It In Action");
+            console.Info(@"
 Chocolatey FOSS install showing tab completion and `refreshenv` (a way
  to update environment variables without restarting the shell).
 
@@ -325,8 +331,8 @@ Chocolatey Professional showing private download cache and virus scan
 
 Pro install in action: https://raw.githubusercontent.com/wiki/chocolatey/choco/images/gifs/chocopro_install_stopped.gif
 ");
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Packages.config");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Packages.config");
+            console.Info(@"
 Alternative to PackageName. This is a list of packages in an xml manifest for Chocolatey to install. This is like the packages.config that NuGet uses except it also adds other options and switches. This can also be the path to the packages.config file if it is not in the current working directory.
 
 NOTE: The filename is only required to end in .config, the name is not required to be packages.config.
@@ -344,8 +350,8 @@ NOTE: The filename is only required to end in .config, the name is not required 
     </packages>
 
 ");
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Alternative Sources");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Alternative Sources");
+            console.Info(@"
 Available in 0.9.10+.
 
 Ruby
@@ -380,8 +386,8 @@ This specifies that the source is a Windows Feature and we should
  e.g. `choco install IIS-WebServerRole --source windowsfeatures`
 
 ");
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Resources");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Resources");
+            console.Info(@"
  * How-To: A complete example of how you can use the PackageParameters argument
    when creating a Chocolatey Package can be seen at
    https://chocolatey.org/docs/how-to-parse-package-parameters-argument
@@ -391,8 +397,8 @@ This specifies that the source is a Windows Feature and we should
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Options and Switches");
+            console.Info(@"
 NOTE: Options and switches apply to all items passed, so if you are
  installing multiple packages, and you use `--version=1.0.0`, it is
  going to look for and try to install version 1.0.0 of every package

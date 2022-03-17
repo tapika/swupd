@@ -18,6 +18,7 @@ namespace chocolatey.infrastructure.app.commands
 {
     using System;
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using attributes;
     using commandline;
     using configuration;
@@ -48,18 +49,6 @@ namespace chocolatey.infrastructure.app.commands
                 .Add("k=|key=|apikey=|api-key=",
                      "ApiKey - The api key for the source. If not specified (and not local file source), does a lookup. If not specified and one is not found for an https source, push will fail.",
                      option => configuration.PushCommand.Key = option.remove_surrounding_quotes())
-                .Add("t=",
-                     "Timeout (in seconds) - The time to allow a package push to occur before timing out. Defaults to execution timeout {0}.".format_with(configuration.CommandExecutionTimeoutSeconds),
-                     option =>
-                         {
-                             this.Log().Warn("Using -t for timeout has been deprecated and will be removed in v1. Please update to use --timeout or --execution-timeout instead.");
-                             int timeout = 0;
-                             int.TryParse(option, out timeout);
-                             if (timeout > 0)
-                             {
-                                 configuration.CommandExecutionTimeoutSeconds = timeout;
-                             }
-                         })
                 //.Add("b|disablebuffering|disable-buffering",
                 //    "DisableBuffering -  Disable buffering when pushing to an HTTP(S) server to decrease memory usage. Note that when this option is enabled, integrated windows authentication might not work.",
                 //    option => configuration.PushCommand.DisableBuffering = option)
@@ -138,6 +127,12 @@ namespace chocolatey.infrastructure.app.commands
  internet feed, then the choco gods think you are crazy. ;-)
  
 NOTE: For chocolatey.org, you must update the source to be secure.".format_with(configuration.Sources);
+
+                    if (ApplicationParameters.runningUnitTesting)
+                    {
+                        errorMessage = Regex.Replace(errorMessage, "(\n.*)$", "", RegexOptions.Singleline);
+                    }
+
                     throw new ApplicationException(errorMessage);
                 }
             }
@@ -145,8 +140,14 @@ NOTE: For chocolatey.org, you must update the source to be secure.".format_with(
 
         public virtual void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "Push Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("Push Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 Chocolatey will attempt to push a compiled nupkg to a package feed. 
  Some may prefer to use `cpush` as a shortcut for `choco push`.
 
@@ -162,8 +163,8 @@ A feed can be a local folder, a file share, the community feed
  endpoints required for NuGet packages.
 ".format_with(ApplicationParameters.ChocolateyCommunityFeedPushSource));
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Usage");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Usage");
+            console.Info(@"
     choco push [<path to nupkg>] [<options/switches>]
     cpush [<path to nupkg>] [<options/switches>]
 
@@ -171,8 +172,8 @@ NOTE: If there is more than one nupkg file in the folder, the command
  will require specifying the path to the file.
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Examples");
+            console.Info(@"
     choco push --source https://chocolatey.org/
     choco push --source ""'https://chocolatey.org/'"" -t 500
     choco push --source ""'https://chocolatey.org/'"" -k=""'123-123123-123'""
@@ -182,8 +183,8 @@ NOTE: See scripting in the command reference (`choco -?`) for how to
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Troubleshooting");
-            "chocolatey".Log().Info(()=> @"
+            hiconsole.Info("Troubleshooting");
+            console.Info(()=> @"
 To use this command, you must have your API key saved for the community
  feed (chocolatey.org) or the source you want to push to. Or you can 
  explicitly pass the apikey to the command. See `apikey` command help 
@@ -200,8 +201,8 @@ A common error is `Failed to process request. 'The specified API key
  and you don't see a good reason for it.
 ".format_with(ApplicationParameters.ChocolateyCommunityFeedPushSource));
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Exit Codes");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Exit Codes");
+            console.Info(@"
 Exit codes that normally result from running this command.
 
 Normal:
@@ -214,7 +215,7 @@ If you find other exit codes that we have not yet documented, please
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
+            hiconsole.Info("Options and Switches");
         }
 
         public virtual void noop(ChocolateyConfiguration configuration)

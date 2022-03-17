@@ -85,8 +85,14 @@ namespace chocolatey.infrastructure.app.commands
 
         public override void help_message(ChocolateyConfiguration configuration)
         {
-            this.Log().Info(ChocolateyLoggers.Important, "Info Command");
-            this.Log().Info(@"
+            var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+            hiconsole.Info("Info Command");
+
+            if (ApplicationParameters.runningUnitTesting)
+                console = hiconsole = LogService.Instance.NullLogger;
+
+            console.Info(@"
 Chocolatey will perform a search for a package local or remote and provide 
  detailed information about that package. This is a synonym for 
  `choco search <pkgname> --exact --detailed`.
@@ -95,13 +101,13 @@ NOTE: New as of 0.9.10.0.
 
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Usage");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Usage");
+            console.Info(@"
     choco info [<options/switches>]
 ");
 
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Examples");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Examples");
+            console.Info(@"
     choco info chocolatey
     choco info googlechrome
     choco info powershell
@@ -110,8 +116,8 @@ NOTE: See scripting in the command reference (`choco -?`) for how to
  write proper scripts and integrations.
 
 ");
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Exit Codes");
-            "chocolatey".Log().Info(@"
+            hiconsole.Info("Exit Codes");
+            console.Info(@"
 Exit codes that normally result from running this command.
 
 Normal:
@@ -132,7 +138,7 @@ If you find other exit codes that we have not yet documented, please
  https://github.com/chocolatey/choco/issues/new/choose.
 
 ".format_with(ApplicationParameters.Features.UseEnhancedExitCodes));
-            "chocolatey".Log().Info(ChocolateyLoggers.Important, "Options and Switches");
+            hiconsole.Info("Options and Switches");
         }
     }
 }

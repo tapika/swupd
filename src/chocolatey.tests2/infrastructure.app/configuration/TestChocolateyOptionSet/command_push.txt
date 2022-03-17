@@ -1,0 +1,10 @@
+> push -?
+Push Command
+
+> push -key mykey --s http://www.google.com
+validation failure: WARNING! The specified source 'http://www.google.com' is not secure.
+config: Sources='http://www.google.com',PushCommand.Key='mykey'
+
+> push --k 1
+config: Sources='https://push.chocolatey.org/',PushCommand.Key='1'
+

@@ -1,0 +1,33 @@
+> source -?
+Source Command
+
+> source --n 1
+config: SourceCommand.Name='1',SourceCommand.Command='list'
+
+> source --s 1
+config: Sources='1',SourceCommand.Command='list'
+
+> source --u 1
+config: SourceCommand.Command='list',SourceCommand.Username='1'
+
+> source --p 1
+config: SourceCommand.Command='list',SourceCommand.Password='1'
+
+> source --cert 1
+config: SourceCommand.Command='list',SourceCommand.Certificate='1'
+
+> source --cp 1
+config: SourceCommand.Command='list',SourceCommand.CertificatePassword='1'
+
+> source --priority 1
+config: SourceCommand.Command='list',SourceCommand.Priority='1'
+
+> source --bypassproxy
+config: SourceCommand.Command='list',SourceCommand.BypassProxy='True'
+
+> source --allowselfservice
+config: SourceCommand.Command='list',SourceCommand.AllowSelfService='True'
+
+> source --adminonly
+config: SourceCommand.Command='list',SourceCommand.VisibleToAdminsOnly='True'
+

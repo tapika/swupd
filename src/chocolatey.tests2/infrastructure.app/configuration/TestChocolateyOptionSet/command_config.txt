@@ -1,0 +1,9 @@
+> config -?
+Config Command
+
+> config --name 1
+config: ConfigCommand.Name='1',ConfigCommand.Command='list'
+
+> config --value 1
+config: ConfigCommand.ConfigValue='1',ConfigCommand.Command='list'
+

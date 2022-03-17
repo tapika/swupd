@@ -1,0 +1,6 @@
+> feature -?
+Feature Command
+
+> feature --n 1
+config: FeatureCommand.Name='1',FeatureCommand.Command='list'
+

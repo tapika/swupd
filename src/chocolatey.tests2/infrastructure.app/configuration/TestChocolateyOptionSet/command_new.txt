@@ -1,0 +1,31 @@
+> new -?
+New Command
+
+> new --a pkg
+config: Input='pkg',NewCommand.Name='pkg',NewCommand.AutomaticPackage='True',
+NewCommand.TemplateProperties.PackageName='pkg'
+
+> new --t 1 pkg
+config: Input='pkg',NewCommand.TemplateName='1',NewCommand.Name='pkg',
+NewCommand.TemplateProperties.PackageName='pkg'
+
+> new --name 1 pkg
+config: Input='pkg',NewCommand.Name='1',
+NewCommand.TemplateProperties.PackageName='1'
+
+> new --version 1 pkg
+config: Input='pkg',NewCommand.Name='pkg',
+NewCommand.TemplateProperties.PackageVersion='1'NewCommand.TemplateProperties.PackageName='pkg'
+
+> new --maintainer 1 pkg
+config: Input='pkg',NewCommand.Name='pkg',
+NewCommand.TemplateProperties.MaintainerName='1'NewCommand.TemplateProperties.PackageName='pkg'
+
+> new --out 1 pkg
+config: Input='pkg',OutputDirectory='1',NewCommand.Name='pkg',
+NewCommand.TemplateProperties.PackageName='pkg'
+
+> new --built-in pkg
+config: Input='pkg',NewCommand.Name='pkg',
+NewCommand.TemplateProperties.PackageName='pkg'NewCommand.UseOriginalTemplate='True'
+
