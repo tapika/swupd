@@ -106,12 +106,6 @@ namespace chocolatey.tests.infrastructure.app.commands
             {
                 optionSet.Contains("k").Should().BeTrue();
             }
-
-            [Fact]
-            public void should_add_short_version_of_timeout_to_the_option_set()
-            {
-                optionSet.Contains("t").Should().BeTrue();
-            }
         }
 
         public class when_handling_additional_argument_parsing : ChocolateyPushCommandSpecsBase
