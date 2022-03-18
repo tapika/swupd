@@ -2,12 +2,10 @@
 Pin Command
 
 > pin --n 1
-config: Sources='lib',
-AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
+config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
 PinCommand.Name='1',PinCommand.Command='list'
 
 > pin --version 1
-config: Sources='lib',
-Version='1',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
-PinCommand.Command='list'
+config: Sources='lib',Version='1',AllVersions='True',Prerelease='True',
+ListCommand.LocalOnly='True',PinCommand.Command='list'
 

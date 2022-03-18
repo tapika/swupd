@@ -79,7 +79,7 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         {
             var properties = new StringBuilder();
             output_tostring(properties, GetType().GetProperties(), this, second, "");
-            return InstallContext.NormalizeMessage(properties.ToString());
+            return properties.ToString();
         }
 
         private void output_tostring(StringBuilder propertyValues, IEnumerable<PropertyInfo> properties, object obj, object secondobj, string prepend)
@@ -117,6 +117,12 @@ NOTE: Hiding sensitive configuration data! Please double and triple
                             string.IsNullOrWhiteSpace(prepend) ? "" : prepend + ".",
                             propertyInfo.Name,
                             objectValue.to_string());
+
+                        if (propertyInfo.Name == "Sources")
+                        {
+                            // Can contain paths
+                            output = InstallContext.NormalizeMessage(output);
+                        }
 
                         append_output(propertyValues, output);
                     }
