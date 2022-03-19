@@ -6,9 +6,7 @@ config: Sources='1'
 
 > apikey --k 1
 validation failure: You must specify both 'source' and 'key' to set an API key.
-config: ApiKeyCommand.Key='1'
 
 > apikey --rem
 validation failure: You must specify 'source' to remove an API key.
-config: ApiKeyCommand.Remove='True'
 

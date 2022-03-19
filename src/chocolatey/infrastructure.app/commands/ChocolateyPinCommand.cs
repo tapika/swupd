@@ -143,9 +143,15 @@ If you find other exit codes that we have not yet documented, please
             hiconsole.Info("Options and Switches");
         }
 
-        public virtual void noop(ChocolateyConfiguration configuration)
+        public virtual void noop(ChocolateyConfiguration config)
         {
-            this.Log().Info("Pin would have called {0} with other options:{1} Name={2}{1} Version={3}".format_with(configuration.PinCommand.Command.to_string(), Environment.NewLine, configuration.PinCommand.Name.to_string(), configuration.Version.to_string()));
+            string msg = $"Pin would have called command {config.PinCommand.Command} for package {config.PinCommand.Name}";
+            if (!string.IsNullOrEmpty(config.Version))
+            {
+                msg += $", version {config.Version}";
+            }
+
+            this.Log().Info(msg);
         }
 
         public virtual void run(ChocolateyConfiguration configuration)

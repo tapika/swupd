@@ -1,0 +1,43 @@
+> pin
+config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
+PinCommand.Command='list'
+list_run(pin-config)
+
+> pin list
+config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
+PinCommand.Command='list'
+list_run(pin-config)
+
+> pin wtf
+Unknown command wtf. Setting to list.
+config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
+PinCommand.Command='list'
+list_run(pin-config)
+
+> pin wtf bbq
+parse failure: A single pin command must be listed. Please see the help menu for those commands
+
+> pin add
+validation failure: When specifying the subcommand 'add', you must also specify --name.
+
+> pin add -n pkg --noop
+config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
+PinCommand.Name='pkg',PinCommand.Command='add'
+_ Chocolatey:ChocolateyPinCommand - Noop Mode _
+Pin would have called command add for package pkg
+
+> pin ADD -n pkg --noop
+config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
+PinCommand.Name='pkg',PinCommand.Command='add'
+_ Chocolatey:ChocolateyPinCommand - Noop Mode _
+Pin would have called command add for package pkg
+
+> pin remove
+validation failure: When specifying the subcommand 'remove', you must also specify --name.
+
+> pin " "
+config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
+PinCommand.Command='list'
+list_run(pin-config)
+
+end of test

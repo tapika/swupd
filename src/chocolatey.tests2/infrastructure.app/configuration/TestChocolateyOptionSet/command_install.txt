@@ -42,7 +42,6 @@ config: Input='pkg',PackageNames='pkg',IgnoreDependencies='True'
 
 > install --x pkg
 validation failure: Force dependencies can only be used with force also turned on.
-config: Input='pkg',PackageNames='pkg',ForceDependencies='True'
 
 > install --n pkg
 config: Input='pkg',SkipPackageInstallProvider='True',PackageNames='pkg'
