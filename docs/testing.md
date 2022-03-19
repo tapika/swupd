@@ -305,3 +305,54 @@ Proxying existing interfaces is useful when you want to know all function calls 
 Once logging is enabled for mock - there is no need to use `.Verify()` anymore, as logging of function calls and it's argument should be sufficient.
 
 Post mortem debugging is also changed to live debugging via logging.
+
+### Code coverage and verifying log
+
+Normally when dealing with loggers - in typical unit test scenarios you would try to replace logger and log somewhere - for example into buffer. Typical unit test case in that case looks like this (bit of pseudo code):
+
+```
+List<string> loggedData = ...;
+
+...
+loggedData.Add("Help of command list");
+somewhereElse.Add("List usage:");
+...
+
+Assert.True(loggedData.Contains("Help of command list"));
+```
+
+ This give some headache to CPU, as afterwards you need to find specific string in array / buffer.
+
+When logging with `LogService` - logged line will get immediately verified that it's valid one.
+
+But you might not want to verify entire text which is displayed to end-user - then you can consider switching logger.
+
+```
+public virtual void help_message(ChocolateyConfiguration configuration)
+{
+    var (hiconsole, console) = LogService.Instance.HelpLoggers;
+
+    hiconsole.Info("List/Search Command");
+
+    if (ApplicationParameters.runningUnitTesting)
+        console = hiconsole = LogService.Instance.NullLogger;
+
+    hiconsole.Info("Usage");
+
+```
+
+So in this case - `"List/Search Command"` will be logged out and also tested that line will not change, but `"Usage"` will not be logged and not verified.
+
+This gives some freedom that not all texts will introduce test breakage.
+
+It's also possible to do same check like this:
+
+    if (ApplicationParameters.runningUnitTesting)
+        return;
+
+But in this case rest of lines will not be executed at all, giving red color in code coverage.
+
+Better to use earlier example, as it works better with code coverage.
+
+It's also possible that some of strings will fail due to `null` reference violation, so it's better to test that code works, even thus it may not provide correct output.
+
