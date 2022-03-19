@@ -72,13 +72,23 @@ namespace chocolatey.tests2.infrastructure.app.configuration
         }
 
         /// <summary>
+        /// Parses command line. Add extra line feed into log for better visibility
+        /// </summary>
+        /// <param name="cmdLine"></param>
+        public void ParseCommandLine(string cmdLine)
+        {
+            ParseCommandLine2(cmdLine);
+            LogService.console.Info("");
+        }
+
+        /// <summary>
         /// Parses command line. Instantiates command if not already instantiated.
         /// Cannot change command type without creating new instance of CommandContext
         /// </summary>
         /// <param name="cmdLine">command line to process</param>
         /// <param name="diffAtStart">true if configuration comparison starts from start of command line processing, false if after main
         /// command is executed</param>
-        public IEnumerable<Option> ParseCommandLine(string cmdLine, bool diffAtStart = false, bool logCalls = false, bool validateRun = true)
+        public IEnumerable<Option> ParseCommandLine2(string cmdLine, bool diffAtStart = false, bool logCalls = false)
         {
             var console = LogService.console;
 
@@ -128,11 +138,6 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             {
                 if (!parser.Parse(args.Skip(1), command, config))
                 {
-                    if (!validateRun)
-                    {
-                        return parser;
-                    }
-
                     phase = "validation";
                     command.handle_validation(config);
 

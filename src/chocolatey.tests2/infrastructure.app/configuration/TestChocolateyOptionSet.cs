@@ -1,9 +1,11 @@
 ﻿using chocolatey.infrastructure.app;
 using chocolatey.infrastructure.app.attributes;
+using chocolatey.infrastructure.app.configuration;
 using chocolatey.infrastructure.app.domain;
 using chocolatey.infrastructure.app.services;
 using chocolatey.infrastructure.commandline;
 using chocolatey.infrastructure.logging;
+using chocolatey.infrastructure.results;
 using logtesting;
 using Moq;
 using NuGet;
@@ -20,14 +22,14 @@ namespace chocolatey.tests2.infrastructure.app.configuration
     {
         public IEnumerable<Option> chocoArgsParse(string cmdLine)
         {
-            var opts = new CommandContext().ParseCommandLine(cmdLine);
+            var opts = new CommandContext().ParseCommandLine2(cmdLine);
             LogService.console.Info("");
             return opts;
         }
 
         public IEnumerable<Option> chocoArgsBasicParse(string cmdLine)
         {
-            var opts = new CommandContext().ParseCommandLine(cmdLine, true, true);
+            var opts = new CommandContext().ParseCommandLine2(cmdLine, true, true);
             LogService.console.Info("");
             return opts;
         }
@@ -113,27 +115,46 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             }
         }
 
-        //originad from when_handling_additional_argument_parsing
+        //originad from ChocolateyPinCommandSpecs.cs
         [LogTest]
         public void test_pin()
         {
             CommandContext cc = new CommandContext("pin");
-            Action<string> parseCommand = (cmd) =>
+            cc.ParseCommandLine("pin");            //no argument, defaults to list
+            cc.ParseCommandLine("pin list");
+            cc.ParseCommandLine("pin wtf");        //invalid argument, set to list
+            cc.ParseCommandLine("pin wtf bbq");
+            cc.ParseCommandLine("pin add");        //no package name
+            cc.ParseCommandLine("pin add -n pkg --noop");
+            cc.ParseCommandLine("pin ADD -n pkg --noop");
+            cc.ParseCommandLine("pin remove");     //no package name
+            cc.ParseCommandLine("pin \" \"");      // empty argument
+
+            // If we have two packages, one of them is pinned, only pinned should be shown.
+            var packageInfoService = cc.Mock<IChocolateyPackageInformationService>();
+
+            var package = new Mock<IPackage>();
+            package.Setup(p => p.Id).Returns("regular");
+            package.Setup(p => p.Version).Returns(new SemanticVersion("1.2.0"));
+
+            packageInfoService.Setup(s => s.get_package_information(package.Object)).Returns(
+                new ChocolateyPackageInformation(package.Object) { IsPinned = false });
+
+            var pinnedPackage = new Mock<IPackage>();
+            pinnedPackage.Setup(p => p.Id).Returns("pinned");
+            pinnedPackage.Setup(p => p.Version).Returns(new SemanticVersion("1.1.0"));
+
+            packageInfoService.Setup(s => s.get_package_information(pinnedPackage.Object)).Returns(
+                new ChocolateyPackageInformation(pinnedPackage.Object) { IsPinned = true });
+
+            var packageResults = new[]
             {
-                cc.ParseCommandLine(cmd);
-                LogService.console.Info("");
+                new PackageResult(package.Object, null),
+                new PackageResult(pinnedPackage.Object, null)
             };
 
-            parseCommand("pin");            //no argument, defaults to list
-            parseCommand("pin list");
-            parseCommand("pin wtf");        //invalid argument, set to list
-            parseCommand("pin wtf bbq");
-            parseCommand("pin add");        //no package name
-            parseCommand("pin add -n pkg --noop");
-            parseCommand("pin ADD -n pkg --noop");
-            parseCommand("pin remove");     //no package name
-            parseCommand("pin \" \"");      // empty argument
+            cc.Mock<INugetService>().Setup(n => n.list_run(It.IsAny<ChocolateyConfiguration>())).Returns(packageResults);
+            cc.ParseCommandLine("pin list");
         }
-
     }
 }

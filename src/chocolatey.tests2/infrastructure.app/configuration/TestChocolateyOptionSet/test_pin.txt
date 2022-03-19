@@ -40,4 +40,12 @@ config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly
 PinCommand.Command='list'
 list_run(pin-config)
 
+> pin list
+config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
+PinCommand.Command='list'
+list_run(pin-config)
+get_package_information(Mock<IPackage:1>.Object)
+get_package_information(Mock<IPackage:2>.Object)
+pinned|1.1.0
+
 end of test
