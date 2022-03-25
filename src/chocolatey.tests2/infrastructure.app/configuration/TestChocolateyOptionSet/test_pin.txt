@@ -13,7 +13,8 @@ parse failure: Source not supported: invalid
 
 > pin list -s windowsinstall
 config: Sources='windowsinstall',AllVersions='True',Prerelease='True',
-ListCommand.LocalOnly='True',PinCommand.Command='list'
+ListCommand.LocalOnly='True',PinCommand.Command='list',
+PinCommand.Sources='windowsinstall'
 list_run(pin-config)
 
 > pin wtf

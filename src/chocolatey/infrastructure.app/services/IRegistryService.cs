@@ -32,5 +32,12 @@ namespace chocolatey.infrastructure.app.services
         Registry read_from_file(string filePath);
         bool installer_value_exists(string keyPath, string value);
         RegistryKey get_key(RegistryHive hive, string subKeyPath);
+
+        /// <summary>
+        /// Gets all property names from appKey and sets them to registry
+        /// </summary>
+        /// <param name="appKey">values container</param>
+        /// <param name="properties">properties to set</param>
+        void set_key_values(RegistryApplicationKey appKey, params string[] properties);
     }
 }

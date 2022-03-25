@@ -61,7 +61,7 @@ namespace chocolatey.infrastructure.app.commands
                      option => configuration.Version = option.remove_surrounding_quotes())
                 .Add("s=|source=",
                      "Source - Source where pins are performed/queries, use windowsinstall to switch source.",
-                     option => configuration.Sources = option.remove_surrounding_quotes())
+                     option => configuration.PinCommand.Sources = option.remove_surrounding_quotes())
                 .Add("p|unpinned",
                      "Shows unpinned packages only",
                      option => configuration.PinCommand.Unpinned = option != null)
@@ -89,17 +89,20 @@ namespace chocolatey.infrastructure.app.commands
 
             configuration.PinCommand.Command = command;
 
+            string sources = configuration.PinCommand.Sources;
+
             // If source not specfied - fall back to package location.
-            if (string.IsNullOrEmpty(configuration.Sources))
+            if (string.IsNullOrEmpty(sources))
             {
                 configuration.Sources = ApplicationParameters.PackagesLocation;
             }
             else
             {
-                if (configuration.Sources != nameof(SourceType.windowsinstall))
+                if (sources != nameof(SourceType.windowsinstall))
                 {
-                    throw new ApplicationException($"Source not supported: {configuration.Sources}");
+                    throw new ApplicationException($"Source not supported: {sources}");
                 }
+                configuration.Sources = nameof(SourceType.windowsinstall);
             }
 
             configuration.ListCommand.LocalOnly = true;
@@ -144,6 +147,8 @@ This is especially helpful when running `choco upgrade` for all
     choco pin add -n=git
     choco pin add -n=git --version 1.2.3
     choco pin remove --name git
+
+    choco pin list -s windowsinstall
 
 NOTE: See scripting in the command reference (`choco -?`) for how to 
  write proper scripts and integrations.
@@ -223,36 +228,64 @@ If you find other exit codes that we have not yet documented, please
             var addingAPin = config.PinCommand.Command == PinCommandType.add;
             var versionUnspecified = string.IsNullOrWhiteSpace(config.Version);
             SemanticVersion semanticVersion = versionUnspecified ? null : new SemanticVersion(config.Version);
-            IPackage installedPackage = packageManager.LocalRepository.FindPackage(config.PinCommand.Name, semanticVersion);
-            if (installedPackage == null)
+            List<IPackage> packages = new List<IPackage>();
+
+            if (config.SourceType == SourceType.normal)
             {
-                var pathResolver = packageManager.PathResolver as ChocolateyPackagePathResolver;
-                if (pathResolver != null)
+                // package exists in file system
+                var package = packageManager.LocalRepository.FindPackage(config.PinCommand.Name, semanticVersion);
+                if (package == null)
                 {
-                    pathResolver.UseSideBySidePaths = true;
-                    installedPackage = packageManager.LocalRepository.FindPackage(config.PinCommand.Name, semanticVersion);
+                    var pathResolver = packageManager.PathResolver as ChocolateyPackagePathResolver;
+                    if (pathResolver != null)
+                    {
+                        pathResolver.UseSideBySidePaths = true;
+                        package = packageManager.LocalRepository.FindPackage(config.PinCommand.Name, semanticVersion);
+                    }
                 }
 
-                if (installedPackage == null)
-                {
-                    throw new ApplicationException("Unable to find package named '{0}'{1} to pin. Please check to ensure it is installed.".format_with(config.PinCommand.Name, versionUnspecified ? "" : " (version '{0}')".format_with(config.Version)));
+                if (package != null)
+                { 
+                    packages.Add(package);
                 }
-            }
-
-            var pkgInfo = _packageInfoService.get_package_information(installedPackage);
-
-            bool changeMessage = pkgInfo.IsPinned != addingAPin;
-
-            pkgInfo.IsPinned = addingAPin;
-            _packageInfoService.save_package_information(pkgInfo);
-
-            if (changeMessage)
-            {
-                this.Log().Warn("Successfully {0} a pin for {1} v{2}.".format_with(addingAPin ? "added" : "removed", pkgInfo.Package.Id, pkgInfo.Package.Version.to_string()));
             }
             else
+            { 
+                // package exists in registry
+                config.Input = config.PinCommand.Name;
+                config.QuietOutput = true;
+                packages = _packageService.list_run(config).Select(x => x.Package).ToList();
+            }
+
+            if (packages.Count == 0)
             {
-                this.Log().Warn(NO_CHANGE_MESSAGE);
+                throw new ApplicationException("Unable to find package named '{0}'{1} to pin. Please check to ensure it is installed.".format_with(config.PinCommand.Name, versionUnspecified ? "" : " (version '{0}')".format_with(config.Version)));
+            }
+
+            foreach (var package in packages)
+            {
+                var pkgInfo = _packageInfoService.get_package_information(package);
+                bool changeMessage = pkgInfo.IsPinned != addingAPin;
+
+                if (package is RegistryPackage regp)
+                {
+                    regp.RegistryKey.IsPinned = addingAPin;
+                    _registryService.set_key_values(regp.RegistryKey, nameof(RegistryApplicationKey.IsPinned));
+                }
+                else
+                {
+                    pkgInfo.IsPinned = addingAPin;
+                    _packageInfoService.save_package_information(pkgInfo);
+                }
+
+                if (changeMessage)
+                {
+                    this.Log().Warn("Successfully {0} a pin for {1} v{2}.".format_with(addingAPin ? "added" : "removed", pkgInfo.Package.Id, pkgInfo.Package.Version.to_string()));
+                }
+                else
+                {
+                    this.Log().Warn(NO_CHANGE_MESSAGE);
+                }
             }
         }
 

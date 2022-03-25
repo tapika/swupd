@@ -537,6 +537,46 @@ namespace chocolatey.infrastructure.app.services
 
             return value;
         }
-    }
 
+        public void set_key_values(RegistryApplicationKey appKey, params string[] properties)
+        {
+            var key = open_key(appKey.Hive, appKey.RegistryView);
+            string subPath = String.Join('\\', appKey.KeyPath.Split('\\').Skip(1));
+            var subKey = FaultTolerance.try_catch_with_logging_exception(
+               () => key.OpenSubKey(subPath, true),
+               $"Could not open subkey {appKey.KeyPath}",
+               logWarningInsteadOfError: true);
+
+            if (subKey != null)
+            {
+                foreach (string prop in properties)
+                {
+                    var propInfo = appKey.GetType().GetProperty(prop);
+                    object value;
+                    RegistryValueKind type = RegistryValueKind.DWord;
+
+                    if (propInfo.PropertyType == typeof(bool))
+                    {
+                        bool bvalue = (bool)propInfo.GetValue(appKey);
+
+                        if (!bvalue)
+                        {
+                            subKey.DeleteValue(propInfo.Name, false);
+                            continue;
+                        }
+                        
+                        value = 1;
+                        type = RegistryValueKind.DWord;
+                    }
+                    else 
+                    {
+                        value = propInfo.GetValue(appKey).ToString();
+                        type = RegistryValueKind.String;
+                    }
+
+                    subKey.SetValue(propInfo.Name, value, type);
+                }
+            }
+        }
+    }
 }

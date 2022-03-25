@@ -11,7 +11,8 @@ ListCommand.LocalOnly='True',PinCommand.Command='list'
 
 > pin --s windowsinstall
 config: Sources='windowsinstall',AllVersions='True',Prerelease='True',
-ListCommand.LocalOnly='True',PinCommand.Command='list'
+ListCommand.LocalOnly='True',PinCommand.Command='list',
+PinCommand.Sources='windowsinstall'
 
 > pin --p
 config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
