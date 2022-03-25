@@ -162,7 +162,7 @@ namespace chocolatey.tests2.infrastructure.app.configuration
 
             cc.Mock<IChocolateyPackageService>().Setup(n => n.list_run(It.IsAny<ChocolateyConfiguration>())).Returns(packageResults);
             cc.ParseCommandLine("pin list");
-            cc.ParseCommandLine("pin list -p");
+            cc.ParseCommandLine("pin list -u");
         }
     }
 }

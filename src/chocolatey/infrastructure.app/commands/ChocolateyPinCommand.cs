@@ -62,7 +62,7 @@ namespace chocolatey.infrastructure.app.commands
                 .Add("s=|source=",
                      "Source - Source where pins are performed/queries, use windowsinstall to switch source.",
                      option => configuration.PinCommand.Sources = option.remove_surrounding_quotes())
-                .Add("p|unpinned",
+                .Add("u|unpinned",
                      "Shows unpinned packages only",
                      option => configuration.PinCommand.Unpinned = option != null)
                 ;

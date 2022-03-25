@@ -14,7 +14,7 @@ config: Sources='windowsinstall',AllVersions='True',Prerelease='True',
 ListCommand.LocalOnly='True',PinCommand.Command='list',
 PinCommand.Sources='windowsinstall'
 
-> pin --p
+> pin --u
 config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
 PinCommand.Command='list',PinCommand.Unpinned='True'
 

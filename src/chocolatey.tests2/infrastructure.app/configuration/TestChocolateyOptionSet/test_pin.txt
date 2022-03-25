@@ -57,7 +57,7 @@ get_package_information(Mock<IPackage:1>.Object)
 get_package_information(Mock<IPackage:2>.Object)
 pinned|1.1.0
 
-> pin list -p
+> pin list -u
 config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
 PinCommand.Command='list',PinCommand.Unpinned='True'
 list_run(pin-config)
