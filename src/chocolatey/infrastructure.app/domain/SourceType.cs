@@ -28,6 +28,12 @@ namespace chocolatey.infrastructure.app.domain
         python,
         windowsfeature,
         windowsfeatures,
+
+        /// <summary>
+        /// Windows installation service (installation information stored in registry)
+        /// </summary>
+        windowsinstall,
+
         cygwin,
     }
 }

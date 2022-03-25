@@ -25,9 +25,17 @@ namespace chocolatey.infrastructure.app.domain
     [XmlType("key")]
     public class RegistryApplicationKey : IEquatable<RegistryApplicationKey>
     {
+        public RegistryHive Hive { get; set; }
+
         public RegistryView RegistryView { get; set; }
 
         public string KeyPath { get; set; }
+        
+        /// <summary>
+        /// Package id if set from registry, null otherwise
+        /// </summary>
+        public string PackageId { get; set; }
+        public bool IsPinned { get; set; }
 
         [XmlAttribute(AttributeName = "installerType")]
         public InstallerType InstallerType { get; set; }

@@ -78,7 +78,12 @@ namespace chocolatey.infrastructure.app
                         new ChocolateyHelpCommand(Container),
                         new ChocolateyInfoCommand(Container.GetInstance<IChocolateyPackageService>()),
                         new ChocolateyInstallCommand(Container.GetInstance<IChocolateyPackageService>()),
-                        new ChocolateyPinCommand(Container.GetInstance<IChocolateyPackageInformationService>(), Container.GetInstance<NuGet.ILogger>(), Container.GetInstance<INugetService>()),
+                        new ChocolateyPinCommand(
+                            Container.GetInstance<IRegistryService>(), 
+                            Container.GetInstance<IChocolateyPackageService>(),
+                            Container.GetInstance<IChocolateyPackageInformationService>(),
+                            Container.GetInstance<NuGet.ILogger>()
+                        ),
                         new ChocolateyOutdatedCommand(Container.GetInstance<IChocolateyPackageService>()),
                         new ChocolateyUpgradeCommand(Container.GetInstance<IChocolateyPackageService>()),
                         new ChocolateyUninstallCommand(Container.GetInstance<IChocolateyPackageService>()),
@@ -95,6 +100,32 @@ namespace chocolatey.infrastructure.app
                     };
                 }
                 return _commands;
+            }
+        }
+
+        List<ISourceRunner> _sources;
+        /// <summary>
+        /// Different sources on which ApplicationManager can operate
+        /// </summary>
+        public List<ISourceRunner> Sources
+        {
+            get 
+            {
+                if (_sources == null)
+                {
+                    _sources = new List<ISourceRunner>()
+                    {
+                        Container.GetInstance<INugetService>(),
+                        new WebPiService(Container.GetInstance<ICommandExecutor>(), Container.GetInstance<INugetService>()),
+                        new WindowsFeatureService(Container.GetInstance<ICommandExecutor>(), Container.GetInstance<INugetService>(), Container.GetInstance<IFileSystem>()),
+                        new CygwinService(Container.GetInstance<ICommandExecutor>(), Container.GetInstance<INugetService>(), Container.GetInstance<IFileSystem>(), Container.GetInstance<IRegistryService>()),
+                        new PythonService(Container.GetInstance<ICommandExecutor>(), Container.GetInstance<INugetService>(), Container.GetInstance<IFileSystem>(), Container.GetInstance<IRegistryService>()),
+                        new RubyGemsService(Container.GetInstance<ICommandExecutor>(), Container.GetInstance<INugetService>()),
+                        new WindowsInstallService(Container, Container.GetInstance<IRegistryService>())
+                    };
+                }
+
+                return _sources;
             }
         }
 
@@ -157,11 +188,11 @@ namespace chocolatey.infrastructure.app
         }
 
         /// <summary>
-        /// In long term perspective it's planned to either remove SimpleInjector container or
+        /// In long term perspective it's planned to either remove SimpleInjector Container or
         /// replace it with Caliburn.Micro.
         /// 
         /// See following articles:
-        ///     https://www.palmmedia.de/Blog/2011/8/30/ioc-container-benchmark-performance-comparison
+        ///     https://www.palmmedia.de/Blog/2011/8/30/ioc-Container-benchmark-performance-comparison
         ///     https://github.com/Caliburn-Micro/Caliburn.Micro/issues/795
         /// </summary>
         public SimpleInjector.Container Container { get; set; }

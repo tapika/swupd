@@ -67,6 +67,13 @@ namespace chocolatey.infrastructure.app.services
                 return packageInformation;
             }
 
+            // Package does not exists physically on disk.
+            if (package is RegistryPackage regpack)
+            {
+                packageInformation.IsPinned = regpack.IsPinned;
+                return packageInformation;
+            }
+
             var pkgStorePath = _fileSystem.combine_paths(ApplicationParameters.ChocolateyPackageInfoStoreLocation, "{0}.{1}".format_with(package.Id, package.Version.to_string()));
             if (!_fileSystem.directory_exists(pkgStorePath))
             {

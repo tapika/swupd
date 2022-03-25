@@ -544,6 +544,7 @@ NOTE: Hiding sensitive configuration data! Please double and triple
     {
         public string Name { get; set; }
         public PinCommandType Command { get; set; }
+        public bool Unpinned { get; set; }
     }
 
     [Serializable]

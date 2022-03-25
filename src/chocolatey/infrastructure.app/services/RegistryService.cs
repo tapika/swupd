@@ -61,10 +61,10 @@ namespace chocolatey.infrastructure.app.services
                  logWarningInsteadOfError: true);
         }
 
-        private void add_key(IList<RegistryKey> keys, RegistryHive hive, RegistryView view)
+        private void add_key(IList<RegistryKeyInfo> keys, RegistryHive hive, RegistryView view)
         {
             var key = open_key(hive, view);
-            if (key != null) keys.Add(key);
+            if (key != null) keys.Add(new RegistryKeyInfo() { key = key, hive = hive, view = view });
         }
 
         public Registry get_installer_keys()
@@ -73,7 +73,7 @@ namespace chocolatey.infrastructure.app.services
             var windowsIdentity = WindowsIdentity.GetCurrent();
             if (windowsIdentity != null) snapshot.User = windowsIdentity.User.to_string();
 
-            IList<RegistryKey> keys = new List<RegistryKey>();
+            IList<RegistryKeyInfo> keys = new List<RegistryKeyInfo>();
             if (Environment.Is64BitOperatingSystem)
             {
                 add_key(keys, RegistryHive.CurrentUser, RegistryView.Registry64);
@@ -83,8 +83,10 @@ namespace chocolatey.infrastructure.app.services
             add_key(keys, RegistryHive.CurrentUser, RegistryView.Registry32);
             add_key(keys, RegistryHive.LocalMachine, RegistryView.Registry32);
 
-            foreach (var registryKey in keys)
+            foreach (var regkey in keys)
             {
+                var registryKey = regkey.key;
+
                 var uninstallKey = FaultTolerance.try_catch_with_logging_exception(
                     () => registryKey.OpenSubKey(UNINSTALLER_KEY_NAME, RegistryKeyPermissionCheck.ReadSubTree, RegistryRights.ReadKey),
                     "Could not open uninstall subkey for key '{0}'".format_with(registryKey.Name),
@@ -93,7 +95,7 @@ namespace chocolatey.infrastructure.app.services
                 if (uninstallKey != null)
                 {
                     //Console.WriteLine("Evaluating {0} of {1}".format_with(uninstallKey.View, uninstallKey.Name));
-                    evaluate_keys(uninstallKey, snapshot);
+                    evaluate_keys(regkey, uninstallKey, snapshot);
                 }
                 registryKey.Close();
                 registryKey.Dispose();
@@ -118,7 +120,7 @@ namespace chocolatey.infrastructure.app.services
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="snapshot">The snapshot.</param>
-        public void evaluate_keys(RegistryKey key, Registry snapshot)
+        public void evaluate_keys(RegistryKeyInfo regkey, RegistryKey key, Registry snapshot)
         {
             if (key == null) return;
 
@@ -128,7 +130,7 @@ namespace chocolatey.infrastructure.app.services
                     foreach (var subKeyName in key.GetSubKeyNames())
                     {
                         FaultTolerance.try_catch_with_logging_exception(
-                            () => evaluate_keys(key.OpenSubKey(subKeyName, RegistryKeyPermissionCheck.ReadSubTree, RegistryRights.ReadKey), snapshot),
+                            () => evaluate_keys(regkey, key.OpenSubKey(subKeyName, RegistryKeyPermissionCheck.ReadSubTree, RegistryRights.ReadKey), snapshot),
                             "Failed to open subkey named '{0}' for '{1}', likely due to permissions".format_with(subKeyName, key.Name),
                             logWarningInsteadOfError: true);
                     }
@@ -137,12 +139,13 @@ namespace chocolatey.infrastructure.app.services
                 logWarningInsteadOfError: true);
 
             var appKey = new RegistryApplicationKey
-                {
-                    KeyPath = key.Name,
-                    RegistryView = key.View,
-                    DefaultValue = key.get_value_as_string(""),
-                    DisplayName = key.get_value_as_string("DisplayName")
-                };
+            {
+                Hive = regkey.hive,
+                KeyPath = key.Name,
+                RegistryView = key.View,
+                DefaultValue = key.get_value_as_string(""),
+                DisplayName = key.get_value_as_string("DisplayName")
+            };
 
             if (string.IsNullOrWhiteSpace(appKey.DisplayName))
             {
@@ -151,6 +154,16 @@ namespace chocolatey.infrastructure.app.services
 
             if (!string.IsNullOrWhiteSpace(appKey.DisplayName))
             {
+                appKey.PackageId = key.get_value_as_string("PackageId");
+                string s = key.get_value_as_string(nameof(RegistryApplicationKey.IsPinned));
+                if (string.IsNullOrWhiteSpace(s))
+                {
+                    appKey.IsPinned = false;
+                }
+                else
+                { 
+                    appKey.IsPinned = s != "0";
+                }
                 appKey.InstallLocation = key.get_value_as_string("InstallLocation");
                 appKey.UninstallString = key.get_value_as_string("UninstallString");
                 if (!string.IsNullOrWhiteSpace(key.get_value_as_string("QuietUninstallString")))

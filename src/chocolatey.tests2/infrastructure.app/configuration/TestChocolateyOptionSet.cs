@@ -100,6 +100,11 @@ namespace chocolatey.tests2.infrastructure.app.configuration
                     value = "http://www.google.com";
                 }
 
+                if (command == "pin" && argSwitch == "s")
+                {
+                    value = nameof(SourceType.windowsinstall);
+                }
+
                 if (arg.OptionValueType == OptionValueType.None)
                 { 
                     cmd += $" --{argSwitch}";
@@ -122,6 +127,8 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             CommandContext cc = new CommandContext("pin");
             cc.ParseCommandLine("pin");            //no argument, defaults to list
             cc.ParseCommandLine("pin list");
+            cc.ParseCommandLine("pin list -s invalid");
+            cc.ParseCommandLine("pin list -s windowsinstall");
             cc.ParseCommandLine("pin wtf");        //invalid argument, set to list
             cc.ParseCommandLine("pin wtf bbq");
             cc.ParseCommandLine("pin add");        //no package name
@@ -153,8 +160,9 @@ namespace chocolatey.tests2.infrastructure.app.configuration
                 new PackageResult(pinnedPackage.Object, null)
             };
 
-            cc.Mock<INugetService>().Setup(n => n.list_run(It.IsAny<ChocolateyConfiguration>())).Returns(packageResults);
+            cc.Mock<IChocolateyPackageService>().Setup(n => n.list_run(It.IsAny<ChocolateyConfiguration>())).Returns(packageResults);
             cc.ParseCommandLine("pin list");
+            cc.ParseCommandLine("pin list -p");
         }
     }
 }

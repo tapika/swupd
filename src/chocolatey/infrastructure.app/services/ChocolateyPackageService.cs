@@ -136,17 +136,14 @@ namespace chocolatey.infrastructure.app.services
 
             foreach (var package in perform_source_runner_function(config, r => r.list_run(config)))
             {
-                if (config.SourceType == SourceType.normal)
+                if (!config.ListCommand.IncludeRegistryPrograms)
                 {
-                    if (!config.ListCommand.IncludeRegistryPrograms)
-                    {
-                        yield return package;
-                    }
+                    yield return package;
+                }
 
-                    if (config.ListCommand.LocalOnly && config.ListCommand.IncludeRegistryPrograms && package.Package != null)
-                    {
-                        packages.Add(package.Package);
-                    }
+                if (config.ListCommand.LocalOnly && config.ListCommand.IncludeRegistryPrograms && package.Package != null)
+                {
+                    packages.Add(package.Package);
                 }
             }
 

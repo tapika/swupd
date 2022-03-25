@@ -8,6 +8,14 @@ config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly
 PinCommand.Command='list'
 list_run(pin-config)
 
+> pin list -s invalid
+parse failure: Source not supported: invalid
+
+> pin list -s windowsinstall
+config: Sources='windowsinstall',AllVersions='True',Prerelease='True',
+ListCommand.LocalOnly='True',PinCommand.Command='list'
+list_run(pin-config)
+
 > pin wtf
 Unknown command wtf. Setting to list.
 config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
@@ -47,5 +55,13 @@ list_run(pin-config)
 get_package_information(Mock<IPackage:1>.Object)
 get_package_information(Mock<IPackage:2>.Object)
 pinned|1.1.0
+
+> pin list -p
+config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
+PinCommand.Command='list',PinCommand.Unpinned='True'
+list_run(pin-config)
+get_package_information(Mock<IPackage:1>.Object)
+regular|1.2.0
+get_package_information(Mock<IPackage:2>.Object)
 
 end of test

@@ -38,7 +38,7 @@ namespace chocolatey.infrastructure.results
 
         public string Name { get; private set; }
         public string Version { get; private set; }
-        public IPackage Package { get; private set; }
+        public IPackage Package { get; set; }
         public string InstallLocation { get; set; }
         public string Source { get; set; }
         public string SourceUri { get; set; }

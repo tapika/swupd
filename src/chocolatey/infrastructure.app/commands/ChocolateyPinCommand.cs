@@ -33,16 +33,21 @@ namespace chocolatey.infrastructure.app.commands
     [CommandFor("pin", "suppress upgrades for a package")]
     public class ChocolateyPinCommand : ICommand
     {
+        private readonly IRegistryService _registryService;
+        private readonly IChocolateyPackageService _packageService;
         private readonly IChocolateyPackageInformationService _packageInfoService;
         private readonly ILogger _nugetLogger;
-        private readonly INugetService _nugetService;
         private const string NO_CHANGE_MESSAGE = "Nothing to change. Pin already set or removed.";
 
-        public ChocolateyPinCommand(IChocolateyPackageInformationService packageInfoService, ILogger nugetLogger, INugetService nugetService)
+        public ChocolateyPinCommand(
+            IRegistryService registryService,
+            IChocolateyPackageService packageService,
+            IChocolateyPackageInformationService packageInfoService, ILogger nugetLogger)
         {
+            _registryService = registryService;
+            _packageService = packageService;
             _packageInfoService = packageInfoService;
             _nugetLogger = nugetLogger;
-            _nugetService = nugetService;
         }
 
         public virtual void configure_argument_parser(OptionSet optionSet, ChocolateyConfiguration configuration)
@@ -54,6 +59,12 @@ namespace chocolatey.infrastructure.app.commands
                 .Add("version=",
                      "Version - Used when multiple versions of a package are installed.  Defaults to empty.",
                      option => configuration.Version = option.remove_surrounding_quotes())
+                .Add("s=|source=",
+                     "Source - Source where pins are performed/queries, use windowsinstall to switch source.",
+                     option => configuration.Sources = option.remove_surrounding_quotes())
+                .Add("p|unpinned",
+                     "Shows unpinned packages only",
+                     option => configuration.PinCommand.Unpinned = option != null)
                 ;
         }
 
@@ -77,7 +88,20 @@ namespace chocolatey.infrastructure.app.commands
             }
 
             configuration.PinCommand.Command = command;
-            configuration.Sources = ApplicationParameters.PackagesLocation;
+
+            // If source not specfied - fall back to package location.
+            if (string.IsNullOrEmpty(configuration.Sources))
+            {
+                configuration.Sources = ApplicationParameters.PackagesLocation;
+            }
+            else
+            {
+                if (configuration.Sources != nameof(SourceType.windowsinstall))
+                {
+                    throw new ApplicationException($"Source not supported: {configuration.Sources}");
+                }
+            }
+
             configuration.ListCommand.LocalOnly = true;
             configuration.AllVersions = true;
             configuration.Prerelease = true;
@@ -179,14 +203,15 @@ If you find other exit codes that we have not yet documented, please
             config.Input = string.Empty;
             var quiet = config.QuietOutput;
             config.QuietOutput = true;
-            var packages = _nugetService.list_run(config).ToList();
+            var packages = _packageService.list_run(config).ToList();
             config.QuietOutput = quiet;
             config.Input = input;
+            bool showPinned = !config.PinCommand.Unpinned;
 
             foreach (var pkg in packages.or_empty_list_if_null())
             {
                 var pkgInfo = _packageInfoService.get_package_information(pkg.Package);
-                if (pkgInfo != null && pkgInfo.IsPinned)
+                if (pkgInfo != null && pkgInfo.IsPinned == showPinned)
                 {
                     this.Log().Info(() => "{0}|{1}".format_with(pkgInfo.Package.Id, pkgInfo.Package.Version));
                 }

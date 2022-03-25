@@ -81,18 +81,8 @@ namespace chocolatey.infrastructure.app.registration
 
             container.Register<IEnumerable<ISourceRunner>>(() =>
                 {
-                    var list = new List<ISourceRunner>
-                        {
-                            container.GetInstance<INugetService>(),
-                            new WebPiService(container.GetInstance<ICommandExecutor>(), container.GetInstance<INugetService>()),
-                            new WindowsFeatureService(container.GetInstance<ICommandExecutor>(), container.GetInstance<INugetService>(), container.GetInstance<IFileSystem>()),
-                            new CygwinService(container.GetInstance<ICommandExecutor>(), container.GetInstance<INugetService>(), container.GetInstance<IFileSystem>(), container.GetInstance<IRegistryService>()),
-                            new PythonService(container.GetInstance<ICommandExecutor>(), container.GetInstance<INugetService>(), container.GetInstance<IFileSystem>(), container.GetInstance<IRegistryService>()),
-                            new RubyGemsService(container.GetInstance<ICommandExecutor>(), container.GetInstance<INugetService>())
-                        };
-                    return list.AsReadOnly();
+                    return ApplicationManager.Instance.Sources.AsReadOnly();
                 }, Lifestyle.Singleton);
-
 
             container.Register<IEventSubscriptionManagerService, EventSubscriptionManagerService>(Lifestyle.Singleton);
             EventManager.initialize_with(container.GetInstance<IEventSubscriptionManagerService>);
