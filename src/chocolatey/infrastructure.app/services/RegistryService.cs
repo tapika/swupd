@@ -540,6 +540,10 @@ namespace chocolatey.infrastructure.app.services
 
         public void set_key_values(RegistryApplicationKey appKey, params string[] properties)
         {
+            // Hive is in double with appKey.KeyPath.Split('\\')[0]
+            // https://stackoverflow.com/questions/58510869/c-sharp-get-basekey-from-registrykey
+            // maybe makes sense to centralize later on.
+
             var key = open_key(appKey.Hive, appKey.RegistryView);
             string subPath = String.Join('\\', appKey.KeyPath.Split('\\').Skip(1));
             var subKey = FaultTolerance.try_catch_with_logging_exception(
