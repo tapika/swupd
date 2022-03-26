@@ -551,7 +551,16 @@ namespace ChocolateyGui.Common.Windows.Services
                 var packageInfoService = choco.Container().GetInstance<IChocolateyPackageInformationService>();
                 var packageInfo = packageInfoService.get_package_information(package.Package);
                 mappedPackage.IsPinned = packageInfo.IsPinned;
-                mappedPackage.IsInstalled = !string.IsNullOrWhiteSpace(package.InstallLocation) || forceInstalled;
+
+                if (package.Package is RegistryPackage)
+                {
+                    mappedPackage.IsInstalled = true;
+                }
+                else
+                { 
+                    mappedPackage.IsInstalled = !string.IsNullOrWhiteSpace(package.InstallLocation) || forceInstalled;
+                }
+
                 mappedPackage.IsSideBySide = packageInfo.IsSideBySide;
 
                 mappedPackage.IsPrerelease = !string.IsNullOrWhiteSpace(mappedPackage.Version.SpecialVersion);
