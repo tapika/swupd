@@ -17,6 +17,15 @@ ListCommand.LocalOnly='True',PinCommand.Command='list',
 PinCommand.Sources='windowsinstall'
 list_run(pin-config)
 
+> pin list -s windowsinstall somepack*
+config: Sources='windowsinstall',Input='somepack*',AllVersions='True',Prerelease='True',
+ListCommand.LocalOnly='True',PinCommand.Command='list',
+PinCommand.Sources='windowsinstall'
+list_run(pin-config)
+
+> pin list 1 2
+parse failure: Too many arguments for pin command
+
 > pin wtf
 Unknown command wtf. Setting to list.
 config: Sources='lib',AllVersions='True',Prerelease='True',ListCommand.LocalOnly='True',
@@ -24,7 +33,15 @@ PinCommand.Command='list'
 list_run(pin-config)
 
 > pin wtf bbq
-parse failure: A single pin command must be listed. Please see the help menu for those commands
+Unknown command wtf. Setting to list.
+config: Sources='lib',Input='bbq',AllVersions='True',Prerelease='True',
+ListCommand.LocalOnly='True',PinCommand.Command='list'
+list_run(pin-config)
+
+> pin list somedir*
+config: Sources='lib',Input='somedir*',AllVersions='True',Prerelease='True',
+ListCommand.LocalOnly='True',PinCommand.Command='list'
+list_run(pin-config)
 
 > pin add
 validation failure: When specifying the subcommand 'add', you must also specify --name.

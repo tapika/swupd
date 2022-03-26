@@ -129,8 +129,11 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             cc.ParseCommandLine("pin list");
             cc.ParseCommandLine("pin list -s invalid");
             cc.ParseCommandLine("pin list -s windowsinstall");
+            cc.ParseCommandLine("pin list -s windowsinstall somepack*");
+            cc.ParseCommandLine("pin list 1 2");
             cc.ParseCommandLine("pin wtf");        //invalid argument, set to list
             cc.ParseCommandLine("pin wtf bbq");
+            cc.ParseCommandLine("pin list somedir*");
             cc.ParseCommandLine("pin add");        //no package name
             cc.ParseCommandLine("pin add -n pkg --noop");
             cc.ParseCommandLine("pin ADD -n pkg --noop");

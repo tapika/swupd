@@ -72,13 +72,14 @@ namespace chocolatey.infrastructure.app.commands
         {
             // don't set configuration.Input or it will be passed to list
 
-            if (unparsedArguments.Count > 1)
+            if (unparsedArguments == null) { unparsedArguments = new List<string>(); }
+            if (unparsedArguments.Count > 2)
             {
-                throw new ApplicationException("A single pin command must be listed. Please see the help menu for those commands");
+                throw new ApplicationException("Too many arguments for pin command");
             }
 
             var command = PinCommandType.unknown;
-            string unparsedCommand = unparsedArguments.DefaultIfEmpty(string.Empty).FirstOrDefault();
+            string unparsedCommand = unparsedArguments.FirstOrDefault();
             Enum.TryParse(unparsedCommand, true, out command);
 
             if (command == PinCommandType.unknown)
@@ -108,6 +109,15 @@ namespace chocolatey.infrastructure.app.commands
             configuration.ListCommand.LocalOnly = true;
             configuration.AllVersions = true;
             configuration.Prerelease = true;
+
+            if (unparsedArguments.Count > 1)
+            {
+                configuration.Input = unparsedArguments[1];
+            }
+            else
+            {
+                configuration.Input = string.Empty;
+            }
         }
 
         public virtual void handle_validation(ChocolateyConfiguration configuration)
@@ -149,6 +159,7 @@ This is especially helpful when running `choco upgrade` for all
     choco pin remove --name git
 
     choco pin list -s windowsinstall
+    choco pin list -s windowsinstall -u *redist*
 
 NOTE: See scripting in the command reference (`choco -?`) for how to 
  write proper scripts and integrations.
@@ -204,13 +215,10 @@ If you find other exit codes that we have not yet documented, please
 
         public virtual void list_pins(IPackageManager packageManager, ChocolateyConfiguration config)
         {
-            var input = config.Input;
-            config.Input = string.Empty;
             var quiet = config.QuietOutput;
             config.QuietOutput = true;
             var packages = _packageService.list_run(config).ToList();
             config.QuietOutput = quiet;
-            config.Input = input;
             bool showPinned = !config.PinCommand.Unpinned;
 
             foreach (var pkg in packages.or_empty_list_if_null())
