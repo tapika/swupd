@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Caliburn.Micro;
+using chocolatey.infrastructure.app.domain;
 using ChocolateyGui.Common.Base;
 using ChocolateyGui.Common.Models.Messages;
 using ChocolateyGui.Common.Properties;
@@ -378,6 +379,8 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
             set { SetPropertyValue(ref _source, value); }
         }
 
+        public SourceType SourceType { get; set; }
+
         public string Summary
         {
             get { return _summary; }
@@ -454,7 +457,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                     IsInstalled = true;
 
                     _chocolateyGuiCacheService.PurgeOutdatedPackages();
-                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Installed, Version));
+                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(this, PackageChangeType.Installed, Version));
                 }
             }
             catch (Exception ex)
@@ -481,7 +484,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                     {
                         await _chocolateyService.InstallPackage(Id, Version.ToString(), Source, true).ConfigureAwait(false);
                         _chocolateyGuiCacheService.PurgeOutdatedPackages();
-                        await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Installed, Version));
+                        await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(this, PackageChangeType.Installed, Version));
                     }
                 }
             }
@@ -531,7 +534,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                         }
 
                         IsInstalled = false;
-                        await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Uninstalled, Version));
+                        await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(this, PackageChangeType.Uninstalled, Version));
                     }
                 }
             }
@@ -575,7 +578,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                     }
 
                     _chocolateyGuiCacheService.PurgeOutdatedPackages();
-                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Updated));
+                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(this, PackageChangeType.Updated));
                 }
             }
             catch (Exception ex)
@@ -594,7 +597,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
             {
                 using (await StartProgressDialog(Resources.PackageViewModel_PinningPackage, Resources.PackageViewModel_PinningPackage, Id))
                 {
-                    var result = await _chocolateyService.PinPackage(Id, Version.ToString()).ConfigureAwait(false);
+                    var result = await _chocolateyService.PinPackage(Id, Version.ToString(), SourceType).ConfigureAwait(false);
 
                     if (!result.Successful)
                     {
@@ -619,7 +622,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                     }
 
                     IsPinned = true;
-                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Pinned, Version));
+                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(this, PackageChangeType.Pinned, Version));
                 }
             }
             catch (Exception ex)
@@ -638,7 +641,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
             {
                 using (await StartProgressDialog(Resources.PackageViewModel_UnpinningPackage, Resources.PackageViewModel_UnpinningPackage, Id))
                 {
-                    var result = await _chocolateyService.UnpinPackage(Id, Version.ToString()).ConfigureAwait(false);
+                    var result = await _chocolateyService.UnpinPackage(Id, Version.ToString(), SourceType).ConfigureAwait(false);
 
                     if (!result.Successful)
                     {
@@ -663,7 +666,7 @@ namespace ChocolateyGui.Common.Windows.ViewModels.Items
                     }
 
                     IsPinned = false;
-                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(Id, PackageChangeType.Unpinned, Version));
+                    await _eventAggregator.PublishOnUIThreadAsync(new PackageChangedMessage(this, PackageChangeType.Unpinned, Version));
                 }
             }
             catch (Exception ex)

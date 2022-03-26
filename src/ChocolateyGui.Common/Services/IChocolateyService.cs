@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using chocolatey.infrastructure.app.domain;
 using ChocolateyGui.Common.Models;
 
 namespace ChocolateyGui.Common.Services
@@ -34,9 +35,9 @@ namespace ChocolateyGui.Common.Services
 
         Task<PackageOperationResult> UpdatePackage(string id, Uri source = null);
 
-        Task<PackageOperationResult> PinPackage(string id, string version);
+        Task<PackageOperationResult> PinPackage(string id, string version, SourceType sourceType);
 
-        Task<PackageOperationResult> UnpinPackage(string id, string version);
+        Task<PackageOperationResult> UnpinPackage(string id, string version, SourceType sourceType);
 
         Task<ChocolateyFeature[]> GetFeatures();
 

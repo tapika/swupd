@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using AutoMapper;
 using Caliburn.Micro;
+using chocolatey.infrastructure.app.domain;
 using ChocolateyGui.Common.Enums;
 using ChocolateyGui.Common.Models;
 using ChocolateyGui.Common.Models.Messages;
@@ -289,6 +290,9 @@ namespace ChocolateyGui.Common.Windows.ViewModels
                     PageCount = (int)Math.Ceiling((double)result.TotalCount / (double)PageSize);
                     Packages.Clear();
 
+                    SourceType sourceType = SourceType.normal;
+                    Enum.TryParse<SourceType>(Source.Value, out sourceType);
+
                     result.Packages.ToList().ForEach(p =>
                     {
                         if (installed.Any(package => string.Equals(package.Id, p.Id, StringComparison.OrdinalIgnoreCase)))
@@ -300,7 +304,9 @@ namespace ChocolateyGui.Common.Windows.ViewModels
                             p.IsLatestVersion = false;
                         }
 
-                        Packages.Add(Mapper.Map<IPackageViewModel>(p));
+                        var pnew = Mapper.Map<IPackageViewModel>(p);
+                        pnew.SourceType = sourceType;
+                        Packages.Add(pnew);
                     });
 
                     if (_configService.GetEffectiveConfiguration().ExcludeInstalledPackages ?? false)

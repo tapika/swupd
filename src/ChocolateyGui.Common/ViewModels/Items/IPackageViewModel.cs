@@ -7,6 +7,7 @@
 
 using System;
 using System.Threading.Tasks;
+using chocolatey.infrastructure.app.domain;
 using NuGet;
 
 namespace ChocolateyGui.Common.ViewModels.Items
@@ -68,6 +69,8 @@ namespace ChocolateyGui.Common.ViewModels.Items
         string RequireLicenseAcceptance { get; set; }
 
         Uri Source { get; set; }
+
+        SourceType SourceType { get; set; }
 
         string Summary { get; set; }
 

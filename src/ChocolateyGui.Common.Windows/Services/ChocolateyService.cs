@@ -322,7 +322,7 @@ namespace ChocolateyGui.Common.Windows.Services
             }
         }
 
-        public async Task<PackageOperationResult> PinPackage(string id, string version)
+        public async Task<PackageOperationResult> PinPackage(string id, string version, SourceType sourceType)
         {
             using (await Lock.WriteLockAsync())
             {
@@ -333,6 +333,11 @@ namespace ChocolateyGui.Common.Windows.Services
                             config.PinCommand.Command = PinCommandType.add;
                             config.PinCommand.Name = id;
                             config.Version = version;
+                            if (sourceType != SourceType.normal)
+                            {
+                                config.Sources = sourceType.ToString();
+                            }
+
                         });
 
                 try
@@ -348,7 +353,7 @@ namespace ChocolateyGui.Common.Windows.Services
             }
         }
 
-        public async Task<PackageOperationResult> UnpinPackage(string id, string version)
+        public async Task<PackageOperationResult> UnpinPackage(string id, string version, SourceType sourceType)
         {
             using (await Lock.WriteLockAsync())
             {
@@ -359,6 +364,10 @@ namespace ChocolateyGui.Common.Windows.Services
                             config.PinCommand.Command = PinCommandType.remove;
                             config.PinCommand.Name = id;
                             config.Version = version;
+                            if (sourceType != SourceType.normal)
+                            {
+                                config.Sources = sourceType.ToString();
+                            }
                         });
                 try
                 {

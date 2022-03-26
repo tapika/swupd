@@ -5,6 +5,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using ChocolateyGui.Common.ViewModels.Items;
 using NuGet;
 
 namespace ChocolateyGui.Common.Models.Messages
@@ -20,14 +21,19 @@ namespace ChocolateyGui.Common.Models.Messages
 
     public class PackageChangedMessage
     {
-        public PackageChangedMessage(string id, PackageChangeType changeType, SemanticVersion version = null)
+        public PackageChangedMessage(IPackageViewModel package, PackageChangeType changeType, SemanticVersion version = null)
         {
-            Id = id;
+            Package = package;
             ChangeType = changeType;
             Version = version;
         }
 
-        public string Id { get; }
+        public IPackageViewModel Package { get; }
+
+        public string Id
+        { 
+            get { return Package.Id; } 
+        }
 
         public SemanticVersion Version { get; }
 

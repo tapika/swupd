@@ -307,23 +307,30 @@ namespace ChocolateyGui.Common.Windows.ViewModels
                     PackageSource.Refresh();
                     break;
                 case PackageChangeType.Unpinned:
-                    var package = Packages.First(p => p.Id == message.Id);
-                    if (package.LatestVersion != null)
+                    if (message.Package.SourceType != chocolatey.infrastructure.app.domain.SourceType.normal)
                     {
                         PackageSource.Refresh();
                     }
                     else
                     {
-                        var outOfDatePackages =
-                            await _chocolateyService.GetOutdatedPackages(package.IsPrerelease, package.Id, false);
-                        foreach (var update in outOfDatePackages)
+                        // Local file system
+                        var package = Packages.First(p => p.Id == message.Id);
+                        if (package.LatestVersion != null)
                         {
-                            await _eventAggregator.PublishOnUIThreadAsync(new PackageHasUpdateMessage(update.Id, update.Version));
+                            PackageSource.Refresh();
                         }
+                        else
+                        {
+                            var outOfDatePackages =
+                                await _chocolateyService.GetOutdatedPackages(package.IsPrerelease, package.Id, false);
+                            foreach (var update in outOfDatePackages)
+                            {
+                                await _eventAggregator.PublishOnUIThreadAsync(new PackageHasUpdateMessage(update.Id, update.Version));
+                            }
 
-                        PackageSource.Refresh();
+                            PackageSource.Refresh();
+                        }
                     }
-
                     break;
 
                 case PackageChangeType.Uninstalled:
