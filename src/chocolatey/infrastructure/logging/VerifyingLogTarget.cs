@@ -50,6 +50,12 @@ namespace chocolatey.infrastructure.logging
                 CreateDirs = true;
                 ArchiveOldFileOnStartup = true;
                 MaxArchiveFiles = 1;
+
+                string dir = Path.GetDirectoryName(path);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
             }
         }
 

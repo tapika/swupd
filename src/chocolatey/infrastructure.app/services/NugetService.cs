@@ -320,7 +320,9 @@ namespace chocolatey.infrastructure.app.services
             //    AnalyzePackage(package);
             //}
 
-            this.Log().Info(config.QuietOutput ? ChocolateyLoggers.LogFileOnly : ChocolateyLoggers.Important, () => "Successfully created package '{0}'".format_with(outputPath));
+            string outputPath2 = InstallContext.NormalizeMessage(outputPath);
+            this.Log().Info(config.QuietOutput ? ChocolateyLoggers.LogFileOnly : ChocolateyLoggers.Important, () => 
+                "Successfully created package '{0}'".format_with(outputPath2));
         }
 
         public void push_noop(ChocolateyConfiguration config)

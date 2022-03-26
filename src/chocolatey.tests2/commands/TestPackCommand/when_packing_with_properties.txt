@@ -1,0 +1,8 @@
+Setting property 'commitId': 1234abcd
+Setting property 'version': 0.1.0
+Attempting to build package from 'test2.nuspec'.
+Successfully created package 'test-package.0.1.0.nupkg'
+=> added new files:
+test-package.0.1.0.nupkg
+  version: 0.1.0.0
+end of test

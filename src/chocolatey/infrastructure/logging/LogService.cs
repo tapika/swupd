@@ -136,6 +136,26 @@ namespace chocolatey.infrastructure.logging
             }
         }
 
+        /// <summary>
+        /// Can be used only by test code. Enables additional log traces for specific class T
+        /// </summary>
+        /// <typeparam name="T">class for which to activate logging</typeparam>
+        /// <param name="minLevel">minimum log level</param>
+        public void AddVerifyingLogRule<T>(LogLevel minLevel = null)
+        {
+            var logconf = LogFactory.Configuration;
+            if (minLevel == null)
+            {
+                minLevel = LogLevel.Debug;
+            }
+            var target = logconf.FindTargetByName(VerifyingLog.LogName);
+            // Insert before all other rules, just because this is more precise class
+            // name, than generic "chocolatey.*"
+            var rule = new LoggingRule(typeof(T).FullName, minLevel, LogLevel.Fatal, target) { Final = true };
+            logconf.LoggingRules.Insert(0, rule);
+            LogFactory.ReconfigExistingLoggers();
+        }
+
         private static string DisabledName(string s)
         {
             return "#" + s;

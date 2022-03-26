@@ -148,7 +148,7 @@
             }
         }
 
-        static List<string> GetFileListing(string path)
+        public static List<string> GetFileListing(string path)
         {
             var list = Directory.GetFiles(path, "*", SearchOption.AllDirectories).ToList();
             list.Sort();
@@ -242,6 +242,14 @@
                     }
                 }
             }
+
+            DisplayUpdates(listBeforeUpdate);
+            lastconf = conf;
+        }
+
+        public void DisplayUpdates(List<string> listBeforeUpdate)
+        {
+            string rootDir = InstallContext.Instance.RootLocation;
             var listAfterUpdate = GetFileListing(rootDir);
             addedFiles = new List<string>();
             removedFiles = new List<string>();
@@ -263,8 +271,6 @@
             }
 
             ListUpdates();
-
-            lastconf = conf;
         }
 
         /// <summary>

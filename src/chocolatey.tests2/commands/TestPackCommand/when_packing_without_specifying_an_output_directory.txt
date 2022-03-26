@@ -1,0 +1,6 @@
+Attempting to build package from 'test1.nuspec'.
+Successfully created package 'test-package.0.1.0.nupkg'
+=> added new files:
+test-package.0.1.0.nupkg
+  version: 0.1.0.0
+end of test
