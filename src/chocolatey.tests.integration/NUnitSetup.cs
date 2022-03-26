@@ -80,7 +80,10 @@ namespace chocolatey.tests.integration
 
             var applicationLocation = fileSystem.get_directory_name(fileSystem.get_current_assembly_path());
 
-            ApplicationParameters.runningUnitTesting = true;
+            if (!oldStyleActivation)
+            { 
+                ApplicationParameters.runningUnitTesting = true;
+            }
             ApplicationParameters.InstallLocation = applicationLocation;
 
             ApplicationParameters.LicenseFileLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "license", "chocolatey.license.xml");
