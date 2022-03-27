@@ -16,6 +16,7 @@
     + [Unit test code amount](#unit-test-code-amount)
     + [Verifying log performance and usability](#verifying-log-performance-and-usability)
     + [Mocking and verifying log](#mocking-and-verifying-log)
+    + [Code coverage and verifying log](#code-coverage-and-verifying-log)
 
 # Chocolatey unit testing
 
@@ -104,7 +105,7 @@ Compared to normal unit testing - logging can be performed from any part of appl
 
 At the moment log levels `Info, Warn, Error, Fatal` will be logged and on levels `Debug, Trace` will be not.
 
-In future it's possible to improve filtering based on logger name and/or log level - at this moment there were no such need. In chocolatey all loggers are named according to their own class name, where all resides in `chocolatey` namespace. That's why we have as a filtering rule `chocolatey.*` - it will pick up all chocolatey classes.
+If you want to change default log level - you can use `LogService.Instance.AddVerifyingLogRule` to increase log level for individual class. Similar kind of code can we written to control filtering as per class or as per log level.
 
 Logging from lower layers is ok if functionality is relatively complex, and you want to make sure that lower layers are executed correctly. If you want to log from lower layers - maybe makes sense to create separate unit test, especially focusing on that lower layer.
 
