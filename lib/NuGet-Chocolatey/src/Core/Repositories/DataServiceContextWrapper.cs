@@ -39,13 +39,21 @@ namespace NuGet
 
         private Type ResolveTypeFunction(string wireName)
         {
-            if (wireName.EndsWith("V2FeedPackage", StringComparison.OrdinalIgnoreCase))
-            {
-                return typeof(DataServicePackage);
-            }
+            //if (wireName.EndsWith("V2FeedPackage", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    return typeof(DataServicePackage);
+            //}
 
-            Debug.Assert(false, "we should never reach here");
-            return null;
+            //Debug.Assert(false, "we should never reach here");
+            //return null;
+
+            //
+            // Chocolatey public server (https://chocolatey.org/api/v2/) operates with types "CCR.Website.V2FeedPackage".
+            // If you use local chocolatey server - it uses different data type - "NuGet.Server.Core.DataServices.ODataPackage"
+            // results in cannot find required data type. Fix this here, even thus not most wise place to fix this.
+            // (.net core 3.1 specific issue)
+            //
+            return typeof(DataServicePackage);
         }
 
         public Uri BaseUri
