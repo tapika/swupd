@@ -545,7 +545,7 @@ namespace chocolatey.infrastructure.app.services
             // maybe makes sense to centralize later on.
 
             var key = open_key(appKey.Hive, appKey.RegistryView);
-            string subPath = String.Join('\\', appKey.KeyPath.Split('\\').Skip(1));
+            string subPath = String.Join("\\", appKey.KeyPath.Split('\\').Skip(1));
             var subKey = FaultTolerance.try_catch_with_logging_exception(
                () => key.OpenSubKey(subPath, true),
                $"Could not open subkey {appKey.KeyPath}",
