@@ -6,7 +6,6 @@ By installing you accept licenses for the packages.
 
 installpackage2 v1.0.0
 installpackage2 package files install completed. Performing other installation steps.
-installpackage2 with custom dir was installed
  The install of installpackage2 was successful.
   Software install location not explicitly set, could be in package or
   default install location if installer.
@@ -20,6 +19,7 @@ Chocolatey installed 1/1 packages.
 custominstalldir\installpackage2\installpackage2.nupkg
   version: 1.0.0.0
 custominstalldir\installpackage2\installpackage2.nuspec
+custominstalldir\installpackage2\msgbox.exe
 custominstalldir\installpackage2\tools\chocolateyinstall.ps1
 custominstalldir\installpackage2\tools\chocolateyuninstall.ps1
 end of test
