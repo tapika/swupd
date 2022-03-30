@@ -122,6 +122,9 @@ namespace NuGet
                 case "title":
                     manifestMetadata.Title = value;
                     break;
+                case "installdirectory":
+                    manifestMetadata.InstallDirectory = value;
+                    break;
                 case "tags":
                     manifestMetadata.Tags = value;
                     break;

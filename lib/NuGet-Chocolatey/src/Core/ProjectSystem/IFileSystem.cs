@@ -7,7 +7,7 @@ namespace NuGet
     public interface IFileSystem
     {
         ILogger Logger { get; set; }
-        string Root { get; }
+        string Root { get; set; }
         void DeleteDirectory(string path, bool recursive);
         IEnumerable<string> GetFiles(string path, string filter, bool recursive);
         IEnumerable<string> GetDirectories(string path);

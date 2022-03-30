@@ -38,6 +38,7 @@ namespace chocolatey.infrastructure.app.services
     using Environment = System.Environment;
     using IFileSystem = filesystem.IFileSystem;
     using chocolatey.infrastructure.app.utility;
+    using System.Text.RegularExpressions;
 
     //todo - this monolith is too large. Refactor once test coverage is up.
 
@@ -499,6 +500,36 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     noPkgResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
                     continue;
                 }
+
+                // Figure out installation directory.
+                string targetDir = InstallContext.Instance.PackagesLocation;
+                if (!string.IsNullOrEmpty(availablePackage.InstallDirectory))
+                {
+                    targetDir = availablePackage.InstallDirectory;
+                    
+                    // properties use "$propertykey$", use '%' to avoid conflicts
+                    targetDir = Regex.Replace(targetDir, "%(.*?)%", (m) =>
+                    {
+                        Environment.SpecialFolder e;
+                        string propKey = m.Groups[1].Value;
+
+                        // Using "%ProgramFiles%\yourcompany" can set install directory to program files
+                        if (Enum.TryParse<Environment.SpecialFolder>(propKey, out e))
+                        {
+                            return Environment.GetFolderPath(e);
+                        }
+
+                        // Using "%RootLocation%\plugins" can set install directory to plugins folder.
+                        var prop = typeof(InstallContext).GetProperty(propKey, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                        if (prop != null && prop.PropertyType == typeof(string))
+                        {
+                            return (string)prop.GetValue(InstallContext.Instance);
+                        }
+
+                        return m.Value;
+                    });
+                }
+                packageManager.FileSystem.Root = targetDir;
 
                 if (installedPackage != null && (installedPackage.Version == availablePackage.Version) && config.Force)
                 {

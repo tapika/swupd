@@ -425,6 +425,16 @@ namespace chocolatey.tests2.commands
                 conf.Sources = null;
             });
         }
+
+        [LogTest()]
+        public void InstallWithDirPath()
+        {
+            InstallOnEmpty((conf) =>
+            {
+                conf.PackageNames = conf.Input = "installpackage2";
+            }, ChocoTestContext.pack_installpackage2_1_0_0);
+        }
+
     }
 }
 

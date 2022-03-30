@@ -80,6 +80,12 @@ namespace NuGet
             set;
         }
 
+        public string InstallDirectory
+        {
+            get;
+            set;
+        }
+
         public ISet<string> Authors
         {
             get;
@@ -470,6 +476,7 @@ namespace NuGet
             Id = metadata.Id;
             Version = metadata.Version;
             Title = metadata.Title;
+            InstallDirectory = metadata.InstallDirectory;
             Authors.AddRange(metadata.Authors);
             Owners.AddRange(metadata.Owners);
             IconUrl = metadata.IconUrl;

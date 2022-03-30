@@ -49,6 +49,9 @@ namespace NuGet
         [XmlElement("title")]
         public string Title { get; set; }
 
+        [XmlElement("installdirectory")]
+        public string InstallDirectory { get; set; }
+
         [Required(ErrorMessageResourceType = typeof(NuGetResources), ErrorMessageResourceName = "Manifest_RequiredMetadataMissing")]
         [XmlElement("authors")]
         public string Authors { get; set; }

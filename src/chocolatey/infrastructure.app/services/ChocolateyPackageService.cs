@@ -1121,7 +1121,7 @@ package '{0}' - stopping further execution".format_with(packageResult.Name));
             FaultTolerance.try_catch_with_logging_exception(
                 () =>
                 {
-                    string badPackageInstallPath = packageResult.InstallLocation.Replace(ApplicationParameters.PackagesLocation, ApplicationParameters.PackageFailuresLocation);
+                    string badPackageInstallPath = _fileSystem.combine_paths(InstallContext.Instance.PackageFailuresLocation, packageResult.Name);
                     if (_fileSystem.directory_exists(badPackageInstallPath))
                     {
                         _fileSystem.delete_directory(badPackageInstallPath, recursive: true);

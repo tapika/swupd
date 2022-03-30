@@ -42,6 +42,11 @@ namespace NuGet
             set;
         }
 
+        public string InstallDirectory
+        {
+            get;
+        }
+
         public string Authors
         {
             get;

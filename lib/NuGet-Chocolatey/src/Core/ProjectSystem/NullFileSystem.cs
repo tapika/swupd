@@ -28,6 +28,7 @@ namespace NuGet
         public string Root
         {
             get { return String.Empty; }
+            set { }
         }
 
         public void DeleteDirectory(string path, bool recursive)

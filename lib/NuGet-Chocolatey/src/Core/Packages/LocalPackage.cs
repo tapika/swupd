@@ -34,6 +34,12 @@ namespace NuGet
             get;
             set;
         }
+        
+        public string InstallDirectory
+        { 
+            get;
+            set;
+        }
 
         public IEnumerable<string> Authors
         {
@@ -383,6 +389,7 @@ namespace NuGet
             Id = metadata.Id;
             Version = metadata.Version;
             Title = metadata.Title;
+            InstallDirectory = metadata.InstallDirectory;
             Authors = metadata.Authors;
             Owners = metadata.Owners;
             IconUrl = metadata.IconUrl;

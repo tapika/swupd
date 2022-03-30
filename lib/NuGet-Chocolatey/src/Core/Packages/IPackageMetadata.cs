@@ -6,6 +6,7 @@ namespace NuGet
     public partial interface IPackageMetadata : IPackageName
     {
         string Title { get; }
+        string InstallDirectory { get; }
         IEnumerable<string> Authors { get; }
         IEnumerable<string> Owners { get; }
         Uri IconUrl { get; }

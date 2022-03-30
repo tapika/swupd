@@ -8,7 +8,7 @@ namespace NuGet
 {
     public class PhysicalFileSystem : IFileSystem
     {
-        private readonly string _root;
+        private string _root;
         private ILogger _logger;
 
         public PhysicalFileSystem(string root)
@@ -25,6 +25,11 @@ namespace NuGet
             get
             {
                 return _root;
+            }
+
+            set
+            {
+                _root = value;
             }
         }
 
