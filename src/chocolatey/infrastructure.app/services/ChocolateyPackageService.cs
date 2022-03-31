@@ -281,6 +281,74 @@ namespace chocolatey.infrastructure.app.services
                         if (config.Information.PlatformType == PlatformType.Windows) CommandExecutor.execute_static(_shutdownExe, "/a", config.CommandExecutionTimeoutSeconds, _fileSystem.get_current_directory(), (s, e) => { }, (s, e) => { }, false, false);
                     }
 
+                    // Register application into registry after installation.
+                    if (!string.IsNullOrEmpty(pkgInfo.Package.InstallDirectory))
+                    {
+                        useRegistryBackupService = false;
+
+                        string installDir = packageResult.InstallLocation;
+
+                        long size = 0;
+
+                        DirectoryInfo dir = new DirectoryInfo(installDir);
+                        foreach (FileInfo fi in dir.GetFiles("*.*", SearchOption.AllDirectories))
+                        {
+                            size += fi.Length;
+                        }
+
+                        var iconSources = Directory.GetFiles(installDir, "*.ico").ToList();
+                        if (iconSources.Count == 0)
+                        { 
+                            iconSources = Directory.GetFiles(installDir, "*.exe").ToList();
+                        }
+                        iconSources.Sort();
+
+                        var appKey = new RegistryApplicationKey
+                        {
+                            Hive = Microsoft.Win32.RegistryHive.LocalMachine,
+
+                            // Package id is used to uniquelly identify application - maybe to avoid collisions
+                            // with existing software - maybe figure out better algorithm
+                            KeyPath = $"HKEY_LOCAL_MACHINE\\{RegistryService.UNINSTALLER_KEY_NAME}\\{pkgInfo.Package.Id}",
+
+                            // At the moment we register app as 64-bit. Maybe later consider using 32-bit registry
+                            RegistryView = Microsoft.Win32.RegistryView.Default,
+                            DisplayName = pkgInfo.Package.Title,
+                            Version = pkgInfo.Package.Version.ToString(),
+                            InstallLocation = packageResult.InstallLocation,
+                            PackageId = pkgInfo.Package.Id,
+                            UninstallString = "uninstall string: to do",
+                            Publisher = String.Join(",", pkgInfo.Package.Authors),
+                            NoModify = true,
+                            NoRepair = true,
+                            InstallDate = DateTime.Now.ToString("d"),
+                            DisplayVersion = pkgInfo.Package.Version.ToString(),
+                            EstimatedSize = size / 1024     // In Kb
+                        };
+
+                        List<String> propNames = new List<string>() {
+                            nameof(RegistryApplicationKey.DisplayName),
+                            nameof(RegistryApplicationKey.Version),
+                            nameof(RegistryApplicationKey.InstallLocation),
+                            nameof(RegistryApplicationKey.PackageId),
+                            nameof(RegistryApplicationKey.UninstallString),
+                            nameof(RegistryApplicationKey.Publisher),
+                            nameof(RegistryApplicationKey.NoModify),
+                            nameof(RegistryApplicationKey.NoRepair),
+                            nameof(RegistryApplicationKey.InstallDate),
+                            nameof(RegistryApplicationKey.DisplayVersion),
+                            nameof(RegistryApplicationKey.EstimatedSize)
+                        };
+
+                        if (iconSources.Count != 0)
+                        {
+                            appKey.DisplayIcon = iconSources.First();
+                            propNames.Add(nameof(RegistryApplicationKey.DisplayIcon));
+                        }
+                        
+                        _registryService.set_key_values(appKey, propNames.ToArray());
+                    }
+
                     if (useRegistryBackupService)
                     {
                         var installersDifferences = _registryService.get_installer_key_differences(installersBefore, _registryService.get_installer_keys());

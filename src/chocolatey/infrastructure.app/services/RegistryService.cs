@@ -42,7 +42,7 @@ namespace chocolatey.infrastructure.app.services
         private readonly bool _logOutput = false;
         //public RegistryService() {}
 
-        private const string UNINSTALLER_KEY_NAME = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
+        public const string UNINSTALLER_KEY_NAME = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
         private const string UNINSTALLER_MSI_MACHINE_KEY_NAME = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Installer\\UserData";
         private const string USER_ENVIRONMENT_REGISTRY_KEY_NAME = "Environment";
         private const string MACHINE_ENVIRONMENT_REGISTRY_KEY_NAME = "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
@@ -192,6 +192,12 @@ namespace chocolatey.infrastructure.app.services
                 appKey.NoRepair = key.get_value_as_string("NoRepair") == "1";
                 appKey.ReleaseType = key.get_value_as_string("ReleaseType");
                 appKey.ParentKeyName = key.get_value_as_string("ParentKeyName");
+                appKey.DisplayIcon = key.get_value_as_string("DisplayIcon");
+                long size = 0;
+                if (long.TryParse(key.get_value_as_string("EstimatedSize"), out size))
+                {
+                    appKey.EstimatedSize = size;
+                }
 
                 if (appKey.WindowsInstaller || appKey.UninstallString.to_string().to_lower().Contains("msiexec"))
                 {
@@ -551,6 +557,14 @@ namespace chocolatey.infrastructure.app.services
                $"Could not open subkey {appKey.KeyPath}",
                logWarningInsteadOfError: true);
 
+            if (subKey == null)
+            {
+                subKey = FaultTolerance.try_catch_with_logging_exception(
+                   () => key.CreateSubKey(subPath, true),
+                   $"Could not open subkey {appKey.KeyPath}",
+                   logWarningInsteadOfError: true);
+            }
+
             if (subKey != null)
             {
                 foreach (string prop in properties)
@@ -559,17 +573,22 @@ namespace chocolatey.infrastructure.app.services
                     object value;
                     RegistryValueKind type = RegistryValueKind.DWord;
 
-                    if (propInfo.PropertyType == typeof(bool))
+                    if (propInfo.PropertyType == typeof(long))
+                    { 
+                        value = (long)propInfo.GetValue(appKey);
+                        type = RegistryValueKind.DWord;
+                    }
+                    else if (propInfo.PropertyType == typeof(bool))
                     {
                         bool bvalue = (bool)propInfo.GetValue(appKey);
 
-                        if (!bvalue)
+                        if (!bvalue && propInfo.Name == nameof(RegistryApplicationKey.IsPinned))
                         {
                             subKey.DeleteValue(propInfo.Name, false);
                             continue;
                         }
                         
-                        value = 1;
+                        value = (bvalue) ? 1: 0;
                         type = RegistryValueKind.DWord;
                     }
                     else 

@@ -1,4 +1,4 @@
 project(msgbox)
-add_executable (msgbox WIN32 msgbox.cpp)
+add_executable (msgbox WIN32 msgbox.cpp msgbox.rc)
 target_link_libraries(msgbox user32.lib)
 

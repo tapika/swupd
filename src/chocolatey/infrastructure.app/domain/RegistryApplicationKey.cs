@@ -74,6 +74,8 @@ namespace chocolatey.infrastructure.app.domain
         public string ReleaseType { get; set; } //hotfix, securityupdate, update rollup, servicepack
         public string ParentKeyName { get; set; }
         public XmlCData LocalPackage { get; set; }
+        public string DisplayIcon { get; set; }
+        public long EstimatedSize { get; internal set; }
 
         /// <summary>
         ///   Is an application listed in ARP (Programs and Features)?
