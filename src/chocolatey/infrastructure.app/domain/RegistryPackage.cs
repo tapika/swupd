@@ -32,11 +32,6 @@ namespace NuGet
             set;
         }
 
-        public string InstallDirectory
-        {
-            get;
-        }
-
         public IEnumerable<string> Authors
         {
             get;
@@ -104,6 +99,12 @@ namespace NuGet
         }
 
         public string Tags
+        {
+            get;
+            set;
+        }
+
+        public List<Authoring.Tag> TagsExtra
         {
             get;
             set;

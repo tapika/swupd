@@ -1,3 +1,4 @@
+using NuGet.Authoring;
 using System;
 using System.Collections.Generic;
 
@@ -6,7 +7,6 @@ namespace NuGet
     public partial interface IPackageMetadata : IPackageName
     {
         string Title { get; }
-        string InstallDirectory { get; }
         IEnumerable<string> Authors { get; }
         IEnumerable<string> Owners { get; }
         Uri IconUrl { get; }
@@ -19,6 +19,7 @@ namespace NuGet
         string ReleaseNotes { get; }
         string Language { get; }
         string Tags { get; }
+        List<Tag> TagsExtra { get; }
         string Copyright { get; }
  
         /// <summary>

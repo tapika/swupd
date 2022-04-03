@@ -13,6 +13,11 @@
         <xs:attribute name="exclude" type="xs:string" use="optional" />
     </xs:complexType>
 
+    <xs:complexType name="tag">
+        <xs:attribute name="key" type="xs:string" use="required" />
+        <xs:attribute name="value" type="xs:string" use="optional" />
+    </xs:complexType>
+
     <xs:complexType name="dependencyGroup">
         <xs:sequence>
             <xs:element name="dependency" minOccurs="0" maxOccurs="unbounded" type="dependency">
@@ -50,7 +55,6 @@
                             <xs:element name="id" maxOccurs="1" minOccurs="1" type="xs:string" />
                             <xs:element name="version" maxOccurs="1" minOccurs="1" type="xs:string" />
                             <xs:element name="title" maxOccurs="1" minOccurs="0" type="xs:string" />
-                            <xs:element name="installdirectory" maxOccurs="1" minOccurs="0" type="xs:string" />
                             <xs:element name="authors" maxOccurs="1" minOccurs="1" type="xs:string" />
                             <xs:element name="owners" maxOccurs="1" minOccurs="0" type="xs:string" />
                             <xs:element name="licenseUrl" maxOccurs="1" minOccurs="0" type="xs:anyURI" />
@@ -81,6 +85,15 @@
                                         <xs:choice minOccurs="0" maxOccurs="unbounded">
                                             <xs:element name="dependency" type="dependency" />
                                             <xs:element name="group" type="dependencyGroup" />
+                                        </xs:choice>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="tags-extra" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                            <xs:element name="tag" type="tag" />
                                         </xs:choice>
                                     </xs:sequence>
                                 </xs:complexType>

@@ -144,7 +144,6 @@ namespace NuGet
                     Id = metadata.Id.SafeTrim(),
                     Version = metadata.Version.ToStringSafe(),
                     Title = metadata.Title.SafeTrim(),
-                    InstallDirectory = metadata.InstallDirectory.SafeTrim(),
                     Authors = GetCommaSeparatedString(metadata.Authors),
                     Owners = GetCommaSeparatedString(metadata.Owners) ?? GetCommaSeparatedString(metadata.Authors),
                     Tags = String.IsNullOrEmpty(metadata.Tags) ? null : metadata.Tags.SafeTrim(),

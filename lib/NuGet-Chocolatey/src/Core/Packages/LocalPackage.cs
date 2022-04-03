@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuGet.Authoring;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,12 +32,6 @@ namespace NuGet
 
         public string Title
         {
-            get;
-            set;
-        }
-        
-        public string InstallDirectory
-        { 
             get;
             set;
         }
@@ -112,6 +107,8 @@ namespace NuGet
             get;
             set;
         }
+
+        public List<Tag> TagsExtra { get; set; }
 
         public Uri ProjectSourceUrl { get; set; }
         public Uri PackageSourceUrl { get; set; }
@@ -389,7 +386,6 @@ namespace NuGet
             Id = metadata.Id;
             Version = metadata.Version;
             Title = metadata.Title;
-            InstallDirectory = metadata.InstallDirectory;
             Authors = metadata.Authors;
             Owners = metadata.Owners;
             IconUrl = metadata.IconUrl;

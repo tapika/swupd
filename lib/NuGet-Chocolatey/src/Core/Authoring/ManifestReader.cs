@@ -122,9 +122,6 @@ namespace NuGet
                 case "title":
                     manifestMetadata.Title = value;
                     break;
-                case "installdirectory":
-                    manifestMetadata.InstallDirectory = value;
-                    break;
                 case "tags":
                     manifestMetadata.Tags = value;
                     break;
@@ -163,6 +160,9 @@ namespace NuGet
                     break;
                 case "dependencies":
                     manifestMetadata.DependencySets = ReadDependencySets(element);
+                    break;
+                case "tags-extra":
+                    manifestMetadata.TagsExtra = ReadTagsExtra(element);
                     break;
                 case "frameworkAssemblies":
                     manifestMetadata.FrameworkAssemblies = ReadFrameworkAssemblies(element);
@@ -305,6 +305,23 @@ namespace NuGet
                             Dependencies = ReadDependencies(element)
                         }).ToList();
             }
+        }
+
+        private static List<Authoring.Tag> ReadTagsExtra(XElement tagsExtraElement)
+        {
+            if (!tagsExtraElement.HasElements)
+            {
+                return new List<Authoring.Tag>();
+            }
+
+            return (from element in tagsExtraElement.ElementsNoNamespace("tag")
+                    let keyElement = element.Attribute("key")
+                    where keyElement != null && !String.IsNullOrEmpty(keyElement.Value)
+                    select new Authoring.Tag
+                    {
+                        Key = keyElement.Value.SafeTrim(),
+                        Value = element.GetOptionalAttributeValue("value").SafeTrim(),
+                    }).ToList();
         }
 
         private static List<ManifestDependency> ReadDependencies(XElement containerElement)

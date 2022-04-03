@@ -37,6 +37,7 @@ namespace chocolatey.infrastructure.app.services
     using results;
     using tolerance;
     using IFileSystem = filesystem.IFileSystem;
+    using NuGet.Packages;
 
     public class ChocolateyPackageService : IChocolateyPackageService
     {
@@ -281,8 +282,9 @@ namespace chocolatey.infrastructure.app.services
                         if (config.Information.PlatformType == PlatformType.Windows) CommandExecutor.execute_static(_shutdownExe, "/a", config.CommandExecutionTimeoutSeconds, _fileSystem.get_current_directory(), (s, e) => { }, (s, e) => { }, false, false);
                     }
 
+                    string installDirTemplate = pkgInfo.Package.GetInstallLocation();
                     // Register application into registry after installation.
-                    if (!string.IsNullOrEmpty(pkgInfo.Package.InstallDirectory))
+                    if (!string.IsNullOrEmpty(installDirTemplate))
                     {
                         useRegistryBackupService = false;
 

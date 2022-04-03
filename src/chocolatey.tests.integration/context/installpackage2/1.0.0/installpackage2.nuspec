@@ -5,12 +5,13 @@
     <version>1.0.0</version>
     <title>Windows install package 2</title>
     <authors>Publisher</authors>
-    <owners>__REPLACE_YOUR_NAME__</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>__REPLACE__</description>
-    <summary>__REPLACE__</summary>
+    <description>test package</description>
     <tags>installpackage admin</tags>
-    <installdirectory>%RootLocation%\custominstalldir</installdirectory>
+    <tags-extra>
+      <tag key="InstallLocation" value="%RootLocation%\custominstalldir" />
+      <!--<tag key="InstallLocation" value="%ProgramFiles%\custominstalldir" />-->
+    </tags-extra>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />

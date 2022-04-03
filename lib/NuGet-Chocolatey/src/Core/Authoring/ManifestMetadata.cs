@@ -6,7 +6,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
+using System.Text;
 using System.Xml.Serialization;
+using NuGet.Authoring;
 using NuGet.Resources;
 
 namespace NuGet
@@ -48,9 +50,6 @@ namespace NuGet
 
         [XmlElement("title")]
         public string Title { get; set; }
-
-        [XmlElement("installdirectory")]
-        public string InstallDirectory { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(NuGetResources), ErrorMessageResourceName = "Manifest_RequiredMetadataMissing")]
         [XmlElement("authors")]
@@ -107,8 +106,47 @@ namespace NuGet
         [XmlElement("language")]
         public string Language { get; set; }
 
+        private string _tags;
         [XmlElement("tags")]
-        public string Tags { get; set; }
+        public string Tags
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+
+                if (TagsExtra != null)
+                {
+                    foreach (var tags in TagsExtra)
+                    {
+                        if (sb.Length != 0)
+                        {
+                            sb.Append(" ");
+                        }
+                        sb.Append(tags.Key);
+                        sb.Append("=");
+                        sb.Append(Uri.EscapeDataString(tags.Value));
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(_tags))
+                {
+                    if (sb.Length != 0)
+                    {
+                        sb.Append(" ");
+                    }
+                    sb.Append(_tags);
+                }
+                return sb.ToString();
+            }
+
+            set {
+                _tags = value;
+            }
+        }
+
+        [XmlArray("tags-extra", IsNullable = false)]
+        [XmlArrayItem("tag", typeof(Authoring.Tag))]
+        public List<Authoring.Tag> TagsExtra { get; set; }
 
         [XmlElement("softwareDisplayName")]
         public string SoftwareDisplayName { get; set; }

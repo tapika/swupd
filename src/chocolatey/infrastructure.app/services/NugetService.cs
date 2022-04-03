@@ -39,6 +39,7 @@ namespace chocolatey.infrastructure.app.services
     using IFileSystem = filesystem.IFileSystem;
     using chocolatey.infrastructure.app.utility;
     using System.Text.RegularExpressions;
+    using NuGet.Packages;
 
     //todo - this monolith is too large. Refactor once test coverage is up.
 
@@ -502,11 +503,12 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 }
 
                 // Figure out installation directory.
-                string targetDir = InstallContext.Instance.PackagesLocation;
-                if (!string.IsNullOrEmpty(availablePackage.InstallDirectory))
+                string targetDir = availablePackage.GetInstallLocation();
+                if (string.IsNullOrEmpty(targetDir))
                 {
-                    targetDir = availablePackage.InstallDirectory;
-                    
+                    targetDir = InstallContext.Instance.PackagesLocation;
+                }else
+                {
                     // properties use "$propertykey$", use '%' to avoid conflicts
                     targetDir = Regex.Replace(targetDir, "%(.*?)%", (m) =>
                     {

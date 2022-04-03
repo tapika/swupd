@@ -1,3 +1,4 @@
+using NuGet.Authoring;
 using NuGet.Resources;
 using System;
 using System.Collections.Generic;
@@ -40,11 +41,6 @@ namespace NuGet
         {
             get;
             set;
-        }
-
-        public string InstallDirectory
-        {
-            get;
         }
 
         public string Authors
@@ -177,6 +173,8 @@ namespace NuGet
             get;
             set;
         }
+        
+        public List<Tag> TagsExtra { get; set; }
 
         public Uri ProjectSourceUrl { get; set; }
         public Uri PackageSourceUrl { get; set; }

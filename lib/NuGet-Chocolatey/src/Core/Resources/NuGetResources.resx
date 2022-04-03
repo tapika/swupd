@@ -177,6 +177,9 @@
   <data name="Manifest_DependencyIdRequired" xml:space="preserve">
     <value>Dependency Id is required.</value>
   </data>
+  <data name="Manifest_TagIdRequired" xml:space="preserve">
+    <value>Tag key is required.</value>
+  </data>
   <data name="Manifest_RequireLicenseAcceptanceRequiresLicenseUrl" xml:space="preserve">
     <value>Enabling license acceptance requires a license url.</value>
   </data>
