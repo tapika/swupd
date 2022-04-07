@@ -250,7 +250,7 @@
                 foreach (var package in packages)
                 {
                     var pkgresult = results[package];
-                    console.Info($"=> install result for {pkgresult.Name}/{pkgresult.Version}: "
+                    console.Info($"=> {conf.CommandName} result for {pkgresult.Name}/{pkgresult.Version}: "
                         + ((pkgresult.Success) ? "succeeded" : "FAILED"));
 
                     foreach (var resultType in new[] { ResultType.Error, ResultType.Warn, ResultType.Inconclusive })
