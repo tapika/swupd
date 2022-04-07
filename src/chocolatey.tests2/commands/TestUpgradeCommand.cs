@@ -82,6 +82,15 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        [LogTest]
+        public void when_noop_upgrading_a_package_that_does_not_exist()
+        {
+            TestUpgrade((conf) =>
+            {
+                conf.PackageNames = conf.Input = "nonexistingpackage";
+                conf.Noop = true;
+            });
+        }
     }
 }
 

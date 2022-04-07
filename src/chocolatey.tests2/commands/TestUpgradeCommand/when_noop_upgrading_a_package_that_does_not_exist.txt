@@ -1,0 +1,9 @@
+nonexistingpackage is not installed. Installing...
+Chocolatey would have used NuGet to install packages (if they are not already installed):
+nonexistingpackage
+nonexistingpackage not installed. The package was not found with the source(s) listed.
+
+Chocolatey can upgrade 0/0 packages. 
+ See the log for details (logs\chocolatey.log).
+=> folder was not updated
+end of test
