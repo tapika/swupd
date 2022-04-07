@@ -15,13 +15,18 @@ namespace chocolatey.tests2.commands
     [Parallelizable(ParallelScope.All), FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class TestInstallCommand: LogTesting
     {
+        public string GetTestFolder([CallerMemberName] string testFolder = "")
+        { 
+            return Path.Combine(nameof(TestInstallCommand), testFolder);
+        }
+
         public void InstallOnEmpty(
             Action<ChocolateyConfiguration> confPatch = null,
             ChocoTestContext packagesContext = ChocoTestContext.packages_default,
             [CallerMemberName] string testFolder = ""
         )
         {
-            InstallOn(ChocoTestContext.empty, confPatch, packagesContext, testFolder);
+            InstallOn(ChocoTestContext.empty, confPatch, packagesContext, GetTestFolder(testFolder));
         }
 
         // when_noop_installing_a_package
@@ -76,7 +81,7 @@ namespace chocolatey.tests2.commands
             [CallerMemberName] string testFolder = ""
         )
         {
-            InstallOn(ChocoTestContext.install, confPatch, ChocoTestContext.packages_default, testFolder);
+            InstallOn(ChocoTestContext.install, confPatch, ChocoTestContext.packages_default, GetTestFolder(testFolder));
         }
 
         void InstalledPackageIs_1_0()
@@ -111,6 +116,16 @@ namespace chocolatey.tests2.commands
             InstalledPackageIs_1_0();
         }
 
+        public void LocalInstallOn(
+            ChocoTestContext testcontext,
+            Action<ChocolateyConfiguration> confPatch = null,
+            ChocoTestContext packagesContext = ChocoTestContext.packages_default,
+            [CallerMemberName] string testFolder = ""
+        )
+        {
+            InstallOn(testcontext, confPatch, packagesContext, GetTestFolder(testFolder));
+        }
+
         // when_force_installing_an_already_installed_package_that_errors
         [LogTest()]
         public void ForceInstallOnErrorPackage()
@@ -118,7 +133,7 @@ namespace chocolatey.tests2.commands
             string modifiedFilePath = null;
             string modifiedContent = "bob";
 
-            InstallOn(
+            LocalInstallOn(
                 ChocoTestContext.badpackage,
                 (conf) =>
                 {
@@ -141,7 +156,7 @@ namespace chocolatey.tests2.commands
                 conf.Force = true;
                 string modifiedFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
                 fileStream = new FileStream(modifiedFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, shareMode);
-            }, testFolder
+            }, GetTestFolder(testFolder)
             );
 
             fileStream.Close();
@@ -243,7 +258,7 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void SwitchSxsToNormal()
         {
-            InstallOn(ChocoTestContext.install_sxs, (conf) =>
+            LocalInstallOn(ChocoTestContext.install_sxs, (conf) =>
             {
                 conf.AllowMultipleVersions = false;
                 conf.Force = true;
@@ -264,7 +279,7 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void InstallWithDependenciesOnInstalled()
         {
-            InstallOn(ChocoTestContext.hasdependency, (conf) =>
+            LocalInstallOn(ChocoTestContext.hasdependency, (conf) =>
             {
                 conf.PackageNames = conf.Input = "hasdependency";
                 conf.Force = true;
@@ -277,7 +292,7 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void InstallWithAllDependenciesOnInstalled()
         {
-            InstallOn(ChocoTestContext.hasdependency, (conf) =>
+            LocalInstallOn(ChocoTestContext.hasdependency, (conf) =>
             {
                 conf.PackageNames = conf.Input = "hasdependency";
                 conf.Force = true;
@@ -291,7 +306,7 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void InstallIgnoreDependencies()
         {
-            InstallOn(ChocoTestContext.hasdependency, (conf) =>
+            LocalInstallOn(ChocoTestContext.hasdependency, (conf) =>
             {
                 conf.PackageNames = conf.Input = "hasdependency";
                 conf.Force = true;
@@ -305,7 +320,7 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void InstallForceAndIgnoreDependencies()
         {
-            InstallOn(ChocoTestContext.hasdependency, (conf) =>
+            LocalInstallOn(ChocoTestContext.hasdependency, (conf) =>
             {
                 conf.PackageNames = conf.Input = "hasdependency";
                 conf.Force = true;
@@ -339,7 +354,7 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void InstallPackageDependOnNewerVersion()
         {
-            InstallOn(ChocoTestContext.isdependency, (conf) =>
+            LocalInstallOn(ChocoTestContext.isdependency, (conf) =>
             {
                 conf.PackageNames = conf.Input = "hasdependency";
             }, ChocoTestContext.packages_for_dependency_testing5);
@@ -349,7 +364,7 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void InstallPackageDependOnNonExistingVersion()
         {
-            InstallOn(ChocoTestContext.isdependency, (conf) =>
+            LocalInstallOn(ChocoTestContext.isdependency, (conf) =>
             {
                 conf.PackageNames = conf.Input = "hasdependency";
             }, ChocoTestContext.packages_for_dependency_testing4);
@@ -359,7 +374,7 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void InstallPackageDependOnNonExistingVersionIgnoreDependencies()
         {
-            InstallOn(ChocoTestContext.isdependency, (conf) =>
+            LocalInstallOn(ChocoTestContext.isdependency, (conf) =>
             {
                 conf.PackageNames = conf.Input = "hasdependency";
                 conf.IgnoreDependencies = true;
@@ -370,7 +385,7 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void InstallPackageWithDependenciesOnNewerVesion()
         {
-            InstallOn(ChocoTestContext.isdependency_hasdependency, (conf) =>
+            LocalInstallOn(ChocoTestContext.isdependency_hasdependency, (conf) =>
             {
                 conf.PackageNames = conf.Input = "conflictingdependency";
             }, ChocoTestContext.packages_for_dependency_testing6);
