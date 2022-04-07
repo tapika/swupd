@@ -16,15 +16,8 @@ namespace chocolatey.tests2.commands
     [Parallelizable(ParallelScope.All), FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class TestUpgradeCommand: LogTesting
     {
-        public enum UpgradeFileTestContext
-        { 
-            none,
-            console_exe
-        }
-
         public void TestUpgrade(
             Action<ChocolateyConfiguration> confPatch = null,
-            UpgradeFileTestContext testContext = UpgradeFileTestContext.console_exe,
             [CallerMemberName] string testFolder = ""
         )
         {
@@ -46,20 +39,30 @@ namespace chocolatey.tests2.commands
                 ChocoTestContext.packages_for_upgrade_testing,
                 Path.Combine(nameof(TestUpgradeCommand), testFolder));
 
-            switch (testContext)
-            {
-                case UpgradeFileTestContext.console_exe:
-                    WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, "tools", "console.exe"));
-                    break;
-            }
+            WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, "tools", "console.exe"));
+            WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, packageName + Constants.PackageExtension));
         }
 
         void WriteFileContext(string path)
         {
-            if (File.Exists(path))
-            { 
-               LogService.console.Info($"{Path.GetFileName(path)}: {File.ReadAllText(path)}");
+            string fileContent;
+
+            if (!File.Exists(path))
+            {
+                return;
             }
+
+            if (Path.GetExtension(path) == Constants.PackageExtension)
+            {
+                fileContent = new OptimizedZipPackage(path).Version.Version.ToString();
+            }
+            else
+            {
+                fileContent = File.ReadAllText(path);
+            }
+
+            string shortPath = InstallContext.NormalizeMessage(path);
+            LogService.console.Info($"{shortPath}: {fileContent}");
         }
 
 
@@ -91,6 +94,14 @@ namespace chocolatey.tests2.commands
                 conf.Noop = true;
             });
         }
+
+        [LogTest]
+        public void when_upgrading_an_existing_package_happy_path()
+        {
+            TestUpgrade();
+        }
+
+
     }
 }
 
