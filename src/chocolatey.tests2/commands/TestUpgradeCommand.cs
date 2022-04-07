@@ -8,6 +8,7 @@ using NuGet;
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Xml.XPath;
 
@@ -16,15 +17,17 @@ namespace chocolatey.tests2.commands
     [Parallelizable(ParallelScope.All), FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class TestUpgradeCommand: LogTesting
     {
-        public void TestUpgrade(
+        public string DoOperation(
+            ChocoTestContext testcontext = ChocoTestContext.upgrade_testing_context,
             Action<ChocolateyConfiguration> confPatch = null,
+            CommandNameType operation = CommandNameType.upgrade,
             [CallerMemberName] string testFolder = ""
         )
         {
             string packageName = null;
             Action<ChocolateyConfiguration> upgradePatch = (conf) =>
             {
-                conf.CommandName = nameof(CommandNameType.upgrade);
+                conf.CommandName = operation.ToString();
                 conf.PackageNames = conf.Input = "upgradepackage";
 
                 if (confPatch != null)
@@ -35,9 +38,41 @@ namespace chocolatey.tests2.commands
                 packageName = conf.PackageNames;
             };
         
-            InstallOn(ChocoTestContext.upgrade_testing_context, upgradePatch, 
+            InstallOn(testcontext, upgradePatch, 
                 ChocoTestContext.packages_for_upgrade_testing,
                 Path.Combine(nameof(TestUpgradeCommand), testFolder));
+
+            return packageName;
+        }
+
+        public void Preinstall(
+            string version,
+            ChocoTestContext testcontext = ChocoTestContext.upgrade_testing_context,
+            Action<ChocolateyConfiguration> confPatch = null,
+            [CallerMemberName] string testFolder = ""
+        )
+        {
+            Action<ChocolateyConfiguration> upgradePatch = (conf) =>
+            {
+                conf.Version = version;
+                
+                if (confPatch != null)
+                {
+                    confPatch(conf);
+                }
+            };
+
+            DoOperation(testcontext, upgradePatch, CommandNameType.install, testFolder);
+        }
+
+        public void TestUpgrade(
+            Action<ChocolateyConfiguration> confPatch = null,
+            bool skipInit = false,
+            [CallerMemberName] string testFolder = ""
+        )
+        {
+            ChocoTestContext testcontext = (skipInit) ? ChocoTestContext.skipcontextinit : ChocoTestContext.upgrade_testing_context;
+            string packageName = DoOperation(testcontext, confPatch, CommandNameType.upgrade, testFolder);
 
             WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, "tools", "console.exe"));
             WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, packageName + Constants.PackageExtension));
@@ -101,6 +136,24 @@ namespace chocolatey.tests2.commands
             TestUpgrade();
         }
 
+        void TitleText(string message)
+        {
+            string slash = string.Concat(Enumerable.Repeat("-", (80 - message.Length) / 2));
+            LogService.console.Info($"{slash} {message} {slash}");
+        }
+
+        [LogTest]
+        public void when_upgrading_an_existing_package_with_prerelease_available_without_prerelease_specified()
+        {
+            TitleText("preinstall");
+            Preinstall("1.1.0");
+
+            TitleText("testupgrade");
+            TestUpgrade((conf) =>
+            {
+                conf.Version = "1.1.0";
+            }, true);
+        }
 
     }
 }
