@@ -1,0 +1,7 @@
+installpackage v1.0.0 is the latest version available based on your source(s).
+
+Chocolatey can upgrade 0/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> folder was not updated
+console.exe: 
+end of test
