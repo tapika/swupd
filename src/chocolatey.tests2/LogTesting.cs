@@ -21,6 +21,7 @@
     using chocolatey;
     using System.Text.RegularExpressions;
     using chocolatey.infrastructure.app.commands;
+    using chocolatey.infrastructure.app.domain;
 
     [TestFixture]
     public class LogTesting
@@ -166,12 +167,19 @@
         /// <summary>
         /// Installs specific package - can be used only within this file
         /// </summary>
-        private void Install(string package, string version, ChocoTestContext packagesContext = ChocoTestContext.packages_default)
+        private void Install(
+            string package, string version, 
+            ChocoTestContext packagesContext = ChocoTestContext.packages_default, bool SkipPackageInstallProvider = false)
         {
             InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
             {
                 conf2.PackageNames = conf2.Input = package;
                 conf2.Version = version;
+
+                if (SkipPackageInstallProvider)
+                {
+                    conf2.SkipPackageInstallProvider = true;
+                }
             }, packagesContext);
         }
 
@@ -199,6 +207,7 @@
                 conf.Sources = PrepareTestFolder(packagesContext, conf);
             }
 
+            conf.CommandName = nameof(CommandNameType.install);
             conf.PackageNames = conf.Input = "installpackage";
             if (confPatch != null)
             {
@@ -210,11 +219,30 @@
 
             if (conf.Noop)
             {
-                Service.install_noop(conf);
+                switch (conf.CommandName)
+                {
+                    case nameof(CommandNameType.install):
+                        Service.install_noop(conf);
+                        break;
+                    case nameof(CommandNameType.upgrade):
+                        Service.upgrade_noop(conf);
+                        break;
+                }
             }
             else
             {
-                var results = Service.install_run(conf);
+                ConcurrentDictionary<string, PackageResult> results = null;
+
+                switch (conf.CommandName)
+                {
+                    case nameof(CommandNameType.install):
+                        results = Service.install_run(conf);
+                        break;
+                    case nameof(CommandNameType.upgrade):
+                        results = Service.upgrade_run(conf);
+                        break;
+                }
+
                 var packages = results.Keys.ToList();
                 packages.Sort();
                 var console = LogService.console;
@@ -530,6 +558,18 @@
                     );
                     break;
 
+                case ChocoTestContext.packages_for_upgrade_testing:
+                    PrepareMultiPackageFolder(
+                        ChocoTestContext.pack_badpackage_1_0,
+                        ChocoTestContext.pack_badpackage_2_0,
+                        ChocoTestContext.pack_installpackage_1_0_0,
+                        ChocoTestContext.pack_upgradepackage_1_0_0,
+                        ChocoTestContext.pack_upgradepackage_1_1_0,
+                        ChocoTestContext.pack_upgradepackage_1_1_1_beta,
+                        ChocoTestContext.pack_upgradepackage_1_1_1_beta2
+                    );
+                    break;
+
                 case ChocoTestContext.badpackage:
                     {
                         _conf.SkipPackageInstallProvider = true;
@@ -563,6 +603,14 @@
                         Install("installpackage", "1.0.0");
                         Install("upgradepackage", "1.0.0");
                         Install("hasdependency", "1.0.0");
+                    }
+                    break;
+                case ChocoTestContext.upgrade_testing_context:
+                    {
+                        ChocoTestContext testContext = ChocoTestContext.packages_for_upgrade_testing;
+                        Install("installpackage", "1.0.0", testContext);
+                        Install("upgradepackage", "1.0.0", testContext);
+                        Install("badpackage", "1.0", testContext, true);
                     }
                     break;
 

@@ -1,0 +1,8 @@
+
+You have upgradepackage v1.0.0 installed. Version 1.1.0 is available based on your source(s).
+
+Chocolatey can upgrade 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> folder was not updated
+console.exe: 1.0.0
+end of test

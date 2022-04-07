@@ -1,0 +1,90 @@
+Installing the following packages:
+installpackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'installpackage 1.0.0'.
+[NuGet] Successfully installed 'installpackage 1.0.0'.
+
+installpackage v1.0.0
+installpackage package files install completed. Performing other installation steps.
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
+ The install of installpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for installpackage/1.0.0: succeeded
+=> added new files:
+.chocolatey\installpackage.1.0.0\.arguments
+.chocolatey\installpackage.1.0.0\.files
+lib\installpackage\installpackage.nupkg
+  version: 1.0.0.0
+lib\installpackage\installpackage.nuspec
+lib\installpackage\tools\casemismatch.exe
+lib\installpackage\tools\Casemismatch.exe.ignore
+lib\installpackage\tools\chocolateyBeforeModify.ps1
+lib\installpackage\tools\chocolateyinstall.ps1
+lib\installpackage\tools\chocolateyuninstall.ps1
+lib\installpackage\tools\console.exe
+lib\installpackage\tools\graphical.exe
+lib\installpackage\tools\graphical.exe.gui
+lib\installpackage\tools\not.installed.exe
+lib\installpackage\tools\not.installed.exe.ignore
+lib\installpackage\tools\simplefile.txt
+Installing the following packages:
+upgradepackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'upgradepackage 1.0.0'.
+[NuGet] Successfully installed 'upgradepackage 1.0.0'.
+
+upgradepackage v1.0.0
+upgradepackage package files install completed. Performing other installation steps.
+upgradepackage 1.0.0 Installed
+Transforming 'console.exe.config' with the data from 'console.exe.config.install.xdt'
+ The install of upgradepackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for upgradepackage/1.0.0: succeeded
+=> added new files:
+.chocolatey\upgradepackage.1.0.0\.arguments
+.chocolatey\upgradepackage.1.0.0\.files
+lib\upgradepackage\tools\chocolateyBeforeModify.ps1
+lib\upgradepackage\tools\chocolateyinstall.ps1
+lib\upgradepackage\tools\chocolateyuninstall.ps1
+lib\upgradepackage\tools\console.exe
+lib\upgradepackage\tools\console.exe.config
+lib\upgradepackage\tools\console.exe.config.install.xdt
+lib\upgradepackage\tools\graphical.exe
+lib\upgradepackage\tools\graphical.exe.gui
+lib\upgradepackage\upgradepackage.nupkg
+  version: 1.0.0.0
+lib\upgradepackage\upgradepackage.nuspec
+Installing the following packages:
+badpackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'badpackage 1.0'.
+[NuGet] Successfully installed 'badpackage 1.0'.
+
+badpackage v1.0
+badpackage package files install completed. Performing other installation steps.
+ The install of badpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for badpackage/1.0: succeeded
+=> added new files:
+.chocolatey\badpackage.1.0\.arguments
+.chocolatey\badpackage.1.0\.files
+lib\badpackage\badpackage.nupkg
+  version: 1.0.0.0
+lib\badpackage\badpackage.nuspec
+lib\badpackage\tools\chocolateyInstall.ps1
+lib\badpackage\tools\chocolateyUninstall.ps1
+shared context ends

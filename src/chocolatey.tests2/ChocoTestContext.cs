@@ -30,8 +30,11 @@ namespace chocolatey.tests2
         packages_for_dependency_testing5,
         packages_for_dependency_testing6,
         packages_for_dependency_testing7,
+        packages_for_upgrade_testing,
+        upgrade_testing_context,
 
         pack_badpackage_1_0,
+        pack_badpackage_2_0,
         pack_hasdependency_1_0_0,
         pack_hasdependency_1_0_1,
         pack_hasdependency_1_1_0,
@@ -53,5 +56,8 @@ namespace chocolatey.tests2
         pack_isexactversiondependency_1_1_0,
         pack_isexactversiondependency_2_0_0,
         pack_upgradepackage_1_0_0,
+        pack_upgradepackage_1_1_0,
+        pack_upgradepackage_1_1_1_beta,
+        pack_upgradepackage_1_1_1_beta2,
     };
 }
