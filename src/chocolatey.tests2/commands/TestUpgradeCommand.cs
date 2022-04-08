@@ -89,7 +89,17 @@ namespace chocolatey.tests2.commands
 
             if (Path.GetExtension(path) == Constants.PackageExtension)
             {
-                fileContent = new OptimizedZipPackage(path).Version.Version.ToString();
+                var pkg = new OptimizedZipPackage(path);
+                var ver1 = pkg.Version.ToString();
+                var ver2 = pkg.Version.Version.ToString();
+                if (ver1 == ver2 || $"{ver1}.0" == ver2)
+                {
+                    fileContent = ver2;
+                }
+                else
+                { 
+                    fileContent = $"{ver1} (normalized: {ver2})";
+                }
             }
             else
             {
@@ -153,6 +163,15 @@ namespace chocolatey.tests2.commands
             {
                 conf.Version = "1.1.0";
             }, true);
+        }
+
+        [LogTest]
+        public void when_upgrading_an_existing_package_with_prerelease_available_and_prerelease_specified()
+        {
+            TestUpgrade((conf) =>
+            {
+                conf.Prerelease = true;
+            });
         }
 
     }

@@ -1,0 +1,33 @@
+Upgrading the following packages:
+upgradepackage
+By upgrading you accept licenses for the packages.
+
+You have upgradepackage v1.0.0 installed. Version 1.1.1-beta2 is available based on your source(s).
+upgradepackage 1.0.0 Before Modification
+ERROR: This should not break the upgrade/uninstall
+ at <ScriptBlock>, upgradepackage\tools\chocolateyBeforeModify.ps1: line 3
+at <ScriptBlock>, helperschocolateyScriptRunner.ps1: line 49
+at <ScriptBlock>, <No file>: line 1
+[NuGet] Uninstalling 'upgradepackage 1.0.0'.
+[NuGet] Skipping 'upgradepackage\tools\console.exe.config' because it was modified.
+[NuGet] Successfully uninstalled 'upgradepackage 1.0.0'.
+[NuGet] Installing 'upgradepackage 1.1.1-beta2'.
+[NuGet] Successfully installed 'upgradepackage 1.1.1-beta2'.
+
+upgradepackage v1.1.1-beta2
+upgradepackage package files upgrade completed. Performing other installation steps.
+upgradepackage 1.1.1-beta2 Installed
+Transforming 'console.exe.config' with the data from 'console.exe.config.install.xdt'
+ The upgrade of upgradepackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey upgraded 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for upgradepackage/1.1.1-beta2: succeeded
+=> added new files:
+.chocolatey\upgradepackage.1.1.1-beta2\.arguments
+.chocolatey\upgradepackage.1.1.1-beta2\.files
+lib\upgradepackage\tools\console.exe: 1.1.1-beta2
+lib\upgradepackage\upgradepackage.nupkg: 1.1.1-beta2 (normalized: 1.1.1.0)
+end of test
