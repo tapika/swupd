@@ -1,0 +1,38 @@
+----------------------------------- preinstall -----------------------------------
+Installing the following packages:
+upgradepackage
+By installing you accept licenses for the packages.
+[NuGet] Installing 'upgradepackage 1.1.1-beta'.
+[NuGet] Successfully installed 'upgradepackage 1.1.1-beta'.
+
+upgradepackage v1.1.1-beta
+upgradepackage package files install completed. Performing other installation steps.
+upgradepackage 1.1.1-beta Installed
+Transforming 'console.exe.config' with the data from 'console.exe.config.install.xdt'
+ The install of upgradepackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for upgradepackage/1.1.1-beta: succeeded
+=> added new files:
+.chocolatey\upgradepackage.1.1.1-beta\.arguments
+.chocolatey\upgradepackage.1.1.1-beta\.files
+------------------------------------ upgrade ------------------------------------
+Upgrading the following packages:
+upgradepackage
+By upgrading you accept licenses for the packages.
+upgradepackage v1.1.1-beta is newer than the most recent.
+ You must be smarter than the average bear...
+
+Chocolatey upgraded 0/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for upgradepackage/1.1.0: succeeded
+  Inconclusive: 
+  - upgradepackage v1.1.1-beta is newer than the most recent.
+ You must be smarter than the average bear...
+=> folder was not updated
+lib\upgradepackage\tools\console.exe: 1.1.1-beta
+lib\upgradepackage\upgradepackage.nupkg: 1.1.1-beta (normalized: 1.1.1.0)
+end of test

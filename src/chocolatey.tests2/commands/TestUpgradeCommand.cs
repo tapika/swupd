@@ -187,6 +187,18 @@ namespace chocolatey.tests2.commands
             TestUpgrade(null, true);
         }
 
+        [LogTest]
+        public void when_upgrading_an_existing_prerelease_package_with_prerelease_available_with_excludeprelease_and_without_prerelease_specified()
+        {
+            TitleText("preinstall");
+            Preinstall("1.1.1-beta", true);
+
+            TitleText("upgrade");
+            TestUpgrade((conf) => {
+                conf.UpgradeCommand.ExcludePrerelease = true;
+            }, true);
+        }
+
     }
 }
 
