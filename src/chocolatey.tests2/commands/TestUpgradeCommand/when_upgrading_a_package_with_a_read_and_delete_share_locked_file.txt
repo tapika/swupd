@@ -8,7 +8,7 @@ ERROR: This should not break the upgrade/uninstall
  at <ScriptBlock>, upgradepackage\tools\chocolateyBeforeModify.ps1: line 3
 at <ScriptBlock>, helperschocolateyScriptRunner.ps1: line 49
 at <ScriptBlock>, <No file>: line 1
-This is try 1/2. Retrying after 300 milliseconds.
+This is try 1/2. Retrying after 0 milliseconds.
  Error converted to warning:
  Access to the path 'lib\upgradepackage' is denied.
 Maximum tries of 2 reached. Throwing error.
