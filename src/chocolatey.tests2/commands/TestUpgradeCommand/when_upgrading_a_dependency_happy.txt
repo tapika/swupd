@@ -1,0 +1,27 @@
+Upgrading the following packages:
+isdependency
+By upgrading you accept licenses for the packages.
+
+You have isdependency v1.0.0 installed. Version 1.1.0 is available based on your source(s).
+[NuGet] Uninstalling 'isdependency 1.0.0'.
+[NuGet] Successfully uninstalled 'isdependency 1.0.0'.
+[NuGet] Installing 'isdependency 1.1.0'.
+[NuGet] Successfully installed 'isdependency 1.1.0'.
+
+isdependency v1.1.0
+isdependency package files upgrade completed. Performing other installation steps.
+isdependency 1.1.0 Installed
+ The upgrade of isdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey upgraded 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for isdependency/1.1.0: succeeded
+=> added new files:
+.chocolatey\isdependency.1.1.0\.arguments
+.chocolatey\isdependency.1.1.0\.files
+lib\hasdependency\hasdependency.nupkg: 1.0.0.0
+lib\isdependency\isdependency.nupkg: 1.1.0.0
+lib\isexactversiondependency\isexactversiondependency.nupkg: 1.0.0.0
+end of test

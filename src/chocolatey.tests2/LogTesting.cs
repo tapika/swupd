@@ -570,13 +570,28 @@
                         ChocoTestContext.pack_isdependency_1_0_0,
                         ChocoTestContext.pack_isdependency_1_0_1,
                         ChocoTestContext.pack_isdependency_1_1_0,
-                        ChocoTestContext.pack_isdependency_2_0_0,
-                        ChocoTestContext.pack_isdependency_2_1_0,
                         ChocoTestContext.pack_isexactversiondependency_1_0_0
                     );
                     break;
 
                 case ChocoTestContext.packages_for_dependency_testing9:
+                    PrepareMultiPackageFolder(
+                        ChocoTestContext.packages_for_dependency_testing8,
+                        ChocoTestContext.pack_isdependency_2_0_0,
+                        ChocoTestContext.pack_isdependency_2_1_0
+                    );
+                    break;
+
+                case ChocoTestContext.packages_for_dependency_testing10:
+                    PrepareMultiPackageFolder(
+                        ChocoTestContext.packages_for_dependency_testing9,
+                        ChocoTestContext.pack_isexactversiondependency_1_0_1,
+                        ChocoTestContext.pack_isexactversiondependency_1_1_0,
+                        ChocoTestContext.pack_isexactversiondependency_2_0_0
+                    );
+                    break;
+
+                case ChocoTestContext.packages_for_dependency_testing11:
                     PrepareMultiPackageFolder(
                         ChocoTestContext.packages_for_dependency_testing8,
                         ChocoTestContext.pack_isexactversiondependency_1_0_1,

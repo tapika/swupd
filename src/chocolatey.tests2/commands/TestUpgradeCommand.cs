@@ -348,7 +348,7 @@ namespace chocolatey.tests2.commands
 
         void TestDependencyUpgrade(
             Action<ChocolateyConfiguration> confPatch = null,
-            ChocoTestContext packagesContext = ChocoTestContext.packages_for_dependency_testing9,
+            ChocoTestContext packagesContext = ChocoTestContext.packages_for_dependency_testing10,
             [CallerMemberName] string testFolder = ""
         )
         {
@@ -361,12 +361,10 @@ namespace chocolatey.tests2.commands
                 }
             };
 
-            TestUpgrade(confDepPatch,
-                ChocoTestContext.isdependency_hasdependency,
-                packagesContext,
-                testFolder
-            );
-         
+            DoOperation(ChocoTestContext.isdependency_hasdependency, confDepPatch, 
+                CommandNameType.upgrade, packagesContext, testFolder);
+
+            WriteNupkgInfo("hasdependency");
             WriteNupkgInfo("isdependency");
             WriteNupkgInfo("isexactversiondependency");
         }
@@ -375,13 +373,13 @@ namespace chocolatey.tests2.commands
         [LogTest]
         public void when_upgrading_a_package_with_dependencies_happy()
         {
-            TestDependencyUpgrade(null, ChocoTestContext.packages_for_dependency_testing9);
+            TestDependencyUpgrade(null, ChocoTestContext.packages_for_dependency_testing10);
         }
 
         [LogTest]
         public void when_upgrading_a_package_with_unavailable_dependencies()
         {
-            TestDependencyUpgrade(null, ChocoTestContext.packages_for_dependency_testing8);
+            TestDependencyUpgrade(null, ChocoTestContext.packages_for_dependency_testing9);
         }
 
         [LogTest]
@@ -392,8 +390,19 @@ namespace chocolatey.tests2.commands
                     conf.IgnoreDependencies = true;
                 }
 
-                ,ChocoTestContext.packages_for_dependency_testing8
+                ,ChocoTestContext.packages_for_dependency_testing9
             );
+        }
+
+        [LogTest]
+        public void when_upgrading_a_dependency_happy()
+        {
+            TestDependencyUpgrade(
+                (conf) => {
+                    conf.PackageNames = conf.Input = "isdependency";
+                }
+
+                ,ChocoTestContext.packages_for_dependency_testing11);
         }
 
 

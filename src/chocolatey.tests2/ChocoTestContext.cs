@@ -32,6 +32,8 @@ namespace chocolatey.tests2
         packages_for_dependency_testing7,
         packages_for_dependency_testing8,
         packages_for_dependency_testing9,
+        packages_for_dependency_testing10,
+        packages_for_dependency_testing11,
         packages_for_upgrade_testing,
         upgrade_testing_context,
 
