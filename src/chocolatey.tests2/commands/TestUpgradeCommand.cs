@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Xml.XPath;
 
 namespace chocolatey.tests2.commands
 {
@@ -455,6 +456,27 @@ namespace chocolatey.tests2.commands
                 ChocoTestContext.packages_for_dependency_testing10,
                 ChocoTestContext.isdependency_hasdependency_sxs
             );
+        }
+
+        [LogTest]
+        public void when_upgrading_a_package_with_config_transforms()
+        {
+            string path = null;
+            TestUpgrade((conf) =>
+            {
+                path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "console.exe.config");
+            });
+
+            var xmlDocument = new XPathDocument(path);
+            XPathNavigator pathNavigator = xmlDocument.CreateNavigator();
+            string[] keys = new[] { "test","testReplace", "insert", "insertNew" };
+            var log = LogService.console;
+            log.Info($"{Path.GetFileName(path)} keys:");
+            foreach (var key in keys)
+            { 
+                string value = pathNavigator.SelectSingleNode($"//configuration/appSettings/add[@key='{key}']/@value").TypedValue.to_string();
+                log.Info($"- {key}: '{value}'");
+            }
         }
 
     }
