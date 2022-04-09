@@ -14,7 +14,7 @@ using System.Runtime.CompilerServices;
 namespace chocolatey.tests2.commands
 {
     [Parallelizable(ParallelScope.All), FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-    public class TestUpgradeCommand: LogTesting
+    public class TestUpgradeCommand : LogTesting
     {
         public string DoOperation(
             ChocoTestContext testcontext = ChocoTestContext.upgrade_testing_context,
@@ -37,7 +37,7 @@ namespace chocolatey.tests2.commands
 
                 packageName = conf.PackageNames;
             };
-        
+
             InstallOn(testcontext, upgradePatch,
                 packagesContext,
                 Path.Combine(nameof(TestUpgradeCommand), testFolder));
@@ -57,7 +57,7 @@ namespace chocolatey.tests2.commands
             {
                 conf.Version = version;
                 conf.Prerelease = allowPrerelease;
-                
+
                 if (confPatch != null)
                 {
                     confPatch(conf);
@@ -81,7 +81,7 @@ namespace chocolatey.tests2.commands
         }
 
         void WriteNupkgInfo(string packageId)
-        { 
+        {
             WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageId, packageId + Constants.PackageExtension));
         }
 
@@ -104,7 +104,7 @@ namespace chocolatey.tests2.commands
                     fileContent = ver2;
                 }
                 else
-                { 
+                {
                     fileContent = $"{ver1} (normalized: {ver2})";
                 }
             }
@@ -283,7 +283,7 @@ namespace chocolatey.tests2.commands
                 });
             }
             finally
-            { 
+            {
                 fileStream.Close();
             }
         }
@@ -346,31 +346,56 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        void TestDependencyUpgrade(
+            Action<ChocolateyConfiguration> confPatch = null,
+            ChocoTestContext packagesContext = ChocoTestContext.packages_for_dependency_testing9,
+            [CallerMemberName] string testFolder = ""
+        )
+        {
+            Action<ChocolateyConfiguration> confDepPatch = (conf) =>
+            {
+                conf.PackageNames = conf.Input = "hasdependency";
+                if (confPatch != null)
+                {
+                    confPatch(conf);
+                }
+            };
+
+            TestUpgrade(confDepPatch,
+                ChocoTestContext.isdependency_hasdependency,
+                packagesContext,
+                testFolder
+            );
+         
+            WriteNupkgInfo("isdependency");
+            WriteNupkgInfo("isexactversiondependency");
+        }
+
+
         [LogTest]
         public void when_upgrading_a_package_with_dependencies_happy()
         {
-            TestUpgrade((conf) =>
-                {
-                    conf.PackageNames = conf.Input = "hasdependency";
-                },
-                ChocoTestContext.isdependency_hasdependency,
-                ChocoTestContext.packages_for_dependency_testing9
-            );
+            TestDependencyUpgrade(null, ChocoTestContext.packages_for_dependency_testing9);
         }
 
         [LogTest]
         public void when_upgrading_a_package_with_unavailable_dependencies()
         {
-            TestUpgrade((conf) =>
-                {
-                    conf.PackageNames = conf.Input = "hasdependency";
-                },
-                ChocoTestContext.isdependency_hasdependency,
-                ChocoTestContext.packages_for_dependency_testing8
-            );
-            WriteNupkgInfo("isdependency");
-            WriteNupkgInfo("isexactversiondependency");
+            TestDependencyUpgrade(null, ChocoTestContext.packages_for_dependency_testing8);
         }
+
+        [LogTest]
+        public void when_upgrading_a_package_with_unavailable_dependencies_ignoring_dependencies()
+        {
+            TestDependencyUpgrade(
+                (conf) => {
+                    conf.IgnoreDependencies = true;
+                }
+
+                ,ChocoTestContext.packages_for_dependency_testing8
+            );
+        }
+
 
     }
 }

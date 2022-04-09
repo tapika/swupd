@@ -52,4 +52,6 @@ Chocolatey upgraded 3/3 packages.
 .chocolatey\isexactversiondependency.2.0.0\.arguments
 .chocolatey\isexactversiondependency.2.0.0\.files
 lib\hasdependency\hasdependency.nupkg: 2.1.0.0
+lib\isdependency\isdependency.nupkg: 2.0.0.0
+lib\isexactversiondependency\isexactversiondependency.nupkg: 2.0.0.0
 end of test
