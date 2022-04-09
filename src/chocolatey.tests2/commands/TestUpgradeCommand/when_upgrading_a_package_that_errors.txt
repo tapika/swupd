@@ -1,0 +1,39 @@
+Upgrading the following packages:
+badpackage
+By upgrading you accept licenses for the packages.
+
+You have badpackage v1.0 installed. Version 2.0 is available based on your source(s).
+[NuGet] Uninstalling 'badpackage 1.0'.
+[NuGet] Successfully uninstalled 'badpackage 1.0'.
+[NuGet] Installing 'badpackage 2.0'.
+[NuGet] Successfully installed 'badpackage 2.0'.
+
+badpackage v2.0
+badpackage package files upgrade completed. Performing other installation steps.
+This is badpackage v2.0 being installed
+WARNING: A warning!
+Oh no! An error
+ERROR: We had an error captain!
+ at <ScriptBlock>, badpackage\tools\chocolateyInstall.ps1: line 15
+at <ScriptBlock>, helperschocolateyScriptRunner.ps1: line 49
+at <ScriptBlock>, <No file>: line 1
+The upgrade of badpackage was NOT successful.
+Error while running 'lib\badpackage\tools\chocolateyInstall.ps1'.
+ See log for details.
+
+Chocolatey upgraded 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for badpackage/2.0: FAILED
+  Error: 
+  - Error while running 'lib\badpackage\tools\chocolateyInstall.ps1'.
+ See log for details.
+=> added new files:
+.chocolatey\badpackage.2.0\.files
+lib-bad\badpackage\.chocolateyPending
+lib-bad\badpackage\badpackage.nupkg
+  version: 2.0.0.0
+lib-bad\badpackage\badpackage.nuspec
+lib-bad\badpackage\tools\chocolateyInstall.ps1
+lib-bad\badpackage\tools\chocolateyUninstall.ps1
+lib\badpackage\badpackage.nupkg: 1.0 (normalized: 1.0.0.0)
+end of test

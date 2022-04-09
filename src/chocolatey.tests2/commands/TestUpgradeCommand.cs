@@ -332,6 +332,15 @@ namespace chocolatey.tests2.commands
             }, ChocoTestContext.empty);
         }
 
+        [LogTest]
+        public void when_upgrading_a_package_that_errors()
+        {
+            TestUpgrade((conf) =>
+            {
+                conf.PackageNames = conf.Input = "badpackage";
+            });
+        }
+
     }
 }
 
