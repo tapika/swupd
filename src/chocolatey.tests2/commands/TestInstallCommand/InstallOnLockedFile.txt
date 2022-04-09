@@ -3,7 +3,7 @@ installpackage
 By installing you accept licenses for the packages.
 installpackage v1.0.0 already installed. Forcing reinstall of version '1.0.0'. 
  Please use upgrade if you meant to upgrade to a new version.
-This is try 1/2. Retrying after 300 milliseconds.
+This is try 1/2. Retrying after 0 milliseconds.
  Error converted to warning:
  Access to the path 'lib\installpackage' is denied.
 Maximum tries of 2 reached. Throwing error.

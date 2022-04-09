@@ -1,4 +1,5 @@
-﻿using chocolatey.infrastructure.registration;
+﻿using chocolatey.infrastructure.filesystem;
+using chocolatey.infrastructure.registration;
 using NUnit.Framework;
 using SimpleInjector;
 using System;
@@ -15,6 +16,9 @@ namespace chocolatey.tests2
         public override void BeforeEverything()
         {
             base.BeforeEverything(false);
+            // Speed up files system operations, take 2
+            DotNetFileSystem.OperationRetryTimeMilliseconds = 0;
+            DotNetFileSystem.IncreaseRetryMilliseconds = 0;
         }
     }
 }

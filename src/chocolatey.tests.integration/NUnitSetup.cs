@@ -95,12 +95,8 @@ namespace chocolatey.tests.integration
 
             ApplicationParameters.LockTransactionalInstallFiles = false;
 
-            // we need to speed up specs a bit, so only try filesystem locking operations twice
-            var field = fileSystem.GetType().GetField("TIMES_TO_TRY_OPERATION", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (field != null)
-            {
-                field.SetValue(fileSystem, 2);
-            }
+            // Speed up files system operations, take 1
+            DotNetFileSystem.TimesToRetryOperation = 2;
         }
 
         private void unpack_self(Container container, ChocolateyConfiguration config)

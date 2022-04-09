@@ -43,17 +43,19 @@ namespace chocolatey.infrastructure.filesystem
     /// <remarks>Normally we avoid regions, however this has so many methods that we are making an exception.</remarks>
     public class DotNetFileSystem : DotNetFileSystemBase
     {
-        private readonly int TIMES_TO_TRY_OPERATION = 3;
+        public static int TimesToRetryOperation = 3;
+        public static int OperationRetryTimeMilliseconds = 200;
+        public static int IncreaseRetryMilliseconds = 100;
         private const int MAX_PATH_FILE = 255;
         private const int MAX_PATH_DIRECTORY = 248;
 
         private void allow_retries(Action action, bool isSilent = false)
         {
             FaultTolerance.retry(
-                TIMES_TO_TRY_OPERATION,
+                TimesToRetryOperation,
                 action,
-                waitDurationMilliseconds: 200,
-                increaseRetryByMilliseconds: 100,
+                waitDurationMilliseconds: OperationRetryTimeMilliseconds,
+                increaseRetryByMilliseconds: IncreaseRetryMilliseconds,
                 isSilent: isSilent);
         }
 
