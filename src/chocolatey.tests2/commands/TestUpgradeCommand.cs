@@ -213,6 +213,14 @@ namespace chocolatey.tests2.commands
             }, true);
         }
 
+        [LogTest]
+        public void when_force_upgrading_a_package()
+        {
+            TestUpgrade((conf) =>
+            {
+                conf.Force = true;
+            });
+        }
     }
 }
 
