@@ -1,0 +1,29 @@
+Upgrading the following packages:
+hasdependency
+By upgrading you accept licenses for the packages.
+
+You have hasdependency v1.0.0 installed. Version 2.1.0 is available based on your source(s).
+[NuGet] Attempting to resolve dependency 'isdependency (≥ 2.0.0)'.
+[NuGet] Attempting to resolve dependency 'isexactversiondependency (= 2.0.0)'.
+hasdependency not upgraded. An error occurred during installation:
+ Unable to resolve dependency 'isexactversiondependency (= 2.0.0)'.
+hasdependency package files upgrade completed. Performing other installation steps.
+The upgrade of hasdependency was NOT successful.
+hasdependency not upgraded. An error occurred during installation:
+ Unable to resolve dependency 'isexactversiondependency (= 2.0.0)'.
+
+Chocolatey upgraded 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for hasdependency/2.1.0: FAILED
+  Error: 
+  - hasdependency not upgraded. An error occurred during installation:
+ Unable to resolve dependency 'isexactversiondependency (= 2.0.0)'.
+=> added new files:
+lib-bad\hasdependency\.chocolateyPending
+lib-bad\hasdependency\hasdependency.nupkg
+  version: 1.0.0.0
+lib-bad\hasdependency\hasdependency.nuspec
+lib\hasdependency\hasdependency.nupkg: 1.0.0.0
+lib\isdependency\isdependency.nupkg: 1.0.0.0
+lib\isexactversiondependency\isexactversiondependency.nupkg: 1.0.0.0
+end of test

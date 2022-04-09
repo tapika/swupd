@@ -77,7 +77,12 @@ namespace chocolatey.tests2.commands
             string packageName = DoOperation(testcontext, confPatch, CommandNameType.upgrade, packagesContext, testFolder);
 
             WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, "tools", "console.exe"));
-            WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, packageName + Constants.PackageExtension));
+            WriteNupkgInfo(packageName);
+        }
+
+        void WriteNupkgInfo(string packageId)
+        { 
+            WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageId, packageId + Constants.PackageExtension));
         }
 
         void WriteFileContext(string path)
@@ -349,10 +354,23 @@ namespace chocolatey.tests2.commands
                     conf.PackageNames = conf.Input = "hasdependency";
                 },
                 ChocoTestContext.isdependency_hasdependency,
-                ChocoTestContext.packages_for_dependency_testing8
+                ChocoTestContext.packages_for_dependency_testing9
             );
         }
 
+        [LogTest]
+        public void when_upgrading_a_package_with_unavailable_dependencies()
+        {
+            TestUpgrade((conf) =>
+                {
+                    conf.PackageNames = conf.Input = "hasdependency";
+                },
+                ChocoTestContext.isdependency_hasdependency,
+                ChocoTestContext.packages_for_dependency_testing8
+            );
+            WriteNupkgInfo("isdependency");
+            WriteNupkgInfo("isexactversiondependency");
+        }
 
     }
 }
