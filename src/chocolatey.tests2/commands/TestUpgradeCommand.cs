@@ -303,6 +303,18 @@ namespace chocolatey.tests2.commands
             }
         }
 
+        [LogTest]
+        public void when_upgrading_a_package_with_added_files()
+        {
+            string path = null;
+            TestUpgrade((conf) =>
+            {
+                path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "dude.txt");
+                File.WriteAllText(path, "hellow");
+            });
+            Assert.True(File.Exists(path));
+        }
+
     }
 }
 
