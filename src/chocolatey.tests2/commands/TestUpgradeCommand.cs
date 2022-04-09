@@ -458,25 +458,50 @@ namespace chocolatey.tests2.commands
             );
         }
 
-        [LogTest]
-        public void when_upgrading_a_package_with_config_transforms()
+
+        void UpgradeWithConfigTransform(
+            bool addXmlComment,
+            [CallerMemberName] string testFolder = ""
+        )
         {
+            const string COMMENT_ADDED = "<!-- dude -->";
             string path = null;
             TestUpgrade((conf) =>
             {
                 path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "console.exe.config");
-            });
+                if (addXmlComment)
+                { 
+                    File.WriteAllText(path, File.ReadAllText(path) + COMMENT_ADDED);
+                }
+            }, testFolder: testFolder);
 
             var xmlDocument = new XPathDocument(path);
             XPathNavigator pathNavigator = xmlDocument.CreateNavigator();
-            string[] keys = new[] { "test","testReplace", "insert", "insertNew" };
+            string[] keys = new[] { "test", "testReplace", "insert", "insertNew" };
             var log = LogService.console;
             log.Info($"{Path.GetFileName(path)} keys:");
             foreach (var key in keys)
-            { 
+            {
                 string value = pathNavigator.SelectSingleNode($"//configuration/appSettings/add[@key='{key}']/@value").TypedValue.to_string();
                 log.Info($"- {key}: '{value}'");
             }
+
+            if (addXmlComment)
+            { 
+                Assert.True(File.ReadAllText(path).Contains(COMMENT_ADDED));
+            }
+        }
+
+        [LogTest]
+        public void when_upgrading_a_package_with_config_transforms()
+        {
+            UpgradeWithConfigTransform(false);
+        }
+
+        [LogTest]
+        public void when_upgrading_a_package_with_config_transforms_when_config_was_edited()
+        {
+            UpgradeWithConfigTransform(true);
         }
 
     }
