@@ -221,6 +221,16 @@ namespace chocolatey.tests2.commands
                 conf.Force = true;
             });
         }
+
+        [LogTest]
+        public void when_upgrading_a_package_that_does_not_have_available_upgrades()
+        {
+            TestUpgrade((conf) =>
+            {
+                conf.PackageNames = conf.Input = "installpackage";
+            });
+        }
+
     }
 }
 
