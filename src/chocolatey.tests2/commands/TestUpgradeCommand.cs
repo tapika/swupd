@@ -47,6 +47,7 @@ namespace chocolatey.tests2.commands
 
         public void Preinstall(
             string version,
+            bool allowPrerelease = false,
             ChocoTestContext testcontext = ChocoTestContext.upgrade_testing_context,
             Action<ChocolateyConfiguration> confPatch = null,
             [CallerMemberName] string testFolder = ""
@@ -55,6 +56,7 @@ namespace chocolatey.tests2.commands
             Action<ChocolateyConfiguration> upgradePatch = (conf) =>
             {
                 conf.Version = version;
+                conf.Prerelease = allowPrerelease;
                 
                 if (confPatch != null)
                 {
@@ -172,6 +174,17 @@ namespace chocolatey.tests2.commands
             {
                 conf.Prerelease = true;
             });
+        }
+
+
+        [LogTest]
+        public void when_upgrading_an_existing_prerelease_package_without_prerelease_specified()
+        {
+            TitleText("preinstall");
+            Preinstall("1.1.1-beta", true);
+
+            TitleText("upgrade");
+            TestUpgrade(null, true);
         }
 
     }
