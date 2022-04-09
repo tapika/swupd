@@ -260,12 +260,29 @@ namespace chocolatey.tests2.commands
         {
             TestUpgrade((conf) =>
             {
-                var fileToSetReadOnly = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                var path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
                 var fileSystem = new DotNetFileSystem();
-                fileSystem.ensure_file_attribute_set(fileToSetReadOnly, FileAttributes.ReadOnly);
+                fileSystem.ensure_file_attribute_set(path, FileAttributes.ReadOnly);
             });
         }
 
+        [LogTest]
+        public void when_upgrading_a_package_with_a_read_and_delete_share_locked_file()
+        {
+            FileStream fileStream = null;
+            try
+            {
+                TestUpgrade((conf) =>
+                {
+                    var path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                    fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read | FileShare.Delete);
+                });
+            }
+            finally
+            { 
+                fileStream.Close();
+            }
+        }
     }
 }
 
