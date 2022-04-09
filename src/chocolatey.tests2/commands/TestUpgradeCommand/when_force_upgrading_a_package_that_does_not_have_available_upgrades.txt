@@ -1,0 +1,24 @@
+Upgrading the following packages:
+installpackage
+By upgrading you accept licenses for the packages.
+installpackage v1.0.0 is the latest version available based on your source(s).
+installpackage 1.0.0 Before Modification
+[NuGet] Installing 'installpackage 1.0.0'.
+[NuGet] Successfully installed 'installpackage 1.0.0'.
+
+installpackage v1.0.0 (forced)
+installpackage package files upgrade completed. Performing other installation steps.
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
+ The upgrade of installpackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey upgraded 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for installpackage/1.0.0: succeeded
+=> folder was not updated
+lib\installpackage\tools\console.exe: 
+lib\installpackage\installpackage.nupkg: 1.0.0.0
+end of test
