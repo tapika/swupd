@@ -3,7 +3,6 @@ using chocolatey.infrastructure.app.configuration;
 using chocolatey.infrastructure.app.domain;
 using chocolatey.infrastructure.filesystem;
 using chocolatey.infrastructure.logging;
-using chocolatey.tests.integration;
 using logtesting;
 using NuGet;
 using NUnit.Framework;
@@ -11,7 +10,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Xml.XPath;
 
 namespace chocolatey.tests2.commands
 {
@@ -22,6 +20,7 @@ namespace chocolatey.tests2.commands
             ChocoTestContext testcontext = ChocoTestContext.upgrade_testing_context,
             Action<ChocolateyConfiguration> confPatch = null,
             CommandNameType operation = CommandNameType.upgrade,
+            ChocoTestContext packagesContext = ChocoTestContext.packages_for_upgrade_testing,
             [CallerMemberName] string testFolder = ""
         )
         {
@@ -39,8 +38,8 @@ namespace chocolatey.tests2.commands
                 packageName = conf.PackageNames;
             };
         
-            InstallOn(testcontext, upgradePatch, 
-                ChocoTestContext.packages_for_upgrade_testing,
+            InstallOn(testcontext, upgradePatch,
+                packagesContext,
                 Path.Combine(nameof(TestUpgradeCommand), testFolder));
 
             return packageName;
@@ -65,16 +64,17 @@ namespace chocolatey.tests2.commands
                 }
             };
 
-            DoOperation(testcontext, upgradePatch, CommandNameType.install, testFolder);
+            DoOperation(testcontext, upgradePatch, CommandNameType.install, ChocoTestContext.packages_for_upgrade_testing, testFolder);
         }
 
         public void TestUpgrade(
             Action<ChocolateyConfiguration> confPatch = null,
             ChocoTestContext testcontext = ChocoTestContext.upgrade_testing_context,
+            ChocoTestContext packagesContext = ChocoTestContext.packages_for_upgrade_testing,
             [CallerMemberName] string testFolder = ""
         )
         {
-            string packageName = DoOperation(testcontext, confPatch, CommandNameType.upgrade, testFolder);
+            string packageName = DoOperation(testcontext, confPatch, CommandNameType.upgrade, packagesContext, testFolder);
 
             WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, "tools", "console.exe"));
             WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, packageName + Constants.PackageExtension));
@@ -340,6 +340,19 @@ namespace chocolatey.tests2.commands
                 conf.PackageNames = conf.Input = "badpackage";
             });
         }
+
+        [LogTest]
+        public void when_upgrading_a_package_with_dependencies_happy()
+        {
+            TestUpgrade((conf) =>
+                {
+                    conf.PackageNames = conf.Input = "hasdependency";
+                },
+                ChocoTestContext.isdependency_hasdependency,
+                ChocoTestContext.packages_for_dependency_testing8
+            );
+        }
+
 
     }
 }

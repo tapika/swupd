@@ -558,6 +558,27 @@
                     );
                     break;
 
+                case ChocoTestContext.packages_for_dependency_testing8:
+                    PrepareMultiPackageFolder(
+                        ChocoTestContext.pack_hasdependency_1_0_0,
+                        ChocoTestContext.pack_hasdependency_1_0_1,
+                        ChocoTestContext.pack_hasdependency_1_1_0,
+                        ChocoTestContext.pack_hasdependency_1_5_0,
+                        ChocoTestContext.pack_hasdependency_1_6_0,
+                        ChocoTestContext.pack_hasdependency_2_0_0,
+                        ChocoTestContext.pack_hasdependency_2_1_0,
+                        ChocoTestContext.pack_isdependency_1_0_0,
+                        ChocoTestContext.pack_isdependency_1_0_1,
+                        ChocoTestContext.pack_isdependency_1_1_0,
+                        ChocoTestContext.pack_isdependency_2_0_0,
+                        ChocoTestContext.pack_isdependency_2_1_0,
+                        ChocoTestContext.pack_isexactversiondependency_1_0_0,
+                        ChocoTestContext.pack_isexactversiondependency_1_0_1,
+                        ChocoTestContext.pack_isexactversiondependency_1_1_0,
+                        ChocoTestContext.pack_isexactversiondependency_2_0_0
+                    );
+                    break;
+
                 case ChocoTestContext.packages_for_upgrade_testing:
                     PrepareMultiPackageFolder(
                         ChocoTestContext.pack_badpackage_1_0,
