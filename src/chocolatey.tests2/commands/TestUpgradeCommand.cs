@@ -70,11 +70,10 @@ namespace chocolatey.tests2.commands
 
         public void TestUpgrade(
             Action<ChocolateyConfiguration> confPatch = null,
-            bool skipInit = false,
+            ChocoTestContext testcontext = ChocoTestContext.upgrade_testing_context,
             [CallerMemberName] string testFolder = ""
         )
         {
-            ChocoTestContext testcontext = (skipInit) ? ChocoTestContext.skipcontextinit : ChocoTestContext.upgrade_testing_context;
             string packageName = DoOperation(testcontext, confPatch, CommandNameType.upgrade, testFolder);
 
             WriteFileContext(Path.Combine(InstallContext.Instance.PackagesLocation, packageName, "tools", "console.exe"));
@@ -165,7 +164,7 @@ namespace chocolatey.tests2.commands
             TestUpgrade((conf) =>
             {
                 conf.Version = "1.1.0";
-            }, true);
+            }, ChocoTestContext.skipcontextinit);
         }
 
         [LogTest]
@@ -185,7 +184,7 @@ namespace chocolatey.tests2.commands
             Preinstall("1.1.1-beta", true);
 
             TitleText("upgrade");
-            TestUpgrade(null, true);
+            TestUpgrade(null, ChocoTestContext.skipcontextinit);
         }
 
         [LogTest]
@@ -197,7 +196,7 @@ namespace chocolatey.tests2.commands
             TitleText("upgrade");
             TestUpgrade((conf) => {
                 conf.UpgradeCommand.ExcludePrerelease = true;
-            }, true);
+            }, ChocoTestContext.skipcontextinit);
         }
 
         [LogTest]
@@ -211,7 +210,7 @@ namespace chocolatey.tests2.commands
             TestUpgrade((conf) => {
                 conf.UpgradeCommand.ExcludePrerelease = true;
                 conf.AllowDowngrade = true;
-            }, true);
+            }, ChocoTestContext.skipcontextinit);
         }
 
         [LogTest]
@@ -323,6 +322,16 @@ namespace chocolatey.tests2.commands
                 conf.PackageNames = conf.Input = "nonexistingpackage";
             });
         }
+
+        [LogTest]
+        public void when_upgrading_a_package_that_is_not_installed()
+        {
+            TestUpgrade((conf) =>
+            {
+                conf.PackageNames = conf.Input = "installpackage";
+            }, ChocoTestContext.empty);
+        }
+
     }
 }
 
