@@ -183,6 +183,20 @@
             }, packagesContext);
         }
 
+        /// <summary>
+        /// Installs specific package using sxs / AllowMultipleVersions
+        /// </summary>
+        private void InstallSxs(
+            string package, string version,
+            ChocoTestContext packagesContext = ChocoTestContext.packages_default)
+        {
+            InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
+            {
+                conf2.PackageNames = conf2.Input = package;
+                conf2.Version = version;
+                conf2.AllowMultipleVersions = true;
+            }, packagesContext);
+        }
 
         public void InstallOn(
             ChocoTestContext testcontext,
@@ -679,6 +693,13 @@
                     {
                         Install("isdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing7);
                         Install("hasdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing7);
+                    }
+                    break;
+
+                case ChocoTestContext.isdependency_hasdependency_sxs:
+                    {
+                        InstallSxs("isdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing6);
+                        InstallSxs("hasdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing6);
                     }
                     break;
 

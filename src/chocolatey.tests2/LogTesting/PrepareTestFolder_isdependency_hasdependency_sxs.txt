@@ -1,0 +1,71 @@
+Installing the following packages:
+isdependency
+By installing you accept licenses for the packages.
+[NuGet] Installing 'isdependency 1.0.0'.
+[NuGet] Successfully installed 'isdependency 1.0.0'.
+
+isdependency v1.0.0
+isdependency package files install completed. Performing other installation steps.
+isdependency 1.0.0 Installed
+ The install of isdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for isdependency/1.0.0: succeeded
+=> added new files:
+.chocolatey\isdependency.1.0.0\.arguments
+.chocolatey\isdependency.1.0.0\.files
+.chocolatey\isdependency.1.0.0\.sxs
+lib\isdependency.1.0.0\isdependency.1.0.0.nupkg
+  version: 1.0.0.0
+lib\isdependency.1.0.0\isdependency.1.0.0.nuspec
+lib\isdependency.1.0.0\tools\chocolateyinstall.ps1
+lib\isdependency.1.0.0\tools\chocolateyuninstall.ps1
+Installing the following packages:
+hasdependency
+By installing you accept licenses for the packages.
+[NuGet] Attempting to resolve dependency 'isexactversiondependency (= 1.0.0)'.
+[NuGet] Attempting to resolve dependency 'isdependency (≥ 1.0.0 && < 2.0.0.0)'.
+[NuGet] Installing 'isexactversiondependency 1.0.0'.
+[NuGet] Successfully installed 'isexactversiondependency 1.0.0'.
+
+isexactversiondependency v1.0.0
+isexactversiondependency package files install completed. Performing other installation steps.
+isexactversiondependency 1.0.0 Installed
+ The install of isexactversiondependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'hasdependency 1.0.0'.
+[NuGet] Successfully installed 'hasdependency 1.0.0'.
+
+hasdependency v1.0.0
+hasdependency package files install completed. Performing other installation steps.
+hasdependency 1.0.0 Installed
+ The install of hasdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 2/2 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for hasdependency/1.0.0: succeeded
+=> install result for isexactversiondependency/1.0.0: succeeded
+=> added new files:
+.chocolatey\hasdependency.1.0.0\.arguments
+.chocolatey\hasdependency.1.0.0\.files
+.chocolatey\hasdependency.1.0.0\.sxs
+.chocolatey\isexactversiondependency.1.0.0\.arguments
+.chocolatey\isexactversiondependency.1.0.0\.files
+.chocolatey\isexactversiondependency.1.0.0\.sxs
+lib\hasdependency.1.0.0\hasdependency.1.0.0.nupkg
+  version: 1.0.0.0
+lib\hasdependency.1.0.0\hasdependency.1.0.0.nuspec
+lib\hasdependency.1.0.0\tools\chocolateyinstall.ps1
+lib\hasdependency.1.0.0\tools\chocolateyuninstall.ps1
+lib\isexactversiondependency.1.0.0\isexactversiondependency.1.0.0.nupkg
+  version: 1.0.0.0
+lib\isexactversiondependency.1.0.0\isexactversiondependency.1.0.0.nuspec
+lib\isexactversiondependency.1.0.0\tools\chocolateyinstall.ps1
+lib\isexactversiondependency.1.0.0\tools\chocolateyuninstall.ps1
+shared context ends

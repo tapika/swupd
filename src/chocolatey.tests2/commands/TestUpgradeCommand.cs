@@ -349,6 +349,7 @@ namespace chocolatey.tests2.commands
         void TestDependencyUpgrade(
             Action<ChocolateyConfiguration> confPatch = null,
             ChocoTestContext packagesContext = ChocoTestContext.packages_for_dependency_testing10,
+            ChocoTestContext testcontext = ChocoTestContext.isdependency_hasdependency,
             [CallerMemberName] string testFolder = ""
         )
         {
@@ -361,7 +362,7 @@ namespace chocolatey.tests2.commands
                 }
             };
 
-            DoOperation(ChocoTestContext.isdependency_hasdependency, confDepPatch, 
+            DoOperation(testcontext, confDepPatch, 
                 CommandNameType.upgrade, packagesContext, testFolder);
 
             WriteNupkgInfo("hasdependency");
@@ -400,11 +401,31 @@ namespace chocolatey.tests2.commands
             TestDependencyUpgrade(
                 (conf) => {
                     conf.PackageNames = conf.Input = "isdependency";
-                }
+                },
 
-                ,ChocoTestContext.packages_for_dependency_testing11);
+                ChocoTestContext.packages_for_dependency_testing11
+            );
         }
 
+        [LogTest]
+        public void when_upgrading_a_dependency_legacy_folder_version()
+        {
+            TestDependencyUpgrade(
+                (conf) => {
+                    // This apparently a walkaround to get rid of "isdependency.1.0.0" folder.
+                    // Bug, maybe should be fixed?
+                    Directory.Delete(InstallContext.Instance.ChocolateyPackageInfoStoreLocation, true);
+
+                    conf.PackageNames = conf.Input = "isdependency";
+                },
+                
+                ChocoTestContext.packages_for_dependency_testing11,
+                ChocoTestContext.isdependency_hasdependency_sxs
+            );
+
+            WriteNupkgInfo("hasdependency.1.0.0");
+            WriteNupkgInfo("isexactversiondependency.1.0.0");
+        }
 
     }
 }

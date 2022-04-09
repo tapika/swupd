@@ -16,6 +16,7 @@ namespace chocolatey.tests2
         isdependency,
         isdependency_hasdependency,
         isdependency_hasdependency_2,
+        isdependency_hasdependency_sxs,
         hasdependency,
         installed_5_packages,
         exactpackage,
