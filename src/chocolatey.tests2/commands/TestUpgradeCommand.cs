@@ -241,6 +241,18 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        [Test]
+        public void when_upgrading_packages_with_packages_config()
+        {
+            Assert.Throws<ApplicationException>(() =>
+            {
+                TestUpgrade((conf) =>
+                {
+                    var confPath = Path.Combine(InstallContext.ApplicationInstallLocation, "context", "testing.packages.config");
+                    conf.PackageNames = conf.Input = confPath;
+                });
+            });
+        }
     }
 }
 
