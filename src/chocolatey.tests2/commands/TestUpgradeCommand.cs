@@ -427,6 +427,18 @@ namespace chocolatey.tests2.commands
             WriteNupkgInfo("isexactversiondependency.1.0.0");
         }
 
+        [LogTest]
+        public void when_upgrading_a_dependency_with_parent_that_depends_on_a_range_less_than_upgrade_version()
+        {
+            TestDependencyUpgrade(
+                (conf) => {
+                    conf.PackageNames = conf.Input = "isdependency";
+                }, 
+                
+                ChocoTestContext.packages_for_dependency_testing10
+            );
+        }
+
     }
 }
 

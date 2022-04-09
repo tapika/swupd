@@ -1,0 +1,56 @@
+Upgrading the following packages:
+isdependency
+By upgrading you accept licenses for the packages.
+
+You have isdependency v1.0.0 installed. Version 2.1.0 is available based on your source(s).
+[NuGet] Attempting to resolve dependency 'isexactversiondependency (= 1.0.1)'.
+[NuGet] Uninstalling 'hasdependency 1.0.0'.
+[NuGet] Successfully uninstalled 'hasdependency 1.0.0'.
+[NuGet] Uninstalling 'isdependency 1.0.0'.
+[NuGet] Successfully uninstalled 'isdependency 1.0.0'.
+[NuGet] Uninstalling 'isexactversiondependency 1.0.0'.
+[NuGet] Successfully uninstalled 'isexactversiondependency 1.0.0'.
+[NuGet] Installing 'isexactversiondependency 1.0.1'.
+[NuGet] Successfully installed 'isexactversiondependency 1.0.1'.
+
+isexactversiondependency v1.0.1
+isexactversiondependency package files upgrade completed. Performing other installation steps.
+isexactversiondependency 1.0.1 Installed
+ The upgrade of isexactversiondependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'hasdependency 1.0.1'.
+[NuGet] Successfully installed 'hasdependency 1.0.1'.
+
+hasdependency v1.0.1
+hasdependency package files upgrade completed. Performing other installation steps.
+hasdependency 1.0.1 Installed
+ The upgrade of hasdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'isdependency 2.1.0'.
+[NuGet] Successfully installed 'isdependency 2.1.0'.
+
+isdependency v2.1.0
+isdependency package files upgrade completed. Performing other installation steps.
+isdependency 2.1.0 Installed
+ The upgrade of isdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey upgraded 3/3 packages. 
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for hasdependency/1.0.1: succeeded
+=> upgrade result for isdependency/2.1.0: succeeded
+=> upgrade result for isexactversiondependency/1.0.1: succeeded
+=> added new files:
+.chocolatey\hasdependency.1.0.1\.arguments
+.chocolatey\hasdependency.1.0.1\.files
+.chocolatey\isdependency.2.1.0\.arguments
+.chocolatey\isdependency.2.1.0\.files
+.chocolatey\isexactversiondependency.1.0.1\.arguments
+.chocolatey\isexactversiondependency.1.0.1\.files
+lib\hasdependency\hasdependency.nupkg: 1.0.1.0
+lib\isdependency\isdependency.nupkg: 2.1.0.0
+lib\isexactversiondependency\isexactversiondependency.nupkg: 1.0.1.0
+end of test
