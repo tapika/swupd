@@ -439,6 +439,24 @@ namespace chocolatey.tests2.commands
             );
         }
 
+        [LogTest]
+        public void when_upgrading_a_legacy_folder_dependency_with_parent_that_depends_on_a_range_less_than_upgrade_version()
+        {
+            // lib\
+            //  hasdependency.1.0.0
+            //  isdependency.1.0.0
+            //  isexactversiondependency.1.0.0
+            // directories are not cleaned up. (old comment "Legacy packages are left when implicit - GH-117")
+            TestDependencyUpgrade(
+                (conf) => {
+                    conf.PackageNames = conf.Input = "isdependency";
+                },
+
+                ChocoTestContext.packages_for_dependency_testing10,
+                ChocoTestContext.isdependency_hasdependency_sxs
+            );
+        }
+
     }
 }
 
