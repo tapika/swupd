@@ -199,6 +199,20 @@ namespace chocolatey.tests2.commands
             }, true);
         }
 
+        [LogTest]
+        public void when_upgrading_an_existing_prerelease_package_with_allow_downgrade_with_excludeprelease_and_without_prerelease_specified()
+        {
+            //Identical result to previous test
+            TitleText("preinstall");
+            Preinstall("1.1.1-beta", true);
+
+            TitleText("upgrade");
+            TestUpgrade((conf) => {
+                conf.UpgradeCommand.ExcludePrerelease = true;
+                conf.AllowDowngrade = true;
+            }, true);
+        }
+
     }
 }
 
