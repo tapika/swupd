@@ -1,0 +1,13 @@
+Upgrading the following packages:
+nonexistingpackage
+By upgrading you accept licenses for the packages.
+nonexistingpackage is not installed. Installing...
+nonexistingpackage not installed. The package was not found with the source(s) listed.
+
+Chocolatey upgraded 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for nonexistingpackage/: FAILED
+  Error: 
+  - nonexistingpackage not installed. The package was not found with the source(s) listed.
+=> folder was not updated
+end of test
