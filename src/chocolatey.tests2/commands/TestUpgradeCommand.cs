@@ -1,6 +1,7 @@
 ﻿using chocolatey.infrastructure.app;
 using chocolatey.infrastructure.app.configuration;
 using chocolatey.infrastructure.app.domain;
+using chocolatey.infrastructure.filesystem;
 using chocolatey.infrastructure.logging;
 using chocolatey.tests.integration;
 using logtesting;
@@ -253,6 +254,18 @@ namespace chocolatey.tests2.commands
                 });
             });
         }
+
+        [LogTest]
+        public void when_upgrading_a_package_with_readonly_files()
+        {
+            TestUpgrade((conf) =>
+            {
+                var fileToSetReadOnly = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                var fileSystem = new DotNetFileSystem();
+                fileSystem.ensure_file_attribute_set(fileToSetReadOnly, FileAttributes.ReadOnly);
+            });
+        }
+
     }
 }
 
