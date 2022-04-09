@@ -283,6 +283,26 @@ namespace chocolatey.tests2.commands
                 fileStream.Close();
             }
         }
+
+        [LogTest]
+        public void when_upgrading_a_package_with_an_exclusively_locked_file()
+        {
+            // graphical.exe.gui gets deleted - bug?    
+            FileStream fileStream = null;
+            try
+            {
+                TestUpgrade((conf) =>
+                {
+                    var path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                    fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                });
+            }
+            finally
+            {
+                fileStream.Close();
+            }
+        }
+
     }
 }
 

@@ -174,6 +174,7 @@ namespace chocolatey.infrastructure.tolerance
                 var exceptionMessage = log_is_in_debug_mode() ? ex.ToString() : ex.Message;
 
                 exceptionMessage = InstallContext.NormalizeMessage(exceptionMessage);
+                errorMessage = InstallContext.NormalizeMessage(errorMessage);
 
                 if (logDebugInsteadOfError)
                 {

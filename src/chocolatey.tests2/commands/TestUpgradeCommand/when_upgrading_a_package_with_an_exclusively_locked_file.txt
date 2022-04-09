@@ -1,0 +1,89 @@
+Upgrading the following packages:
+upgradepackage
+By upgrading you accept licenses for the packages.
+
+You have upgradepackage v1.0.0 installed. Version 1.1.0 is available based on your source(s).
+upgradepackage 1.0.0 Before Modification
+ERROR: This should not break the upgrade/uninstall
+ at <ScriptBlock>, upgradepackage\tools\chocolateyBeforeModify.ps1: line 3
+at <ScriptBlock>, helperschocolateyScriptRunner.ps1: line 49
+at <ScriptBlock>, <No file>: line 1
+This is try 1/2. Retrying after 0 milliseconds.
+ Error converted to warning:
+ Access to the path 'lib\upgradepackage' is denied.
+Maximum tries of 2 reached. Throwing error.
+Move failed with message:
+ Access to the path 'lib\upgradepackage' is denied.
+ Attempting backup move method.
+This is try 1/2. Retrying after 0 milliseconds.
+ Error converted to warning:
+ The process cannot access the file because it is being used by another process.
+Maximum tries of 2 reached. Throwing error.
+Error during backup (move phase):
+ The process cannot access the file because it is being used by another process.
+This is try 1/2. Retrying after 0 milliseconds.
+ Error converted to warning:
+ The process cannot access the file 'lib\upgradepackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+Maximum tries of 2 reached. Throwing error.
+Error during backup (reset phase):
+ The process cannot access the file 'lib\upgradepackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+Error computing hash for 'lib\upgradepackage\tools\chocolateyinstall.ps1'
+ Hash will be special code for locked file or file too big instead.
+ Captured error:
+  The process cannot access the file 'lib\upgradepackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+This is try 1/2. Retrying after 0 milliseconds.
+ Error converted to warning:
+ The process cannot access the file 'lib\upgradepackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+Maximum tries of 2 reached. Throwing error.
+Error backing up changed file:
+ The process cannot access the file 'lib\upgradepackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+There was an error accessing files. This could mean there is a 
+ process locking the folder or files. Please make sure nothing is 
+ running that would lock the files or folders in this directory prior 
+ to upgrade. If the package fails to upgrade, this is likely the cause.
+[NuGet] Uninstalling 'upgradepackage 1.0.0'.
+upgradepackage not upgraded. An error occurred during installation:
+ The process cannot access the file 'lib\upgradepackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+upgradepackage package files upgrade completed. Performing other installation steps.
+The upgrade of upgradepackage was NOT successful.
+upgradepackage not upgraded. An error occurred during installation:
+ The process cannot access the file 'lib\upgradepackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+This is try 1/2. Retrying after 0 milliseconds.
+ Error converted to warning:
+ Access to the path 'lib\upgradepackage' is denied.
+Maximum tries of 2 reached. Throwing error.
+Move failed with message:
+ Access to the path 'lib\upgradepackage' is denied.
+ Attempting backup move method.
+This is try 1/2. Retrying after 0 milliseconds.
+ Error converted to warning:
+ The process cannot access the file because it is being used by another process.
+Maximum tries of 2 reached. Throwing error.
+Could not move bad package to failure directory It will show as installed.
+ lib\upgradepackage
+ The error:
+ The process cannot access the file because it is being used by another process.
+This is try 1/2. Retrying after 0 milliseconds.
+ Error converted to warning:
+ Cannot create 'lib\upgradepackage' because a file or directory with the same name already exists.
+Maximum tries of 2 reached. Throwing error.
+Move failed with message:
+ Cannot create 'lib\upgradepackage' because a file or directory with the same name already exists.
+ Attempting backup move method.
+
+Chocolatey upgraded 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for upgradepackage/1.1.0: FAILED
+  Error: 
+  - upgradepackage not upgraded. An error occurred during installation:
+ The process cannot access the file 'lib\upgradepackage\tools\chocolateyinstall.ps1' because it is being used by another process.
+=> added new files:
+lib-bad\upgradepackage\.chocolateyPending
+lib-bad\upgradepackage\upgradepackage.nupkg
+  version: 1.0.0.0
+lib-bad\upgradepackage\upgradepackage.nuspec
+=> removed files:
+lib\upgradepackage\tools\graphical.exe.gui
+lib\upgradepackage\tools\console.exe: 1.0.0
+lib\upgradepackage\upgradepackage.nupkg: 1.0.0.0
+end of test

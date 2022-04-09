@@ -904,6 +904,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                             }
 
                             var logMessage = "{0} not upgraded. An error occurred during installation:{1} {2}".format_with(packageName, Environment.NewLine, message);
+                            logMessage = InstallContext.NormalizeMessage(logMessage);
                             this.Log().Error(ChocolateyLoggers.Important, logMessage);
                             packageResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
                             if (packageResult.ExitCode == 0) packageResult.ExitCode = 1;
@@ -1121,7 +1122,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     catch (Exception ex)
                     {
                         errored = true;
-                        this.Log().Error("Error during backup (reset phase):{0} {1}".format_with(Environment.NewLine, ex.Message));
+                        string exMessage = InstallContext.NormalizeMessage(ex.Message);
+                        this.Log().Error("Error during backup (reset phase):{0} {1}".format_with(Environment.NewLine, exMessage));
                     }
                 }
 
