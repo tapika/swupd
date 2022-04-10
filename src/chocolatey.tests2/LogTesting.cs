@@ -174,7 +174,7 @@
             bool Prerelease = false
         )
         {
-            InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
+            ExecuteConf(ChocoTestContext.skipcontextinit, (conf2) =>
             {
                 conf2.PackageNames = conf2.Input = package;
                 conf2.Version = version;
@@ -195,7 +195,7 @@
             string package, string version,
             ChocoTestContext packagesContext = ChocoTestContext.packages_default)
         {
-            InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
+            ExecuteConf(ChocoTestContext.skipcontextinit, (conf2) =>
             {
                 conf2.PackageNames = conf2.Input = package;
                 conf2.Version = version;
@@ -203,7 +203,14 @@
             }, packagesContext);
         }
 
-        public void InstallOn(
+        /// <summary>
+        /// Executes operation defined in configuration
+        /// </summary>
+        /// <param name="testcontext">test content to start from</param>
+        /// <param name="confPatch">additional patch action after configuration is created</param>
+        /// <param name="packagesContext">package content to request</param>
+        /// <param name="testFolder">test folder where to execute</param>
+        public void ExecuteConf(
             ChocoTestContext testcontext,
             Action<ChocolateyConfiguration> confPatch = null,
             ChocoTestContext packagesContext = ChocoTestContext.packages_default,
@@ -246,6 +253,9 @@
                     case nameof(CommandNameType.upgrade):
                         Service.upgrade_noop(conf);
                         break;
+                    case nameof(CommandNameType.uninstall):
+                        Service.uninstall_noop(conf);
+                        break;
                 }
             }
             else
@@ -259,6 +269,9 @@
                         break;
                     case nameof(CommandNameType.upgrade):
                         results = Service.upgrade_run(conf);
+                        break;
+                    case nameof(CommandNameType.uninstall):
+                        results = Service.uninstall_run(conf);
                         break;
                 }
 
@@ -652,10 +665,18 @@
                     break;
                 case ChocoTestContext.upgrade_testing_context:
                     {
-                        ChocoTestContext testContext = ChocoTestContext.packages_for_upgrade_testing;
-                        Install("installpackage", "1.0.0", testContext);
-                        Install("upgradepackage", "1.0.0", testContext);
-                        Install("badpackage", "1.0", testContext, true);
+                        ChocoTestContext packagesContext = ChocoTestContext.packages_for_upgrade_testing;
+                        Install("installpackage", "1.0.0", packagesContext);
+                        Install("upgradepackage", "1.0.0", packagesContext);
+                        Install("badpackage", "1.0", packagesContext, true);
+                    }
+                    break;
+
+                case ChocoTestContext.uninstall_testing_context:
+                    {
+                        ChocoTestContext packagesContext = ChocoTestContext.packages_for_upgrade_testing;
+                        Install("installpackage", "1.0.0", packagesContext);
+                        Install("badpackage", "1.0", packagesContext, true);
                     }
                     break;
 

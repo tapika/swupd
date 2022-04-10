@@ -26,7 +26,7 @@ namespace chocolatey.tests2.commands
             [CallerMemberName] string testFolder = ""
         )
         {
-            InstallOn(ChocoTestContext.empty, confPatch, packagesContext, GetTestFolder(testFolder));
+            ExecuteConf(ChocoTestContext.empty, confPatch, packagesContext, GetTestFolder(testFolder));
         }
 
         // when_noop_installing_a_package
@@ -81,7 +81,7 @@ namespace chocolatey.tests2.commands
             [CallerMemberName] string testFolder = ""
         )
         {
-            InstallOn(ChocoTestContext.install, confPatch, ChocoTestContext.packages_default, GetTestFolder(testFolder));
+            ExecuteConf(ChocoTestContext.install, confPatch, ChocoTestContext.packages_default, GetTestFolder(testFolder));
         }
 
         void InstalledPackageIs_1_0()
@@ -123,7 +123,7 @@ namespace chocolatey.tests2.commands
             [CallerMemberName] string testFolder = ""
         )
         {
-            InstallOn(testcontext, confPatch, packagesContext, GetTestFolder(testFolder));
+            ExecuteConf(testcontext, confPatch, packagesContext, GetTestFolder(testFolder));
         }
 
         // when_force_installing_an_already_installed_package_that_errors

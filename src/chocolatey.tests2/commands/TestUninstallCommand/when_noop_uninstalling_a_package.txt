@@ -1,0 +1,7 @@
+Would have run 'chocolateyBeforeModify.ps1':
+Write-Output "$env:PackageName $env:PackageVersion Before Modification"
+Would have run 'chocolateyuninstall.ps1':
+Write-Output "$env:PackageName $env:PackageVersion Uninstalled"
+Would have uninstalled installpackage v1.0.0.
+=> folder was not updated
+end of test

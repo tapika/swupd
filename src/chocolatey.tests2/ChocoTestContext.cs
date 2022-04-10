@@ -36,6 +36,7 @@ namespace chocolatey.tests2
         packages_for_dependency_testing11,
         packages_for_upgrade_testing,
         upgrade_testing_context,
+        uninstall_testing_context,
 
         pack_badpackage_1_0,
         pack_badpackage_2_0,

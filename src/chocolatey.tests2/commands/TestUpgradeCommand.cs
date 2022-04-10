@@ -39,7 +39,7 @@ namespace chocolatey.tests2.commands
                 packageName = conf.PackageNames;
             };
 
-            InstallOn(testcontext, upgradePatch,
+            ExecuteConf(testcontext, upgradePatch,
                 packagesContext,
                 Path.Combine(nameof(TestUpgradeCommand), testFolder));
 
