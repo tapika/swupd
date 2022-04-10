@@ -130,30 +130,53 @@ namespace chocolatey.tests2.commands
         [LogTest]
         public void when_uninstalling_a_package_with_added_files()
         {
-            string path = null;
+            string dudeTxt = null;
 
             TestUninstall((conf) =>
             {
-                path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "dude.txt");
-                File.WriteAllText(path, "hellow");
+                dudeTxt = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "dude.txt");
+                File.WriteAllText(dudeTxt, "hellow");
             });
 
-            Assert.True(File.Exists(path));
+            Assert.True(File.Exists(dudeTxt));
         }
 
         [LogTest]
         public void when_uninstalling_a_package_with_changed_files()
         {
-            string path = null;
+            string chocoPs1 = null;
 
             TestUninstall((conf) =>
             {
-                path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
-                File.WriteAllText(path, "hellow");
+                chocoPs1 = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                File.WriteAllText(chocoPs1, "hellow");
             });
 
-            Assert.True(File.Exists(path)); //should keep changed file
+            Assert.True(File.Exists(chocoPs1)); //should keep changed file
         }
+
+        [LogTest]
+        public void when_force_uninstalling_a_package_with_added_and_changed_files()
+        {
+            string dudeTxt = null;
+            string chocoPs1 = null;
+
+            TestUninstall((conf) =>
+            {
+                conf.Force = true;
+
+                chocoPs1 = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                File.WriteAllText(chocoPs1, "hellow");
+
+                dudeTxt = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "dude.txt");
+                File.WriteAllText(dudeTxt, "hellow");
+            });
+
+            // Force wipeouts all user made changes
+            Assert.False(File.Exists(chocoPs1));
+            Assert.False(File.Exists(dudeTxt));
+        }
+
 
     }
 }
