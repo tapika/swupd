@@ -556,22 +556,6 @@
                     );
                     break;
 
-                case ChocoTestContext.packages_for_dependency_testing7:
-                    PrepareMultiPackageFolder(
-                        ChocoTestContext.pack_hasdependency_1_0_0,
-                        ChocoTestContext.pack_conflictingdependency_2_1_0,
-                        ChocoTestContext.pack_isdependency_1_0_0,
-                        ChocoTestContext.pack_isdependency_1_0_1,
-                        ChocoTestContext.pack_isdependency_1_1_0,
-                        ChocoTestContext.pack_isdependency_2_0_0,
-                        ChocoTestContext.pack_isdependency_2_1_0,
-                        ChocoTestContext.pack_isexactversiondependency_1_0_0,
-                        ChocoTestContext.pack_isexactversiondependency_1_0_1,
-                        ChocoTestContext.pack_isexactversiondependency_1_1_0,
-                        ChocoTestContext.pack_isexactversiondependency_2_0_0
-                    );
-                    break;
-
                 case ChocoTestContext.packages_for_dependency_testing8:
                     PrepareMultiPackageFolder(
                         ChocoTestContext.pack_hasdependency_1_0_0,
@@ -686,13 +670,6 @@
                     {
                         Install("isdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing6);
                         Install("hasdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing6);
-                    }
-                    break;
-
-                case ChocoTestContext.isdependency_hasdependency_2:
-                    {
-                        Install("isdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing7);
-                        Install("hasdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing7);
                     }
                     break;
 
