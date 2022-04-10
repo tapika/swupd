@@ -109,6 +109,24 @@ namespace chocolatey.tests2.commands
             }
         }
 
+        [LogTest]
+        public void when_uninstalling_a_package_with_an_exclusively_locked_file()
+        {
+            FileStream fileStream = null;
+            try
+            {
+                TestUninstall((conf) =>
+                {
+                    var path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                    fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                });
+            }
+            finally
+            {
+                fileStream.Close();
+            }
+        }
+
     }
 }
 

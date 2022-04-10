@@ -1514,6 +1514,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                         catch (Exception ex)
                         {
                             var logMessage = "{0} not uninstalled. An error occurred during uninstall:{1} {2}".format_with(packageName, Environment.NewLine, ex.Message);
+                            logMessage = InstallContext.NormalizeMessage(logMessage);
                             this.Log().Error(ChocolateyLoggers.Important, logMessage);
                             var result = packageUninstalls.GetOrAdd(packageVersion.Id.to_lower() + "." + packageVersion.Version.to_string(), new PackageResult(packageVersion, _fileSystem.combine_paths(ApplicationParameters.PackagesLocation, packageVersion.Id)));
                             result.Messages.Add(new ResultMessage(ResultType.Error, logMessage));

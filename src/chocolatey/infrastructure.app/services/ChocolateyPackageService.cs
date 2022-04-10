@@ -872,9 +872,15 @@ Would have determined packages that are out of date based on what is
                     Environment.ExitCode = 1;
                 }
 
+                var log = LogService.console;
+                if (ApplicationParameters.runningUnitTesting)
+                {
+                    log = LogService.Instance.NullLogger;
+                }
+
                 if (uninstallFailures != 0)
                 {
-                    this.Log().Warn(@"
+                    log.Warn(@"
 If a package uninstall is failing and/or you've already uninstalled the
  software outside of Chocolatey, you can attempt to run the command
  with `-n` to skip running a chocolateyUninstall script, additionally
