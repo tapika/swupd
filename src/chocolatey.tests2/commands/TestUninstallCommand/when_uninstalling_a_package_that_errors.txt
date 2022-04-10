@@ -1,0 +1,32 @@
+Uninstalling the following packages:
+badpackage
+[NuGet] Uninstalling 'badpackage 1.0'.
+
+badpackage v1.0
+WARNING: A warning!
+Oh no! An error
+ERROR: We had an error captain!
+ at <ScriptBlock>, badpackage\tools\chocolateyUninstall.ps1: line 13
+at <ScriptBlock>, helperschocolateyScriptRunner.ps1: line 49
+at <ScriptBlock>, <No file>: line 1
+badpackage uninstall not successful.
+Error while running 'lib\badpackage\tools\chocolateyUninstall.ps1'.
+ See log for details.
+badpackage not uninstalled. An error occurred during uninstall:
+ badpackage uninstall not successful.
+
+Chocolatey uninstalled 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> uninstall result for badpackage/1.0: FAILED
+  Error: 
+  - Error while running 'lib\badpackage\tools\chocolateyUninstall.ps1'.
+ See log for details.
+  - badpackage not uninstalled. An error occurred during uninstall:
+ badpackage uninstall not successful.
+=> added new files:
+lib-bkp\badpackage\badpackage.nupkg
+  version: 1.0.0.0
+lib-bkp\badpackage\badpackage.nuspec
+lib-bkp\badpackage\tools\chocolateyInstall.ps1
+lib-bkp\badpackage\tools\chocolateyUninstall.ps1
+end of test

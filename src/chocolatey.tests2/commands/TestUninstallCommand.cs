@@ -186,6 +186,15 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        [LogTest]
+        public void when_uninstalling_a_package_that_errors()
+        {
+            TestUninstall((conf) =>
+            {
+                conf.PackageNames = conf.Input = "badpackage";
+            });
+        }
+
     }
 }
 
