@@ -57,6 +57,15 @@ namespace chocolatey.tests2.commands
             TestUninstall();
         }
 
+        [LogTest]
+        public void when_force_uninstalling_a_package()
+        {
+            TestUninstall((conf) =>
+            {
+                conf.Force = true;
+            });
+        }
+
     }
 }
 
