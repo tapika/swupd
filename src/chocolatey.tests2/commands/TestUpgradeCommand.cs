@@ -538,6 +538,22 @@ namespace chocolatey.tests2.commands
             WriteNupkgInfo("installpackage");
         }
 
+        [LogTest]
+        public void when_upgrading_all_packages_with_prereleases_installed_with_excludeprerelease_specified()
+        {
+            TitleText("preinstall");
+            Preinstall("1.1.1-beta", true);
+
+            TitleText("upgrade");
+            TestUpgrade((conf) => {
+                conf.Prerelease = false;
+                conf.PackageNames = conf.Input = "all";
+                conf.UpgradeCommand.ExcludePrerelease = true;
+            }, ChocoTestContext.skipcontextinit);
+
+            WriteNupkgInfo("upgradepackage");
+        }
+
     }
 }
 
