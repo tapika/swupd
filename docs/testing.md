@@ -17,6 +17,7 @@
     + [Verifying log performance and usability](#verifying-log-performance-and-usability)
     + [Mocking and verifying log](#mocking-and-verifying-log)
     + [Code coverage and verifying log](#code-coverage-and-verifying-log)
+    + [Log performance](#log-performance)
 
 # Chocolatey unit testing
 
@@ -356,4 +357,10 @@ But in this case rest of lines will not be executed at all, giving red color in 
 Better to use earlier example, as it works better with code coverage.
 
 It's also possible that some of strings will fail due to `null` reference violation, so it's better to test that code works, even thus it may not provide correct output.
+
+### Log performance
+
+Chocolatey is relatively small so logging does influence it's performance - however - it's possible that same testing framework could be reused for other projects as well, except Chocolatey.
+
+According to [NLog performance](https://github.com/NLog/NLog/wiki/Performance) wiki pages - if logging is not performed - then no need to perform string formatting as well - and for that purpose developer should use parameters instead of string interpolation (`$"Hello {world}"`).
 
