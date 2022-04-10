@@ -513,6 +513,15 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        [LogTest]
+        public void when_upgrading_all_packages_happy_path()
+        {
+            TestUpgrade((conf) =>
+            {
+                conf.PackageNames = conf.Input = "all";
+            });
+        }
+
     }
 }
 

@@ -1,0 +1,65 @@
+Upgrading the following packages:
+all
+By upgrading you accept licenses for the packages.
+
+You have badpackage v1.0 installed. Version 2.0 is available based on your source(s).
+[NuGet] Uninstalling 'badpackage 1.0'.
+[NuGet] Successfully uninstalled 'badpackage 1.0'.
+[NuGet] Installing 'badpackage 2.0'.
+[NuGet] Successfully installed 'badpackage 2.0'.
+
+badpackage v2.0
+badpackage package files upgrade completed. Performing other installation steps.
+This is badpackage v2.0 being installed
+WARNING: A warning!
+Oh no! An error
+ERROR: We had an error captain!
+ at <ScriptBlock>, badpackage\tools\chocolateyInstall.ps1: line 15
+at <ScriptBlock>, helperschocolateyScriptRunner.ps1: line 49
+at <ScriptBlock>, <No file>: line 1
+The upgrade of badpackage was NOT successful.
+Error while running 'lib\badpackage\tools\chocolateyInstall.ps1'.
+ See log for details.
+installpackage v1.0.0 is the latest version available based on your source(s).
+
+You have upgradepackage v1.0.0 installed. Version 1.1.0 is available based on your source(s).
+upgradepackage 1.0.0 Before Modification
+ERROR: This should not break the upgrade/uninstall
+ at <ScriptBlock>, upgradepackage\tools\chocolateyBeforeModify.ps1: line 3
+at <ScriptBlock>, helperschocolateyScriptRunner.ps1: line 49
+at <ScriptBlock>, <No file>: line 1
+[NuGet] Uninstalling 'upgradepackage 1.0.0'.
+[NuGet] Skipping 'upgradepackage\tools\console.exe.config' because it was modified.
+[NuGet] Successfully uninstalled 'upgradepackage 1.0.0'.
+[NuGet] Installing 'upgradepackage 1.1.0'.
+[NuGet] Successfully installed 'upgradepackage 1.1.0'.
+
+upgradepackage v1.1.0
+upgradepackage package files upgrade completed. Performing other installation steps.
+upgradepackage 1.1.0 Installed
+Transforming 'console.exe.config' with the data from 'console.exe.config.install.xdt'
+ The upgrade of upgradepackage was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey upgraded 1/3 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for badpackage/2.0: FAILED
+  Error: 
+  - Error while running 'lib\badpackage\tools\chocolateyInstall.ps1'.
+ See log for details.
+=> upgrade result for installpackage/1.0.0: succeeded
+  Inconclusive: 
+  - installpackage v1.0.0 is the latest version available based on your source(s).
+=> upgrade result for upgradepackage/1.1.0: succeeded
+=> added new files:
+.chocolatey\badpackage.2.0\.files
+.chocolatey\upgradepackage.1.1.0\.arguments
+.chocolatey\upgradepackage.1.1.0\.files
+lib-bad\badpackage\.chocolateyPending
+lib-bad\badpackage\badpackage.nupkg
+  version: 2.0.0.0
+lib-bad\badpackage\badpackage.nuspec
+lib-bad\badpackage\tools\chocolateyInstall.ps1
+lib-bad\badpackage\tools\chocolateyUninstall.ps1
+end of test
