@@ -504,6 +504,15 @@ namespace chocolatey.tests2.commands
             UpgradeWithConfigTransform(true);
         }
 
+        [LogTest]
+        public void when_upgrading_a_package_with_no_sources_enabled()
+        {
+            TestUpgrade((conf) =>
+            {
+                conf.Sources = null;
+            });
+        }
+
     }
 }
 
