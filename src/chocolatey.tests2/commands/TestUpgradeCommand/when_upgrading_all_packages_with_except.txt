@@ -1,0 +1,13 @@
+Upgrading the following packages:
+all
+By upgrading you accept licenses for the packages.
+These packages will not be upgraded because they were specified in the 'except' list: upgradepackage,badpackage
+installpackage v1.0.0 is the latest version available based on your source(s).
+
+Chocolatey upgraded 0/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for installpackage/1.0.0: succeeded
+  Inconclusive: 
+  - installpackage v1.0.0 is the latest version available based on your source(s).
+=> folder was not updated
+end of test

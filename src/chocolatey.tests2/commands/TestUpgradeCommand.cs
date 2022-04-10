@@ -554,6 +554,16 @@ namespace chocolatey.tests2.commands
             WriteNupkgInfo("upgradepackage");
         }
 
+        [LogTest]
+        public void when_upgrading_all_packages_with_except()
+        {
+            TestUpgrade((conf) =>
+            {
+                conf.PackageNames = conf.Input = "all";
+                conf.UpgradeCommand.PackageNamesToSkip = "upgradepackage,badpackage";
+            });
+        }
+
     }
 }
 
