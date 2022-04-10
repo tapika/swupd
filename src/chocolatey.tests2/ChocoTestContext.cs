@@ -20,6 +20,7 @@ namespace chocolatey.tests2
         installed_5_packages,
         exactpackage,
         badpackage,
+        upgradepackage_1_1_1_beta,
         empty,
 
         packages_default,

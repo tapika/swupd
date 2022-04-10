@@ -169,7 +169,10 @@
         /// </summary>
         private void Install(
             string package, string version, 
-            ChocoTestContext packagesContext = ChocoTestContext.packages_default, bool SkipPackageInstallProvider = false)
+            ChocoTestContext packagesContext = ChocoTestContext.packages_default, 
+            bool SkipPackageInstallProvider = false, 
+            bool Prerelease = false
+        )
         {
             InstallOn(ChocoTestContext.skipcontextinit, (conf2) =>
             {
@@ -180,6 +183,8 @@
                 {
                     conf2.SkipPackageInstallProvider = true;
                 }
+
+                conf2.Prerelease = Prerelease;
             }, packagesContext);
         }
 
@@ -677,6 +682,13 @@
                     {
                         InstallSxs("isdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing6);
                         InstallSxs("hasdependency", "1.0.0", ChocoTestContext.packages_for_dependency_testing6);
+                    }
+                    break;
+
+                case ChocoTestContext.upgradepackage_1_1_1_beta:
+                    {
+                        PrepareTestContext(ChocoTestContext.upgrade_testing_context, _conf);
+                        Install("upgradepackage", "1.1.1-beta", ChocoTestContext.packages_for_upgrade_testing, false, true);
                     }
                     break;
 

@@ -186,37 +186,32 @@ namespace chocolatey.tests2.commands
         [LogTest]
         public void when_upgrading_an_existing_prerelease_package_without_prerelease_specified()
         {
-            TitleText("preinstall");
-            Preinstall("1.1.1-beta", true);
-
-            TitleText("upgrade");
-            TestUpgrade(null, ChocoTestContext.skipcontextinit);
+            TestUpgrade(null, ChocoTestContext.upgradepackage_1_1_1_beta);
         }
 
         [LogTest]
         public void when_upgrading_an_existing_prerelease_package_with_prerelease_available_with_excludeprelease_and_without_prerelease_specified()
         {
-            TitleText("preinstall");
-            Preinstall("1.1.1-beta", true);
-
-            TitleText("upgrade");
-            TestUpgrade((conf) => {
-                conf.UpgradeCommand.ExcludePrerelease = true;
-            }, ChocoTestContext.skipcontextinit);
+            TestUpgrade(
+                (conf) => {
+                    conf.UpgradeCommand.ExcludePrerelease = true;
+                }, 
+                ChocoTestContext.upgradepackage_1_1_1_beta
+            );
         }
 
         [LogTest]
         public void when_upgrading_an_existing_prerelease_package_with_allow_downgrade_with_excludeprelease_and_without_prerelease_specified()
         {
             //Identical result to previous test
-            TitleText("preinstall");
-            Preinstall("1.1.1-beta", true);
+            TestUpgrade(
+                (conf) => {
+                    conf.UpgradeCommand.ExcludePrerelease = true;
+                    conf.AllowDowngrade = true;
+                },
+                ChocoTestContext.upgradepackage_1_1_1_beta
+            );
 
-            TitleText("upgrade");
-            TestUpgrade((conf) => {
-                conf.UpgradeCommand.ExcludePrerelease = true;
-                conf.AllowDowngrade = true;
-            }, ChocoTestContext.skipcontextinit);
         }
 
         [LogTest]
@@ -551,14 +546,14 @@ namespace chocolatey.tests2.commands
         [LogTest]
         public void when_upgrading_all_packages_with_prereleases_installed()
         {
-            TitleText("preinstall");
-            Preinstall("1.1.1-beta", true);
-
-            TitleText("upgrade");
-            TestUpgrade((conf) => {
-                conf.Prerelease = false;
-                conf.PackageNames = conf.Input = "all";
-            }, ChocoTestContext.skipcontextinit);
+            TestUpgrade(
+                (conf) =>
+                {
+                    conf.Prerelease = false;
+                    conf.PackageNames = conf.Input = "all";
+                },
+                ChocoTestContext.upgradepackage_1_1_1_beta
+            );
 
             WriteNupkgInfo("upgradepackage");
             WriteNupkgInfo("installpackage");
@@ -567,16 +562,16 @@ namespace chocolatey.tests2.commands
         [LogTest]
         public void when_upgrading_all_packages_with_prereleases_installed_with_excludeprerelease_specified()
         {
-            TitleText("preinstall");
-            Preinstall("1.1.1-beta", true);
-
-            TitleText("upgrade");
-            TestUpgrade((conf) => {
-                conf.Prerelease = false;
-                conf.PackageNames = conf.Input = "all";
-                conf.UpgradeCommand.ExcludePrerelease = true;
-            }, ChocoTestContext.skipcontextinit);
-
+            TestUpgrade(
+                (conf) =>
+                {
+                    conf.Prerelease = false;
+                    conf.PackageNames = conf.Input = "all";
+                    conf.UpgradeCommand.ExcludePrerelease = true;
+                },
+                ChocoTestContext.upgradepackage_1_1_1_beta
+            );
+            
             WriteNupkgInfo("upgradepackage");
         }
 
