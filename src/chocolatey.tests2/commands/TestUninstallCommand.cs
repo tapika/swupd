@@ -1,6 +1,7 @@
 ﻿using chocolatey.infrastructure.app;
 using chocolatey.infrastructure.app.configuration;
 using chocolatey.infrastructure.app.domain;
+using chocolatey.infrastructure.filesystem;
 using logtesting;
 using NUnit.Framework;
 using System;
@@ -77,6 +78,16 @@ namespace chocolatey.tests2.commands
                     var confPath = Path.Combine(InstallContext.ApplicationInstallLocation, "context", "testing.packages.config");
                     conf.PackageNames = conf.Input = confPath;
                 });
+            });
+        }
+
+        [LogTest]
+        public void when_uninstalling_a_package_with_readonly_files()
+        {
+            TestUninstall((conf) =>
+            {
+                var path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                new DotNetFileSystem().ensure_file_attribute_set(path, FileAttributes.ReadOnly);
             });
         }
 
