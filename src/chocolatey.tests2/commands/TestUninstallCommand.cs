@@ -177,6 +177,14 @@ namespace chocolatey.tests2.commands
             Assert.False(File.Exists(dudeTxt));
         }
 
+        [LogTest]
+        public void when_uninstalling_a_package_that_does_not_exist()
+        {
+            TestUninstall((conf) =>
+            {
+                conf.PackageNames = conf.Input = "somethingnonexisting";
+            });
+        }
 
     }
 }

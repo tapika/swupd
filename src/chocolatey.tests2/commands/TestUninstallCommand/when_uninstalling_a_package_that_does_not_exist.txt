@@ -1,0 +1,11 @@
+Uninstalling the following packages:
+somethingnonexisting
+somethingnonexisting is not installed. Cannot uninstall a non-existent package.
+
+Chocolatey uninstalled 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> uninstall result for somethingnonexisting/: FAILED
+  Error: 
+  - somethingnonexisting is not installed. Cannot uninstall a non-existent package.
+=> folder was not updated
+end of test
