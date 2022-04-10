@@ -50,6 +50,13 @@ namespace chocolatey.tests2.commands
                 conf.Noop = true;
             });
         }
+
+        [LogTest]
+        public void when_uninstalling_a_package_happy_path()
+        {
+            TestUninstall();
+        }
+
     }
 }
 
