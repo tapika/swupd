@@ -321,6 +321,20 @@ namespace chocolatey.tests2.commands
         }
 
         [LogTest]
+        public void when_upgrading_a_package_with_changed_files()
+        {
+            // Loosing work made by end-user - maybe better to backup it somewhere?
+            string path = null;
+            TestUpgrade((conf) =>
+            {
+                path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                File.WriteAllText(path, "hellow");
+            });
+
+            Assert.True(File.ReadAllText(path) != "hellow");
+        }
+
+        [LogTest]
         public void when_upgrading_a_package_that_does_not_exist()
         {
             TestUpgrade((conf) =>
