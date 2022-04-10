@@ -1,4 +1,5 @@
-﻿using chocolatey.infrastructure.app.configuration;
+﻿using chocolatey.infrastructure.app;
+using chocolatey.infrastructure.app.configuration;
 using chocolatey.infrastructure.app.domain;
 using logtesting;
 using NUnit.Framework;
@@ -63,6 +64,19 @@ namespace chocolatey.tests2.commands
             TestUninstall((conf) =>
             {
                 conf.Force = true;
+            });
+        }
+
+        [Test]
+        public void when_uninstalling_packages_with_packages_config()
+        {
+            Assert.Throws<ApplicationException>(() =>
+            {
+                TestUninstall((conf) =>
+                {
+                    var confPath = Path.Combine(InstallContext.ApplicationInstallLocation, "context", "testing.packages.config");
+                    conf.PackageNames = conf.Input = confPath;
+                });
             });
         }
 
