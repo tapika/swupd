@@ -41,6 +41,15 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        [LogTest]
+        public void when_noop_uninstalling_a_package_that_does_not_exist()
+        {
+            TestUninstall((conf) =>
+            {
+                conf.PackageNames = conf.Input = "somethingnonexisting";
+                conf.Noop = true;
+            });
+        }
     }
 }
 

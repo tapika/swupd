@@ -1,0 +1,3 @@
+somethingnonexisting is not installed. Cannot uninstall a non-existent package.
+=> folder was not updated
+end of test
