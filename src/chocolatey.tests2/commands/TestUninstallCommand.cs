@@ -141,6 +141,20 @@ namespace chocolatey.tests2.commands
             Assert.True(File.Exists(path));
         }
 
+        [LogTest]
+        public void when_uninstalling_a_package_with_changed_files()
+        {
+            string path = null;
+
+            TestUninstall((conf) =>
+            {
+                path = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                File.WriteAllText(path, "hellow");
+            });
+
+            Assert.True(File.Exists(path)); //should keep changed file
+        }
+
     }
 }
 

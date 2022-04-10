@@ -1,0 +1,31 @@
+Uninstalling the following packages:
+installpackage
+installpackage 1.0.0 Before Modification
+[NuGet] Uninstalling 'installpackage 1.0.0'.
+
+installpackage v1.0.0
+installpackage 1.0.0 Uninstalled
+ Skipping auto uninstaller - No registry snapshot.
+[NuGet] Skipping 'installpackage\tools\chocolateyinstall.ps1' because it was modified.
+[NuGet] Successfully uninstalled 'installpackage 1.0.0'.
+ installpackage has been successfully uninstalled.
+
+Chocolatey uninstalled 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> uninstall result for installpackage/1.0.0: succeeded
+=> added new files:
+lib\installpackage\tools\chocolateyinstall.ps1.1.0.0
+=> removed files:
+lib\installpackage\installpackage.nupkg
+lib\installpackage\installpackage.nuspec
+lib\installpackage\tools\casemismatch.exe
+lib\installpackage\tools\Casemismatch.exe.ignore
+lib\installpackage\tools\chocolateyBeforeModify.ps1
+lib\installpackage\tools\chocolateyuninstall.ps1
+lib\installpackage\tools\console.exe
+lib\installpackage\tools\graphical.exe
+lib\installpackage\tools\graphical.exe.gui
+lib\installpackage\tools\not.installed.exe
+lib\installpackage\tools\not.installed.exe.ignore
+lib\installpackage\tools\simplefile.txt
+end of test
