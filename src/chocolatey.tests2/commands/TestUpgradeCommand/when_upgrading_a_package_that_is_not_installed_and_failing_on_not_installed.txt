@@ -1,0 +1,12 @@
+Upgrading the following packages:
+installpackage
+By upgrading you accept licenses for the packages.
+installpackage is not installed. Cannot upgrade a non-existent package.
+
+Chocolatey upgraded 0/1 packages. 1 packages failed.
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for installpackage/: FAILED
+  Error: 
+  - installpackage is not installed. Cannot upgrade a non-existent package.
+=> folder was not updated
+end of test

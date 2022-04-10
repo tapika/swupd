@@ -339,6 +339,18 @@ namespace chocolatey.tests2.commands
         }
 
         [LogTest]
+        public void when_upgrading_a_package_that_is_not_installed_and_failing_on_not_installed()
+        {
+            TestUpgrade((conf) =>
+                {
+                    conf.PackageNames = conf.Input = "installpackage";
+                    conf.UpgradeCommand.FailOnNotInstalled = true;
+                }, 
+                ChocoTestContext.empty
+            );
+        }
+
+        [LogTest]
         public void when_upgrading_a_package_that_errors()
         {
             TestUpgrade((conf) =>
