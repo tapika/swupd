@@ -23,8 +23,6 @@ namespace ChocolateyGui.Common.Services
 
         Task<PackageResults> Search(string query, PackageSearchOptions options);
 
-        Task<Package> GetByVersionAndIdAsync(string id, string version, bool isPrerelease);
-
         Task<PackageOperationResult> InstallPackage(
             string id,
             string version = null,

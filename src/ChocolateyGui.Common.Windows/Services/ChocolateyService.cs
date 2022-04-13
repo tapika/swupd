@@ -253,34 +253,6 @@ namespace ChocolateyGui.Common.Windows.Services
             };
         }
 
-        public async Task<Package> GetByVersionAndIdAsync(string id, string version, bool isPrerelease)
-        {
-            _choco.Set(
-                config =>
-                {
-                    config.CommandName = "list";
-                    config.Input = id;
-                    config.ListCommand.Exact = true;
-                    config.Version = version;
-                    config.QuietOutput = true;
-                    config.RegularOutput = false;
-#if !DEBUG
-                    config.Verbose = false;
-#endif // DEBUG
-                });
-            var chocoConfig = _choco.GetConfiguration();
-
-            var nugetLogger = _choco.Container().GetInstance<NuGet.ILogger>();
-            var semvar = new SemanticVersion(version);
-            var nugetPackage = await Task.Run(() => (NugetList.GetPackages(chocoConfig, nugetLogger) as IQueryable<IPackage>).FirstOrDefault(p => p.Version == semvar));
-            if (nugetPackage == null)
-            {
-                throw new Exception("No Package Found");
-            }
-
-            return GetMappedPackage(_choco, new PackageResult(nugetPackage, null, chocoConfig.Sources), _mapper);
-        }
-
         public async Task<PackageOperationResult> UninstallPackage(string id, string version, bool force = false)
         {
             using (await Lock.WriteLockAsync())
