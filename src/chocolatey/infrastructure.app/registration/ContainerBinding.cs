@@ -56,7 +56,6 @@ namespace chocolatey.infrastructure.app.registration
             container.Register<IDateTimeService, SystemDateTimeUtcService>(Lifestyle.Singleton);
 
             //nuget
-            container.Register<ILogger, ChocolateyNugetLogger>(Lifestyle.Singleton);
             container.Register<INugetService, NugetService>(Lifestyle.Singleton);
             container.Register<IPackageDownloader, PackageDownloader>(Lifestyle.Singleton);
             container.Register<IPowershellService, PowershellService>(Lifestyle.Singleton);

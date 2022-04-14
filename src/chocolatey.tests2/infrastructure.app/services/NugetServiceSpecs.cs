@@ -33,7 +33,7 @@ namespace chocolatey.tests2.infrastructure.app.services
 
         public NugetServiceSpecs()
         {
-            service = new NugetService(fileSystem.Object, null, 
+            service = new NugetService(fileSystem.Object, 
                 new Mock<IChocolateyPackageInformationService>().Object, filesService.Object, 
                 new Mock<IPackageDownloader>().Object
             );

@@ -46,7 +46,7 @@ namespace chocolatey.infrastructure.app.services
     public class NugetService : INugetService
     {
         private readonly IFileSystem _fileSystem;
-        private readonly ILogger _nugetLogger;
+        private readonly ILogger _nugetLogger = new ChocolateyNugetLogger();
         private readonly IChocolateyPackageInformationService _packageInfoService;
         private readonly IFilesService _filesService;
         private readonly IPackageDownloader _packageDownloader;
@@ -61,14 +61,12 @@ namespace chocolatey.infrastructure.app.services
         ///   Initializes a new instance of the <see cref="NugetService" /> class.
         /// </summary>
         /// <param name="fileSystem">The file system.</param>
-        /// <param name="nugetLogger">The nuget logger</param>
         /// <param name="packageInfoService">Package information service</param>
         /// <param name="filesService">The files service</param>
         /// <param name="packageDownloader">The downloader used to download packages</param>
-        public NugetService(IFileSystem fileSystem, ILogger nugetLogger, IChocolateyPackageInformationService packageInfoService, IFilesService filesService, IPackageDownloader packageDownloader)
+        public NugetService(IFileSystem fileSystem, IChocolateyPackageInformationService packageInfoService, IFilesService filesService, IPackageDownloader packageDownloader)
         {
             _fileSystem = fileSystem;
-            _nugetLogger = nugetLogger;
             _packageInfoService = packageInfoService;
             _filesService = filesService;
             _packageDownloader = packageDownloader;
