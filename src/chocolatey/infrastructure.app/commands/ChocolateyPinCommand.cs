@@ -36,18 +36,16 @@ namespace chocolatey.infrastructure.app.commands
         private readonly IRegistryService _registryService;
         private readonly IChocolateyPackageService _packageService;
         private readonly IChocolateyPackageInformationService _packageInfoService;
-        private readonly ILogger _nugetLogger;
         private const string NO_CHANGE_MESSAGE = "Nothing to change. Pin already set or removed.";
 
         public ChocolateyPinCommand(
             IRegistryService registryService,
             IChocolateyPackageService packageService,
-            IChocolateyPackageInformationService packageInfoService, ILogger nugetLogger)
+            IChocolateyPackageInformationService packageInfoService)
         {
             _registryService = registryService;
             _packageService = packageService;
             _packageInfoService = packageInfoService;
-            _nugetLogger = nugetLogger;
         }
 
         public virtual void configure_argument_parser(OptionSet optionSet, ChocolateyConfiguration configuration)
@@ -196,24 +194,19 @@ If you find other exit codes that we have not yet documented, please
 
         public virtual void run(ChocolateyConfiguration configuration)
         {
-            var packageManager = NugetCommon.GetPackageManager(configuration, _nugetLogger,
-                                                               new PackageDownloader(),
-                                                               installSuccessAction: null,
-                                                               uninstallSuccessAction: null,
-                                                               addUninstallHandler: false);
             switch (configuration.PinCommand.Command)
             {
                 case PinCommandType.list:
-                    list_pins(packageManager, configuration);
+                    list_pins(configuration);
                     break;
                 case PinCommandType.add:
                 case PinCommandType.remove:
-                    set_pin(packageManager, configuration);
+                    set_pin(configuration);
                     break;
             }
         }
 
-        public virtual void list_pins(IPackageManager packageManager, ChocolateyConfiguration config)
+        public virtual void list_pins(ChocolateyConfiguration config)
         {
             var quiet = config.QuietOutput;
             config.QuietOutput = true;
@@ -231,39 +224,17 @@ If you find other exit codes that we have not yet documented, please
             }
         }
 
-        public virtual void set_pin(IPackageManager packageManager, ChocolateyConfiguration config)
+        public virtual void set_pin(ChocolateyConfiguration config)
         {
             var addingAPin = config.PinCommand.Command == PinCommandType.add;
             var versionUnspecified = string.IsNullOrWhiteSpace(config.Version);
-            SemanticVersion semanticVersion = versionUnspecified ? null : new SemanticVersion(config.Version);
             List<IPackage> packages = new List<IPackage>();
 
-            if (config.SourceType == SourceType.normal)
-            {
-                // package exists in file system
-                var package = packageManager.LocalRepository.FindPackage(config.PinCommand.Name, semanticVersion);
-                if (package == null)
-                {
-                    var pathResolver = packageManager.PathResolver as ChocolateyPackagePathResolver;
-                    if (pathResolver != null)
-                    {
-                        pathResolver.UseSideBySidePaths = true;
-                        package = packageManager.LocalRepository.FindPackage(config.PinCommand.Name, semanticVersion);
-                    }
-                }
-
-                if (package != null)
-                { 
-                    packages.Add(package);
-                }
-            }
-            else
-            { 
-                // package exists in registry
-                config.Input = config.PinCommand.Name;
-                config.QuietOutput = true;
-                packages = _packageService.list_run(config).Select(x => x.Package).ToList();
-            }
+            // package exists in registry
+            var confList = config.deep_copy();
+            confList.Input = confList.PinCommand.Name;
+            confList.QuietOutput = true;
+            packages = _packageService.list_run(confList).Select(x => x.Package).ToList();
 
             if (packages.Count == 0)
             {

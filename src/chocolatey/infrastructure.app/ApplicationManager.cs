@@ -81,8 +81,7 @@ namespace chocolatey.infrastructure.app
                         new ChocolateyPinCommand(
                             Container.GetInstance<IRegistryService>(), 
                             Container.GetInstance<IChocolateyPackageService>(),
-                            Container.GetInstance<IChocolateyPackageInformationService>(),
-                            Container.GetInstance<NuGet.ILogger>()
+                            Container.GetInstance<IChocolateyPackageInformationService>()
                         ),
                         new ChocolateyOutdatedCommand(Container.GetInstance<IChocolateyPackageService>()),
                         new ChocolateyUpgradeCommand(Container.GetInstance<IChocolateyPackageService>()),
