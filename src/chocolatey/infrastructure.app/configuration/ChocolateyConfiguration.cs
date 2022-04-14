@@ -540,7 +540,7 @@ NOTE: Hiding sensitive configuration data! Please double and triple
     }
 
     [Serializable]
-    public sealed class PinCommandConfiguration
+    public class PinCommandConfiguration
     {
         public string Name { get; set; }
         public PinCommandType Command { get; set; }

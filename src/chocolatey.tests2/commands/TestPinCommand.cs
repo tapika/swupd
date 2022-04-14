@@ -14,6 +14,13 @@ using System.Runtime.CompilerServices;
 
 namespace chocolatey.tests2.commands
 {
+    [Serializable]
+    public class PinCommandConfig: PinCommandConfiguration
+    {
+        public string Version { get; set; }
+    }
+
+
     [Parallelizable(ParallelScope.All)]
     public class TestPinCommand: LogTesting
     {
@@ -25,7 +32,7 @@ namespace chocolatey.tests2.commands
         }
 
         public void PinContext(
-            Func<ChocolateyConfiguration, PinCommandConfiguration[]> getPinTestCommands,
+            Func<ChocolateyConfiguration, PinCommandConfig[]> getPinTestCommands,
             [CallerMemberName] string testFolder = ""
         )
         {
@@ -42,6 +49,7 @@ namespace chocolatey.tests2.commands
             foreach (var cmd in getPinTestCommands(conf))
             {
                 conf.PinCommand = cmd;
+                conf.Version = cmd.Version;
                 try
                 {
                     pincmd.run(conf);
@@ -53,6 +61,7 @@ namespace chocolatey.tests2.commands
             }
             
             conf.PinCommand.Command = PinCommandType.list;
+            conf.Version = null;
             pincmd.run(conf);
         }
 
@@ -61,7 +70,7 @@ namespace chocolatey.tests2.commands
         {
             PinContext((conf) =>
             {
-                return new PinCommandConfiguration[] { };  
+                return new PinCommandConfig[] { };  
             });
         }
 
@@ -70,8 +79,8 @@ namespace chocolatey.tests2.commands
         {
             PinContext((conf) =>
             {
-                return new PinCommandConfiguration[] { 
-                    new PinCommandConfiguration{ Command = PinCommandType.add, Name = "upgradepackage" }
+                return new PinCommandConfig[] { 
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "upgradepackage" }
                 };
             });
         }
@@ -81,9 +90,9 @@ namespace chocolatey.tests2.commands
         {
             PinContext((conf) =>
             {
-                return new PinCommandConfiguration[] {
-                    new PinCommandConfiguration{ Command = PinCommandType.add, Name = "upgradepackage" },
-                    new PinCommandConfiguration{ Command = PinCommandType.add, Name = "installpackage" }
+                return new PinCommandConfig[] {
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "upgradepackage" },
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "installpackage" }
                 };
             });
         }
@@ -93,8 +102,8 @@ namespace chocolatey.tests2.commands
         {
             PinContext((conf) =>
             {
-                return new PinCommandConfiguration[] {
-                    new PinCommandConfiguration{ Command = PinCommandType.add, Name = "upgradepackage" },
+                return new PinCommandConfig[] {
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "upgradepackage" },
                 };
             });
         }
@@ -104,9 +113,9 @@ namespace chocolatey.tests2.commands
         {
             PinContext((conf) =>
             {
-                return new PinCommandConfiguration[] {
-                    new PinCommandConfiguration{ Command = PinCommandType.add, Name = "upgradepackage" },
-                    new PinCommandConfiguration{ Command = PinCommandType.add, Name = "upgradepackage" },
+                return new PinCommandConfig[] {
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "upgradepackage" },
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "upgradepackage" },
                 };
             });
         }
@@ -116,8 +125,8 @@ namespace chocolatey.tests2.commands
         {
             PinContext((conf) =>
             {
-                return new PinCommandConfiguration[] {
-                    new PinCommandConfiguration{ Command = PinCommandType.add, Name = "whatisthis" },
+                return new PinCommandConfig[] {
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "whatisthis" },
                 };
             });
         }
@@ -127,9 +136,9 @@ namespace chocolatey.tests2.commands
         {
             PinContext((conf) =>
             {
-                return new PinCommandConfiguration[] {
-                    new PinCommandConfiguration{ Command = PinCommandType.add, Name = "upgradepackage" },
-                    new PinCommandConfiguration{ Command = PinCommandType.remove, Name = "upgradepackage" },
+                return new PinCommandConfig[] {
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "upgradepackage" },
+                    new PinCommandConfig{ Command = PinCommandType.remove, Name = "upgradepackage" },
                 };
             });
         }
@@ -139,8 +148,8 @@ namespace chocolatey.tests2.commands
         {
             PinContext((conf) =>
             {
-                return new PinCommandConfiguration[] {
-                    new PinCommandConfiguration{ Command = PinCommandType.remove, Name = "upgradepackage" },
+                return new PinCommandConfig[] {
+                    new PinCommandConfig{ Command = PinCommandType.remove, Name = "upgradepackage" },
                 };
             });
         }
@@ -150,10 +159,33 @@ namespace chocolatey.tests2.commands
         {
             PinContext((conf) =>
             {
-                return new PinCommandConfiguration[] {
-                    new PinCommandConfiguration{ Command = PinCommandType.remove, Name = "whatisthis" },
+                return new PinCommandConfig[] {
+                    new PinCommandConfig{ Command = PinCommandType.remove, Name = "whatisthis" },
                 };
             });
         }
+
+        [LogTest]
+        public void when_listing_pins_with_certain_existing_version()
+        {
+            PinContext((conf) =>
+            {
+                return new PinCommandConfig[] {
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "upgradepackage", Version = "1.0.0" },
+                };
+            });
+        }
+
+        [LogTest]
+        public void when_listing_pins_with_certain_nonexisting_version()
+        {
+            PinContext((conf) =>
+            {
+                return new PinCommandConfig[] {
+                    new PinCommandConfig{ Command = PinCommandType.add, Name = "upgradepackage", Version = "4.3.1" },
+                };
+            });
+        }
+
     }
 }
