@@ -43,7 +43,7 @@ namespace chocolatey.infrastructure.app.services
 
     //todo - this monolith is too large. Refactor once test coverage is up.
 
-    public class NugetService : INugetService
+    public partial class NugetService : INugetService
     {
         private readonly IFileSystem _fileSystem;
         private readonly ILogger _nugetLogger = new ChocolateyNugetLogger();
@@ -423,9 +423,8 @@ folder.");
                 config.Sources = _fileSystem.get_directory_name(_fileSystem.get_full_path(config.Sources));
             }
 
-            var packageManager = NugetCommon.GetPackageManager(
-                config, _nugetLogger, _packageDownloader,
-                installSuccessAction: (e) =>
+            var packageManager = GetPackageManager(
+                config, installSuccessAction: (e) =>
                     {
                         var pkg = e.Package;
                         var packageResult = packageInstalls.GetOrAdd(pkg.Id.to_lower(), new PackageResult(pkg, e.InstallPath));
@@ -434,7 +433,6 @@ folder.");
 
                         if (continueAction != null) continueAction.Invoke(packageResult);
                     },
-                uninstallSuccessAction: null,
                 addUninstallHandler: true);
 
             var originalConfig = config;
@@ -634,10 +632,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
             SemanticVersion version = !string.IsNullOrWhiteSpace(config.Version) ? new SemanticVersion(config.Version) : null;
             if (config.Force) config.AllowDowngrade = true;
 
-            var packageManager = NugetCommon.GetPackageManager(
+            var packageManager = GetPackageManager(
                 config,
-                _nugetLogger,
-                _packageDownloader,
                 installSuccessAction: (e) =>
                     {
                         var pkg = e.Package;
@@ -646,9 +642,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                         packageResult.Messages.Add(new ResultMessage(ResultType.Debug, ApplicationParameters.Messages.ContinueChocolateyAction));
 
                         if (continueAction != null) continueAction.Invoke(packageResult);
-                    },
-                uninstallSuccessAction: null,
-                addUninstallHandler: false);
+                    });
 
             var configIgnoreDependencies = config.IgnoreDependencies;
             set_package_names_if_all_is_specified(config, () => { config.IgnoreDependencies = true; });
@@ -917,14 +911,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
         public virtual ConcurrentDictionary<string, PackageResult> get_outdated(ChocolateyConfiguration config)
         {
-            var packageManager = NugetCommon.GetPackageManager(
-              config,
-              _nugetLogger,
-              _packageDownloader,
-              installSuccessAction: null,
-              uninstallSuccessAction: null,
-              addUninstallHandler: false);
-
+            var packageManager = GetPackageManager(config);
             var repository = packageManager.SourceRepository;
             var outdatedPackages = new ConcurrentDictionary<string, PackageResult>();
 
@@ -1287,9 +1274,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
             var packageUninstalls = new ConcurrentDictionary<string, PackageResult>(StringComparer.InvariantCultureIgnoreCase);
 
             SemanticVersion version = config.Version != null ? new SemanticVersion(config.Version) : null;
-            var packageManager = NugetCommon.GetPackageManager(config, _nugetLogger, _packageDownloader,
-                                                               installSuccessAction: null,
-                                                               uninstallSuccessAction: (e) =>
+            var packageManager = GetPackageManager(config, uninstallSuccessAction: (e) =>
                                                                    {
                                                                        var pkg = e.Package;
                                                                        "chocolatey".Log().Info(ChocolateyLoggers.Important, " {0} has been successfully uninstalled.".format_with(pkg.Id));
