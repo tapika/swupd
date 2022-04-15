@@ -561,6 +561,19 @@ namespace chocolatey.infrastructure.app.services
             return value;
         }
 
+        public void delete_key(RegistryApplicationKey appKey)
+        {
+            var key = open_key(appKey.Hive, appKey.RegistryView);
+            string subPath = String.Join("\\", appKey.KeyPath.Split('\\').Skip(1));
+
+            FaultTolerance.try_catch_with_logging_exception(
+               () => key.DeleteSubKey(subPath),
+               $"Could not delete subkey {appKey.KeyPath}",
+               logWarningInsteadOfError: true
+            );
+        }
+
+
         public void set_key_values(RegistryApplicationKey appKey, params string[] properties)
         {
             // Hive is in double with appKey.KeyPath.Split('\\')[0]

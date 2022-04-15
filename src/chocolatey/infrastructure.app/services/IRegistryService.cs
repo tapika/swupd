@@ -39,5 +39,10 @@ namespace chocolatey.infrastructure.app.services
         /// <param name="appKey">values container</param>
         /// <param name="properties">properties to set</param>
         void set_key_values(RegistryApplicationKey appKey, params string[] properties);
+
+        /// <summary>
+        /// Deletes registry key
+        /// </summary>
+        public void delete_key(RegistryApplicationKey appKey);
     }
 }
