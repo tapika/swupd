@@ -1032,6 +1032,13 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
         private string get_install_directory(ChocolateyConfiguration config, IPackage installedPackage)
         {
+            if (installedPackage is RegistryPackage regp)
+            {
+                string installDir = installedPackage.GetPackageLocation();
+                if (!_fileSystem.directory_exists(installDir)) return null;
+                return installDir;
+            }
+
             var pathResolver = NugetCommon.GetPathResolver(config, NugetCommon.GetNuGetFileSystem(config, _nugetLogger));
             var installDirectory = pathResolver.GetInstallPath(installedPackage);
             if (!_fileSystem.directory_exists(installDirectory))
@@ -1061,7 +1068,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
         {
             if (pkgInfo != null && pkgInfo.IsSideBySide) return;
 
-            var installDirectory = _fileSystem.combine_paths(ApplicationParameters.PackagesLocation, installedPackage.Id);
+            var installDirectory = installedPackage.GetPackageLocation();
             if (!_fileSystem.directory_exists(installDirectory))
             {
                 // if the folder has a version on it, we need to rename the folder first.
@@ -1086,8 +1093,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
             {
                 this.Log().Debug("Backing up existing {0} prior to operation.".format_with(installedPackage.Id));
 
-                var backupLocation = pkgInstallPath.Replace(ApplicationParameters.PackagesLocation, ApplicationParameters.PackageBackupLocation);
-
+                var backupLocation = Path.Combine(ApplicationParameters.PackageBackupLocation, installedPackage.Id);
                 var errored = false;
                 try
                 {
@@ -1274,14 +1280,24 @@ Please see https://chocolatey.org/docs/troubleshooting for more
         public virtual ConcurrentDictionary<string, PackageResult> uninstall_run(ChocolateyConfiguration config, Action<PackageResult> continueAction, bool performAction, Action<PackageResult> beforeUninstallAction = null)
         {
             var packageUninstalls = new ConcurrentDictionary<string, PackageResult>(StringComparer.InvariantCultureIgnoreCase);
+            IPackage pkgDeleted = null;
 
             SemanticVersion version = config.Version != null ? new SemanticVersion(config.Version) : null;
-            var packageManager = GetPackageManager(config, uninstallSuccessAction: (e) =>
-                                                                   {
-                                                                       var pkg = e.Package;
-                                                                       "chocolatey".Log().Info(ChocolateyLoggers.Important, " {0} has been successfully uninstalled.".format_with(pkg.Id));
-                                                                   },
-                                                               addUninstallHandler: true);
+            var packageManager = GetPackageManager(config, 
+                uninstallSuccessAction: (e) =>
+                    {
+                        var pkg = e.Package;
+                        
+                        if (pkgDeleted != null && 
+                            pkgDeleted.Id == pkg.Id && pkg.Version == pkgDeleted.Version && pkgDeleted is RegistryPackage regp)
+                        {
+                            _registryService.delete_key(regp.RegistryKey);
+                        }
+
+                        "chocolatey".Log().Info(ChocolateyLoggers.Important, " {0} has been successfully uninstalled.".format_with(pkg.Id));
+                    },
+                addUninstallHandler: true
+            );
 
             var loopCount = 0;
             packageManager.PackageUninstalling += (s, e) =>
@@ -1396,12 +1412,12 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 IList<IPackage> installedPackageVersions = new List<IPackage>();
                 if (string.IsNullOrWhiteSpace(config.Version))
                 {
-                    installedPackageVersions = packageManager.LocalRepository.FindPackagesById(packageName).OrderBy((p) => p.Version).ToList();
+                    installedPackageVersions = packageManager.FindLocalPackages(packageName).OrderBy((p) => p.Version).ToList();
                 }
                 else
                 {
                     var semanticVersion = new SemanticVersion(config.Version);
-                    installedPackageVersions = packageManager.LocalRepository.FindPackagesById(packageName).Where((p) => p.Version.Equals(semanticVersion)).ToList();
+                    installedPackageVersions = packageManager.FindLocalPackages(packageName, semanticVersion).ToList();
                 }
 
                 if (installedPackageVersions.Count == 0)
@@ -1469,9 +1485,16 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                         if (config.RegularOutput) this.Log().Warn(ChocolateyLoggers.Important, logMessage);
                         continue;
                     }
+                    pkgDeleted = packageVersion;
 
                     if (performAction)
                     {
+                        if (packageVersion is RegistryPackage regp)
+                        {
+                            string packagesLocation = Path.GetDirectoryName(regp.GetPackageLocation());
+                            packageManager.FileSystem.Root = packagesLocation;
+                        }
+
                         try
                         {
                             using (packageManager.SourceRepository.StartOperation(
@@ -1533,9 +1556,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
         {
             this.Log().Debug(ChocolateyLoggers.Verbose, "Removing nupkg if it still exists.");
             var isSideBySide = pkgInfo != null && pkgInfo.IsSideBySide;
-
             var nupkgFile = "{0}{1}.nupkg".format_with(removedPackage.Id, isSideBySide ? "." + removedPackage.Version.to_string() : string.Empty);
-            var installDir = _fileSystem.combine_paths(ApplicationParameters.PackagesLocation, "{0}{1}".format_with(removedPackage.Id, isSideBySide ? "." + removedPackage.Version.to_string() : string.Empty));
+            var installDir = removedPackage.GetPackageLocation(pkgInfo);
             var nupkg = _fileSystem.combine_paths(installDir, nupkgFile);
 
             if (!_fileSystem.file_exists(nupkg)) return;
@@ -1550,7 +1572,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
         {
             this.Log().Debug(ChocolateyLoggers.Verbose, "Ensuring removal of installation files.");
             var isSideBySide = pkgInfo != null && pkgInfo.IsSideBySide;
-            var installDir = _fileSystem.combine_paths(ApplicationParameters.PackagesLocation, "{0}{1}".format_with(removedPackage.Id, isSideBySide ? "." + removedPackage.Version.to_string() : string.Empty));
+            var installDir = removedPackage.GetPackageLocation(pkgInfo);
 
             if (_fileSystem.directory_exists(installDir) && pkgInfo != null && pkgInfo.FilesSnapshot != null)
             {

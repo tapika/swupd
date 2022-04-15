@@ -1,4 +1,5 @@
-﻿using NuGet;
+﻿using chocolatey.infrastructure.app.domain;
+using NuGet;
 using System.IO;
 
 namespace chocolatey.infrastructure.app.nuget
@@ -8,14 +9,18 @@ namespace chocolatey.infrastructure.app.nuget
         /// <summary>
         /// Gets package installed location
         /// </summary>
-        public static string GetPackageLocation(this IPackage package)
+        public static string GetPackageLocation(this IPackage package, ChocolateyPackageInformation pkgInfo = null)
         {
-            if (package is RegistryPackage regp)
+            if (package is RegistryPackage regp && regp.RegistryKey != null)
             {
                 return regp.RegistryKey.InstallLocation;
             }
 
-            return Path.Combine(InstallContext.Instance.PackagesLocation, package.Id);
+            var isSideBySide = pkgInfo != null && pkgInfo.IsSideBySide;
+            var installDir = Path.Combine(InstallContext.Instance.PackagesLocation,  
+                "{0}{1}".format_with(package.Id, isSideBySide ? "." + package.Version.to_string() : string.Empty));
+
+            return installDir;
         }
     }
 }

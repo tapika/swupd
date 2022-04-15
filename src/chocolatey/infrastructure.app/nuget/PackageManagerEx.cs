@@ -1,5 +1,6 @@
 ﻿using chocolatey.infrastructure.app.services;
 using NuGet;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -42,5 +43,21 @@ namespace chocolatey.infrastructure.app.nuget
             return null;
         }
 
+
+        public IEnumerable<IPackage> FindLocalPackages(string packageId, SemanticVersion semanticVersion = null)
+        {
+            IEnumerable<IPackage> locals;
+            if (semanticVersion != null)
+            {
+                locals = LocalRepository.FindPackagesById(packageId).Where((p) => p.Version.Equals(semanticVersion));
+            }
+            else
+            { 
+                locals = LocalRepository.FindPackagesById(packageId);
+            }
+
+            var registry = _registryService.get_installer_keys(packageId);
+            return locals.Concat(registry.RegistryKeys.Select(x => new RegistryPackage(x)));
+        }
     }
 }
