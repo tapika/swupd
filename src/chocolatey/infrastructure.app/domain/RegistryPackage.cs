@@ -22,6 +22,7 @@ namespace NuGet
             SemanticVersion.TryParse(registryKey.Version, out semversion);
             Version = semversion;
             Id = registryKey.PackageId;
+            IsPinned = registryKey.IsPinned;
         }
 
         public string Id
