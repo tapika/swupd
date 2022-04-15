@@ -14,6 +14,16 @@ namespace NuGet
             Listed = true;
         }
 
+        public RegistryPackage(RegistryApplicationKey registryKey)
+        { 
+            Listed = true;
+            RegistryKey = registryKey;
+            SemanticVersion semversion;
+            SemanticVersion.TryParse(registryKey.Version, out semversion);
+            Version = semversion;
+            Id = registryKey.PackageId;
+        }
+
         public string Id
         {
             get;

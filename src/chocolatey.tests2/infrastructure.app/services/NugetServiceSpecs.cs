@@ -3,14 +3,11 @@ using chocolatey.infrastructure.app.configuration;
 using chocolatey.infrastructure.app.domain;
 using chocolatey.infrastructure.app.services;
 using chocolatey.infrastructure.filesystem;
-using chocolatey.infrastructure.logging;
 using logtesting;
 using Moq;
 using NuGet;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using IFileSystem = chocolatey.infrastructure.filesystem.IFileSystem;
 
 namespace chocolatey.tests2.infrastructure.app.services
@@ -33,7 +30,9 @@ namespace chocolatey.tests2.infrastructure.app.services
 
         public NugetServiceSpecs()
         {
-            service = new NugetService(fileSystem.Object, 
+            service = new NugetService(
+                new Mock<IRegistryService>().Object,
+                fileSystem.Object,
                 new Mock<IChocolateyPackageInformationService>().Object, filesService.Object, 
                 new Mock<IPackageDownloader>().Object
             );

@@ -67,7 +67,7 @@ namespace chocolatey.infrastructure.app.services
             if (key != null) keys.Add(new RegistryKeyInfo() { key = key, hive = hive, view = view });
         }
 
-        public Registry get_installer_keys()
+        public Registry get_installer_keys(string packageId = null, string version = null)
         {
             var snapshot = new Registry();
             var windowsIdentity = WindowsIdentity.GetCurrent();
@@ -95,7 +95,7 @@ namespace chocolatey.infrastructure.app.services
                 if (uninstallKey != null)
                 {
                     //Console.WriteLine("Evaluating {0} of {1}".format_with(uninstallKey.View, uninstallKey.Name));
-                    evaluate_keys(regkey, uninstallKey, snapshot);
+                    evaluate_keys(regkey, uninstallKey, snapshot, packageId, version);
                 }
                 registryKey.Close();
                 registryKey.Dispose();
@@ -120,15 +120,27 @@ namespace chocolatey.infrastructure.app.services
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="snapshot">The snapshot.</param>
-        public void evaluate_keys(RegistryKeyInfo regkey, RegistryKey key, Registry snapshot)
+        public void evaluate_keys(RegistryKeyInfo regkey, RegistryKey key, Registry snapshot, string packageId = null, string version = null)
         {
             if (key == null) return;
 
             FaultTolerance.try_catch_with_logging_exception(
                 () =>
                 {
+                    Regex reMatchFile = null;
+                
+                    if (packageId != null)
+                        reMatchFile = FindFilesPatternToRegex.Convert(packageId);
+                
                     foreach (var subKeyName in key.GetSubKeyNames())
                     {
+                        if (reMatchFile != null && !reMatchFile.IsMatch(subKeyName))
+                        {
+                            continue;
+                        }
+
+                        regkey.SubKeyName = subKeyName;
+
                         FaultTolerance.try_catch_with_logging_exception(
                             () => evaluate_keys(regkey, key.OpenSubKey(subKeyName, RegistryKeyPermissionCheck.ReadSubTree, RegistryRights.ReadKey), snapshot),
                             "Failed to open subkey named '{0}' for '{1}', likely due to permissions".format_with(subKeyName, key.Name),
@@ -155,6 +167,11 @@ namespace chocolatey.infrastructure.app.services
             if (!string.IsNullOrWhiteSpace(appKey.DisplayName))
             {
                 appKey.PackageId = key.get_value_as_string("PackageId");
+                if (string.IsNullOrWhiteSpace(appKey.PackageId))
+                {
+                    appKey.PackageId = regkey.SubKeyName;
+                }
+
                 string s = key.get_value_as_string(nameof(RegistryApplicationKey.IsPinned));
                 if (string.IsNullOrWhiteSpace(s))
                 {

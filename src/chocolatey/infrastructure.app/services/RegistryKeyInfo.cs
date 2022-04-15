@@ -7,5 +7,6 @@ namespace chocolatey.infrastructure.app.services
         public RegistryKey key;
         public RegistryHive hive;
         public RegistryView view;
+        public string SubKeyName;
     }
 }

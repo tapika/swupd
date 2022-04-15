@@ -1,0 +1,46 @@
+﻿using chocolatey.infrastructure.app.services;
+using NuGet;
+using System.IO;
+using System.Linq;
+
+namespace chocolatey.infrastructure.app.nuget
+{
+    /// <summary>
+    /// Bit extended version of Nuget.PackageManager - will support also in registry queries.
+    /// </summary>
+    public class PackageManagerEx: PackageManager
+    {
+        private readonly IRegistryService _registryService;
+
+        public PackageManagerEx(
+            IRegistryService registryService,
+            IPackageRepository sourceRepository, IPackagePathResolver pathResolver, 
+            IFileSystem fileSystem, IPackageRepository localRepository) :
+                base(sourceRepository, pathResolver, fileSystem, localRepository)
+        {
+            _registryService = registryService;
+        }
+
+        /// <summary>
+        /// Finds locally installed package - either in local repostory or via registry
+        /// </summary>
+        public IPackage FindLocalPackage(string packageName)
+        {
+            IPackage package = LocalRepository.FindPackage(packageName);
+            if (package != null)
+            {
+                return package;
+            }
+
+            // At the moment bit slow, maybe needs to be precached.
+            //var registry = _registryService.get_installer_keys(packageName);
+            //if (registry.RegistryKeys.Count != 0)
+            //{
+            //    return new RegistryPackage(registry.RegistryKeys.First());
+            //}
+
+            return null;
+        }
+
+    }
+}

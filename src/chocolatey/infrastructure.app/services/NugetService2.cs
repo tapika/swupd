@@ -8,7 +8,7 @@ namespace chocolatey.infrastructure.app.services
 {
     public partial class NugetService : INugetService
     {
-        public IPackageManager GetPackageManager(
+        public PackageManagerEx GetPackageManager(
             ChocolateyConfiguration configuration, 
             Action<PackageOperationEventArgs> installSuccessAction = null, 
             Action<PackageOperationEventArgs> uninstallSuccessAction = null,
@@ -17,7 +17,7 @@ namespace chocolatey.infrastructure.app.services
         {
             IFileSystem nugetPackagesFileSystem = NugetCommon.GetNuGetFileSystem(configuration, _nugetLogger);
             IPackagePathResolver pathResolver = NugetCommon.GetPathResolver(configuration, nugetPackagesFileSystem);
-            var packageManager = new PackageManager(NugetCommon.GetRemoteRepository(configuration, _nugetLogger, _packageDownloader), pathResolver, nugetPackagesFileSystem,
+            var packageManager = new PackageManagerEx(_registryService, NugetCommon.GetRemoteRepository(configuration, _nugetLogger, _packageDownloader), pathResolver, nugetPackagesFileSystem,
                 NugetCommon.GetLocalRepository(pathResolver, nugetPackagesFileSystem, _nugetLogger))
             {
                 DependencyVersion = DependencyVersion.Highest,

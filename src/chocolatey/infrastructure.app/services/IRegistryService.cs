@@ -23,7 +23,7 @@ namespace chocolatey.infrastructure.app.services
 
     public interface IRegistryService
     {
-        Registry get_installer_keys();
+        Registry get_installer_keys(string packageId = null, string version = null);
         Registry get_installer_key_differences(Registry before, Registry after);
         IEnumerable<GenericRegistryValue> get_environment_values();
         IEnumerable<GenericRegistryValue> get_added_changed_environment_differences(IEnumerable<GenericRegistryValue> before, IEnumerable<GenericRegistryValue> after);

@@ -47,6 +47,7 @@ namespace chocolatey.infrastructure.app.services
     {
         private readonly IFileSystem _fileSystem;
         private readonly ILogger _nugetLogger = new ChocolateyNugetLogger();
+        private readonly IRegistryService _registryService;
         private readonly IChocolateyPackageInformationService _packageInfoService;
         private readonly IFilesService _filesService;
         private readonly IPackageDownloader _packageDownloader;
@@ -64,8 +65,9 @@ namespace chocolatey.infrastructure.app.services
         /// <param name="packageInfoService">Package information service</param>
         /// <param name="filesService">The files service</param>
         /// <param name="packageDownloader">The downloader used to download packages</param>
-        public NugetService(IFileSystem fileSystem, IChocolateyPackageInformationService packageInfoService, IFilesService filesService, IPackageDownloader packageDownloader)
+        public NugetService(IRegistryService registryService, IFileSystem fileSystem, IChocolateyPackageInformationService packageInfoService, IFilesService filesService, IPackageDownloader packageDownloader)
         {
+            _registryService = registryService;
             _fileSystem = fileSystem;
             _packageInfoService = packageInfoService;
             _filesService = filesService;
@@ -443,12 +445,12 @@ folder.");
                 config = originalConfig.deep_copy();
 
                 //todo: get smarter about realizing multiple versions have been installed before and allowing that
-                IPackage installedPackage = packageManager.LocalRepository.FindPackage(packageName);
+                IPackage installedPackage = packageManager.FindLocalPackage(packageName);
 
                 if (installedPackage != null && (version == null || version == installedPackage.Version) && !config.Force)
                 {
                     string logMessage = "{0} v{1} already installed.{2} Use --force to reinstall, specify a version to install, or try upgrade.".format_with(installedPackage.Id, installedPackage.Version, Environment.NewLine);
-                    var nullResult = packageInstalls.GetOrAdd(packageName, new PackageResult(installedPackage, _fileSystem.combine_paths(ApplicationParameters.PackagesLocation, installedPackage.Id)));
+                    var nullResult = packageInstalls.GetOrAdd(packageName, new PackageResult(installedPackage, installedPackage.GetPackageLocation()));
                     nullResult.Messages.Add(new ResultMessage(ResultType.Warn, logMessage));
                     nullResult.Messages.Add(new ResultMessage(ResultType.Inconclusive, logMessage));
                     this.Log().Warn(ChocolateyLoggers.Important, logMessage);
@@ -655,7 +657,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 // reset config each time through
                 config = originalConfig.deep_copy();
 
-                IPackage installedPackage = packageManager.LocalRepository.FindPackage(packageName);
+                IPackage installedPackage = packageManager.FindLocalPackage(packageName);
 
                 if (installedPackage == null)
                 {
@@ -925,7 +927,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 // reset config each time through
                 config = originalConfig.deep_copy();
 
-                var installedPackage = packageManager.LocalRepository.FindPackage(packageName);
+                var installedPackage = packageManager.FindLocalPackage(packageName);
                 var pkgInfo = _packageInfoService.get_package_information(installedPackage);
                 bool isPinned = pkgInfo.IsPinned;
 
@@ -1309,7 +1311,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     }
 
                     // is this the latest version, have you passed --sxs, or is this a side-by-side install? This is the only way you get through to the continue action.
-                    var latestVersion = packageManager.LocalRepository.FindPackage(e.Package.Id);
+                    var latestVersion = packageManager.FindLocalPackage(e.Package.Id);
                     var pkgInfo = _packageInfoService.get_package_information(e.Package);
                     if (latestVersion.Version == pkg.Version || config.AllowMultipleVersions || (pkgInfo != null && pkgInfo.IsSideBySide))
                     {
