@@ -441,13 +441,22 @@ namespace chocolatey.tests2.commands
             });
         }
 
-        [LogTest()]
+        [LogTest]
         public void InstallWithDirPath()
         {
-            InstallOnEmpty((conf) =>
+            const string packageId = "installpackage2";
+            using (var tester = new TestRegistry())
             {
-                conf.PackageNames = conf.Input = "installpackage2";
-            }, ChocoTestContext.pack_installpackage2_1_0_0);
+                tester.DeleteInstallEntries(packageId);
+
+                InstallOnEmpty((conf) =>
+                {
+                    conf.PackageNames = conf.Input = packageId;
+                }, ChocoTestContext.pack_installpackage2_1_0_0);
+
+                tester.LogInstallEntries(packageId);
+                tester.DeleteInstallEntries(packageId);
+            }
         }
 
     }

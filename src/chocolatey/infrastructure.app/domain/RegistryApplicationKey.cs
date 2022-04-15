@@ -17,6 +17,9 @@
 namespace chocolatey.infrastructure.app.domain
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
     using System.Xml.Serialization;
     using Microsoft.Win32;
     using xml;
@@ -100,6 +103,40 @@ namespace chocolatey.infrastructure.app.domain
                    && !NoRemove
                    && !SystemComponent
                 ;
+        }
+
+        public string ToStringFull(string prefix = "")
+        {
+            StringBuilder sb = new StringBuilder();
+            List<string> ignoreProps = new[] {
+                nameof(InstallDate),            // changing everytime.
+                nameof(RegistryView),           // not sure if test machine is 32 or 64 bit.
+                nameof(InstallerType),          // don't care ...
+                nameof(SystemComponent),
+                nameof(WindowsInstaller),
+            }.ToList();
+            
+            foreach (var prop in GetType().GetProperties())
+            {
+                object obj = prop.GetValue(this);
+                if (obj == null)
+                {
+                    continue;
+                }
+
+                if (ignoreProps.Contains(prop.Name))
+                { 
+                    continue;
+                }
+
+                string value = InstallContext.NormalizeMessage(obj.ToString());
+                if (!string.IsNullOrEmpty(value))
+                { 
+                    sb.AppendLine($"{prefix}{prop.Name}: {value}");
+                }
+            }
+
+            return sb.ToString();
         }
 
         public override string ToString()

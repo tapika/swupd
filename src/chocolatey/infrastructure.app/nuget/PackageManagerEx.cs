@@ -34,11 +34,11 @@ namespace chocolatey.infrastructure.app.nuget
             }
 
             // At the moment bit slow, maybe needs to be precached.
-            //var registry = _registryService.get_installer_keys(packageName);
-            //if (registry.RegistryKeys.Count != 0)
-            //{
-            //    return new RegistryPackage(registry.RegistryKeys.First());
-            //}
+            var registry = _registryService.get_installer_keys(packageName);
+            if (registry.RegistryKeys.Count != 0)
+            {
+                return new RegistryPackage(registry.RegistryKeys.First());
+            }
 
             return null;
         }

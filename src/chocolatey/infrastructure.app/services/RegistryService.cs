@@ -567,7 +567,7 @@ namespace chocolatey.infrastructure.app.services
             string subPath = String.Join("\\", appKey.KeyPath.Split('\\').Skip(1));
 
             FaultTolerance.try_catch_with_logging_exception(
-               () => key.DeleteSubKey(subPath),
+               () => key.DeleteSubKey(subPath, false),
                $"Could not delete subkey {appKey.KeyPath}",
                logWarningInsteadOfError: true
             );
