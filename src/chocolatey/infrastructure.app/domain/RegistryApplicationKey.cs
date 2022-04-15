@@ -32,7 +32,13 @@ namespace chocolatey.infrastructure.app.domain
         public string KeyPath { get; set; }
         
         /// <summary>
-        /// Package id if set from registry, null otherwise
+        /// By default package id is the same as registry subkey name - normal installers
+        /// (Wix, etc...) might be using GUID for it. GUID is of course cryptic and not so useful.
+        /// 
+        /// It's possible to override package id by using 'PackageId' registry key value.
+        /// 
+        /// How unique that packageId is difficult to say - it might depend on nuget package server
+        /// and package maintainers.
         /// </summary>
         public string PackageId { get; set; }
         public bool IsPinned { get; set; }
