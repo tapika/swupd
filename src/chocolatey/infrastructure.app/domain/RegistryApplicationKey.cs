@@ -115,8 +115,8 @@ namespace chocolatey.infrastructure.app.domain
                 nameof(SystemComponent),
                 nameof(WindowsInstaller),
             }.ToList();
-            
-            foreach (var prop in GetType().GetProperties())
+
+            foreach (var prop in GetType().GetProperties().OrderBy(x => x.MetadataToken))
             {
                 object obj = prop.GetValue(this);
                 if (obj == null)
