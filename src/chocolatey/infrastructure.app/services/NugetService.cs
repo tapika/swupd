@@ -851,6 +851,11 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
                     if (performAction)
                     {
+                        if (installedPackage is RegistryPackage regp)
+                        {
+                            packageManager.FileSystem.Root = Path.GetDirectoryName(regp.GetPackageLocation());
+                        }
+
                         try
                         {
                             using (packageManager.SourceRepository.StartOperation(

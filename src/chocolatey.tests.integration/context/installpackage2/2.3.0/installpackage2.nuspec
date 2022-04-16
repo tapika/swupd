@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>installpackage2</id>
+    <version>2.3.0</version>
+    <title>Windows install package 2v2</title>
+    <authors>Publisher</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>test package</description>
+    <tags>installpackage admin</tags>
+    <tags-extra>
+      <tag key="InstallLocation" value="%RootLocation%\custominstalldir" />
+    </tags-extra>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <file src="msgbox.exe" target="msgbox.exe" />
+    <file src="release_notes_2_3_0.txt" target="release_notes_2_3_0.txt" />
+  </files>
+</package>

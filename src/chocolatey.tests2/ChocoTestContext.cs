@@ -50,6 +50,7 @@ namespace chocolatey.tests2
         pack_hasdependency_2_1_0,
         pack_installpackage_1_0_0,
         pack_installpackage2_1_0_0,
+        pack_installpackage2_2_3_0,
         pack_isdependency_1_0_0,
         pack_isdependency_1_0_1,
         pack_isdependency_1_1_0,

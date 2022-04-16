@@ -1,0 +1,61 @@
+
+- before operation installpackage2 registry:
+  Hive: LocalMachine
+  KeyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\installpackage2
+  PackageId: installpackage2
+  IsPinned: False
+  DisplayName: installpackage2
+  InstallLocation: custominstalldir\installpackage2
+  UninstallString: none
+  HasQuietUninstall: False
+  Publisher: TestRegistry
+  DisplayVersion: 1.0.0
+  Version: 1.0.0
+  NoRemove: False
+  NoModify: False
+  NoRepair: False
+  EstimatedSize: 0
+
+Upgrading the following packages:
+installpackage2
+By upgrading you accept licenses for the packages.
+
+You have installpackage2 v1.0.0 installed. Version 2.3.0 is available based on your source(s).
+[NuGet] Uninstalling 'installpackage2 1.0.0'.
+[NuGet] Successfully uninstalled 'installpackage2 1.0.0'.
+[NuGet] Installing 'installpackage2 2.3.0'.
+[NuGet] Successfully installed 'installpackage2 2.3.0'.
+
+installpackage2 v2.3.0
+installpackage2 package files upgrade completed. Performing other installation steps.
+ The upgrade of installpackage2 was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey upgraded 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> upgrade result for installpackage2/2.3.0: succeeded
+=> added new files:
+.chocolatey\installpackage2.2.3.0\.arguments
+.chocolatey\installpackage2.2.3.0\.files
+custominstalldir\installpackage2\release_notes_2_3_0.txt
+
+- after operation installpackage2 registry:
+  Hive: LocalMachine
+  KeyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\installpackage2
+  PackageId: installpackage2
+  IsPinned: False
+  DisplayName: Windows install package 2v2
+  InstallLocation: custominstalldir\installpackage2
+  UninstallString: uninstall string: to do
+  HasQuietUninstall: False
+  Publisher: Publisher
+  DisplayVersion: 2.3.0
+  Version: 2.3.0
+  NoRemove: False
+  NoModify: True
+  NoRepair: True
+  DisplayIcon: custominstalldir\installpackage2\msgbox.exe
+  EstimatedSize: 313
+
+end of test

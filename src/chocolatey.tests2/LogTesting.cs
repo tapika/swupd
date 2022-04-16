@@ -28,6 +28,8 @@
     {
         protected IChocolateyPackageService Service;
 
+        public const string installpackage2_id = "installpackage2";
+
         public LogTesting()
         {
             Service = chocolatey.tests.integration.NUnitSetup.Container.GetInstance<IChocolateyPackageService>();

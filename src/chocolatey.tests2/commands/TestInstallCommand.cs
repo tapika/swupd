@@ -441,8 +441,6 @@ namespace chocolatey.tests2.commands
             });
         }
 
-        const string installpackage2_id = "installpackage2";
-        
         [LogTest]
         public void when_installing_regpackage_on_empty()
         {

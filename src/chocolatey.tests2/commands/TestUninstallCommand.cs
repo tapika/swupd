@@ -198,22 +198,20 @@ namespace chocolatey.tests2.commands
         [LogTest]
         public void when_uninstalling_registry_package()
         {
-            const string packageId = "installpackage2";
-
             using (var tester = new TestRegistry(false))
             {
                 TestUninstall((conf) =>
                 {
-                    conf.PackageNames = conf.Input = "installpackage2";
+                    conf.PackageNames = conf.Input = installpackage2_id;
 
                     tester.Lock();
                     tester.AddInstallPackage2Entry();
-                    tester.LogInstallEntries(false, packageId);
+                    tester.LogInstallEntries(false, installpackage2_id);
 
                 }, ChocoTestContext.installupdate2);
 
-                tester.LogInstallEntries(true, packageId);
-                tester.DeleteInstallEntries(packageId);
+                tester.LogInstallEntries(true, installpackage2_id);
+                tester.DeleteInstallEntries(installpackage2_id);
             }
 
         }
