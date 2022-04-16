@@ -207,14 +207,7 @@ namespace chocolatey.tests2.commands
                     conf.PackageNames = conf.Input = "installpackage2";
 
                     tester.Lock();
-                    tester.AddInstallEntry(
-                        new RegistryApplicationKey()
-                        {
-                            PackageId = packageId,
-                            Version = "1.0.0",
-                            InstallLocation = Path.Combine(InstallContext.Instance.RootLocation, "custominstalldir", packageId)
-                        }
-                    );
+                    tester.AddInstallPackage2Entry();
                     tester.LogInstallEntries(false, packageId);
 
                 }, ChocoTestContext.installupdate2);

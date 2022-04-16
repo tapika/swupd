@@ -1,4 +1,5 @@
-﻿using chocolatey.infrastructure.app.domain;
+﻿using chocolatey.infrastructure.app;
+using chocolatey.infrastructure.app.domain;
 using chocolatey.infrastructure.app.services;
 using chocolatey.infrastructure.logging;
 using System;
@@ -71,6 +72,18 @@ namespace chocolatey.tests2
             }
 
             registryService.set_key_values(appKey, propNames.ToArray());
+        }
+
+        public void AddInstallPackage2Entry()
+        {
+            AddInstallEntry(
+                new RegistryApplicationKey()
+                {
+                    PackageId = "installpackage2",
+                    Version = "1.0.0",
+                    InstallLocation = Path.Combine(InstallContext.Instance.RootLocation, "custominstalldir", "installpackage2")
+                }
+            );
         }
 
         public void LogInstallEntries(bool afterOp, params string[] packageIds)

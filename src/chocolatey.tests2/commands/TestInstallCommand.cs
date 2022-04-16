@@ -441,24 +441,45 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        const string installpackage2_id = "installpackage2";
+        
         [LogTest]
-        public void InstallWithDirPath()
+        public void when_installing_regpackage_on_empty()
         {
-            const string packageId = "installpackage2";
             using (var tester = new TestRegistry())
             {
-                tester.DeleteInstallEntries(packageId);
-                tester.LogInstallEntries(false, packageId);
+                tester.DeleteInstallEntries(installpackage2_id);
+                tester.LogInstallEntries(false, installpackage2_id);
 
                 InstallOnEmpty((conf) =>
                 {
-                    conf.PackageNames = conf.Input = packageId;
+                    conf.PackageNames = conf.Input = installpackage2_id;
                 }, ChocoTestContext.pack_installpackage2_1_0_0);
 
-                tester.LogInstallEntries(true, packageId);
-                tester.DeleteInstallEntries(packageId);
+                tester.LogInstallEntries(true, installpackage2_id);
+                tester.DeleteInstallEntries(installpackage2_id);
             }
         }
+
+        [LogTest]
+        public void when_installing_regpackage_on_already_installed()
+        {
+            using (var tester = new TestRegistry(false))
+            {
+                LocalInstallOn(ChocoTestContext.installupdate2, (conf) =>
+                {
+                    conf.PackageNames = conf.Input = installpackage2_id;
+
+                    tester.Lock();
+                    tester.DeleteInstallEntries(installpackage2_id);
+                    tester.AddInstallPackage2Entry();
+
+                }, ChocoTestContext.pack_installpackage2_1_0_0);
+
+                tester.DeleteInstallEntries(installpackage2_id);
+            }
+        }
+
 
     }
 }

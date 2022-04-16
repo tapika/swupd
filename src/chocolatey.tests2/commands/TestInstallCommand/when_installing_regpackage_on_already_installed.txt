@@ -1,0 +1,17 @@
+Installing the following packages:
+installpackage2
+By installing you accept licenses for the packages.
+installpackage2 v1.0.0 already installed.
+ Use --force to reinstall, specify a version to install, or try upgrade.
+
+Chocolatey installed 0/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for installpackage2/1.0.0: succeeded
+  Warn: 
+  - installpackage2 v1.0.0 already installed.
+ Use --force to reinstall, specify a version to install, or try upgrade.
+  Inconclusive: 
+  - installpackage2 v1.0.0 already installed.
+ Use --force to reinstall, specify a version to install, or try upgrade.
+=> folder was not updated
+end of test
