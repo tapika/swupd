@@ -1,0 +1,41 @@
+
+- before operation installpackage2 registry:
+  Hive: LocalMachine
+  KeyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\installpackage2
+  PackageId: installpackage2
+  IsPinned: False
+  DisplayName: installpackage2
+  InstallLocation: custominstalldir\installpackage2
+  UninstallString: none
+  HasQuietUninstall: False
+  Publisher: TestRegistry
+  DisplayVersion: 1.0.0
+  Version: 1.0.0
+  NoRemove: False
+  NoModify: False
+  NoRepair: False
+  EstimatedSize: 0
+
+Uninstalling the following packages:
+installpackage2
+[NuGet] Uninstalling 'installpackage2 1.0.0'.
+
+installpackage2 v1.0.0
+installpackage2 1.0.0 Uninstalled
+ Skipping auto uninstaller - No registry snapshot.
+[NuGet] Successfully uninstalled 'installpackage2 1.0.0'.
+ installpackage2 has been successfully uninstalled.
+
+Chocolatey uninstalled 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> uninstall result for installpackage2/1.0.0: succeeded
+=> folder was not updated
+=> removed files:
+custominstalldir\installpackage2\installpackage2.nupkg
+custominstalldir\installpackage2\installpackage2.nuspec
+custominstalldir\installpackage2\msgbox.exe
+custominstalldir\installpackage2\tools\chocolateyinstall.ps1
+custominstalldir\installpackage2\tools\chocolateyuninstall.ps1
+
+- after operation installpackage2 - not installed
+end of test
