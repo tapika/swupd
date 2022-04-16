@@ -328,27 +328,13 @@ namespace chocolatey.infrastructure.app.services
                             EstimatedSize = size / 1024     // In Kb
                         };
 
-                        List<String> propNames = new List<string>() {
-                            nameof(RegistryApplicationKey.DisplayName),
-                            nameof(RegistryApplicationKey.Version),
-                            nameof(RegistryApplicationKey.InstallLocation),
-                            nameof(RegistryApplicationKey.PackageId),
-                            nameof(RegistryApplicationKey.UninstallString),
-                            nameof(RegistryApplicationKey.Publisher),
-                            nameof(RegistryApplicationKey.NoModify),
-                            nameof(RegistryApplicationKey.NoRepair),
-                            nameof(RegistryApplicationKey.InstallDate),
-                            nameof(RegistryApplicationKey.DisplayVersion),
-                            nameof(RegistryApplicationKey.EstimatedSize)
-                        };
-
-                        if (iconSources.Count != 0)
+                        bool haveIcon = iconSources.Count != 0;
+                        if (haveIcon)
                         {
                             appKey.DisplayIcon = iconSources.First();
-                            propNames.Add(nameof(RegistryApplicationKey.DisplayIcon));
                         }
                         
-                        _registryService.set_key_values(appKey, propNames.ToArray());
+                        _registryService.set_key_values(appKey, RegistryApplicationKey.GetPropertyNames(haveIcon).ToArray());
                     }
 
                     if (useRegistryBackupService)

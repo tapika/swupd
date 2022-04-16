@@ -656,6 +656,22 @@
                     }
                     break;
 
+                case ChocoTestContext.installupdate2:
+                    {
+                        const string packageId = "installpackage2";
+
+                        using (var tester = new TestRegistry())
+                        {
+                            tester.DeleteInstallEntries(packageId);
+
+                            Install("installpackage2", "1.0.0", ChocoTestContext.pack_installpackage2_1_0_0);
+                            
+                            tester.LogInstallEntries(true, packageId);
+                            tester.DeleteInstallEntries(packageId);
+                        }
+                    }
+                    break;
+
                 case ChocoTestContext.installed_5_packages:
                     {
                         Install("installpackage", "1.0.0");

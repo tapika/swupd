@@ -195,6 +195,36 @@ namespace chocolatey.tests2.commands
             });
         }
 
+        [LogTest]
+        public void when_uninstalling_registry_package()
+        {
+            const string packageId = "installpackage2";
+
+            using (var tester = new TestRegistry(false))
+            {
+                TestUninstall((conf) =>
+                {
+                    conf.PackageNames = conf.Input = "installpackage2";
+
+                    tester.Lock();
+                    tester.AddInstallEntry(
+                        new RegistryApplicationKey()
+                        {
+                            PackageId = packageId,
+                            Version = "1.0.0",
+                            InstallLocation = Path.Combine(InstallContext.Instance.RootLocation, "custominstalldir", packageId)
+                        }
+                    );
+                    tester.LogInstallEntries(false, packageId);
+
+                }, ChocoTestContext.installupdate2);
+
+                tester.LogInstallEntries(true, packageId);
+                tester.DeleteInstallEntries(packageId);
+            }
+
+        }
+
     }
 }
 

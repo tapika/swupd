@@ -448,13 +448,14 @@ namespace chocolatey.tests2.commands
             using (var tester = new TestRegistry())
             {
                 tester.DeleteInstallEntries(packageId);
+                tester.LogInstallEntries(false, packageId);
 
                 InstallOnEmpty((conf) =>
                 {
                     conf.PackageNames = conf.Input = packageId;
                 }, ChocoTestContext.pack_installpackage2_1_0_0);
 
-                tester.LogInstallEntries(packageId);
+                tester.LogInstallEntries(true, packageId);
                 tester.DeleteInstallEntries(packageId);
             }
         }

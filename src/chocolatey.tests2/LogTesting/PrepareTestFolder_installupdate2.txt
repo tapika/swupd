@@ -1,5 +1,3 @@
-
-- before operation installpackage2 - not installed
 Installing the following packages:
 installpackage2
 By installing you accept licenses for the packages.
@@ -43,4 +41,4 @@ custominstalldir\installpackage2\tools\chocolateyuninstall.ps1
   DisplayIcon: custominstalldir\installpackage2\msgbox.exe
   EstimatedSize: 313
 
-end of test
+shared context ends

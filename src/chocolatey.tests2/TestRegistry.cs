@@ -2,6 +2,8 @@
 using chocolatey.infrastructure.app.services;
 using chocolatey.infrastructure.logging;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 
 namespace chocolatey.tests2
@@ -11,12 +13,25 @@ namespace chocolatey.tests2
     /// </summary>
     public class TestRegistry: IDisposable
     {
-        static object locker = new object();
+        static AutoResetEvent locker = new AutoResetEvent(true);
         RegistryService registryService = new RegistryService(null, null);
 
-        public TestRegistry()
+        public TestRegistry(bool initialLock = true)
         {
-            Monitor.Enter(locker);
+            if (initialLock)
+            { 
+                Lock();
+            }
+        }
+
+        public void Lock()
+        {
+            locker.WaitOne();
+        }
+
+        public void Unlock()
+        {
+            locker.Set();
         }
 
         public void DeleteInstallEntries(params string[] packageIds)
@@ -34,21 +49,46 @@ namespace chocolatey.tests2
             }
         }
 
-        public void LogInstallEntries(params string[] packageIds)
+        public void AddInstallEntry(RegistryApplicationKey appKey)
+        {
+            Type type = appKey.GetType();
+            appKey.Hive = Microsoft.Win32.RegistryHive.LocalMachine;
+            appKey.RegistryView = Microsoft.Win32.RegistryView.Default;
+            appKey.KeyPath = $"HKEY_LOCAL_MACHINE\\{RegistryService.UNINSTALLER_KEY_NAME}\\{appKey.PackageId}";
+            appKey.Publisher = "TestRegistry";
+
+            // So control panel would see it:
+            appKey.UninstallString = "none";  
+            appKey.DisplayName = appKey.PackageId;
+            appKey.DisplayVersion = appKey.Version.ToString();
+
+            List<string> propNames = RegistryApplicationKey.GetPropertyNames(true);
+            foreach (string propName in propNames.ToArray())
+            {
+                var prop = type.GetProperty(propName);
+                if (prop.GetValue(appKey) == null)
+                    propNames.Remove(propName);
+            }
+
+            registryService.set_key_values(appKey, propNames.ToArray());
+        }
+
+        public void LogInstallEntries(bool afterOp, params string[] packageIds)
         {
             var console = LogService.console;
+            string prefix = (afterOp) ? "after operation": "before operation";
             foreach (string packageId in packageIds)
             {
                 var registry = registryService.get_installer_keys(packageId);
                 if (registry.RegistryKeys.Count == 0)
                 {
                     console.Info("");
-                    console.Info($"- {packageId} - not installed");
+                    console.Info($"- {prefix} {packageId} - not installed");
                 }
                 else
                 { 
                     console.Info("");
-                    console.Info($"- {packageId} registry:");
+                    console.Info($"- {prefix} {packageId} registry:");
                     foreach (var registryKey in registry.RegistryKeys)
                     {
                         console.Info(registryKey.ToStringFull("  "));
@@ -59,7 +99,7 @@ namespace chocolatey.tests2
 
         public void Dispose()
         {
-            Monitor.Exit(locker);
+            Unlock();
         }
     }
 }

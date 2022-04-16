@@ -139,6 +139,34 @@ namespace chocolatey.infrastructure.app.domain
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Gets property names which are saved in registry
+        /// </summary>
+        /// <param name="haveIcon">true if have icon</param>
+        public static List<String> GetPropertyNames(bool haveIcon)
+        {
+            List<String> propNames = new List<string>() {
+                nameof(RegistryApplicationKey.DisplayName),
+                nameof(RegistryApplicationKey.Version),
+                nameof(RegistryApplicationKey.InstallLocation),
+                nameof(RegistryApplicationKey.PackageId),
+                nameof(RegistryApplicationKey.UninstallString),
+                nameof(RegistryApplicationKey.Publisher),
+                nameof(RegistryApplicationKey.NoModify),
+                nameof(RegistryApplicationKey.NoRepair),
+                nameof(RegistryApplicationKey.InstallDate),
+                nameof(RegistryApplicationKey.DisplayVersion),
+                nameof(RegistryApplicationKey.EstimatedSize)
+            };
+
+            if (haveIcon)
+            { 
+                propNames.Add(nameof(RegistryApplicationKey.DisplayIcon));
+            }
+
+            return propNames;
+        }
+
         public override string ToString()
         {
             return "{0}|{1}|{2}|{3}|{4}".format_with(
