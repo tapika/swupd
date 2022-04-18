@@ -11,6 +11,7 @@
 
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
   <Import Project="$(ProjectDir)..\props\configurationmanager.props" />
+  <Import Project="..\props\systemreactive.props" />
 
   <ItemGroup>
     <None Include="$(ProjectDir)..\..\ProjectsCommon.props" Link="ProjectsCommon.props" />

@@ -43,6 +43,6 @@ namespace chocolatey.infrastructure.app.services
         /// <summary>
         /// Deletes registry key
         /// </summary>
-        public void delete_key(RegistryApplicationKey appKey);
+        void delete_key(RegistryApplicationKey appKey);
     }
 }

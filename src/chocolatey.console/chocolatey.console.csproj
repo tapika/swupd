@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <Import Project="..\props\nlog.props" />
+  <Import Project="..\props\systemreactive.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\chocolatey\chocolatey.csproj" />
