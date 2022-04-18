@@ -454,6 +454,36 @@ NOTE: Hiding sensitive configuration data! Please double and triple
 
         // list
         public bool LocalOnly { get; set; }
+        bool? _showRegistryPackages;
+        
+        /// <summary>
+        /// When not running unit tests - we always return this as true (feature rich).
+        /// If running unit tests - by default we disable registry access (requires lock), unless
+        /// overridden from test itself.
+        /// </summary>
+        public bool ShowRegistryPackages
+        {
+            get
+            {
+                if (!ApplicationParameters.runningUnitTesting)
+                {
+                    return true;
+                }
+
+                if (!_showRegistryPackages.HasValue)
+                {
+                    return false;
+                }
+
+                return _showRegistryPackages.Value;
+            }
+
+            set
+            {
+                _showRegistryPackages = value;
+            }
+        }
+
         public bool IdOnly { get; set; }
         public bool IncludeRegistryPrograms { get; set; }
         public int? Page { get; set; }

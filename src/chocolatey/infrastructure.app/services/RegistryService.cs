@@ -67,7 +67,7 @@ namespace chocolatey.infrastructure.app.services
             if (key != null) keys.Add(new RegistryKeyInfo() { key = key, hive = hive, view = view });
         }
 
-        public Registry get_installer_keys(string packageId = null, string version = null)
+        public Registry get_installer_keys(string packageId = null, string version = null, bool? nugetInstallable = null)
         {
             var snapshot = new Registry();
             var windowsIdentity = WindowsIdentity.GetCurrent();
@@ -95,7 +95,7 @@ namespace chocolatey.infrastructure.app.services
                 if (uninstallKey != null)
                 {
                     //Console.WriteLine("Evaluating {0} of {1}".format_with(uninstallKey.View, uninstallKey.Name));
-                    evaluate_keys(regkey, uninstallKey, snapshot, packageId, version);
+                    evaluate_keys(regkey, uninstallKey, snapshot, packageId, version, nugetInstallable);
                 }
                 registryKey.Close();
                 registryKey.Dispose();
@@ -120,7 +120,8 @@ namespace chocolatey.infrastructure.app.services
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="snapshot">The snapshot.</param>
-        public void evaluate_keys(RegistryKeyInfo regkey, RegistryKey key, Registry snapshot, string packageId = null, string version = null)
+        public void evaluate_keys(RegistryKeyInfo regkey, RegistryKey key, Registry snapshot, 
+            string packageId = null, string version = null, bool? nugetInstallable = null)
         {
             if (key == null) return;
 
@@ -142,7 +143,7 @@ namespace chocolatey.infrastructure.app.services
                         regkey.SubKeyName = subKeyName;
 
                         FaultTolerance.try_catch_with_logging_exception(
-                            () => evaluate_keys(regkey, key.OpenSubKey(subKeyName, RegistryKeyPermissionCheck.ReadSubTree, RegistryRights.ReadKey), snapshot),
+                            () => evaluate_keys(regkey, key.OpenSubKey(subKeyName, RegistryKeyPermissionCheck.ReadSubTree, RegistryRights.ReadKey), snapshot, packageId, version, nugetInstallable),
                             "Failed to open subkey named '{0}' for '{1}', likely due to permissions".format_with(subKeyName, key.Name),
                             logWarningInsteadOfError: true);
                     }
@@ -164,8 +165,11 @@ namespace chocolatey.infrastructure.app.services
                 appKey.DisplayName = appKey.DefaultValue;
             }
 
+            bool addRegEntry = false;
+
             if (!string.IsNullOrWhiteSpace(appKey.DisplayName))
             {
+                addRegEntry = true;
                 appKey.PackageId = key.get_value_as_string("PackageId");
                 if (string.IsNullOrWhiteSpace(appKey.PackageId))
                 {
@@ -178,10 +182,36 @@ namespace chocolatey.infrastructure.app.services
                     appKey.IsPinned = false;
                 }
                 else
-                { 
+                {
                     appKey.IsPinned = s != "0";
                 }
                 appKey.InstallLocation = key.get_value_as_string("InstallLocation");
+
+                if (nugetInstallable.HasValue)
+                {
+                    string dir = appKey.InstallLocation;
+                    bool isNugetInstallable = false;
+
+                    if (!String.IsNullOrEmpty(dir))
+                    {
+                        string parentDir = System.IO.Path.GetDirectoryName(dir);
+                        string parentDirName = System.IO.Path.GetFileName(dir);
+                        if (parentDirName == appKey.PackageId)
+                        {
+                            string nuspecPath = System.IO.Path.Combine(dir, appKey.PackageId + NuGet.Constants.ManifestExtension);
+                            isNugetInstallable = System.IO.File.Exists(nuspecPath);
+                        }
+                    }
+
+                    if (nugetInstallable.Value != isNugetInstallable)
+                    {
+                        addRegEntry = false;
+                    }
+                }
+            }
+
+            if(addRegEntry)
+            {
                 appKey.UninstallString = key.get_value_as_string("UninstallString");
                 if (!string.IsNullOrWhiteSpace(key.get_value_as_string("QuietUninstallString")))
                 {

@@ -34,7 +34,7 @@ namespace chocolatey.infrastructure.app.nuget
             }
 
             // At the moment bit slow, maybe needs to be precached.
-            var registry = _registryService.get_installer_keys(packageName);
+            var registry = _registryService.get_installer_keys(packageName, null, true);
             if (registry.RegistryKeys.Count != 0)
             {
                 return new RegistryPackage(registry.RegistryKeys.First());
@@ -56,7 +56,7 @@ namespace chocolatey.infrastructure.app.nuget
                 locals = LocalRepository.FindPackagesById(packageId);
             }
 
-            var registry = _registryService.get_installer_keys(packageId);
+            var registry = _registryService.get_installer_keys(packageId, null, true);
             return locals.Concat(registry.RegistryKeys.Select(x => new RegistryPackage(x)));
         }
     }

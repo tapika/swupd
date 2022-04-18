@@ -101,10 +101,10 @@ namespace chocolatey.tests2.commands
             });
         }
 
-        public void ExactPackagesList(Action<ChocolateyConfiguration> confPatch)
+        public void ExactPackagesList(Action<ChocolateyConfiguration> confPatch, ChocoTestContext testcontext = ChocoTestContext.exactpackage)
         {
             var conf = Scenario.list(true);
-            InstallContext.Instance.RootLocation = PrepareTestFolder(ChocoTestContext.exactpackage, conf);
+            InstallContext.Instance.RootLocation = PrepareTestFolder(testcontext, conf);
             conf.Sources = InstallContext.Instance.PackagesLocation;
             confPatch(conf);
             Service.list_run(conf).ToList();
@@ -155,6 +155,25 @@ namespace chocolatey.tests2.commands
                 conf.Prerelease = true;
                 conf.Input = conf.PackageNames = "exactpackage";
             });
+        }
+
+        [LogTest]
+        public void when_listing_regpackage()
+        {
+            using (var tester = new TestRegistry(false))
+            {
+                ExactPackagesList((conf) =>
+                {
+                    conf.ListCommand.LocalOnly = true;
+                    conf.ListCommand.ShowRegistryPackages = true;
+                    
+                    tester.Lock();
+                    tester.AddInstallPackage2Entry();
+
+                }, ChocoTestContext.installupdate2);
+
+                tester.DeleteInstallEntries(installpackage2_id);
+            }
         }
 
     }

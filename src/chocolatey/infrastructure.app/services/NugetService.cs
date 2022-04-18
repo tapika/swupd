@@ -112,6 +112,11 @@ namespace chocolatey.infrastructure.app.services
                                 ));
         }
 
+        IEnumerable<IPackage> GetLocalRegistryPackages()
+        {
+            return _registryService.get_installer_keys("*", null, true).RegistryKeys.Select(x => new RegistryPackage(x));
+        }
+
         public virtual IEnumerable<PackageResult> list_run(ChocolateyConfiguration config)
         {
             int count = 0;
@@ -129,7 +134,16 @@ namespace chocolatey.infrastructure.app.services
 
             if (config.RegularOutput) this.Log().Debug(() => "Running list with the following filter = '{0}'".format_with(config.Input));
             if (config.RegularOutput) this.Log().Debug(ChocolateyLoggers.Verbose, () => "--- Start of List ---");
-            foreach (var pkg in NugetList.GetPackages(config, _nugetLogger))
+
+            var packages = NugetList.GetPackages(config, _nugetLogger).ToList();
+
+            if(config.ListCommand.LocalOnly && config.ListCommand.ShowRegistryPackages)
+            {
+                packages.AddRange(GetLocalRegistryPackages());
+                packages = packages.OrderBy(x => x.Id).ThenByDescending(p => p.Version).ToList();
+            }
+
+            foreach (var pkg in packages)
             {
                 var package = pkg; // for lamda access
 
