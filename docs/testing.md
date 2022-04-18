@@ -360,7 +360,7 @@ It's also possible that some of strings will fail due to `null` reference violat
 
 ### Log performance
 
-Chocolatey is relatively small so logging does influence it's performance - however - it's possible that same testing framework could be reused for other projects as well, except Chocolatey.
+Chocolatey is relatively small project so logging does influence it's performance much - however - it's possible that same testing framework could be used for other projects as well, except Chocolatey.
 
 According to [NLog performance](https://github.com/NLog/NLog/wiki/Performance) wiki pages - if logging is not performed - then no need to perform string formatting as well - and for that purpose developer should use parameters instead of string interpolation (`$"Hello {world}"`).
 
