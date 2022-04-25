@@ -64,6 +64,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChocolateyGui", "Chocolatey
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chocolatey.tests2", "chocolatey.tests2\chocolatey.tests2.csproj", "{47966427-1793-49FD-8F50-3EB02BF90E5C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChocolateyGuiCli", "ChocolateyGuiCli\ChocolateyGuiCli.csproj", "{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -230,6 +232,18 @@ Global
 		{47966427-1793-49FD-8F50-3EB02BF90E5C}.RelWithDebInfo|Any CPU.Build.0 = RelWithDebInfo|Any CPU
 		{47966427-1793-49FD-8F50-3EB02BF90E5C}.RelWithDebInfo|x86.ActiveCfg = Release|Any CPU
 		{47966427-1793-49FD-8F50-3EB02BF90E5C}.RelWithDebInfo|x86.Build.0 = Release|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.Debug|x86.Build.0 = Debug|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.Release|x86.ActiveCfg = Release|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.Release|x86.Build.0 = Release|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.RelWithDebInfo|Any CPU.ActiveCfg = RelWithDebInfo|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.RelWithDebInfo|Any CPU.Build.0 = RelWithDebInfo|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|Any CPU
+		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.RelWithDebInfo|x86.Build.0 = RelWithDebInfo|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
