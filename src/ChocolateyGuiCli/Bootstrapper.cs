@@ -54,6 +54,7 @@ namespace ChocolateyGuiCli
 
         internal static void Configure()
         {
+            var addDataPath = AppDataPath;
             var logPath = LogSetup.GetLogsFolderPath("Logs");
 
             LogSetup.Execute();
