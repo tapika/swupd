@@ -40,7 +40,9 @@ namespace cakebuild.commands
             }
 
             string rootDir = context.RootDirectory;
-            string outDir = Path.Combine(rootDir, $@"src\bin\{context.cmdArgs.NetFramework}-Release");
+            string outDir = Path.Combine(rootDir, $@"bin\{context.cmdArgs.NetFramework}-Release_test");
+
+            context.ConfigureDotNet(outDir);
 
             var testsToRun = helpers.split(context.cmdArgs.testsToRun);
 

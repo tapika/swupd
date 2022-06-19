@@ -40,8 +40,12 @@
     <Configurations>Debug;Release;RelWithDebInfo</Configurations>
     <!-- Save temporary files in here -->  
     <IntermediateOutputPath>$(SolutionDir)obj\$(TargetFramework)-$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(SolutionDir)bin\$(TargetFramework)-$(Configuration)</OutputPath>
+    <OutputPath>$(SolutionDir)..\bin\$(TargetFramework)-$(Configuration)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(MSBuildProjectName.Contains('tests'))">
+    <OutputPath>$(SolutionDir)..\bin\$(TargetFramework)-$(Configuration)_test</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
