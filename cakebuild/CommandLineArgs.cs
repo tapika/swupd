@@ -71,12 +71,17 @@ namespace cakebuild
         public bool displaysHelp = false;
 
         [CommandOption("--net <FRAMEWORK>")]
-        [Description(".net framework to use (netcoreapp3.1, net5.0, net6.0, net4.8)")]
+        [Description(".net framework to use (netcoreapp3.1, net5.0, net6.0, net48)")]
         public string NetFramework { get; set; } = "netcoreapp3.1";
         
         public string NetFrameworkSuffix
         {
             get {
+                if (NetFramework == "net48")
+                {
+                    return "";
+                }
+
                 if (NetFramework.Length == 0)
                     return "";
                 return "_" + NetFramework;

@@ -46,6 +46,39 @@ namespace cakebuild.commands
 
             LogInfo($"- Building {Path.GetFileName(solutionPath)}...");
 
+            string globalJson = Path.Combine(rootDir, $@"src\global.json");
+            string versionToRequest = null;
+            switch (context.cmdArgs.NetFramework)
+            {
+                case "netcoreapp3.1":
+                    versionToRequest = "3.1.101";
+                    break;
+                case "net5.0":
+                    versionToRequest = "5.0.406";
+                    break;
+                case "net6.0":
+                    versionToRequest = "6.0.0";
+                    break;
+            }
+
+            if (versionToRequest == null)
+            {
+                if (File.Exists(globalJson))
+                {
+                    File.Delete(globalJson);
+                }
+            }
+            else
+            {
+                File.WriteAllText(globalJson, $@"{{
+  ""sdk"": {{
+    ""version"": ""{versionToRequest}"",
+    ""rollForward"": ""latestFeature""
+  }}
+}}
+");
+            }
+
             DotNetCoreMSBuildSettings msbuild_settings = new DotNetCoreMSBuildSettings()
             {
                 Verbosity = DotNetVerbosity.Minimal
