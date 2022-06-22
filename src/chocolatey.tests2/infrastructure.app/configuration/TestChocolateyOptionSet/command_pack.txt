@@ -7,3 +7,6 @@ config: Version='1'
 > pack --out 1
 config: OutputDirectory='1'
 
+> pack --in 1
+config: PackCommand.InputDirectory='1'
+
