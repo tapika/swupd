@@ -304,6 +304,12 @@ namespace chocolatey.infrastructure.app.services
             var propertyProvider = new DictionaryPropertyProvider(properties);
 
             var basePath = nuspecDirectory;
+
+            if (!String.IsNullOrEmpty(config.PackCommand.InputDirectory))
+            {
+                basePath = config.PackCommand.InputDirectory;
+            }
+
             if (config.Information.PlatformType != PlatformType.Windows)
             {
                 //bug with nuspec and tools/** folder location on Windows.

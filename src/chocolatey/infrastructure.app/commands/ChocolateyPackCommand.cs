@@ -45,6 +45,9 @@ namespace chocolatey.infrastructure.app.commands
                 .Add("out=|outdir=|outputdirectory=|output-directory=",
                      "OutputDirectory - Specifies the directory for the created Chocolatey package file. If not specified, uses the current directory.",
                      option => configuration.OutputDirectory = option.remove_surrounding_quotes())
+                .Add("in=|input-directory=",
+                     "InputDirectory - Specifies input directory from where to take files - by default same directory as .nuspec file",
+                     option => configuration.PackCommand.InputDirectory = option.remove_surrounding_quotes())
                 ;
         }
 

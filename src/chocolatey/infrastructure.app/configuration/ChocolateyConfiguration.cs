@@ -600,6 +600,7 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         }
 
         public IDictionary<string, string> Properties { get; private set; }
+        public string InputDirectory { get; set; }
     }
 
     [Serializable]

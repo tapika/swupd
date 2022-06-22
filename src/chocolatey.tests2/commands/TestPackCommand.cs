@@ -23,6 +23,8 @@ namespace chocolatey.tests2.commands
             packcmd = ApplicationManager.Instance.Commands.OfType<ChocolateyPackCommand>().Single();
         }
 
+        const string justSomeFileCs = "justsomefile.cs";
+
         public void PackContext(
             Action<ChocolateyConfiguration> confPatch = null,
             string nuspecFile = "test1.nuspec",
@@ -43,7 +45,7 @@ namespace chocolatey.tests2.commands
             string srcdir = Path.GetDirectoryName(srcpath);
             string nuspecPath = Path.Combine(srcdir, nuspecFile);
             File.Copy(nuspecPath, Path.Combine(rootDir, nuspecFile), true);
-            File.Copy(srcpath, Path.Combine(rootDir, "justsomefile.cs"), true);
+            File.Copy(srcpath, Path.Combine(rootDir, justSomeFileCs), true);
 
             conf.Input = Path.Combine(rootDir, nuspecFile);
             conf.OutputDirectory = rootDir;
@@ -93,6 +95,23 @@ namespace chocolatey.tests2.commands
                 , "test2.nuspec"
             );
         }
+
+        [LogTest]
+        public void when_packing_with_input_folder()
+        {
+            PackContext((conf) =>
+                {
+                    string rootDir = InstallContext.Instance.RootLocation;
+                    string dir = Path.Combine(rootDir, "testdir");
+                    Directory.CreateDirectory(dir);
+                    File.Copy(Path.Combine(rootDir, justSomeFileCs), Path.Combine(dir, "fileInDir.cs"), true);
+                    
+                    conf.PackCommand.InputDirectory = dir;
+                }
+                , "test1.nuspec"
+            );
+        }
+
     }
 }
 
