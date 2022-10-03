@@ -16,6 +16,16 @@ list_run(list-config)
 Error: Missing required value for option '--root'.
 chocoArgsParse: return on startup
 
+> list --instdir
+- logInit called.
+Error: Missing required value for option '--instdir'.
+chocoArgsParse: return on startup
+
+> list --instdir instdir
+config: CommandName='list'
+ensure_source_app_installed(list-config)
+list_run(list-config)
+
 > list -d -lo
 config: CommandName='list',Debug='True',ListCommand.LocalOnly='True'
 ensure_source_app_installed(list-config)

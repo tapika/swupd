@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 
@@ -36,17 +37,44 @@ namespace chocolatey.infrastructure.app
         public static string ApplicationInstallLocation
         {
             get {
-                // Visual studio / .net 4.8 / testhost*.exe
-                if (System.Diagnostics.Process.GetCurrentProcess().ProcessName.StartsWith("testhost"))
-                {
-                    return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                }
-            
-                // See also: https://github.com/dotnet/runtime/issues/13051
-                return Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+                return Instance.InstallLocation;
             }
         }
-        
+
+        string getExecutableDirectory()
+        {
+            // Visual studio / .net 4.8 / testhost*.exe
+            if (System.Diagnostics.Process.GetCurrentProcess().ProcessName.StartsWith("testhost"))
+            {
+                return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            }
+
+            // See also: https://github.com/dotnet/runtime/issues/13051
+            return Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+        }
+
+        string installLocation;
+        /// <summary>
+        /// Where choco is installed.
+        /// </summary>
+        public string InstallLocation
+        {
+            get
+            {
+                if (installLocation == null)
+                {
+                    installLocation = getExecutableDirectory();
+                }
+
+                return installLocation;
+            }
+
+            set
+            {
+                installLocation = value;
+            }
+        }
+
         /// <summary>
         /// choco's .ps1 helper functions
         /// </summary>
@@ -54,7 +82,7 @@ namespace chocolatey.infrastructure.app
         {
             get
             { 
-                return Path.Combine(InstallContext.ApplicationInstallLocation, "helpers");
+                return Path.Combine(Instance.installLocation, "helpers");
             }
         }
 

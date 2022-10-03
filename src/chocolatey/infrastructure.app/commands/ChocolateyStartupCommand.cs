@@ -20,6 +20,12 @@
             optionSet
                 .Add("root=", "Sets root location",
                     option => InstallContext.Instance.RootLocation = option.remove_surrounding_quotes())
+                .Add("instdir=", "Sets application install location",
+                    option => {
+                        string dir = option.remove_surrounding_quotes();
+                        InstallContext.Instance.InstallLocation = dir;
+                        InstallContext.Instance.RootLocation = dir;
+                    } )
                 .Add("clearlogs|clearlog", "Removes logs if any is present",
                     option => ApplicationParameters.ClearLogFiles = option != null)
             ;

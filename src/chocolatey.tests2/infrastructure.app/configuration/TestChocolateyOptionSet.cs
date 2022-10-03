@@ -42,6 +42,8 @@ namespace chocolatey.tests2.infrastructure.app.configuration
             chocoArgsBasicParse("-?");
             chocoArgsBasicParse("list --root subfolder");
             chocoArgsBasicParse("list --root");
+            chocoArgsBasicParse("list --instdir");
+            chocoArgsBasicParse("list --instdir instdir");
             chocoArgsBasicParse("list -d -lo");
             chocoArgsBasicParse("list");
             chocoArgsBasicParse("list -?");
