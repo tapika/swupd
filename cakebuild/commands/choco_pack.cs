@@ -51,21 +51,15 @@ namespace cakebuild.commands
             string tempDir = Path.Combine(rootDir, "bin", "temp");
             string binDir = Path.Combine(rootDir, $@"bin\{context.cmdArgs.NetFramework}-Release");
 
-            string path = Environment.GetEnvironmentVariable("PATH");
-            if (!path.StartsWith(binDir))
-            { 
-                Environment.SetEnvironmentVariable("PATH", $"{binDir};{path}");
-            }
-
             ChocolateyPackSettings packSettings = new ChocolateyPackSettings()
             {
                 OutputDirectory = publishNugetDir,
                 ArgumentCustomization = builder =>
                 {
-                    new string[] { 
-                        "--root", tempDir, 
-                        "--in", binDir 
-                    }.Select(x => new TextArgument(x)).ToList().ForEach(x => builder.Append(x));
+                    new string[] {
+                    "--root", tempDir,
+                    "--in", binDir
+                }.Select(x => new TextArgument(x)).ToList().ForEach(x => builder.Append(x));
                     //builder.Append($"choco_build_tag=\"{branchName} \"");
                     //string branchNameSuffix = (branchName.Length != 0) ? $"-{branchName}" : "";
                     //builder.Append($"choco_build_tag_suffix=\"{branchNameSuffix} \"");
@@ -73,7 +67,6 @@ namespace cakebuild.commands
                 }
             };
             context.ChocolateyPack(nuspecFilePath, packSettings);
-
         }
     }
 

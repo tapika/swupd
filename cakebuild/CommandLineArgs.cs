@@ -205,6 +205,12 @@ namespace cakebuild
                 args.Add("true");
             }
 
+            // Need to set up choco.exe environment variables before cake starts to detect tools
+            string binDir = System.IO.Path.Combine(BuildContext.GetRootDirectory(), $@"bin\{NetFramework}-Release");
+            string path = Environment.GetEnvironmentVariable("PATH");
+            Environment.SetEnvironmentVariable("PATH", $"{binDir};{path}");
+            Environment.SetEnvironmentVariable("ChocolateyInstall", $"{binDir}\\choco.exe");
+
             //Console.WriteLine("routed command: " + string.Join(' ', args));
             return args.ToArray();
         }

@@ -14,12 +14,17 @@ namespace cakebuild
             cmdArgs = _commandLineArguments;
         }
 
+        public static string GetRootDirectory()
+        {
+            string rootDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), @"..\..\.."));
+            return rootDir;
+        }
+
         public string RootDirectory
         {
             get
             {
-                string rootDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), @"..\..\.."));
-                return rootDir;
+                return GetRootDirectory();
             }
         }
 
