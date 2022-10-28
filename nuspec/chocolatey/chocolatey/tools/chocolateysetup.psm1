@@ -1,5 +1,5 @@
 ﻿$thisScriptFolder = (Split-Path -parent $MyInvocation.MyCommand.Definition)
-$chocInstallVariableName = "ChocolateyInstall"
+$chocoInstallVariableName = "ChocolateyInstall"
 $sysDrive = $env:SystemDrive
 $tempDir = $env:TEMP
 $defaultChocolateyPathOld = "$sysDrive\Chocolatey"
@@ -30,13 +30,77 @@ param (
   }
 }
 
+function Remove-ShimWithAuthenticodeSignature {
+  param (
+    [string] $filePath
+  )
+  if (!(Test-Path $filePath)) {
+    return
+  }
+
+  $signature = Get-AuthenticodeSignature $filePath -ErrorAction SilentlyContinue
+
+  if (!$signature -or !$signature.SignerCertificate) {
+    Write-ChocolateyWarning "Shim found in $filePath, but was not signed. Ignoring removal..."
+    return
+  }
+
+  $possibleSignatures = @(
+    'RealDimensions Software, LLC'
+    'Chocolatey Software, Inc\.'
+  )
+
+  $possibleSignatures | ForEach-Object {
+    if ($signature.SignerCertificate.Subject -match "$_") {
+      Write-Output "Removing shim $filePath"
+      $null = Remove-Item "$filePath"
+
+      if (Test-Path "$filePath.ignore") {
+        $null = Remove-Item "$filePath.ignore"
+      }
+
+      if (Test-Path "$filePath.old") {
+        $null = Remove-Item "$filePath.old"
+      }
+    }
+  }
+
+  # This means the file was found, however did not get removed as it contained a authenticode signature that
+  # is not ours.
+  if (Test-Path $filePath) {
+    Write-ChocolateyWarning "Shim found in $filePath, but did not match our signature. Ignoring removal..."
+    return
+  }
+}
+
+function Remove-UnsupportedShimFiles {
+  param([string[]]$Paths)
+
+  $shims = @("cpack.exe", "cver.exe")
+
+  $Paths | ForEach-Object {
+    $path = $_
+    $shims | ForEach-Object { Join-Path $path $_ } | Where-Object { Test-Path $_ } | ForEach-Object {
+      $shimPath = $_
+      Write-Debug "Removing shim from '$shimPath'."
+
+      try {
+        Remove-ShimWithAuthenticodeSignature -filePath $shimPath
+      }
+      catch {
+        Write-ChocolateyWarning "Unable to remove '$shimPath'. Please remove the file manually."
+      }
+    }
+  }
+}
+
 function Initialize-Chocolatey {
 <#
   .DESCRIPTION
     This will initialize the Chocolatey tool by
       a) setting up the "chocolateyPath" (the location where all chocolatey nuget packages will be installed)
       b) Installs chocolatey into the "chocolateyPath"
-            c) Instals .net 4.0 if needed
+            c) Installs .net 4.0 if needed
       d) Adds Chocolatey to the PATH environment variable so you have access to the choco commands.
   .PARAMETER  ChocolateyPath
     Allows you to override the default path of (C:\ProgramData\chocolatey\) by specifying a directory chocolatey will install nuget packages.
@@ -107,6 +171,12 @@ Creating Chocolatey folders if they do not already exist.
   Create-DirectoryIfNotExists $chocolateyExePath
   Create-DirectoryIfNotExists $chocolateyLibPath
 
+  $possibleShimPaths = @(
+    Join-Path "$chocolateyPath" "redirects"
+    Join-Path "$thisScriptFolder" "chocolateyInstall\redirects"
+  )
+  Remove-UnsupportedShimFiles -Paths $possibleShimPaths
+
   Install-ChocolateyFiles $chocolateyPath
   Ensure-ChocolateyLibFiles $chocolateyLibPath
 
@@ -142,6 +212,8 @@ You may need to shut down and restart powershell and/or consoles
   if (-not $allowInsecureRootInstall) {
     Remove-OldChocolateyInstall $defaultChocolateyPathOld
   }
+
+  Remove-UnsupportedShimFiles -Paths $chocolateyExePath
 }
 
 function Set-ChocolateyInstallFolder {
@@ -152,24 +224,24 @@ param(
 
   $environmentTarget = [System.EnvironmentVariableTarget]::User
   # removing old variable
-  Install-ChocolateyEnvironmentVariable -variableName "$chocInstallVariableName" -variableValue $null -variableType $environmentTarget
+  Install-ChocolateyEnvironmentVariable -variableName "$chocoInstallVariableName" -variableValue $null -variableType $environmentTarget
   if (Test-ProcessAdminRights) {
     Write-Debug "Administrator installing so using Machine environment variable target instead of User."
     $environmentTarget = [System.EnvironmentVariableTarget]::Machine
     # removing old variable
-    Install-ChocolateyEnvironmentVariable -variableName "$chocInstallVariableName" -variableValue $null -variableType $environmentTarget
+    Install-ChocolateyEnvironmentVariable -variableName "$chocoInstallVariableName" -variableValue $null -variableType $environmentTarget
   } else {
     Write-ChocolateyWarning "Setting ChocolateyInstall Environment Variable on USER and not SYSTEM variables.`n  This is due to either non-administrator install OR the process you are running is not being run as an Administrator."
   }
 
-  Write-Output "Creating $chocInstallVariableName as an environment variable (targeting `'$environmentTarget`') `n  Setting $chocInstallVariableName to `'$folder`'"
+  Write-Output "Creating $chocoInstallVariableName as an environment variable (targeting `'$environmentTarget`') `n  Setting $chocoInstallVariableName to `'$folder`'"
   Write-ChocolateyWarning "It's very likely you will need to close and reopen your shell `n  before you can use choco."
-  Install-ChocolateyEnvironmentVariable -variableName "$chocInstallVariableName" -variableValue "$folder" -variableType $environmentTarget
+  Install-ChocolateyEnvironmentVariable -variableName "$chocoInstallVariableName" -variableValue "$folder" -variableType $environmentTarget
 }
 
 function Get-ChocolateyInstallFolder(){
   Write-Debug "Get-ChocolateyInstallFolder"
-  [Environment]::GetEnvironmentVariable($chocInstallVariableName)
+  [Environment]::GetEnvironmentVariable($chocoInstallVariableName)
 }
 
 function Create-DirectoryIfNotExists($folderName){
@@ -216,10 +288,10 @@ param(
   $ErrorActionPreference = 'Stop'
   try {
     # get current acl
-    $acl = (Get-Item $folder).GetAccessControl('Access,Owner')
+    $acl = Get-Acl $folder
 
     Write-Debug "Removing existing permissions."
-    $acl.Access | % { $acl.RemoveAccessRuleAll($_) }
+    $acl.Access | ForEach-Object { $acl.RemoveAccessRuleAll($_) }
 
     $inheritanceFlags = ([Security.AccessControl.InheritanceFlags]::ContainerInherit -bor [Security.AccessControl.InheritanceFlags]::ObjectInherit)
     $propagationFlags = [Security.AccessControl.PropagationFlags]::None
@@ -262,17 +334,17 @@ param(
     $acl.SetAccessRuleProtection($true, $false)
 
     # enact the changes against the actual
-    (Get-Item $folder).SetAccessControl($acl)
+    Set-Acl -Path $folder -AclObject $acl
 
     # set an explicit append permission on the logs folder
     Write-Debug "Allow users to append to log files."
     $logsFolder = "$folder\logs"
     Create-DirectoryIfNotExists $logsFolder
-    $logsAcl = (Get-Item $logsFolder).GetAccessControl('Access')
+    $logsAcl = Get-Acl $logsFolder
     $usersAppendAccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($builtinUsers, $rightsWrite, [Security.AccessControl.InheritanceFlags]::ObjectInherit, [Security.AccessControl.PropagationFlags]::InheritOnly, "Allow")
     $logsAcl.SetAccessRule($usersAppendAccessRule)
     $logsAcl.SetAccessRuleProtection($false, $true)
-    (Get-Item $logsFolder).SetAccessControl($logsAcl)
+    Set-Acl -Path $logsFolder -AclObject $logsAcl
   } catch {
     Write-ChocolateyWarning "Not able to set permissions for $folder."
   }
@@ -296,7 +368,7 @@ param(
 
     $chocolateyExePathOld = Join-Path $chocolateyPathOld 'bin'
     'Machine', 'User' |
-    % {
+    ForEach-Object {
       $path = Get-EnvironmentVariable -Name 'PATH' -Scope $_
       $updatedPath = [System.Text.RegularExpressions.Regex]::Replace($path,[System.Text.RegularExpressions.Regex]::Escape($chocolateyExePathOld) + '(?>;)?', '', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
       if ($updatedPath -ne $path) {
@@ -315,9 +387,9 @@ param(
     $from = "$chocolateyPathOld\bin"
     $to = "$chocolateyPath\bin"
     # TODO: This exclusion list needs to be updated once shims are removed
-    $exclude = @("choco.exe", "chocolatey.exe", "cinst.exe", "clist.exe", "cpack.exe", "cpush.exe", "cuninst.exe", "cup.exe", "cver.exe", "RefreshEnv.cmd")
+    $exclude = @("choco.exe", "chocolatey.exe", "cinst.exe", "clist.exe", "cpush.exe", "cuninst.exe", "cup.exe", "RefreshEnv.cmd")
     Get-ChildItem -Path $from -recurse -Exclude $exclude |
-      % {
+      ForEach-Object {
         Write-Debug "Copying $_ `n to $to"
         if ($_.PSIsContainer) {
           Copy-Item $_ -Destination (Join-Path $to $_.Parent.FullName.Substring($from.length)) -Force -ErrorAction SilentlyContinue
@@ -343,7 +415,7 @@ param(
   if (Test-Path $chocolateyPathOld) {
     Write-ChocolateyWarning "This action will result in Log Errors, you can safely ignore those. `n You may need to finish removing '$chocolateyPathOld' manually."
     try {
-      Get-ChildItem -Path "$chocolateyPathOld" | % {
+      Get-ChildItem -Path "$chocolateyPathOld" | ForEach-Object {
         if (Test-Path $_.FullName) {
           Write-Debug "Removing $_ unless matches .log"
           Remove-Item $_.FullName -exclude *.log -recurse -force -ErrorAction SilentlyContinue
@@ -366,11 +438,11 @@ param(
   Write-Debug "Install-ChocolateyFiles"
 
   Write-Debug "Removing install files in chocolateyInstall, helpers, redirects, and tools"
-  "$chocolateyPath\chocolateyInstall", "$chocolateyPath\helpers", "$chocolateyPath\redirects", "$chocolateyPath\tools" | % {
+  "$chocolateyPath\chocolateyInstall", "$chocolateyPath\helpers", "$chocolateyPath\redirects", "$chocolateyPath\tools" | ForEach-Object {
     #Write-Debug "Checking path $_"
 
     if (Test-Path $_) {
-      Get-ChildItem -Path "$_" | % {
+      Get-ChildItem -Path "$_" | ForEach-Object {
         #Write-Debug "Checking child path $_ ($($_.FullName))"
         if (Test-Path $_.FullName) {
           Write-Debug "Removing $_ unless matches .log"
@@ -401,13 +473,13 @@ param(
   }
 
   Write-Debug "Unpacking files required for Chocolatey."
-  $chocInstallFolder = Join-Path $thisScriptFolder "chocolateyInstall"
-  $chocoExe = Join-Path $chocInstallFolder 'choco.exe'
+  $chocoInstallFolder = Join-Path $thisScriptFolder "chocolateyInstall"
+  $chocoExe = Join-Path $chocoInstallFolder 'choco.exe'
   $chocoExeDest = Join-Path $chocolateyPath 'choco.exe'
   Copy-Item $chocoExe $chocoExeDest -force
 
-  Write-Debug "Copying the contents of `'$chocInstallFolder`' to `'$chocolateyPath`'."
-  Copy-Item $chocInstallFolder\* $chocolateyPath -Recurse -Force
+  Write-Debug "Copying the contents of `'$chocoInstallFolder`' to `'$chocolateyPath`'."
+  Copy-Item $chocoInstallFolder\* $chocolateyPath -Recurse -Force
 }
 
 function Ensure-ChocolateyLibFiles {
@@ -421,7 +493,7 @@ param(
 
   if (!(Test-Path("$chocoPkgDirectory\chocolatey.nupkg"))) {
     Write-Output "chocolatey.nupkg file not installed in lib.`n Attempting to locate it from bootstrapper."
-    $chocoZipFile = Join-Path $tempDir "chocolatey\chocInstall\chocolatey.zip"
+    $chocoZipFile = Join-Path $tempDir "chocolatey\chocoInstall\chocolatey.zip"
 
     Write-Debug "First the zip file at '$chocoZipFile'."
     Write-Debug "Then from a neighboring chocolatey.*nupkg file '$thisScriptFolder/../../'."
@@ -432,9 +504,12 @@ param(
     }
 
     if (!(Test-Path("$chocoPkgDirectory\chocolatey.nupkg"))) {
-      $chocoPkg = Get-ChildItem "$thisScriptFolder/../../" | ?{$_.name -match "^chocolatey.*nupkg" } | Sort name -Descending | Select -First 1
+      $chocoPkg = Get-ChildItem "$thisScriptFolder/../../" | 
+        Where-Object {$_.name -match "^chocolatey.*nupkg" } | 
+        Sort-Object name -Descending | 
+        Select-Object -First 1
       if ($chocoPkg -ne '') { $chocoPkg = $chocoPkg.FullName }
-      "$chocoZipFile", "$chocoPkg" | % {
+      "$chocoZipFile", "$chocoPkg" | ForEach-Object {
         if ($_ -ne $null -and $_ -ne '') {
           if (Test-Path $_) {
             Write-Debug "Copying '$_' to '$chocoPkgDirectory\chocolatey.nupkg'."
@@ -504,7 +579,7 @@ param(
 function Initialize-ChocolateyPath {
 param(
   [string]$chocolateyExePath = "$($env:ALLUSERSPROFILE)\chocolatey\bin",
-  [string]$chocolateyExePathVariable = "%$($chocInstallVariableName)%\bin"
+  [string]$chocolateyExePathVariable = "%$($chocoInstallVariableName)%\bin"
 )
   Write-Debug "Initialize-ChocolateyPath"
   Write-Debug "Initializing Chocolatey Path if required"
@@ -522,7 +597,7 @@ param(
 function Process-ChocolateyBinFiles {
 param(
   [string]$chocolateyExePath = "$($env:ALLUSERSPROFILE)\chocolatey\bin",
-  [string]$chocolateyExePathVariable = "%$($chocInstallVariableName)%\bin"
+  [string]$chocolateyExePathVariable = "%$($chocoInstallVariableName)%\bin"
 )
   Write-Debug "Process-ChocolateyBinFiles"
   $processedMarkerFile = Join-Path $chocolateyExePath '_processed.txt'
@@ -550,7 +625,14 @@ param(
 
 # Adapted from http://www.west-wind.com/Weblog/posts/197245.aspx
 function Get-FileEncoding($Path) {
-    $bytes = [byte[]](Get-Content $Path -Encoding byte -ReadCount 4 -TotalCount 4)
+    if ($PSVersionTable.PSVersion.Major -lt 6) {
+      Write-Debug "Detected Powershell version < 6 ; Using -Encoding byte parameter"
+      $bytes = [byte[]](Get-Content $Path -Encoding byte -ReadCount 4 -TotalCount 4)
+    }
+    else {
+      Write-Debug "Detected Powershell version >= 6 ; Using -AsByteStream parameter"
+      $bytes = [byte[]](Get-Content $Path -AsByteStream -ReadCount 4 -TotalCount 4)
+    }
 
     if(!$bytes) { return 'utf8' }
 
@@ -601,9 +683,9 @@ function Add-ChocolateyProfile {
       #"" | Out-File $profileFile -Encoding UTF8
     }
 
-    # Check authenticode, but only if file is greater than 4 bytes
+    # Check authenticode, but only if file is greater than 5 bytes
     $profileFileInfo = New-Object System.IO.FileInfo($profileFile)
-    if ($profileFileInfo.Length -ge 5) {
+    if ($profileFileInfo.Length -gt 5) {
       $signature = Get-AuthenticodeSignature $profile
       if ($signature.Status -ne 'NotSigned') {
         Write-Warning "Not setting tab completion: File is Authenticode signed at '$profile'."
@@ -613,7 +695,11 @@ function Add-ChocolateyProfile {
 
     $profileInstall = @'
 
-# Chocolatey profile
+# Import the Chocolatey Profile that contains the necessary code to enable
+# tab-completions to function for `choco`.
+# Be aware that if you are missing these lines from your profile, tab completion
+# for `choco` will not function.
+# See https://ch0.co/tab-completion for details.
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
   Import-Module "$ChocolateyProfile"
@@ -715,7 +801,7 @@ function Invoke-Chocolatey-Initial {
     & $chocoExe -v | Out-Null
     Write-Debug "Chocolatey execution completed successfully."
   } catch {
-    Write-ChocolateyWarning "Unable to run Chocolately at this time.  It is likely that .Net Framework installation requires a system reboot"
+    Write-ChocolateyWarning "Unable to run Chocolatey at this time.  It is likely that .Net Framework installation requires a system reboot"
   }
 }
 
