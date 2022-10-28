@@ -22,21 +22,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7A36F8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{FB6236DD-17EF-4C36-943C-47792FBC3306}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "chocolatey", "chocolatey", "{DAB29F30-149D-4005-A8D2-4FA56CF2784D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "choco", "choco", "{DAB29F30-149D-4005-A8D2-4FA56CF2784D}"
 	ProjectSection(SolutionItems) = preProject
-		..\nuget\chocolatey\chocolatey.nuspec = ..\nuget\chocolatey\chocolatey.nuspec
+		..\nuspec\chocolatey\choco\choco.nuspec = ..\nuspec\chocolatey\choco\choco.nuspec
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{E5C987F8-6B95-4835-BBDD-A25C9D370BB9}"
 	ProjectSection(SolutionItems) = preProject
-		..\nuget\chocolatey\tools\chocolateyInstall.ps1 = ..\nuget\chocolatey\tools\chocolateyInstall.ps1
-		..\nuget\chocolatey\tools\chocolateysetup.psm1 = ..\nuget\chocolatey\tools\chocolateysetup.psm1
-		..\nuget\chocolatey\tools\init.ps1 = ..\nuget\chocolatey\tools\init.ps1
+		..\nuspec\chocolatey\choco\tools\chocolateyInstall.ps1 = ..\nuspec\chocolatey\choco\tools\chocolateyInstall.ps1
+		..\nuspec\chocolatey\choco\tools\chocolateysetup.psm1 = ..\nuspec\chocolatey\choco\tools\chocolateysetup.psm1
+		..\nuspec\chocolatey\choco\tools\init.ps1 = ..\nuspec\chocolatey\choco\tools\init.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "chocolatey.lib", "chocolatey.lib", "{DD9689F3-1D2D-41AE-A672-063EE70C0C9A}"
 	ProjectSection(SolutionItems) = preProject
-		..\nuget\chocolatey.lib\chocolatey.lib.nuspec = ..\nuget\chocolatey.lib\chocolatey.lib.nuspec
+		..\nuspec\nuget\chocolatey.lib\chocolatey.lib.nuspec = ..\nuspec\nuget\chocolatey.lib\chocolatey.lib.nuspec
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "toplevel", "toplevel", "{18FEFF9F-7352-4230-8B4E-E8D8BE976095}"
