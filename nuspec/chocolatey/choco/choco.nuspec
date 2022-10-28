@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata>
-    <id>chocolatey</id>
-    <version>0.9.10</version>
+    <id>choco</id>
+    <version>2.0.0</version>
     <!--<packageSourceUrl>https://github.com/chocolatey/choco</packageSourceUrl> Need to move build to use choco to pack instead of nuget-->
     <owners>Rob Reynolds</owners>
     <title>Chocolatey</title>
-    <authors>Chocolatey Software, Inc</authors>
-    <projectUrl>https://github.com/chocolatey/choco</projectUrl>
+    <authors>Tarmo Pikaro</authors>
+    <projectUrl>https://github.com/tapika/swupd</projectUrl>
     <iconUrl>https://chocolatey.org/assets/images/nupkg/chocolateyicon.png</iconUrl>
     <licenseUrl>https://raw.githubusercontent.com/chocolatey/choco/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -17,6 +17,9 @@
     <mailingListUrl>https://groups.google.com/forum/#!forum/chocolatey</mailingListUrl>
     <bugTrackerUrl>https://github.com/chocolatey/choco/issues</bugTrackerUrl>-->
     <tags>nuget apt-get machine repository chocolatey</tags>
+    <tags-extra>
+      <tag key="InstallLocation" value="%CommonApplicationData%\choco" />
+    </tags-extra>
     <summary>Chocolatey is the package manager for Windows (like apt-get but for Windows)</summary>
     <description>
 Chocolatey is a package manager for Windows (like apt-get but for Windows). It was designed to be a decentralized framework for quickly installing applications and tools that you need. It is built on the NuGet infrastructure currently using PowerShell as its focus for delivering packages from the distros to your door, err computer.
@@ -63,5 +66,12 @@ In that mess there is a link to the [PowerShell Chocolatey module reference](htt
     <releaseNotes>
 See all - https://docs.chocolatey.org/en-us/choco/release-notes
     </releaseNotes>
+    <dependencies>
+      <dependency id="dotnetcore" version="3.1.30" />
+    </dependencies>
   </metadata>
+
+  <files>
+      <file src="**\*.*" target="" exclude="*.pdb"/>
+  </files>
 </package>
