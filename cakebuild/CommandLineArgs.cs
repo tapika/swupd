@@ -104,6 +104,10 @@ namespace cakebuild
         [Description("Enables code coverage testing")]
         public bool? codecoverage { get; set; }
 
+        [CommandOption($"--{nameof(nuget)}")]
+        [Description("Builds nuget package")]
+        public bool? nuget { get; set; }
+
         [CommandOption($"--{nameof(coverageFormats)}")]
         [Description("Specifies code coverage formats, comma separated. For example: 'HtmlSummary,Html,Cobertura' ")]
         public string coverageFormats { get; set; } = "Html";
