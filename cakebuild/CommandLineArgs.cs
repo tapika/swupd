@@ -286,6 +286,7 @@ namespace cakebuild
                             newArgs.testsToRun = "chocolatey.tests,chocolatey.tests.integration,chocolatey.tests2";
                             newArgs.uploadCoverageResults = true;
                             newArgs.ShowCommands = true;
+                            newArgs.nuget = true;
                             break;
                         case nameof(buildexe):
                             newArgs.r2r_build = true;
