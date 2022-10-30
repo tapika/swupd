@@ -1,0 +1,23 @@
+> psrun install -s i
+- Package 'installpackage': executing install...
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
+> psrun install -s install
+- Package 'installpackage': executing install...
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
+> psrun install -s u
+- Package 'installpackage': executing uninstall...
+installpackage 1.0.0 Uninstalled
+> psrun install -s uninstall
+- Package 'installpackage': executing uninstall...
+installpackage 1.0.0 Uninstalled
+> psrun install -s bm
+- Package 'installpackage': executing before_modify...
+installpackage 1.0.0 Before Modification
+> psrun install -s before_modify
+- Package 'installpackage': executing before_modify...
+installpackage 1.0.0 Before Modification
+end of test

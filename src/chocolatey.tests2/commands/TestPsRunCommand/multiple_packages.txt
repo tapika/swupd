@@ -1,0 +1,3 @@
+> psrun install -s install
+ApplicationException: More than one package found by criteria: ''
+end of test

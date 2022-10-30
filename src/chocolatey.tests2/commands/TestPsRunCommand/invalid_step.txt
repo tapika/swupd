@@ -1,0 +1,2 @@
+ApplicationException: operation 'invalid_operation' is not valid: allowed only install/i, uninstall/u, before_modify/bm
+end of test

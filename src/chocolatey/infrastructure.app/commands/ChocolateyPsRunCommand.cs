@@ -35,7 +35,7 @@ namespace chocolatey.infrastructure.app.commands
         private readonly IChocolateyPackageService _packageService;
         private readonly IPowershellService _powershellService;
 
-        enum ExecuteStep
+        public enum ExecuteStep
         { 
             i,
             install,
@@ -92,7 +92,7 @@ namespace chocolatey.infrastructure.app.commands
         {
             if (!Enum.TryParse<ExecuteStep>(config.PsRunCommand.step.ToLower(), out operation))
             {
-                throw new ApplicationException($"operation '{operation}' is not valid: allowed only install/i, uninstall/u, before_modify/bm");    
+                throw new ApplicationException($"operation '{config.PsRunCommand.step}' is not valid: allowed only install/i, uninstall/u, before_modify/bm");    
             }
         }
 
