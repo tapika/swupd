@@ -94,6 +94,7 @@ namespace chocolatey.infrastructure.app
                         new ChocolateyFeatureCommand(Container.GetInstance<IChocolateyConfigSettingsService>()),
                         new ChocolateyApiKeyCommand(Container.GetInstance<IChocolateyConfigSettingsService>()),
                         new ChocolateyUnpackSelfCommand(Container.GetInstance<IFileSystem>()),
+                        new ChocolateyPsRunCommand(Container.GetInstance<IChocolateyPackageService>(), Container.GetInstance<IPowershellService>()),
                         new ChocolateyVersionCommand(Container.GetInstance<IChocolateyPackageService>()),
                         new ChocolateyUpdateCommand(Container.GetInstance<IChocolateyPackageService>())
                     };
@@ -152,6 +153,7 @@ namespace chocolatey.infrastructure.app
                     typeof(ChocolateyFeatureCommand),
                     typeof(ChocolateyApiKeyCommand),
                     typeof(ChocolateyUnpackSelfCommand),
+                    typeof(ChocolateyPsRunCommand),
                     typeof(ChocolateyVersionCommand),
                     typeof(ChocolateyUpdateCommand),
                 };

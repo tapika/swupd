@@ -1,0 +1,35 @@
+> psrun -?
+PsRun Command
+
+> psrun --s 1 pkg
+config: Input='pkg',PsRunCommand.step='1'
+validation failure: No packages found: 'pkg'
+
+> psrun --pre pkg
+config: Input='pkg',Prerelease='True'
+validation failure: No packages found: 'pkg'
+
+> psrun --e pkg
+config: Input='pkg',ListCommand.Exact='True'
+validation failure: No packages found: 'pkg'
+
+> psrun --by-id-only pkg
+config: Input='pkg',ListCommand.ByIdOnly='True'
+validation failure: No packages found: 'pkg'
+
+> psrun --by-tag-only pkg
+config: Input='pkg',ListCommand.ByTagOnly='True'
+validation failure: No packages found: 'pkg'
+
+> psrun --id-starts-with pkg
+config: Input='pkg',ListCommand.IdStartsWith='True'
+validation failure: No packages found: 'pkg'
+
+> psrun --approved-only pkg
+config: Input='pkg',ListCommand.ApprovedOnly='True'
+validation failure: No packages found: 'pkg'
+
+> psrun --not-broken pkg
+config: Input='pkg',ListCommand.NotBroken='True'
+validation failure: No packages found: 'pkg'
+

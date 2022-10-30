@@ -85,9 +85,9 @@ namespace chocolatey.tests2.infrastructure.app.configuration
                 case "new":
                 case "uninstall":
                 case "upgrade":
+                case "psrun":
                     extraArg = " pkg";
                     break;
-
             }
 
             foreach (var arg in args)

@@ -40,6 +40,7 @@ namespace chocolatey.infrastructure.app.configuration
             Features = new FeaturesConfiguration();
             NewCommand = new NewCommandConfiguration();
             ListCommand = new ListCommandConfiguration();
+            PsRunCommand = new PsRunCommandConfiguration();
             UpgradeCommand = new UpgradeCommandConfiguration();
             SourceCommand = new SourcesCommandConfiguration();
             MachineSources = new List<MachineSourceConfiguration>();
@@ -292,6 +293,11 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public ListCommandConfiguration ListCommand { get;  set; }
 
         /// <summary>
+        /// Configuration related to PsRun command
+        /// </summary>
+        public PsRunCommandConfiguration PsRunCommand { get;  set; }
+
+        /// <summary>
         ///   Configuration related specifically to Upgrade command
         /// </summary>
         /// <remarks>
@@ -498,6 +504,13 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public bool NotBroken { get; set; }
         public bool IncludeVersionOverrides { get; set; }
     }
+
+    [Serializable]
+    public sealed class PsRunCommandConfiguration
+    {
+        public string step { get; set; } = "install";
+    }
+
 
     [Serializable]
     public sealed class UpgradeCommandConfiguration
