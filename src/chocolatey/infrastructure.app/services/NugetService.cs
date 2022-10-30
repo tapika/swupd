@@ -112,9 +112,33 @@ namespace chocolatey.infrastructure.app.services
                                 ));
         }
 
-        IEnumerable<IPackage> GetLocalRegistryPackages()
+        IEnumerable<IPackage> GetLocalRegistryPackages(ChocolateyConfiguration config)
         {
-            return _registryService.get_installer_keys("*", null, true).RegistryKeys.Select(x => new RegistryPackage(x));
+            var list = _registryService.get_installer_keys("*", null, true).RegistryKeys.Select(x => new RegistryPackage(x)).ToList();
+
+            if (config.ListCommand.Exact)
+            {
+                var searchTerm = config.Input.ToLower();
+                list = list.Where(x => searchTerm == x.Id.ToLower()).Where(p => config.Prerelease || p.IsReleaseVersion()).ToList();
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(config.Input))
+                {
+                    // Try to Mimic PackageExtensions.Find<T> function behavior.
+                    // Registry packages can be listed only by Id for now.
+                    var searchTerms = config.Input.Split().Select(x => x.ToLower()).ToList();
+                    if (searchTerms.Any())
+                    {
+                        list = list.Where(
+                            x => searchTerms.Any(y => x.Id.ToLower().StartsWith(y))).
+                            Where(p => config.Prerelease || p.IsReleaseVersion()).ToList();
+                    }
+                }
+            }
+
+            IQueryable<IPackage> packages = list.AsQueryable();
+            return NugetList.FilterPackages(config, true, config.Input, false, ref packages);
         }
 
         public virtual IEnumerable<PackageResult> list_run(ChocolateyConfiguration config)
@@ -139,7 +163,7 @@ namespace chocolatey.infrastructure.app.services
 
             if(config.ListCommand.LocalOnly && config.ListCommand.ShowRegistryPackages)
             {
-                packages.AddRange(GetLocalRegistryPackages());
+                packages.AddRange(GetLocalRegistryPackages(config));
                 packages = packages.OrderBy(x => x.Id).ThenByDescending(p => p.Version).ToList();
             }
 

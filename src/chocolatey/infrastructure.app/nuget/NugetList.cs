@@ -90,6 +90,12 @@ namespace chocolatey.infrastructure.app.nuget
                 }
             }
 
+            return FilterPackages(configuration, packageRepository.SupportsPrereleasePackages, searchTermLower, isServiceBased, ref results);
+        }
+
+        public static IQueryable<IPackage> FilterPackages(ChocolateyConfiguration configuration, bool supportsPrereleasePackages, 
+            string searchTermLower, bool isServiceBased, ref IQueryable<IPackage> results)
+        {
             if (configuration.ListCommand.Page.HasValue)
             {
                 results = results.Skip(configuration.ListCommand.PageSize * configuration.ListCommand.Page.Value).Take(configuration.ListCommand.PageSize);
@@ -138,7 +144,7 @@ namespace chocolatey.infrastructure.app.nuget
                 }
             }
 
-            if (configuration.Prerelease && packageRepository.SupportsPrereleasePackages)
+            if (configuration.Prerelease && supportsPrereleasePackages)
             {
                 results = results.Where(p => p.IsAbsoluteLatestVersion);
             }
