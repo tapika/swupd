@@ -62,9 +62,29 @@
     <PackageReference Include="System.Threading.AccessControl" Version="5.0.0" />
     <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
 
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.6" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.6" GeneratePathProperty="true" />
     <PackageReference Include="System.Management.Automation" Version="7.0.6" />
   </ItemGroup>
+
+  <!-- 
+    In normal executable - powershell modules are compiled and used to runtimes\win\lib\netcoreapp3.1\Modules
+    In ready2run executables powershell modules are included from Modules - we force their inclusion into that folder.
+  -->
+  <PropertyGroup Condition=" $(RuntimeIdentifier.StartsWith('win')) ">
+    <OSShort>win</OSShort>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(OSShort)' == '' ">
+    <OSShort>unix</OSShort>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
+    <None Include="$(PkgMicrosoft_PowerShell_SDK)\contentFiles\any\any\runtimes\win\lib\$(TargetFramework)\Modules\**">
+      <Link>Modules\%(RecursiveDir)\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 
   <ItemGroup>
     <EmbeddedResource Include="infrastructure.app\configuration\chocolatey.config" />
