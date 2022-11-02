@@ -1,7 +1,7 @@
 # Function can be tested in pwsh using following variable defined:
 #$PSModuleAutoloadingPreference = 'None'
 
-if ($null -eq (Get-Command -Name Get-WmiObject -ErrorAction SilentlyContinue))
+if( (Get-Module -Name CimCmdlets -ListAvailable) -ne $null)
 {
     Import-Module CimCmdlets
 
