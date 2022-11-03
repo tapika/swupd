@@ -14,6 +14,10 @@
     <NugetSuffix>_msbuild</NugetSuffix>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(PUBLISH_CHOCO)' != '' ">
+    <NugetSuffix>_ready2run</NugetSuffix>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(MySolutionName)' == '' ">
     <MySolutionName>$(SolutionName)</MySolutionName>
   </PropertyGroup>

@@ -3,8 +3,12 @@
     This is some odd constant which needs to be present 
     for .net core 3.1 platform - otherwise netstandard2.0\System.Reactive.dll gets selected over 
     netcoreapp3.1\System.Reactive.dll - resulting in further exceptions
+
+    PUBLISH_CHOCO:
+    When compiling normally    - we need to be compatible with chocolatey gui. 
+    When compiling readytorun  - use less dependent packages System.Reactive.Linq for .net standard 2.0
   -->
-  <PropertyGroup Condition=" ! $(RuntimeIdentifier.StartsWith('lin')) ">
+  <PropertyGroup Condition=" ! $(RuntimeIdentifier.StartsWith('lin')) and '$(PUBLISH_CHOCO)' == ''">
     <UseWindowsRxVersion>true</UseWindowsRxVersion>
   </PropertyGroup>
 
