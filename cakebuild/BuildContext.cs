@@ -43,10 +43,10 @@ namespace cakebuild
             switch (cmdArgs.NetFramework)
             {
                 case "netcoreapp3.1":
-                    versionToRequest = "3.1.101";
+                    versionToRequest = "3.1";
                     break;
                 case "net5.0":
-                    versionToRequest = "5.0.406";
+                    versionToRequest = "5.0";
                     break;
                 case "net6.0":
                     versionToRequest = "6.0.0";
