@@ -76,6 +76,8 @@
       <TrimmerRootAssembly Include="System.Private.CoreLib" />
       <!-- Sequence contains no elements -->
       <TrimmerRootAssembly Include="NuGet.Core" />
+      <!-- Exception thrown: 'System.InvalidOperationException' in System.Linq.dll. Sequence contains no elements-->
+      <TrimmerRootAssembly Include="Microsoft.Data.Services.Client" />
       <!-- some exception -->
       <TrimmerRootAssembly Include="chocolatey" />
       <!-- The application to execute does not exist: 'C:\Users\%USERNAME%\AppData\Local\Temp\.net\... -->
