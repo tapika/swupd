@@ -105,7 +105,7 @@
       <!-- Cannot process argument because the value of argument "getterCodeReference setterCodeReference" is null. -->
       <TrimmerRootAssembly Include="Microsoft.PowerShell.Security" />
       <!-- ERROR: The type initializer for 'Microsoft.Management.Infrastructure.CimCmdlets.GetCimInstanceCommand' threw an exception -->
-      <TrimmerRootAssembly Include="Microsoft.Management.Infrastructure.CimCmdlets" />
+      <TrimmerRootAssembly Include="Microsoft.Management.Infrastructure.CimCmdlets" Condition=" $(RuntimeIdentifier.StartsWith('win')) " />
       <!-- ERROR: 'AllowAutoRedirect' is a ReadOnly property. -->
       <TrimmerRootAssembly Include="System.Net.Requests" />
       <!--<TrimmerRootAssembly Include="Microsoft.PowerShell.CoreCLR.Eventing" />
