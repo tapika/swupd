@@ -236,7 +236,7 @@ param(
     return $fileName
   } catch {
     if ($request -ne $null) {
-      $request.ServicePoint.MaxIdleTime = 0
+      #$request.ServicePoint.MaxIdleTime = 0
       $request.Abort();
       # ruthlessly remove $request to ensure it isn't reused
       Remove-Variable request

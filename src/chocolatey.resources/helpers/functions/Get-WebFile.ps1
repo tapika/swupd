@@ -316,7 +316,7 @@ param(
     }
   } catch {
     if ($req -ne $null) {
-      $req.ServicePoint.MaxIdleTime = 0
+      #$req.ServicePoint.MaxIdleTime = 0
       $req.Abort();
       # ruthlessly remove $req to ensure it isn't reused
       Remove-Variable req

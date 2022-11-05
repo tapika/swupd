@@ -182,7 +182,7 @@ param(
 
   } catch {
     if ($ftprequest -ne $null) {
-      $ftprequest.ServicePoint.MaxIdleTime = 0
+      #$ftprequest.ServicePoint.MaxIdleTime = 0
       $ftprequest.Abort();
       # ruthlessly remove $ftprequest to ensure it isn't reused
       Remove-Variable ftprequest
