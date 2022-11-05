@@ -108,6 +108,8 @@
       <TrimmerRootAssembly Include="Microsoft.Management.Infrastructure.CimCmdlets" Condition=" $(RuntimeIdentifier.StartsWith('win')) " />
       <!-- ERROR: 'AllowAutoRedirect' is a ReadOnly property. -->
       <TrimmerRootAssembly Include="System.Net.Requests" />
+      <!-- ERROR: Could not load file or assembly 'System.Runtime.Handles, Version=4.0.0.0 -->
+      <TrimmerRootAssembly Include="System.Runtime.Handles" />
       <!--<TrimmerRootAssembly Include="Microsoft.PowerShell.CoreCLR.Eventing" />
       <TrimmerRootAssembly Include="Microsoft.PowerShell.MarkdownRender" />-->
 
