@@ -28,6 +28,7 @@ namespace chocolatey.infrastructure.app.domain
     [XmlType("key")]
     public class RegistryApplicationKey : IEquatable<RegistryApplicationKey>
     {
+        [XmlIgnore]
         public RegistryHive Hive { get; set; }
 
         public RegistryView RegistryView { get; set; }
@@ -83,7 +84,9 @@ namespace chocolatey.infrastructure.app.domain
         public string ReleaseType { get; set; } //hotfix, securityupdate, update rollup, servicepack
         public string ParentKeyName { get; set; }
         public XmlCData LocalPackage { get; set; }
+        [XmlIgnore]
         public string DisplayIcon { get; set; }
+        [XmlIgnore]
         public long EstimatedSize { get; internal set; }
 
         /// <summary>
