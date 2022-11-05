@@ -5,6 +5,7 @@
     <Platforms>AnyCPU</Platforms>
     <ApplicationIcon>..\..\docs\logo\chocolatey.ico</ApplicationIcon>
     <IsPublishable>false</IsPublishable>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -63,8 +64,13 @@
     <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
 
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.6" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Management.Infrastructure.Runtime.Win" Version="2.0.0" GeneratePathProperty="true" />
     <PackageReference Include="System.Management.Automation" Version="7.0.6" />
   </ItemGroup>
+
+  <PropertyGroup Condition=" '$(RuntimeIdentifier)' == '' ">
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+  </PropertyGroup>
 
   <!-- 
     In normal executable - powershell modules are compiled and used to runtimes\win\lib\netcoreapp3.1\Modules
@@ -79,12 +85,19 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
-    <None Include="$(PkgMicrosoft_PowerShell_SDK)\contentFiles\any\any\runtimes\win\lib\$(TargetFramework)\Modules\**">
+    <None Include="$(PkgMicrosoft_PowerShell_SDK)\contentFiles\any\any\runtimes\$(OSShort)\lib\$(TargetFramework)\Modules\**">
       <Link>Modules\%(RecursiveDir)\%(FileName)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
+  <!-- ERROR: The type initializer for 'Microsoft.Management.Infrastructure.Native.ApplicationMethods' threw an exception.-->
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">
+    <Content Include="$(PkgMicrosoft_Management_Infrastructure_Runtime_Win)\runtimes\$(RuntimeIdentifier)\native\*.dll">
+      <Link>%(RecursiveDir)\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="infrastructure.app\configuration\chocolatey.config" />
