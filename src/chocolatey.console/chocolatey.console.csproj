@@ -110,6 +110,8 @@
       <TrimmerRootAssembly Include="System.Net.Requests" />
       <!-- ERROR: Could not load file or assembly 'System.Runtime.Handles, Version=4.0.0.0 -->
       <TrimmerRootAssembly Include="System.Runtime.Handles" />
+      <!-- ERROR: No parameterless constructor defined for type 'System.Management.WbemDefPath' -->
+      <TrimmerRootAssembly Include="System.Management" />
       <!--<TrimmerRootAssembly Include="Microsoft.PowerShell.CoreCLR.Eventing" />
       <TrimmerRootAssembly Include="Microsoft.PowerShell.MarkdownRender" />-->
 
