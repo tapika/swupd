@@ -27,8 +27,6 @@ namespace ConsoleApplication
         {
             MyCmdArgs cmdArgs = CmdArgs.Parse<MyCmdArgs>(args);
 
-            cmdArgs.debug = true;
-
             if (cmdArgs.output == null || cmdArgs.path == null || cmdArgs.help)
             {
                 Console.WriteLine(
@@ -180,8 +178,11 @@ class Program
                 Console.WriteLine($" ShimGen has successfully created a shim for {Path.GetFileName(outputPath)}\n");
             }
             Environment.CurrentDirectory = asmDir;
-            //Directory.Delete(dir, true);
 
+            if (!cmdArgs.debug)
+            { 
+                Directory.Delete(dir, true);
+            }
         }
 
         /// <summary>
