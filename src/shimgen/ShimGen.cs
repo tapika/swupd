@@ -160,11 +160,18 @@ class Program
 
             if (File.Exists(outputPath)) File.Delete(outputPath);
 
+            string dotnetPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\dotnet\dotnet.exe");
+            if (!File.Exists(dotnetPath))
+            {
+                Console.WriteLine($"Error: dotnet executable does not exists: {dotnetPath}");
+                return;
+            }
+
             Process p = new Process()
             {
                 StartInfo = new ProcessStartInfo()
                 {
-                    FileName = "dotnet",
+                    FileName = dotnetPath,
                     UseShellExecute = false,
                     Arguments = "build shim.csproj --verbosity quiet --nologo -consoleLoggerParameters:NoSummary"
                 }
