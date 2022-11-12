@@ -42,6 +42,7 @@ jobs:
     - name: Github actions environment to local environment
       uses: cake-build/cake-action@v1
       with:
+        cake-version: 2.3.0
         script-path: routeenvvar.cake
 
     - name: Build all
