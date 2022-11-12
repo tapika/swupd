@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,7 +6,18 @@
     <!-- No localization folder: https://stackoverflow.com/questions/48424796/net-core-build-produces-localization-folders -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>..\chocolatey.resources\tools</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ShimTemplate.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ShimTemplate.cs;shim.manifest;CmdArgs.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="IconLib.Unofficial" Version="0.73.0" />

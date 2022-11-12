@@ -12,6 +12,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chocolatey", "chocolatey\chocolatey.csproj", "{5563DC61-35FD-4FAB-B331-9AE1FDB23F80}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chocolatey.resources", "chocolatey.resources\chocolatey.resources.csproj", "{AF584111-FE32-448D-A1D0-63217AF8B43C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1} = {A453472A-DD1D-4458-B8C6-836202B5FDA1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chocolatey.tests.integration", "chocolatey.tests.integration\chocolatey.tests.integration.csproj", "{12ECAD4F-D463-4D72-A792-A4FCCFE9C456}"
 EndProject
@@ -65,6 +68,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chocolatey.tests2", "chocolatey.tests2\chocolatey.tests2.csproj", "{47966427-1793-49FD-8F50-3EB02BF90E5C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChocolateyGuiCli", "ChocolateyGuiCli\ChocolateyGuiCli.csproj", "{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{C7A89B93-E555-422C-80F7-7A3D4A5F9D01}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "shimgen", "shimgen\shimgen.csproj", "{A453472A-DD1D-4458-B8C6-836202B5FDA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -244,6 +251,18 @@ Global
 		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.RelWithDebInfo|Any CPU.Build.0 = RelWithDebInfo|Any CPU
 		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|Any CPU
 		{D6CA161D-0EFC-4A60-A2D3-39E28F93DF94}.RelWithDebInfo|x86.Build.0 = RelWithDebInfo|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.Debug|x86.Build.0 = Debug|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.Release|x86.ActiveCfg = Release|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.Release|x86.Build.0 = Release|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.RelWithDebInfo|x86.ActiveCfg = Release|Any CPU
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1}.RelWithDebInfo|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -259,6 +278,7 @@ Global
 		{34B74905-DF66-4BF7-958B-62C50ED1203C} = {44F5C54A-1D0E-4D33-A354-9BB2C5B7A177}
 		{B2667D84-F31E-482D-A604-1323905D582F} = {44F5C54A-1D0E-4D33-A354-9BB2C5B7A177}
 		{47966427-1793-49FD-8F50-3EB02BF90E5C} = {7656D054-387D-409C-A9FB-62A44599AA77}
+		{A453472A-DD1D-4458-B8C6-836202B5FDA1} = {C7A89B93-E555-422C-80F7-7A3D4A5F9D01}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {998CAC46-A2B8-447C-B4CC-3B11DC35ED46}

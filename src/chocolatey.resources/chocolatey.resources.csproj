@@ -10,7 +10,7 @@
   <Import Project="$(ProjectDir)..\..\ProjectsCommon.props" />
 
   <ItemGroup>
-    <EmbeddedResource Include="**\*.psm1;**\*.ps1;**\*.exe;**\*.dll;**\*.ignore;**\*.cmd;**\*.txt;**\*.config;**\*.manifest" />
+    <EmbeddedResource Include="**\*.psm1;**\*.ps1;**\*.exe;**\*.dll;**\*.ignore;**\*.cmd;**\*.txt;**\*.config;**\*.manifest;tools\*.cs" />
   </ItemGroup>
 
   <ItemGroup>

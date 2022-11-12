@@ -109,7 +109,7 @@ $@"Usage: shimget -output=<.exe path> -path=<in .exe path> [optional arguments]
                         }
                     }
                 }
-                string toShimDir = @"..\..\..\";
+                string toShimDir = @"..\";
                 if (hasIcon)
                 {
                     xml.WriteElementString("ApplicationIcon", "app.ico");
