@@ -158,12 +158,14 @@ class Program
 
             Environment.CurrentDirectory = dir;
 
+            if (File.Exists(outputPath)) File.Delete(outputPath);
+
             Process p = new Process()
             {
                 StartInfo = new ProcessStartInfo()
                 {
-                    WindowStyle = ProcessWindowStyle.Hidden,
                     FileName = "dotnet",
+                    UseShellExecute = false,
                     Arguments = "build shim.csproj --verbosity quiet --nologo -consoleLoggerParameters:NoSummary"
                 }
             };
