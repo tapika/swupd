@@ -21,6 +21,8 @@
 
   <ItemGroup>
     <PackageReference Include="IconLib.Unofficial" Version="0.73.0" />
+    <!-- Use older version just not to have too many dependent .dll's. -->
+    <PackageReference Include="PeNet" Version="0.5.0" />
   </ItemGroup>
 
 </Project>

@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing.IconLib;
 using System.Text.RegularExpressions;
 using System.Linq;
+using PeNet;
 
 namespace ConsoleApplication
 {
@@ -49,6 +50,27 @@ $@"Usage: shimget -output=<.exe path> -path=<in .exe path> [optional arguments]
             if (!Path.IsPathRooted(targetExePath))
             {
                 targetExePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(outputPath), targetExePath));
+            }
+
+            if (!File.Exists(targetExePath))
+            {
+                Console.WriteLine($"Error: Executable specified by -{nameof(MyCmdArgs.path)} does not exists: '{targetExePath}'");
+                return;
+            }
+
+            try {
+                var file = new PeFile(targetExePath);
+                if (!cmdArgs.gui && file.ImageNtHeaders.OptionalHeader.Subsystem == 2 /*PeNet.Header.Pe.SubsystemType.WindowsGui*/)
+                {
+                    cmdArgs.gui = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (cmdArgs.debug)
+                {
+                    Console.WriteLine($"Cannot load {targetExePath}: {ex.Message}");
+                }
             }
 
             targetExePath = makeRelative(targetExePath, Path.GetDirectoryName(outputPath));
