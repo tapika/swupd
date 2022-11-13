@@ -4,8 +4,8 @@ This is unofficial fork of choco.
 
 Branch  | Github Actions | Coverage
 ------------- | ------------- | -------------
-master | [![Github Builds Status](https://github.com/tapika/swupd/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tapika/swupd/actions/workflows/build.yml) |  [![Coverage Status](https://coveralls.io/repos/github/tapika/swupd/badge.svg?branch=master)](https://coveralls.io/github/tapika/swupd?branch=master)
-develop | [![Github Builds Status](https://github.com/tapika/swupd/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/tapika/swupd/actions/workflows/build.yml) | [![Coverage Status](https://coveralls.io/repos/github/tapika/swupd/badge.svg?branch=develop)](https://coveralls.io/github/tapika/swupd?branch=develop)
+master | [![Github Builds Status](https://github.com/tapika/swupd/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/tapika/swupd/actions/workflows/build.yml) |  [![codecov](https://codecov.io/github/tapika/swupd/branch/master/graph/badge.svg?token=2KGYLTDZUU)](https://codecov.io/github/tapika/swupd)
+develop | [![Github Builds Status](https://github.com/tapika/swupd/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/tapika/swupd/actions/workflows/build.yml) | [![codecov](https://codecov.io/github/tapika/swupd/branch/develop/graph/badge.svg?token=2KGYLTDZUU)](https://codecov.io/github/tapika/swupd?branch=develop)
 
 ### Building
 
