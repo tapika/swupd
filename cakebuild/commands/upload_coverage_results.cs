@@ -1,4 +1,5 @@
-﻿using Cake.Common.Build;
+﻿using Cake.Codecov;
+using Cake.Common.Build;
 using Cake.Core.Diagnostics;
 using Cake.Coveralls;
 using Cake.Frosting;
@@ -39,10 +40,14 @@ namespace cakebuild.commands
         public override void Run(BuildContext context)
         {
             string rootDir = context.RootDirectory;
-            string coverageHtml = System.IO.Path.Combine(rootDir, @"build_output\build_artifacts\codecoverage\Html");
-            string coverageXml = Path.Combine(coverageHtml, "Cobertura.xml");
 
-            string repoTokenFile = @"c:\Private\coveralls_io_token.txt";
+            // Coverall.io does not work, disable for timebeing.
+
+            //string coverageHtml = System.IO.Path.Combine(rootDir, @"build_output\build_artifacts\codecoverage\Html");
+            //string coverageXml = Path.Combine(coverageHtml, "Cobertura.xml");
+
+            //string repoTokenFile = @"c:\Private\coveralls_io_token.txt";
+            string repoTokenFile = @"c:\Private\codecov_token.txt";
             string repoToken = null;
             if (File.Exists(repoTokenFile))
             {
@@ -51,12 +56,15 @@ namespace cakebuild.commands
 
             if (!string.IsNullOrEmpty(repoToken))
             {
-                Environment.SetEnvironmentVariable("COVERALLS_REPO_TOKEN", repoToken);
+                //Environment.SetEnvironmentVariable("COVERALLS_REPO_TOKEN", repoToken);
+                Environment.SetEnvironmentVariable("CODECOV_TOKEN", repoToken);
             }
 
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("COVERALLS_REPO_TOKEN")))
+            //if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("COVERALLS_REPO_TOKEN")))
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CODECOV_TOKEN")))
             {
-                LogInfo(@"Environment variable 'COVERALLS_REPO_TOKEN' not set and c:\Private\coveralls_io_token.txt not available - " +
+                //LogInfo(@"Environment variable 'COVERALLS_REPO_TOKEN' not set and c:\Private\coveralls_io_token.txt not available - " +
+                LogInfo(@"Environment variable 'CODECOV_TOKEN' not set and c:\Private\codecov_token.txt not available - " +
                     "coverage report upload skipped");
                 return;
             }
@@ -109,22 +117,33 @@ namespace cakebuild.commands
             // https://github.com/coveralls-net/coveralls.net.git
             // Detects upload information via Appveyor environment variables. Of course if we are running on custom build machine
             // or in github actions - none of environment variables are present. We mimic here Appveyor behavior.
-            Environment.SetEnvironmentVariable("APPVEYOR_JOB_ID", runId);
-            Environment.SetEnvironmentVariable("APPVEYOR", "true");
-            Environment.SetEnvironmentVariable("APPVEYOR_REPO_COMMIT", commitId);
-            Environment.SetEnvironmentVariable("APPVEYOR_REPO_COMMIT_MESSAGE", commitMessage);
-            Environment.SetEnvironmentVariable("APPVEYOR_REPO_BRANCH", branch);
+            //Environment.SetEnvironmentVariable("APPVEYOR_JOB_ID", runId);
+            //Environment.SetEnvironmentVariable("APPVEYOR", "true");
+            //Environment.SetEnvironmentVariable("APPVEYOR_REPO_COMMIT", commitId);
+            //Environment.SetEnvironmentVariable("APPVEYOR_REPO_COMMIT_MESSAGE", commitMessage);
+            //Environment.SetEnvironmentVariable("APPVEYOR_REPO_BRANCH", branch);
 
             LogInfo($"runId: {runId}, branchRef: {branch}, commitId: {commitId}");
-            LogInfo($"commitMessage: '{commitMessage}'");
+            //LogInfo($"commitMessage: '{commitMessage}'");
 
-            LogInfo($"Uploading coverage report {Path.GetFileName(coverageXml)} to coveralls.io...");
+            //LogInfo($"Uploading coverage report {Path.GetFileName(coverageXml)} to coveralls.io...");
 
-            context.CoverallsIo(new Cake.Core.IO.FilePath(coverageXml), new CoverallsIoSettings()
-                {
-                    ParseType = CoverageParseType.cobertura
-                }
-            );
+            //context.CoverallsIo(new Cake.Core.IO.FilePath(coverageXml), new CoverallsIoSettings()
+            //    {
+            //        ParseType = CoverageParseType.cobertura
+            //    }
+            //);
+
+            Environment.SetEnvironmentVariable("NODE_SKIP_PLATFORM_CHECK", "1");
+
+            context.Codecov(new CodecovSettings()
+            {
+                Branch = branch,
+                Commit = commitId,
+                Build = runId,
+                Token = Environment.GetEnvironmentVariable("CODECOV_TOKEN"),
+                ToolPath = Path.Combine(rootDir, @"tools\codecov.exe")
+            });
         }
     }
 }
