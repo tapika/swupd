@@ -6,6 +6,13 @@
 
 There are multiple solutions at the moment `chocolatey.sln` for .NET Framework 4.8, and others `chocolatey_*.sln` which targets to same .net platform which is set in solution name.
 
+Besides this - there also exists `src\shimgen\shimgen.sln` - it's a command line tool, which is built first and
+independently from chocolatey.
+
+`shimgen` is disabled by default, can be activated from cli using command:
+
+`choco feature enable -n useShimGenService`
+
 #### From command line
 
 Run `cakebuild.bat` from root folder. Use additionally `--help` to get some help on command line arguments.
