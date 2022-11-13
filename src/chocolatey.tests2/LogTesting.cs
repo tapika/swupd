@@ -151,11 +151,26 @@
             }
         }
 
-        public static List<string> GetFileListing(string path)
+        /// <summary>
+        /// Gets all files listing by excluding shim generated files in shimDir.
+        /// </summary>
+        /// <returns>current folder listing</returns>
+        public static List<string> GetFileListing(string path, string shimDir = null)
         {
             var list = Directory.GetFiles(path, "*", SearchOption.AllDirectories).ToList();
             list.Sort();
-            return list;
+
+            if (shimDir == null)
+            {
+                return list;
+            }
+
+            // Filter out all shim generated files about which we don't care.
+            // besides console.exe, there is also console.dll, console.deps.json, console.runtimeconfig.dev.json, console.runtimeconfig.json
+            shimDir += Path.DirectorySeparatorChar;
+            string[] excludedExtensions = new[] { ".json", ".pdb", ".dll" };
+            var list2 = list.Where(x => !(x.StartsWith(shimDir) && excludedExtensions.Contains(Path.GetExtension(x).ToLower()))).ToList();
+            return list2;
         }
 
         public List<string> addedFiles;
@@ -312,7 +327,7 @@
         public void DisplayUpdates(List<string> listBeforeUpdate)
         {
             string rootDir = InstallContext.Instance.RootLocation;
-            var listAfterUpdate = GetFileListing(rootDir);
+            var listAfterUpdate = GetFileListing(rootDir, InstallContext.Instance.ShimsLocation);
             addedFiles = new List<string>();
             removedFiles = new List<string>();
 

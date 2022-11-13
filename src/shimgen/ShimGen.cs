@@ -73,7 +73,7 @@ $@"Usage: shimget -output=<.exe path> -path=<in .exe path> [optional arguments]
                 xml.WriteElementString("TargetFramework", cmdArgs.net);
 
                 xml.WriteElementString("AppendTargetFrameworkToOutputPath", "false");
-                xml.WriteElementString("OutputPath", Path.GetDirectoryName(outputPath));
+                xml.WriteElementString("OutputPath", "bin");
                 xml.WriteElementString("AssemblyName", Path.GetFileNameWithoutExtension(outputPath));
                 xml.WriteElementString("AssemblyTitle", "ShimGen generated shim");
                 xml.WriteElementString("AssemblyInformationalVersion", "1.0.0");
@@ -167,20 +167,21 @@ class Program
                 return;
             }
 
-            Process p = new Process()
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    FileName = dotnetPath,
-                    UseShellExecute = false,
-                    Arguments = "build shim.csproj --verbosity quiet --nologo -consoleLoggerParameters:NoSummary"
-                }
-            };
-            if (!p.Start()) throw new Exception($"Process {p.StartInfo.FileName} cannot be started");
+            runDotNet(dotnetPath, "build shim.csproj --verbosity quiet --nologo -consoleLoggerParameters:NoSummary");
 
-            p.WaitForExit();
-            //.net core 3.1 or higher
-            //Process.Start("dotnet", "build shim.csproj --verbosity quiet --nologo -consoleLoggerParameters:NoSummary").WaitForExit();
+            // We could run a publish here, but it uses subfolder. Easier just to copy whatever we have.
+            if (Directory.Exists(bindir))
+            {
+                string outdir = Path.GetDirectoryName(outputPath);
+                var files2copy = Directory.GetFiles(bindir, "*");
+                foreach (var file in files2copy)
+                {
+                    if (Path.GetExtension(file).ToLower() == ".pdb") continue;  // no need for debug symbols
+
+                    string targetFile = Path.Combine(outdir, Path.GetFileName(file));
+                    File.Copy(file, targetFile, true);
+                }
+            }
 
             if (File.Exists(outputPath))
             {
@@ -189,9 +190,26 @@ class Program
             Environment.CurrentDirectory = asmDir;
 
             if (!cmdArgs.debug)
-            { 
+            {
                 Directory.Delete(dir, true);
             }
+        }
+
+        private static void runDotNet(string dotnetPath, string arguments)
+        {
+            Process p = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = dotnetPath,
+                    UseShellExecute = false,
+                    Arguments = arguments
+                }
+            };
+            if (!p.Start()) throw new Exception($"Process {p.StartInfo.FileName} cannot be started");
+            p.WaitForExit();
+            //.net core 3.1 or higher
+            //Process.Start("dotnet", "build shim.csproj --verbosity quiet --nologo -consoleLoggerParameters:NoSummary").WaitForExit();
         }
 
         /// <summary>
