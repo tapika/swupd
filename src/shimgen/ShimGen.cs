@@ -244,7 +244,18 @@ class Program
         {
             String pathSep = "\\";
             String fromPath = Path.GetFullPath(_fromPath);
-            String baseDir = Path.GetFullPath(_baseDir);            // If folder contains upper folder references, they gets lost here. "c:\test\..\test2" => "c:\test2"
+            String baseDir;
+
+            if (!string.IsNullOrEmpty(_baseDir))
+            {
+                baseDir = Path.GetFullPath(_baseDir);            // If folder contains upper folder references, they gets lost here. "c:\test\..\test2" => "c:\test2"
+            }
+            else
+            {
+                // Path not specified, assuming current directory
+                baseDir = Environment.CurrentDirectory;
+            }
+
 
             String[] p1 = Regex.Split(fromPath, "[\\\\/]").Where(x => x.Length != 0).ToArray();
             String[] p2 = Regex.Split(baseDir, "[\\\\/]").Where(x => x.Length != 0).ToArray();
