@@ -3,6 +3,7 @@ using NLog.Layouts;
 using NLog.Targets;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -27,6 +28,8 @@ namespace chocolatey.infrastructure.logging
             streamreader?.Dispose();
         }
 
+        // Not included in code coverage, because non working test also means no code coverage
+        [ExcludeFromCodeCoverage]
         public VerifyingLogTarget(string name, string path, bool _createNew = false): base(name)
         {
             bool allowToCreatingLog = false;
@@ -60,6 +63,7 @@ namespace chocolatey.infrastructure.logging
         }
 
         //unlike in FileTarget - this one is without [RequiredParameter]
+        [ExcludeFromCodeCoverage]
         new public Layout FileName
         {
             get
@@ -75,6 +79,7 @@ namespace chocolatey.infrastructure.logging
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int MessageBox(IntPtr hWnd, String text, String caption, uint type);
 
+        [ExcludeFromCodeCoverage]
         protected override void Write(LogEventInfo logEvent)
         {
             if (!verifying)
@@ -96,7 +101,8 @@ namespace chocolatey.infrastructure.logging
             // exception again.
             if (lastException != null)
             {
-                throw new Exception(lastException);
+                // NLog catches some of exceptions, but bypasses this exception always.
+                throw new OutOfMemoryException(lastException);
             }
 
             string actualLines = base.Layout.Render(logEvent);
