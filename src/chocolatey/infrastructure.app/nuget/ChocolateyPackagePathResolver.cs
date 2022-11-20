@@ -36,8 +36,8 @@ namespace chocolatey.infrastructure.app.nuget
         public override string GetInstallPath(IPackage package)
         {
             var packageVersionPath = Path.Combine(_nugetFileSystem.Root, GetPackageDirectory(package.Id,package.Version,useVersionInPath:true));
-            if (_nugetFileSystem.DirectoryExists(packageVersionPath)) return packageVersionPath;
 
+            if (UseSideBySidePaths) return packageVersionPath;
 
             return Path.Combine(_nugetFileSystem.Root, GetPackageDirectory(package.Id, package.Version));
         }

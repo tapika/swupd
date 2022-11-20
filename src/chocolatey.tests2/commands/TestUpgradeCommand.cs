@@ -432,12 +432,12 @@ namespace chocolatey.tests2.commands
         [LogTest]
         public void when_upgrading_a_dependency_legacy_folder_version()
         {
+            // When switching between sxs-no-sxs - logic seems to leave isdependency.1.0.0.nupkg/isdependency.1.0.0.nuspec
+            // files behind, also .install_info.
+            // maybe should be fixed
+
             TestDependencyUpgrade(
                 (conf) => {
-                    // This apparently a walkaround to get rid of "isdependency.1.0.0" folder.
-                    // Bug, maybe should be fixed?
-                    Directory.Delete(InstallContext.Instance.ChocolateyPackageInfoStoreLocation, true);
-
                     conf.PackageNames = conf.Input = "isdependency";
                 },
                 
