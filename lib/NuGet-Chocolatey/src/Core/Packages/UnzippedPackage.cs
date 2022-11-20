@@ -179,5 +179,15 @@ namespace NuGet
 
             Published = _repositoryFileSystem.GetLastModified(manifestFilePath);
         }
+
+        override public string GetPackageDirectory()
+        {
+            if (String.IsNullOrEmpty(_packagePath))
+            {
+                return null;
+            }
+
+            return Path.GetDirectoryName(_packagePath);
+        }
     }
 }

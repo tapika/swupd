@@ -21,8 +21,19 @@ namespace chocolatey.infrastructure.app.services
 
     public interface IChocolateyPackageInformationService
     {
+        /// <summary>
+        /// Gets package information
+        /// </summary>
+        /// <param name="package">package to get information on</param>
+        /// <param name="installDir">where package was installed or updated, null otherwise</param>
+        ChocolateyPackageInformation get_package_information(IPackage package, string installDir);
         ChocolateyPackageInformation get_package_information(IPackage package);
-        void save_package_information(ChocolateyPackageInformation packageInformation);
+
+        /// <summary>
+        /// Saves package information into .install_info folder.
+        /// </summary>
+        /// <param name="installDir">can specify install path if package was just installed. Provide null otherwise.</param>
+        void save_package_information(ChocolateyPackageInformation packageInformation, string installDir);
         void remove_package_information(IPackage package);
     }
 }

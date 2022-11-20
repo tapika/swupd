@@ -451,5 +451,7 @@ namespace NuGet
         {
             if (version != null) Version = version;
         }
+
+        abstract public string GetPackageDirectory();
     }
 }

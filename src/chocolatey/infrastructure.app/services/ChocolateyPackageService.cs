@@ -293,8 +293,15 @@ namespace chocolatey.infrastructure.app.services
                         long size = 0;
 
                         DirectoryInfo dir = new DirectoryInfo(installDir);
+                        string excludeDir = Path.Combine(installDir, FilesService.installInfoFolder) + Path.DirectorySeparatorChar;
+                        string excludeFile = Path.Combine(installDir, ApplicationParameters.PackagePendingFileName);
                         foreach (FileInfo fi in dir.GetFiles("*.*", SearchOption.AllDirectories))
                         {
+                            if (fi.FullName.StartsWith(excludeDir) || fi.FullName == excludeFile)
+                            {
+                                continue;
+                            }
+
                             size += fi.Length;
                         }
 
@@ -403,7 +410,7 @@ namespace chocolatey.infrastructure.app.services
                 if (key != null) Environment.SetEnvironmentVariable(ApplicationParameters.Environment.ChocolateyPackageInstallLocation, key.InstallLocation, EnvironmentVariableTarget.Process);
             }
 
-            update_package_information(pkgInfo);
+            _packageInfoService.save_package_information(pkgInfo, packageResult.InstallLocation);
             ensure_bad_package_path_is_clean(config, packageResult);
             EventManager.publish(new HandlePackageResultCompletedMessage(packageResult, config, commandName));
 
@@ -477,18 +484,14 @@ package '{0}' - stopping further execution".format_with(packageResult.Name));
 
         protected virtual ChocolateyPackageInformation get_package_information(PackageResult packageResult, ChocolateyConfiguration config)
         {
-            var pkgInfo = _packageInfoService.get_package_information(packageResult.Package);
+            var pkgInfo = _packageInfoService.get_package_information(packageResult.Package,
+                packageResult.InstallLocation);
             if (config.AllowMultipleVersions)
             {
                 pkgInfo.IsSideBySide = true;
             }
 
             return pkgInfo;
-        }
-
-        protected virtual void update_package_information(ChocolateyPackageInformation pkgInfo)
-        {
-            _packageInfoService.save_package_information(pkgInfo);
         }
 
         private string capture_arguments(ChocolateyConfiguration config, PackageResult packageResult)
