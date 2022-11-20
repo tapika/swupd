@@ -79,6 +79,8 @@ Chocolatey upgraded 0/1 packages. 1 packages failed.
  The process cannot access the file 'lib\upgradepackage\tools\chocolateyinstall.ps1' because it is being used by another process.
 => added new files:
 lib-bad\upgradepackage\.chocolateyPending
+lib-bad\upgradepackage\.install_info\.arguments
+lib-bad\upgradepackage\.install_info\.files
 lib-bad\upgradepackage\upgradepackage.nupkg
   version: 1.0.0.0
 lib-bad\upgradepackage\upgradepackage.nuspec

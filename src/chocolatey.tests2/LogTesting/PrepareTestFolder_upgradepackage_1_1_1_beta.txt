@@ -17,8 +17,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for installpackage/1.0.0: succeeded
 => added new files:
-.chocolatey\installpackage.1.0.0\.arguments
-.chocolatey\installpackage.1.0.0\.files
+lib\installpackage\.install_info\.arguments
+lib\installpackage\.install_info\.files
 lib\installpackage\installpackage.nupkg
   version: 1.0.0.0
 lib\installpackage\installpackage.nuspec
@@ -51,8 +51,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for upgradepackage/1.0.0: succeeded
 => added new files:
-.chocolatey\upgradepackage.1.0.0\.arguments
-.chocolatey\upgradepackage.1.0.0\.files
+lib\upgradepackage\.install_info\.arguments
+lib\upgradepackage\.install_info\.files
 lib\upgradepackage\tools\chocolateyBeforeModify.ps1
 lib\upgradepackage\tools\chocolateyinstall.ps1
 lib\upgradepackage\tools\chocolateyuninstall.ps1
@@ -80,8 +80,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for badpackage/1.0: succeeded
 => added new files:
-.chocolatey\badpackage.1.0\.arguments
-.chocolatey\badpackage.1.0\.files
+lib\badpackage\.install_info\.arguments
+lib\badpackage\.install_info\.files
 lib\badpackage\badpackage.nupkg
   version: 1.0.0.0
 lib\badpackage\badpackage.nuspec
@@ -105,6 +105,5 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for upgradepackage/1.1.1-beta: succeeded
 => added new files:
-.chocolatey\upgradepackage.1.1.1-beta\.arguments
-.chocolatey\upgradepackage.1.1.1-beta\.files
+lib\upgradepackage\.install_info\.files.backup
 shared context ends

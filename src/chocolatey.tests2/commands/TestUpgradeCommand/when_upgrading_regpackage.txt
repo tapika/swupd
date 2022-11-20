@@ -36,8 +36,7 @@ Chocolatey upgraded 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => upgrade result for installpackage2/2.3.0: succeeded
 => added new files:
-.chocolatey\installpackage2.2.3.0\.arguments
-.chocolatey\installpackage2.2.3.0\.files
+custominstalldir\installpackage2\.install_info\.files.backup
 custominstalldir\installpackage2\release_notes_2_3_0.txt
 
 - after operation installpackage2 registry:

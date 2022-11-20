@@ -42,6 +42,8 @@ Chocolatey installed 0/1 packages.
   - Unable to remove existing package prior to forced reinstall:
  The process cannot access the file 'lib\installpackage\tools\chocolateyinstall.ps1' because it is being used by another process.
 => added new files:
+lib-bkp\installpackage\.install_info\.arguments
+lib-bkp\installpackage\.install_info\.files
 lib-bkp\installpackage\installpackage.nupkg
   version: 1.0.0.0
 lib-bkp\installpackage\installpackage.nuspec

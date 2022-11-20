@@ -27,15 +27,14 @@ Chocolatey installed 2/2 packages.
 => install result for conflictingdependency/1.0.1: succeeded
 => install result for isdependency/1.0.1: succeeded
 => added new files:
-.chocolatey\conflictingdependency.1.0.1\.arguments
-.chocolatey\conflictingdependency.1.0.1\.files
-.chocolatey\isdependency.1.0.1\.arguments
-.chocolatey\isdependency.1.0.1\.files
+lib\conflictingdependency\.install_info\.arguments
+lib\conflictingdependency\.install_info\.files
 lib\conflictingdependency\conflictingdependency.nupkg
   version: 1.0.1.0
 lib\conflictingdependency\conflictingdependency.nuspec
 lib\conflictingdependency\tools\chocolateyinstall.ps1
 lib\conflictingdependency\tools\chocolateyuninstall.ps1
+lib\isdependency\.install_info\.files.backup
 => additional version information:
   isdependency version: 1.0.1.0
 end of test

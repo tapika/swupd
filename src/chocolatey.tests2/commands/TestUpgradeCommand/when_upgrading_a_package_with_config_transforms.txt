@@ -26,8 +26,7 @@ Chocolatey upgraded 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => upgrade result for upgradepackage/1.1.0: succeeded
 => added new files:
-.chocolatey\upgradepackage.1.1.0\.arguments
-.chocolatey\upgradepackage.1.1.0\.files
+lib\upgradepackage\.install_info\.files.backup
 lib\upgradepackage\tools\console.exe: 1.1.0
 lib\upgradepackage\upgradepackage.nupkg: 1.1.0.0
 console.exe.config keys:

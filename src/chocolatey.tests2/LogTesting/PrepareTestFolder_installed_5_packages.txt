@@ -17,8 +17,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for installpackage/1.0.0: succeeded
 => added new files:
-.chocolatey\installpackage.1.0.0\.arguments
-.chocolatey\installpackage.1.0.0\.files
+lib\installpackage\.install_info\.arguments
+lib\installpackage\.install_info\.files
 lib\installpackage\installpackage.nupkg
   version: 1.0.0.0
 lib\installpackage\installpackage.nuspec
@@ -51,8 +51,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for upgradepackage/1.0.0: succeeded
 => added new files:
-.chocolatey\upgradepackage.1.0.0\.arguments
-.chocolatey\upgradepackage.1.0.0\.files
+lib\upgradepackage\.install_info\.arguments
+lib\upgradepackage\.install_info\.files
 lib\upgradepackage\tools\chocolateyBeforeModify.ps1
 lib\upgradepackage\tools\chocolateyinstall.ps1
 lib\upgradepackage\tools\chocolateyuninstall.ps1
@@ -103,22 +103,22 @@ Chocolatey installed 3/3 packages.
 => install result for isdependency/1.1.0: succeeded
 => install result for isexactversiondependency/1.0.0: succeeded
 => added new files:
-.chocolatey\hasdependency.1.0.0\.arguments
-.chocolatey\hasdependency.1.0.0\.files
-.chocolatey\isdependency.1.1.0\.arguments
-.chocolatey\isdependency.1.1.0\.files
-.chocolatey\isexactversiondependency.1.0.0\.arguments
-.chocolatey\isexactversiondependency.1.0.0\.files
+lib\hasdependency\.install_info\.arguments
+lib\hasdependency\.install_info\.files
 lib\hasdependency\hasdependency.nupkg
   version: 1.0.0.0
 lib\hasdependency\hasdependency.nuspec
 lib\hasdependency\tools\chocolateyinstall.ps1
 lib\hasdependency\tools\chocolateyuninstall.ps1
+lib\isdependency\.install_info\.arguments
+lib\isdependency\.install_info\.files
 lib\isdependency\isdependency.nupkg
   version: 1.1.0.0
 lib\isdependency\isdependency.nuspec
 lib\isdependency\tools\chocolateyinstall.ps1
 lib\isdependency\tools\chocolateyuninstall.ps1
+lib\isexactversiondependency\.install_info\.arguments
+lib\isexactversiondependency\.install_info\.files
 lib\isexactversiondependency\isexactversiondependency.nupkg
   version: 1.0.0.0
 lib\isexactversiondependency\isexactversiondependency.nuspec

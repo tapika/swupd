@@ -53,10 +53,11 @@ Chocolatey upgraded 1/3 packages. 1 packages failed.
   - installpackage v1.0.0 is the latest version available based on your source(s).
 => upgrade result for upgradepackage/1.1.0: succeeded
 => added new files:
-.chocolatey\badpackage.2.0\.files
-.chocolatey\upgradepackage.1.1.0\.arguments
-.chocolatey\upgradepackage.1.1.0\.files
+lib\upgradepackage\.install_info\.files.backup
 lib-bad\badpackage\.chocolateyPending
+lib-bad\badpackage\.install_info\.arguments
+lib-bad\badpackage\.install_info\.files
+lib-bad\badpackage\.install_info\.files.backup
 lib-bad\badpackage\badpackage.nupkg
   version: 2.0.0.0
 lib-bad\badpackage\badpackage.nuspec

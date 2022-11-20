@@ -38,8 +38,10 @@ Chocolatey upgraded 0/3 packages. 1 packages failed.
   - upgradepackage v1.1.1-beta is newer than the most recent.
  You must be smarter than the average bear...
 => added new files:
-.chocolatey\badpackage.2.0\.files
 lib-bad\badpackage\.chocolateyPending
+lib-bad\badpackage\.install_info\.arguments
+lib-bad\badpackage\.install_info\.files
+lib-bad\badpackage\.install_info\.files.backup
 lib-bad\badpackage\badpackage.nupkg
   version: 2.0.0.0
 lib-bad\badpackage\badpackage.nuspec

@@ -17,8 +17,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for installpackage/1.0.0: succeeded
 => added new files:
-.chocolatey\installpackage.1.0.0\.arguments
-.chocolatey\installpackage.1.0.0\.files
+lib\installpackage\.install_info\.arguments
+lib\installpackage\.install_info\.files
 lib\installpackage\installpackage.nupkg
   version: 1.0.0.0
 lib\installpackage\installpackage.nuspec

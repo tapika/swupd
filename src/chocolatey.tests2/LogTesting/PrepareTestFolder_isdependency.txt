@@ -15,8 +15,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for isdependency/1.0.0: succeeded
 => added new files:
-.chocolatey\isdependency.1.0.0\.arguments
-.chocolatey\isdependency.1.0.0\.files
+lib\isdependency\.install_info\.arguments
+lib\isdependency\.install_info\.files
 lib\isdependency\isdependency.nupkg
   version: 1.0.0.0
 lib\isdependency\isdependency.nuspec

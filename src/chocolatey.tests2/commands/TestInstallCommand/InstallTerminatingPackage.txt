@@ -18,8 +18,8 @@ Chocolatey installed 0/1 packages. 1 packages failed.
   - Error while running 'lib\nonterminatingerror\tools\chocolateyInstall.ps1'.
  See log for details.
 => added new files:
-.chocolatey\nonterminatingerror.1.0\.files
 lib-bad\nonterminatingerror\.chocolateyPending
+lib-bad\nonterminatingerror\.install_info\.files
 lib-bad\nonterminatingerror\nonterminatingerror.nupkg
   version: 1.0.0.0
 lib-bad\nonterminatingerror\nonterminatingerror.nuspec

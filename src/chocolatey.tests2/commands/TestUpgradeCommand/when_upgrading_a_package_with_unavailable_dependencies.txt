@@ -20,6 +20,8 @@ Chocolatey upgraded 0/1 packages. 1 packages failed.
  Unable to resolve dependency 'isexactversiondependency (= 2.0.0)'.
 => added new files:
 lib-bad\hasdependency\.chocolateyPending
+lib-bad\hasdependency\.install_info\.arguments
+lib-bad\hasdependency\.install_info\.files
 lib-bad\hasdependency\hasdependency.nupkg
   version: 1.0.0.0
 lib-bad\hasdependency\hasdependency.nuspec

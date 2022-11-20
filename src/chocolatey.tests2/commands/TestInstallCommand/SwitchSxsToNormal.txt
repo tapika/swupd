@@ -12,6 +12,9 @@ installpackage v1.0.0 already installed. Forcing reinstall of version '1.0.0'.
 
 installpackage v1.0.0 (forced)
 installpackage package files install completed. Performing other installation steps.
+This is installpackage v1.0.0 being installed
+WARNING: A warning!
+installpackage v1.0.0 has been installed
  The install of installpackage was successful.
   Software install location not explicitly set, could be in package or
   default install location if installer.
@@ -20,7 +23,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for installpackage/1.0.0: succeeded
 => added new files:
-.chocolatey\installpackage.1.0.0\.files.backup
+lib\installpackage\.install_info\.arguments
+lib\installpackage\.install_info\.files
 lib\installpackage\installpackage.nupkg
   version: 1.0.0.0
 lib\installpackage\installpackage.nuspec
@@ -34,6 +38,7 @@ lib\installpackage\tools\graphical.exe
 lib\installpackage\tools\graphical.exe.gui
 lib\installpackage\tools\not.installed.exe
 lib\installpackage\tools\not.installed.exe.ignore
+lib\installpackage\tools\simplefile.txt
 => removed files:
 lib\installpackage.1.0.0\installpackage.1.0.0.nupkg
 lib\installpackage.1.0.0\installpackage.1.0.0.nuspec
