@@ -289,7 +289,6 @@ A corrupt .registry file exists at {0}.
         public void remove_package_information(IPackage package)
         {
             var pkgStorePath = GetPackageInfoDirectory(package);
-            if (_config.RegularOutput) this.Log().Info("Removing Package Information for {0}".format_with(pkgStorePath));
             _fileSystem.delete_directory_if_exists(pkgStorePath, recursive: true);
         }
     }
