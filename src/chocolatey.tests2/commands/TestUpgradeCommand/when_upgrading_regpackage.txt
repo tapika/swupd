@@ -15,6 +15,7 @@
   NoModify: False
   NoRepair: False
   EstimatedSize: 0
+  Tags: test
 
 Upgrading the following packages:
 installpackage2
@@ -56,5 +57,6 @@ custominstalldir\installpackage2\release_notes_2_3_0.txt
   NoRepair: True
   DisplayIcon: custominstalldir\installpackage2\msgbox.exe
   EstimatedSize: 313
+  Tags: test
 
 end of test

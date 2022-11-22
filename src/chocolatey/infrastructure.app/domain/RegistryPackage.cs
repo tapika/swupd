@@ -24,6 +24,7 @@ namespace NuGet
             Id = registryKey.PackageId;
             IsPinned = registryKey.IsPinned;
             installLocation = registryKey.InstallLocation.ToString();
+            Tags = registryKey.Tags;
         }
 
         public string Id

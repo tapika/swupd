@@ -15,6 +15,7 @@
   NoModify: False
   NoRepair: False
   EstimatedSize: 0
+  Tags: test
 
 Uninstalling the following packages:
 installpackage2

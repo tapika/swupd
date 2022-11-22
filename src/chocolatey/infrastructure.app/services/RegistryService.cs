@@ -245,6 +245,7 @@ namespace chocolatey.infrastructure.app.services
                 {
                     appKey.EstimatedSize = size;
                 }
+                appKey.Tags = key.get_value_as_string("Tags");
 
                 if (appKey.WindowsInstaller || appKey.UninstallString.to_string().to_lower().Contains("msiexec"))
                 {
@@ -653,7 +654,13 @@ namespace chocolatey.infrastructure.app.services
                     }
                     else 
                     {
-                        value = propInfo.GetValue(appKey).ToString();
+                        object o = propInfo.GetValue(appKey);
+                        if (o == null)
+                        {
+                            continue;
+                        }
+
+                        value = o.ToString();
                         type = RegistryValueKind.String;
                     }
 

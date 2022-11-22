@@ -110,9 +110,13 @@ namespace chocolatey.infrastructure.app.nuget
 
             if (configuration.ListCommand.ByTagOnly)
             {
+                string searchText = configuration.ListCommand.SearchTag;
+                if (string.IsNullOrEmpty(searchText))
+                    searchText = searchTermLower;
+
                 results = isServiceBased
-                    ? results.Where(p => p.Tags.Contains(searchTermLower))
-                    : results.Where(p => p.Tags.contains(searchTermLower, StringComparison.InvariantCultureIgnoreCase));
+                    ? results.Where(p => p.Tags.Contains(searchText))
+                    : results.Where(p => p.Tags.contains(searchText, StringComparison.InvariantCultureIgnoreCase));
             }
 
             if (configuration.ListCommand.IdStartsWith)

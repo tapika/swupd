@@ -451,7 +451,17 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public int PageSize { get; set; }
         public bool Exact { get; set; }
         public bool ByIdOnly { get; set; }
+        
+        /// <summary>
+        /// When set to true - searches for text in package.Tag
+        /// </summary>
         public bool ByTagOnly { get; set; }
+
+        /// <summary>
+        /// Specific tag to search
+        /// </summary>
+        public string SearchTag { get; set; }
+
         public bool IdStartsWith { get; set; }
         public bool OrderByPopularity { get; set; }
         public bool ApprovedOnly { get; set; }

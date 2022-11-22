@@ -90,6 +90,12 @@ namespace chocolatey.infrastructure.app.domain
         public long EstimatedSize { get; internal set; }
 
         /// <summary>
+        /// Currently used only to tag specific installation for testing.
+        /// </summary>
+        [XmlIgnore]
+        public string Tags { get; set; }
+
+        /// <summary>
         ///   Is an application listed in ARP (Programs and Features)?
         /// </summary>
         /// <returns>true if the key should be listed as a program</returns>
@@ -159,7 +165,8 @@ namespace chocolatey.infrastructure.app.domain
                 nameof(RegistryApplicationKey.NoRepair),
                 nameof(RegistryApplicationKey.InstallDate),
                 nameof(RegistryApplicationKey.DisplayVersion),
-                nameof(RegistryApplicationKey.EstimatedSize)
+                nameof(RegistryApplicationKey.EstimatedSize),
+                nameof(RegistryApplicationKey.Tags)
             };
 
             if (haveIcon)
