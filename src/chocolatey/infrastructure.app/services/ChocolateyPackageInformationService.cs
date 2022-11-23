@@ -96,13 +96,6 @@ namespace chocolatey.infrastructure.app.services
                 return packageInformation;
             }
 
-            // Package does not exists physically on disk.
-            if (package is RegistryPackage regpack)
-            {
-                packageInformation.IsPinned = regpack.IsPinned;
-                return packageInformation;
-            }
-
             var pkgStorePath = GetPackageInfoDirectory(package, installDir);
             if (!_fileSystem.directory_exists(pkgStorePath))
             {
@@ -171,7 +164,17 @@ A corrupt .registry file exists at {0}.
 
             packageInformation.HasSilentUninstall = _fileSystem.file_exists(_fileSystem.combine_paths(pkgStorePath, SILENT_UNINSTALLER_FILE));
             packageInformation.IsSideBySide = _fileSystem.file_exists(_fileSystem.combine_paths(pkgStorePath, SIDE_BY_SIDE_FILE));
-            packageInformation.IsPinned = _fileSystem.file_exists(_fileSystem.combine_paths(pkgStorePath, PIN_FILE));
+
+            // Package does not exists physically on disk.
+            if (package is RegistryPackage regpack)
+            {
+                packageInformation.IsPinned = regpack.IsPinned;
+            }
+            else
+            { 
+                packageInformation.IsPinned = _fileSystem.file_exists(_fileSystem.combine_paths(pkgStorePath, PIN_FILE));
+            }
+
             var argsFile = _fileSystem.combine_paths(pkgStorePath, ARGS_FILE);
             if (_fileSystem.file_exists(argsFile)) packageInformation.Arguments = _fileSystem.read_file(argsFile);
             var extraInfoFile = _fileSystem.combine_paths(pkgStorePath, EXTRA_FILE);
