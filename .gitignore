@@ -38,3 +38,5 @@ src/_dotTrace.chocolatey/
 src/chocolatey.sln.GhostDoc.xml
 
 *.resources
+/src/tools
+/tools
