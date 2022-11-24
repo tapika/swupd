@@ -110,6 +110,8 @@ namespace chocolatey.infrastructure.app.services
             return capture_package_files(installDirectory, config);
         }
 
+        public const string installInfoFolder = ".install_info";
+
         public PackageFiles capture_package_files(string directory, ChocolateyConfiguration config)
         {
             var packageFiles = new PackageFiles();
@@ -117,8 +119,10 @@ namespace chocolatey.infrastructure.app.services
             if (!package_install_directory_is_correct(directory)) return packageFiles;
 
             this.Log().Debug(() => "Capturing package files in '{0}'".format_with(directory));
+            string installDir = Path.Combine(directory, installInfoFolder) + Path.DirectorySeparatorChar;
+            
             //gather all files in the folder 
-            var files = _fileSystem.get_files(directory, pattern: "*.*", option: SearchOption.AllDirectories);
+            var files = _fileSystem.get_files(directory, pattern: "*.*", option: SearchOption.AllDirectories).Where(x => !x.StartsWith(installDir));
             foreach (string file in files.or_empty_list_if_null().Where(f => !f.EndsWith(ApplicationParameters.PackagePendingFileName)))
             {
                 packageFiles.Files.Add(get_package_file(file));

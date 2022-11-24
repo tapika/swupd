@@ -45,12 +45,9 @@ Chocolatey upgraded 3/3 packages.
 => upgrade result for isdependency/2.0.0: succeeded
 => upgrade result for isexactversiondependency/2.0.0: succeeded
 => added new files:
-.chocolatey\hasdependency.2.1.0\.arguments
-.chocolatey\hasdependency.2.1.0\.files
-.chocolatey\isdependency.2.0.0\.arguments
-.chocolatey\isdependency.2.0.0\.files
-.chocolatey\isexactversiondependency.2.0.0\.arguments
-.chocolatey\isexactversiondependency.2.0.0\.files
+lib\hasdependency\.install_info\.files.backup
+lib\isdependency\.install_info\.files.backup
+lib\isexactversiondependency\.install_info\.files.backup
 lib\hasdependency\hasdependency.nupkg: 2.1.0.0
 lib\isdependency\isdependency.nupkg: 2.0.0.0
 lib\isexactversiondependency\isexactversiondependency.nupkg: 2.0.0.0

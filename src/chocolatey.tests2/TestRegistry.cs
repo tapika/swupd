@@ -81,7 +81,8 @@ namespace chocolatey.tests2
                 {
                     PackageId = "installpackage2",
                     Version = "1.0.0",
-                    InstallLocation = Path.Combine(InstallContext.Instance.RootLocation, "custominstalldir", "installpackage2")
+                    InstallLocation = Path.Combine(InstallContext.Instance.RootLocation, "custominstalldir", "installpackage2"),
+                    Tags = "test"
                 }
             );
         }

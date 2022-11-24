@@ -67,7 +67,6 @@ namespace chocolatey.infrastructure.app
         public static string PackageFailuresLocation            { get { return InstallContext.Instance.PackageFailuresLocation; } }
         public static string PackageBackupLocation              { get { return InstallContext.Instance.PackageBackupLocation; } }
         public static string ShimsLocation                      { get { return InstallContext.Instance.ShimsLocation; } }
-        public static string ChocolateyPackageInfoStoreLocation { get { return InstallContext.Instance.ChocolateyPackageInfoStoreLocation; } }
         public static string ExtensionsLocation                 { get { return InstallContext.Instance.ExtensionsLocation; } }
         public static string TemplatesLocation                  { get { return InstallContext.Instance.TemplatesLocation; } }
         public static readonly string ChocolateyCommunityFeedPushSourceOld = "https://chocolatey.org/";

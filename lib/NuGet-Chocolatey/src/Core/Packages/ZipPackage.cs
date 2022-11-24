@@ -241,5 +241,10 @@ namespace NuGet
                 MemoryCache.Instance.Remove(zipPackage.GetFilesCacheKey());
             }
         }
+
+        override public string GetPackageDirectory()
+        {
+            return null;
+        }
     }
 }

@@ -601,5 +601,10 @@ namespace NuGet
         {
             if (version != null) Version = version.ToString();
         }
+
+        public string GetPackageDirectory()
+        {
+            return null;
+        }
     }
 }

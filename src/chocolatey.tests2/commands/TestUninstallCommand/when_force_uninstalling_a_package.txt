@@ -14,6 +14,8 @@ Chocolatey uninstalled 1/1 packages.
 => uninstall result for installpackage/1.0.0: succeeded
 => folder was not updated
 => removed files:
+lib\installpackage\.install_info\.arguments
+lib\installpackage\.install_info\.files
 lib\installpackage\installpackage.nupkg
 lib\installpackage\installpackage.nuspec
 lib\installpackage\tools\casemismatch.exe

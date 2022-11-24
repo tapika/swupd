@@ -19,8 +19,7 @@ Chocolatey upgraded 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => upgrade result for isdependency/1.1.0: succeeded
 => added new files:
-.chocolatey\isdependency.1.1.0\.arguments
-.chocolatey\isdependency.1.1.0\.files
+lib\isdependency\.install_info\.files.backup
 lib\hasdependency\hasdependency.nupkg: 1.0.0.0
 lib\isdependency\isdependency.nupkg: 1.1.0.0
 lib\isexactversiondependency\isexactversiondependency.nupkg: 1.0.0.0

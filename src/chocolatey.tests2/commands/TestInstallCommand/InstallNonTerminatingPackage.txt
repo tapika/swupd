@@ -17,8 +17,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for nonterminatingerror/1.0: succeeded
 => added new files:
-.chocolatey\nonterminatingerror.1.0\.arguments
-.chocolatey\nonterminatingerror.1.0\.files
+lib\nonterminatingerror\.install_info\.arguments
+lib\nonterminatingerror\.install_info\.files
 lib\nonterminatingerror\nonterminatingerror.nupkg
   version: 1.0.0.0
 lib\nonterminatingerror\nonterminatingerror.nuspec

@@ -19,19 +19,14 @@ Chocolatey upgraded 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => upgrade result for isdependency/1.1.0: succeeded
 => added new files:
-.chocolatey\isdependency.1.1.0\.arguments
-.chocolatey\isdependency.1.1.0\.files
-lib\isdependency\isdependency.1.0.0.nupkg
-  version: 1.0.0.0
-lib\isdependency\isdependency.1.0.0.nuspec
+lib\isdependency\.install_info\.arguments
+lib\isdependency\.install_info\.files
 lib\isdependency\isdependency.nupkg
   version: 1.1.0.0
 lib\isdependency\isdependency.nuspec
 lib\isdependency\tools\chocolateyinstall.ps1
 lib\isdependency\tools\chocolateyuninstall.ps1
 => removed files:
-lib\isdependency.1.0.0\isdependency.1.0.0.nupkg
-lib\isdependency.1.0.0\isdependency.1.0.0.nuspec
 lib\isdependency.1.0.0\tools\chocolateyinstall.ps1
 lib\isdependency.1.0.0\tools\chocolateyuninstall.ps1
 lib\isdependency\isdependency.nupkg: 1.1.0.0

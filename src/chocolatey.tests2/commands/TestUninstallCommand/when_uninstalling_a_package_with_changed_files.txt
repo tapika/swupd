@@ -16,6 +16,8 @@ Chocolatey uninstalled 1/1 packages.
 => added new files:
 lib\installpackage\tools\chocolateyinstall.ps1.1.0.0
 => removed files:
+lib\installpackage\.install_info\.arguments
+lib\installpackage\.install_info\.files
 lib\installpackage\installpackage.nupkg
 lib\installpackage\installpackage.nuspec
 lib\installpackage\tools\casemismatch.exe

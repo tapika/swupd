@@ -24,6 +24,8 @@ Chocolatey uninstalled 0/1 packages. 1 packages failed.
   - badpackage not uninstalled. An error occurred during uninstall:
  badpackage uninstall not successful.
 => added new files:
+lib-bkp\badpackage\.install_info\.arguments
+lib-bkp\badpackage\.install_info\.files
 lib-bkp\badpackage\badpackage.nupkg
   version: 1.0.0.0
 lib-bkp\badpackage\badpackage.nuspec

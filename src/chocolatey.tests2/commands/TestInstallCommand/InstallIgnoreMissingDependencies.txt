@@ -15,8 +15,8 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for hasdependency/2.1.0: succeeded
 => added new files:
-.chocolatey\hasdependency.2.1.0\.arguments
-.chocolatey\hasdependency.2.1.0\.files
+lib\hasdependency\.install_info\.arguments
+lib\hasdependency\.install_info\.files
 lib\hasdependency\hasdependency.nupkg
   version: 2.1.0.0
 lib\hasdependency\hasdependency.nuspec

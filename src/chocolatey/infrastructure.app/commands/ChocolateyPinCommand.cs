@@ -254,7 +254,7 @@ If you find other exit codes that we have not yet documented, please
                 else
                 {
                     pkgInfo.IsPinned = addingAPin;
-                    _packageInfoService.save_package_information(pkgInfo);
+                    _packageInfoService.save_package_information(pkgInfo, null);
                 }
 
                 if (changeMessage)

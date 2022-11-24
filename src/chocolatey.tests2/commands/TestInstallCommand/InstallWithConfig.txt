@@ -69,21 +69,15 @@ Chocolatey installed 5/6 packages. 1 packages failed.
   - missingpackage not installed. The package was not found with the source(s) listed.
 => install result for upgradepackage/1.0.0: succeeded
 => added new files:
-.chocolatey\hasdependency.1.0.0\.arguments
-.chocolatey\hasdependency.1.0.0\.files
-.chocolatey\installpackage.1.0.0\.arguments
-.chocolatey\installpackage.1.0.0\.files
-.chocolatey\isdependency.1.1.0\.arguments
-.chocolatey\isdependency.1.1.0\.files
-.chocolatey\isexactversiondependency.1.0.0\.arguments
-.chocolatey\isexactversiondependency.1.0.0\.files
-.chocolatey\upgradepackage.1.0.0\.arguments
-.chocolatey\upgradepackage.1.0.0\.files
+lib\hasdependency\.install_info\.arguments
+lib\hasdependency\.install_info\.files
 lib\hasdependency\hasdependency.nupkg
   version: 1.0.0.0
 lib\hasdependency\hasdependency.nuspec
 lib\hasdependency\tools\chocolateyinstall.ps1
 lib\hasdependency\tools\chocolateyuninstall.ps1
+lib\installpackage\.install_info\.arguments
+lib\installpackage\.install_info\.files
 lib\installpackage\installpackage.nupkg
   version: 1.0.0.0
 lib\installpackage\installpackage.nuspec
@@ -98,16 +92,22 @@ lib\installpackage\tools\graphical.exe.gui
 lib\installpackage\tools\not.installed.exe
 lib\installpackage\tools\not.installed.exe.ignore
 lib\installpackage\tools\simplefile.txt
+lib\isdependency\.install_info\.arguments
+lib\isdependency\.install_info\.files
 lib\isdependency\isdependency.nupkg
   version: 1.1.0.0
 lib\isdependency\isdependency.nuspec
 lib\isdependency\tools\chocolateyinstall.ps1
 lib\isdependency\tools\chocolateyuninstall.ps1
+lib\isexactversiondependency\.install_info\.arguments
+lib\isexactversiondependency\.install_info\.files
 lib\isexactversiondependency\isexactversiondependency.nupkg
   version: 1.0.0.0
 lib\isexactversiondependency\isexactversiondependency.nuspec
 lib\isexactversiondependency\tools\chocolateyinstall.ps1
 lib\isexactversiondependency\tools\chocolateyuninstall.ps1
+lib\upgradepackage\.install_info\.arguments
+lib\upgradepackage\.install_info\.files
 lib\upgradepackage\tools\chocolateyBeforeModify.ps1
 lib\upgradepackage\tools\chocolateyinstall.ps1
 lib\upgradepackage\tools\chocolateyuninstall.ps1

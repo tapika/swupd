@@ -282,7 +282,7 @@ namespace cakebuild
                     switch (a.ToLower())
                     {
                         case nameof(all):
-                            newArgs.OSS = "win7,linux";
+                            newArgs.OSS = "win81,linux";
                             newArgs.r2r_targets = "choco";
                             newArgs.r2r_build = true;
                             newArgs.test = true;
@@ -302,7 +302,7 @@ namespace cakebuild
                             }
                             if (string.IsNullOrEmpty(newArgs.OSS))
                             {
-                                newArgs.OSS = "win7";
+                                newArgs.OSS = "win81";
                             }
                             break;
                         case nameof(buildsolution):

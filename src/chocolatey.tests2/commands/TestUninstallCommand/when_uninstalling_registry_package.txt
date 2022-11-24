@@ -15,6 +15,7 @@
   NoModify: False
   NoRepair: False
   EstimatedSize: 0
+  Tags: test
 
 Uninstalling the following packages:
 installpackage2
@@ -31,6 +32,8 @@ Chocolatey uninstalled 1/1 packages.
 => uninstall result for installpackage2/1.0.0: succeeded
 => folder was not updated
 => removed files:
+custominstalldir\installpackage2\.install_info\.arguments
+custominstalldir\installpackage2\.install_info\.files
 custominstalldir\installpackage2\installpackage2.nupkg
 custominstalldir\installpackage2\installpackage2.nuspec
 custominstalldir\installpackage2\msgbox.exe

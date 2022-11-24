@@ -271,25 +271,16 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         /// <summary>
         ///   Configuration values provided by choco.
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public InformationCommandConfiguration Information { get;  set; }
 
         /// <summary>
         ///   Configuration related to features and whether they are enabled.
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public FeaturesConfiguration Features { get;  set; }
 
         /// <summary>
         ///   Configuration related specifically to List command
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public ListCommandConfiguration ListCommand { get;  set; }
 
         /// <summary>
@@ -300,97 +291,61 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         /// <summary>
         ///   Configuration related specifically to Upgrade command
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public UpgradeCommandConfiguration UpgradeCommand { get;  set; }
 
         /// <summary>
         ///   Configuration related specifically to New command
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public NewCommandConfiguration NewCommand { get;  set; }
 
         /// <summary>
         ///   Configuration related specifically to Source command
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public SourcesCommandConfiguration SourceCommand { get;  set; }
 
         /// <summary>
         ///   Default Machine Sources Configuration
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public IList<MachineSourceConfiguration> MachineSources { get; set; }
 
         /// <summary>
         /// Configuration related specifically to the Feature command
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public FeatureCommandConfiguration FeatureCommand { get; set; }
 
         /// <summary>
         /// Configuration related to the configuration file.
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public ConfigCommandConfiguration ConfigCommand { get; set; }
 
         /// <summary>
         ///   Configuration related specifically to ApiKey command
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public ApiKeyCommandConfiguration ApiKeyCommand { get;  set; }
 
         /// <summary>
         ///   Configuration related specifically to the Pack command.
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public PackCommandConfiguration PackCommand { get; set; }
 
         /// <summary>
         ///   Configuration related specifically to Push command
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public PushCommandConfiguration PushCommand { get;  set; }
 
         /// <summary>
         /// Configuration related specifically to Pin command
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public PinCommandConfiguration PinCommand { get; set; }
 
         /// <summary>
         /// Configuration related specifically to Outdated command
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public OutdatedCommandConfiguration OutdatedCommand { get; set; }
 
         /// <summary>
         /// Configuration related specifically to proxies.
         /// </summary>
-        /// <remarks>
-        ///   On .NET 4.0, get error CS0200 when private set - see http://stackoverflow.com/a/23809226/18475
-        /// </remarks>
         public ProxyConfiguration Proxy { get; set; }
     }
 
@@ -496,7 +451,17 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public int PageSize { get; set; }
         public bool Exact { get; set; }
         public bool ByIdOnly { get; set; }
+        
+        /// <summary>
+        /// When set to true - searches for text in package.Tag
+        /// </summary>
         public bool ByTagOnly { get; set; }
+
+        /// <summary>
+        /// Specific tag to search
+        /// </summary>
+        public string SearchTag { get; set; }
+
         public bool IdStartsWith { get; set; }
         public bool OrderByPopularity { get; set; }
         public bool ApprovedOnly { get; set; }

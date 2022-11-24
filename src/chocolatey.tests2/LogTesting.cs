@@ -158,7 +158,7 @@
         public static List<string> GetFileListing(string path, string shimDir = null)
         {
             var list = Directory.GetFiles(path, "*", SearchOption.AllDirectories).ToList();
-            list.Sort();
+            list.Sort(StringComparer.InvariantCultureIgnoreCase);
 
             if (shimDir == null)
             {

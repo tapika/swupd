@@ -21,9 +21,7 @@ Transforming 'console.exe.config' with the data from 'console.exe.config.install
 Chocolatey upgraded 1/1 packages. 
  See the log for details (logs\chocolatey.log).
 => upgrade result for upgradepackage/1.1.1-beta2: succeeded
-=> added new files:
-.chocolatey\upgradepackage.1.1.1-beta2\.arguments
-.chocolatey\upgradepackage.1.1.1-beta2\.files
+=> folder was not updated
 lib\upgradepackage\tools\console.exe: 1.1.1-beta2
 lib\upgradepackage\upgradepackage.nupkg: 1.1.1-beta2 (normalized: 1.1.1.0)
 end of test

@@ -34,5 +34,11 @@ namespace NuGet
         void ExtractContents(IFileSystem fileSystem, string extractPath);
 
         void OverrideOriginalVersion(SemanticVersion version);
+
+        /// <summary>
+        /// Gets package directory if it exists, null if cannot be determined (not present on disk)
+        /// </summary>
+        /// <returns>package path</returns>
+        string GetPackageDirectory();
     }
 }

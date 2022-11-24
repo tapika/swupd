@@ -17,8 +17,7 @@ Chocolatey installed 1/1 packages.
  See the log for details (logs\chocolatey.log).
 => install result for upgradepackage/1.1.0: succeeded
 => added new files:
-.chocolatey\upgradepackage.1.1.0\.arguments
-.chocolatey\upgradepackage.1.1.0\.files
+lib\upgradepackage\.install_info\.files.backup
 ---------------------------------- testupgrade ----------------------------------
 Upgrading the following packages:
 upgradepackage

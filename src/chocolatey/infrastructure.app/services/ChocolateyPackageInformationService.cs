@@ -58,7 +58,36 @@ namespace chocolatey.infrastructure.app.services
             _config = config;
         }
 
+        string GetPackageInfoDirectory(IPackage package, string installDirectory = null)
+        {
+            // Backwards compatibility support
+            string oldDir = Path.Combine(InstallContext.Instance.RootLocation, ".chocolatey", "{0}.{1}".format_with(package.Id, package.Version.to_string()));
+            if (_fileSystem.directory_exists(oldDir))
+            {
+                return oldDir;
+            }
+
+            string packageDir = installDirectory;
+
+            if (packageDir == null)
+            {
+                packageDir = package.GetPackageDirectory();
+                if (packageDir == null)
+                {
+                    return packageDir;
+                }
+            }
+
+            string newDir = Path.Combine(packageDir, FilesService.installInfoFolder);
+            return newDir;
+        }
+
         public ChocolateyPackageInformation get_package_information(IPackage package)
+        {
+            return get_package_information(package, null);
+        }
+
+        public ChocolateyPackageInformation get_package_information(IPackage package, string installDir)
         {
             var packageInformation = new ChocolateyPackageInformation(package);
             if (package == null)
@@ -67,14 +96,7 @@ namespace chocolatey.infrastructure.app.services
                 return packageInformation;
             }
 
-            // Package does not exists physically on disk.
-            if (package is RegistryPackage regpack)
-            {
-                packageInformation.IsPinned = regpack.IsPinned;
-                return packageInformation;
-            }
-
-            var pkgStorePath = _fileSystem.combine_paths(ApplicationParameters.ChocolateyPackageInfoStoreLocation, "{0}.{1}".format_with(package.Id, package.Version.to_string()));
+            var pkgStorePath = GetPackageInfoDirectory(package, installDir);
             if (!_fileSystem.directory_exists(pkgStorePath))
             {
                 return packageInformation;
@@ -142,7 +164,17 @@ A corrupt .registry file exists at {0}.
 
             packageInformation.HasSilentUninstall = _fileSystem.file_exists(_fileSystem.combine_paths(pkgStorePath, SILENT_UNINSTALLER_FILE));
             packageInformation.IsSideBySide = _fileSystem.file_exists(_fileSystem.combine_paths(pkgStorePath, SIDE_BY_SIDE_FILE));
-            packageInformation.IsPinned = _fileSystem.file_exists(_fileSystem.combine_paths(pkgStorePath, PIN_FILE));
+
+            // Package does not exists physically on disk.
+            if (package is RegistryPackage regpack)
+            {
+                packageInformation.IsPinned = regpack.IsPinned;
+            }
+            else
+            { 
+                packageInformation.IsPinned = _fileSystem.file_exists(_fileSystem.combine_paths(pkgStorePath, PIN_FILE));
+            }
+
             var argsFile = _fileSystem.combine_paths(pkgStorePath, ARGS_FILE);
             if (_fileSystem.file_exists(argsFile)) packageInformation.Arguments = _fileSystem.read_file(argsFile);
             var extraInfoFile = _fileSystem.combine_paths(pkgStorePath, EXTRA_FILE);
@@ -166,19 +198,22 @@ A corrupt .registry file exists at {0}.
             return packageInformation;
         }
 
-        public void save_package_information(ChocolateyPackageInformation packageInformation)
+        public void save_package_information(ChocolateyPackageInformation packageInformation, string installDir)
         {
-            _fileSystem.create_directory_if_not_exists(ApplicationParameters.ChocolateyPackageInfoStoreLocation);
-            _fileSystem.ensure_file_attribute_set(ApplicationParameters.ChocolateyPackageInfoStoreLocation, FileAttributes.Hidden);
-
             if (packageInformation.Package == null)
             {
                 if (_config.RegularOutput) this.Log().Debug("No package information to save as package is null.");
                 return;
             }
 
-            var pkgStorePath = _fileSystem.combine_paths(ApplicationParameters.ChocolateyPackageInfoStoreLocation, "{0}.{1}".format_with(packageInformation.Package.Id, packageInformation.Package.Version.to_string()));
+            string pkgStorePath = GetPackageInfoDirectory(packageInformation.Package, installDir);
+            if (pkgStorePath == null)
+            {
+                return;
+            }
+
             _fileSystem.create_directory_if_not_exists(pkgStorePath);
+            _fileSystem.ensure_file_attribute_set(pkgStorePath, FileAttributes.Hidden);
 
             if (packageInformation.RegistrySnapshot != null)
             {
@@ -256,8 +291,7 @@ A corrupt .registry file exists at {0}.
 
         public void remove_package_information(IPackage package)
         {
-            var pkgStorePath = _fileSystem.combine_paths(ApplicationParameters.ChocolateyPackageInfoStoreLocation, "{0}.{1}".format_with(package.Id, package.Version.to_string()));
-            if (_config.RegularOutput) this.Log().Info("Removing Package Information for {0}".format_with(pkgStorePath));
+            var pkgStorePath = GetPackageInfoDirectory(package);
             _fileSystem.delete_directory_if_exists(pkgStorePath, recursive: true);
         }
     }

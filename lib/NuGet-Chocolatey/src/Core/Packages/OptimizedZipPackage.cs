@@ -347,5 +347,17 @@ namespace NuGet
                 }
             }
         }
+
+        public override string GetPackageDirectory()
+        {
+            if (_fileSystem is PhysicalFileSystem pfs)
+            {
+                string path = Path.Combine(pfs.Root, _packagePath);
+                return Path.GetDirectoryName(path);
+            }
+
+            return null;
+        }
+
     }
 }

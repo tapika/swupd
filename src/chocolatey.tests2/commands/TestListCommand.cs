@@ -166,7 +166,9 @@ namespace chocolatey.tests2.commands
                 {
                     conf.ListCommand.LocalOnly = true;
                     conf.ListCommand.ShowRegistryPackages = true;
-                    
+                    conf.ListCommand.ByTagOnly = true;
+                    conf.ListCommand.SearchTag = "test";
+
                     tester.Lock();
                     tester.AddInstallPackage2Entry();
 

@@ -23,6 +23,8 @@ namespace NuGet
             Version = semversion;
             Id = registryKey.PackageId;
             IsPinned = registryKey.IsPinned;
+            installLocation = registryKey.InstallLocation.ToString();
+            Tags = registryKey.Tags;
         }
 
         public string Id
@@ -363,6 +365,9 @@ namespace NuGet
         #endregion
 
         public bool IsPinned { get; set; }
+        
+        private string installLocation { get; set; }
+        
         public RegistryApplicationKey RegistryKey { get; set; }
 
         public virtual IEnumerable<FrameworkName> GetSupportedFrameworks()
@@ -388,6 +393,11 @@ namespace NuGet
         public void ExtractContents(IFileSystem fileSystem, string extractPath)
         {
             throw new NotImplementedException();
+        }
+
+        public string GetPackageDirectory()
+        {
+            return installLocation;
         }
     }
 }

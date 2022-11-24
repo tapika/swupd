@@ -44,6 +44,8 @@ Chocolatey uninstalled 0/1 packages. 1 packages failed.
  The process cannot access the file 'lib\installpackage\tools\chocolateyinstall.ps1' because it is being used by another process.
 => folder was not updated
 => removed files:
+lib\installpackage\.install_info\.arguments
+lib\installpackage\.install_info\.files
 lib\installpackage\tools\casemismatch.exe
 lib\installpackage\tools\Casemismatch.exe.ignore
 lib\installpackage\tools\chocolateyBeforeModify.ps1
