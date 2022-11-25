@@ -158,7 +158,9 @@
         public static List<string> GetFileListing(string path, string shimDir = null)
         {
             var list = Directory.GetFiles(path, "*", SearchOption.AllDirectories).ToList();
-            list.Sort(StringComparer.InvariantCultureIgnoreCase);
+            // If we want to be portable accross all .net's - better use Ordinal sorting method, see
+            // https://forum.stimulsoft.com/viewtopic.php?t=59248
+            list.Sort(StringComparer.OrdinalIgnoreCase);
 
             if (shimDir == null)
             {
