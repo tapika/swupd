@@ -154,8 +154,8 @@ namespace chocolatey.tests2.commands
             InstallOnInstall((conf) =>
             {
                 conf.Force = true;
-                string modifiedFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
-                fileStream = new FileStream(modifiedFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, shareMode);
+                lockedFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                fileStream = new FileStream(lockedFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, shareMode);
             }, GetTestFolder(testFolder)
             );
 

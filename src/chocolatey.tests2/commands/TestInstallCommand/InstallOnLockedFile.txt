@@ -27,6 +27,5 @@ installpackage v1.0.0 has been installed
 Chocolatey installed 1/1 packages. 
  See the log for details (logs\chocolatey.log).
 => install result for installpackage/1.0.0: succeeded
-=> added new files:
-lib-bkp\installpackage\tools\chocolateyinstall.ps1
+=> folder was not updated
 end of test
