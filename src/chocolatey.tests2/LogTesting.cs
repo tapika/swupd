@@ -353,7 +353,7 @@
                         if (pparts1.First() == InstallContext.BackupFolderName)
                         { 
                             var pparts2 = lockedFilePath.Substring(rootDir.Length + 1).Split(Path.DirectorySeparatorChar);
-                            addfile = Path.Combine(pparts1.Skip(1).ToArray()) == Path.Combine(pparts2.Skip(1).ToArray());
+                            addfile = Path.Combine(pparts1.Skip(1).ToArray()) != Path.Combine(pparts2.Skip(1).ToArray());
                         }
                     }
 
