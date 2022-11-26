@@ -213,7 +213,14 @@ class Program
 
             if (!cmdArgs.debug)
             {
-                Directory.Delete(dir, true);
+                try
+                {
+                    Directory.Delete(dir, true);
+                }
+                catch (IOException)
+                { 
+                    //maybe running in parallel with dotnet command - cannot delete directory sometimes
+                }
             }
         }
 
