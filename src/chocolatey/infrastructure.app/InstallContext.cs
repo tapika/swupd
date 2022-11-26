@@ -1,5 +1,7 @@
-﻿using System;
+﻿using chocolatey.infrastructure.app.configuration;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -178,6 +180,20 @@ namespace chocolatey.infrastructure.app
             return message;
         }
 
+        /// <summary>
+        /// Generates tempotary path for specific tool. Directory is not physically created, but 
+        /// just logical path is given. End-user is responsible for deleting given directory name.
+        /// </summary>
+        /// <param name="config">configuration from where to get cache location</param>
+        /// <param name="tempName">tool name for temp folder</param>
+        /// <returns></returns>
+        public string GetThreadTempFolderName(ChocolateyConfiguration config, string tempName)
+        {
+            return Path.Combine(config.CacheLocation, 
+                // Currently we don't need process specific temporary folder, but leave it here just in case if later on we
+                // won't redirect TEMP folder.
+                $"{tempName}_{Process.GetCurrentProcess().Id}_{Thread.CurrentThread.ManagedThreadId}");
+        }
     }
 }
 
