@@ -1022,7 +1022,7 @@ package '{0}' - stopping further execution".format_with(packageResult.Name));
 
         private void uninstall_cleanup(ChocolateyConfiguration config, PackageResult packageResult)
         {
-            if (config.Features.RemovePackageInformationOnUninstall) _packageInfoService.remove_package_information(packageResult.Package);
+            _packageInfoService.remove_package_information(packageResult.Package);
 
             ensure_bad_package_path_is_clean(config, packageResult);
             remove_rollback_if_exists(packageResult);

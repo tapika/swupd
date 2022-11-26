@@ -396,7 +396,6 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public bool UseRememberedArgumentsForUpgrades { get; set; }
         public bool IgnoreUnfoundPackagesOnUpgradeOutdated { get; set; }
         public bool SkipPackageUpgradesWhenNotInstalled { get; set; }
-        public bool RemovePackageInformationOnUninstall { get; set; }
         public bool ExitOnRebootDetected { get; set; }
         public bool LogValidationResultsOnWarnings { get; set; }
         public bool UsePackageRepositoryOptimizations { get; set; }
