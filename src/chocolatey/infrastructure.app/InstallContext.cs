@@ -147,7 +147,8 @@ namespace chocolatey.infrastructure.app
         }
 
         public string PackageFailuresLocation               { get { return Path.Combine(RootLocation, "lib-bad"); } }
-        public string PackageBackupLocation                 { get { return Path.Combine(RootLocation, "lib-bkp"); } }
+        public const string BackupFolderName = "lib-bkp";
+        public string PackageBackupLocation                 { get { return Path.Combine(RootLocation, BackupFolderName); } }
         public string ShimsLocation                         { get { return Path.Combine(RootLocation, "bin"); } }
         public string ExtensionsLocation                    { get { return Path.Combine(RootLocation, "extensions"); } }
         public string TemplatesLocation                     { get { return Path.Combine(RootLocation, "templates"); } }

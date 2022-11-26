@@ -34,7 +34,6 @@ Chocolatey upgraded 1/1 packages.
 => upgrade result for upgradepackage/1.1.0: succeeded
 => added new files:
 lib\upgradepackage\.install_info\.files.backup
-lib-bkp\upgradepackage\tools\chocolateyinstall.ps1
 lib\upgradepackage\tools\console.exe: 1.1.0
 lib\upgradepackage\upgradepackage.nupkg: 1.1.0.0
 end of test
