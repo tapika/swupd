@@ -31,17 +31,29 @@ namespace NuGet
 
         private static readonly AsyncLocal<IFileSystem> _tempFileSystem = new AsyncLocal<IFileSystem>();
 
-        private static IFileSystem TempFileSystem
+        public static IFileSystem NuGetScratchFileSystem
         {
             get
             {
                 if (_tempFileSystem.Value == null)
                 {
-                    string temp = Path.Combine(Path.GetTempPath(), "NuGetScratch", $"{Process.GetCurrentProcess().Id}_{Thread.CurrentThread.ManagedThreadId}");
-                    _tempFileSystem.Value = new PhysicalFileSystem(temp);
+                    NuGetThreadScratchDirectory = Path.Combine(Path.GetTempPath(), "NuGetScratch", $"{Process.GetCurrentProcess().Id}_{Thread.CurrentThread.ManagedThreadId}");
                 }
 
                 return _tempFileSystem.Value;
+            }
+        }
+
+        public static string NuGetThreadScratchDirectory
+        {
+            get
+            {
+                return NuGetScratchFileSystem.Root;
+            }
+            
+            set
+            {
+                _tempFileSystem.Value = new PhysicalFileSystem(value);
             }
         }
 
@@ -75,7 +87,7 @@ namespace NuGet
             string directory = Path.GetDirectoryName(fullPackagePath);
             _fileSystem = new PhysicalFileSystem(directory);
             _packagePath = Path.GetFileName(fullPackagePath);
-            _expandedFileSystem = TempFileSystem;
+            _expandedFileSystem = NuGetScratchFileSystem;
 
             EnsureManifest();
         }
@@ -99,7 +111,7 @@ namespace NuGet
 
             _fileSystem = fileSystem;
             _packagePath = packagePath;
-            _expandedFileSystem = TempFileSystem;
+            _expandedFileSystem = NuGetScratchFileSystem;
 
             EnsureManifest();
         }
@@ -244,7 +256,7 @@ namespace NuGet
             var packageName = new PackageName(Id, Version);
 
             // Only use the cache for expanded folders under %temp%, or set from unit tests
-            if (_expandedFileSystem == TempFileSystem || _forceUseCache)
+            if (_expandedFileSystem == NuGetScratchFileSystem || _forceUseCache)
             {
                 Tuple<string, DateTimeOffset> cacheValue;
                 DateTimeOffset lastModifiedTime = _fileSystem.GetLastModified(_packagePath);
@@ -336,14 +348,14 @@ namespace NuGet
                     foreach (var valueTuple in _cachedExpandedFolder.Values)
                     {
                         string expandedFolder = valueTuple.Item1;
-                        TempFileSystem.DeleteDirectorySafe(expandedFolder, recursive: true);
+                        NuGetScratchFileSystem.DeleteDirectorySafe(expandedFolder, recursive: true);
                     }
 
                     _cachedExpandedFolder.Clear();
                 }
                 else
                 {
-                    TempFileSystem.DeleteDirectorySafe(TempFileSystem.Root, recursive: true);
+                    NuGetScratchFileSystem.DeleteDirectorySafe(NuGetScratchFileSystem.Root, recursive: true);
                 }
             }
         }
