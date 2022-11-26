@@ -99,7 +99,7 @@ namespace chocolatey.tests2.commands
             {
                 TestUninstall((conf) =>
                 {
-                    lockedFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                    lockedFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyinstall.ps1");
                     fileStream = new FileStream(lockedFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read | FileShare.Delete);
                 });
             }
