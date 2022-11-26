@@ -147,15 +147,19 @@ namespace chocolatey.tests2.commands
             InstalledPackageIs_1_0();
         }
 
-        void InstallOnLockedCommon(FileShare shareMode, [CallerMemberName] string testFolder = "")
+        void InstallOnLockedCommon(FileShare shareMode, bool excludeLockedFile, [CallerMemberName] string testFolder = "")
         {
             FileStream fileStream = null;
 
             InstallOnInstall((conf) =>
             {
                 conf.Force = true;
-                lockedFilePath = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
-                fileStream = new FileStream(lockedFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, shareMode);
+                string file = Path.Combine(InstallContext.Instance.PackagesLocation, conf.PackageNames, "tools", "chocolateyInstall.ps1");
+                if (excludeLockedFile)
+                {
+                    lockedFilePath = file;
+                }
+                fileStream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite, shareMode);
             }, GetTestFolder(testFolder)
             );
 
@@ -167,14 +171,14 @@ namespace chocolatey.tests2.commands
         [LogTest()]
         public void InstallOnLockedFile()
         {
-            InstallOnLockedCommon(FileShare.Read | FileShare.Delete);
+            InstallOnLockedCommon(FileShare.Read | FileShare.Delete, true);
         }
 
         // when_force_installing_an_already_installed_package_with_with_an_exclusively_locked_file
         [LogTest()]
         public void InstallOnExclusvelyLockedFile()
         {
-            InstallOnLockedCommon(FileShare.None);
+            InstallOnLockedCommon(FileShare.None, false);
 
             // Several tests in InstallScenarious.cs were marked as 
             // "Force install with file locked leaves inconsistent state - GH-114"
