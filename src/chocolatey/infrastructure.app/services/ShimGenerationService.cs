@@ -107,7 +107,7 @@ namespace chocolatey.infrastructure.app.services
                     argsForPackage += " --gui";
                 }
 
-                string shimGenTemp = InstallContext.Instance.GetThreadTempFolderName(configuration, "shimgen");
+                string shimGenTemp = InstallContext.Instance.GetThreadTempFolderName("shimgen");
                 argsForPackage += $" -temp \"{shimGenTemp}\"";
 
                 var exitCode = _commandExecutor.execute(

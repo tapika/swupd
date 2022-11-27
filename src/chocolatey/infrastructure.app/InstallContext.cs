@@ -93,7 +93,6 @@ namespace chocolatey.infrastructure.app
         /// <summary>
         /// Root folder under which chocolatey directories resides, like
         /// 
-        ///     .chocolatey\
         ///     lib\
         ///     packages\
         ///     logs\
@@ -180,20 +179,60 @@ namespace chocolatey.infrastructure.app
             return message;
         }
 
+        string _cacheLocation;
+
+        /// <summary>
+        /// Determines where choco keeps it's temporary files. If you change this during run-time - you will need also to clean up
+        /// old temporary folder.
+        /// </summary>
+        public string CacheLocation
+        {
+            get {
+                if (_cacheLocation == null)
+                    builders.ConfigurationBuilder.ReconfigureCacheLocation(new ChocolateyConfiguration());
+
+                return _cacheLocation;
+            }
+
+            set {
+                _cacheLocation = value;
+            }
+        }
+
         /// <summary>
         /// Generates tempotary path for specific tool. Directory is not physically created, but 
         /// just logical path is given. End-user is responsible for deleting given directory name.
         /// </summary>
-        /// <param name="config">configuration from where to get cache location</param>
         /// <param name="tempName">tool name for temp folder</param>
-        /// <returns></returns>
-        public string GetThreadTempFolderName(ChocolateyConfiguration config, string tempName)
+        /// <returns>thread local temporary directory</returns>
+        public string GetThreadTempFolderName(string tempName)
         {
-            return Path.Combine(config.CacheLocation, 
+            return Path.Combine(CacheLocation,
                 // Currently we don't need process specific temporary folder, but leave it here just in case if later on we
                 // won't redirect TEMP folder.
                 $"{tempName}_{Process.GetCurrentProcess().Id}_{Thread.CurrentThread.ManagedThreadId}");
         }
+
+        string _powerShellTempLocation;
+
+        public string PowerShellTempLocation
+        {
+            get
+            {
+                if (_powerShellTempLocation == null)
+                {
+                    _powerShellTempLocation = GetThreadTempFolderName("PwSh");
+                }
+
+                return _powerShellTempLocation;
+            }
+
+            set
+            {
+                _powerShellTempLocation = value;
+            }
+        }
+
     }
 }
 

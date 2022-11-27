@@ -412,7 +412,7 @@ folder.");
                 config.PackageNames
                                 ));
 
-            var tempInstallsLocation = InstallContext.Instance.GetThreadTempFolderName(config, "choco_noop");
+            var tempInstallsLocation = InstallContext.Instance.GetThreadTempFolderName("choco_noop");
             _fileSystem.create_directory_if_not_exists(tempInstallsLocation);
 
             var installLocation = ApplicationParameters.PackagesLocation;
@@ -485,7 +485,7 @@ folder.");
             var originalConfig = config;
 
             // Must be set before packageManager.FindLocalPackage & NugetList.find_package
-            OptimizedZipPackage.NuGetThreadScratchDirectory = InstallContext.Instance.GetThreadTempFolderName(config, "NuGetScratch");
+            OptimizedZipPackage.NuGetThreadScratchDirectory = InstallContext.Instance.GetThreadTempFolderName("NuGetScratch");
 
             foreach (string packageName in packageNames.or_empty_list_if_null())
             {
@@ -701,7 +701,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
             var originalConfig = config;
 
-            OptimizedZipPackage.NuGetThreadScratchDirectory = InstallContext.Instance.GetThreadTempFolderName(config, "NuGetScratch");
+            OptimizedZipPackage.NuGetThreadScratchDirectory = InstallContext.Instance.GetThreadTempFolderName("NuGetScratch");
 
             foreach (string packageName in config.PackageNames.Split(new[] { ApplicationParameters.PackageNamesSeparator }, StringSplitOptions.RemoveEmptyEntries).or_empty_list_if_null())
             {
@@ -1461,7 +1461,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
             var originalConfig = config;
 
-            OptimizedZipPackage.NuGetThreadScratchDirectory = InstallContext.Instance.GetThreadTempFolderName(config, "NuGetScratch");
+            OptimizedZipPackage.NuGetThreadScratchDirectory = InstallContext.Instance.GetThreadTempFolderName("NuGetScratch");
 
             foreach (string packageName in config.PackageNames.Split(new[] { ApplicationParameters.PackageNamesSeparator }, StringSplitOptions.RemoveEmptyEntries).or_empty_list_if_null())
             {

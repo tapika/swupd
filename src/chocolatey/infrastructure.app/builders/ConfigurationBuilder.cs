@@ -174,19 +174,7 @@ namespace chocolatey.infrastructure.app.builders
 
         private static void set_config_items(ChocolateyConfiguration config, ConfigFileSettings configFileSettings, IFileSystem fileSystem)
         {
-            config.CacheLocation = Environment.ExpandEnvironmentVariables(set_config_item(ApplicationParameters.ConfigSettings.CacheLocation, configFileSettings, string.IsNullOrWhiteSpace(configFileSettings.CacheLocation) ? string.Empty : configFileSettings.CacheLocation, "Cache location if not TEMP folder. Replaces `$env:TEMP` value for choco.exe process. It is highly recommended this be set to make Chocolatey more deterministic in cleanup."));
-            if (string.IsNullOrWhiteSpace(config.CacheLocation)) {
-                config.CacheLocation = fileSystem.get_temp_path(); // System.Environment.GetEnvironmentVariable("TEMP");
-                // TEMP gets set in EnvironmentSettings, so it may already have
-                // chocolatey in the path when it installs the next package from
-                // the API.
-                if(!String.Equals(fileSystem.get_directory_info_for(config.CacheLocation).Name, "chocolatey", StringComparison.OrdinalIgnoreCase)) {
-                    config.CacheLocation = fileSystem.combine_paths(fileSystem.get_temp_path(), "chocolatey");
-                }
-            }
-
-            // if it is still empty, use temp in the Chocolatey install directory.
-            if (string.IsNullOrWhiteSpace(config.CacheLocation)) config.CacheLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "temp");
+            ReconfigureCacheLocation(config, configFileSettings);
 
             var commandExecutionTimeoutSeconds = 0;
             var commandExecutionTimeout = set_config_item(ApplicationParameters.ConfigSettings.CommandExecutionTimeoutSeconds, configFileSettings, string.IsNullOrWhiteSpace(configFileSettings.CommandExecutionTimeoutSeconds.to_string()) ? ApplicationParameters.DefaultWaitForExitInSeconds.to_string() : configFileSettings.CommandExecutionTimeoutSeconds.to_string(), "Default timeout for command execution. '0' for infinite (starting in 0.10.4).");
@@ -220,6 +208,38 @@ namespace chocolatey.infrastructure.app.builders
             config.Proxy.BypassList = set_config_item(ApplicationParameters.ConfigSettings.ProxyBypassList, configFileSettings, string.Empty, "Optional proxy bypass list. Comma separated. Available in 0.10.4+.");
             config.Proxy.BypassOnLocal = set_config_item(ApplicationParameters.ConfigSettings.ProxyBypassOnLocal, configFileSettings, "true", "Bypass proxy for local connections. Available in 0.10.4+.").is_equal_to(bool.TrueString);
             config.UpgradeCommand.PackageNamesToSkip = set_config_item(ApplicationParameters.ConfigSettings.UpgradeAllExceptions, configFileSettings, string.Empty, "A comma-separated list of package names that should not be upgraded when running `choco upgrade all'. Defaults to empty. Available in 0.10.14+.");
+        }
+
+        public const string chocoTempFolderName = "choco";     // official choco uses "chocolatey". Renamed just to avoid the conflicts with official choco.
+
+        /// <summary>
+        /// Reconfigures cache location
+        /// </summary>
+        /// <param name="config">configuration where to set CacheLocation</param>
+        /// <param name="configFileSettings">chocolatey.config. If not specified - then not used either</param>
+        public static void ReconfigureCacheLocation(ChocolateyConfiguration config, ConfigFileSettings configFileSettings = null)
+        {
+            string configCacheLocationValue = null;
+
+            if (configFileSettings != null)
+            {
+                configCacheLocationValue = set_config_item(ApplicationParameters.ConfigSettings.CacheLocation, configFileSettings, string.IsNullOrWhiteSpace(configFileSettings.CacheLocation) ? string.Empty : configFileSettings.CacheLocation, "Cache location if not TEMP folder. Replaces `$env:TEMP` value for choco.exe process. It is highly recommended this be set to make Chocolatey more deterministic in cleanup.");
+            }
+
+            string cacheLocation = Environment.ExpandEnvironmentVariables(configCacheLocationValue);
+            if (string.IsNullOrWhiteSpace(cacheLocation))
+            {
+                cacheLocation = System.Environment.GetEnvironmentVariable("TEMP");
+
+                if ( !Path.GetDirectoryName(cacheLocation).is_equal_to(chocoTempFolderName))
+                {
+                    cacheLocation = Path.Combine(cacheLocation, chocoTempFolderName);
+                }
+            }
+
+            // if it is still empty, use temp in the Chocolatey install directory.
+            if (string.IsNullOrWhiteSpace(cacheLocation)) cacheLocation = Path.Combine(InstallContext.Instance.RootLocation, "temp");
+            config.CacheLocation = cacheLocation;
         }
 
         private static string set_config_item(string configName, ConfigFileSettings configFileSettings, string defaultValue, string description, bool forceSettingValue = false)

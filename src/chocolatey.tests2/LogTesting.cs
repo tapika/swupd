@@ -714,6 +714,12 @@
                     }
                     break;
 
+                case ChocoTestContext.installpackage3:
+                    {
+                        Install("installpackage3", "1.0.0", ChocoTestContext.pack_installpackage3_1_0_0, true);
+                    }
+                    break;
+
                 case ChocoTestContext.installed_5_packages:
                     {
                         Install("installpackage", "1.0.0");

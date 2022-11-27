@@ -1,0 +1,23 @@
+Installing the following packages:
+installpackage3
+By installing you accept licenses for the packages.
+[NuGet] Installing 'installpackage3 1.0.0'.
+[NuGet] Successfully installed 'installpackage3 1.0.0'.
+
+installpackage3 v1.0.0
+installpackage3 package files install completed. Performing other installation steps.
+ The install of installpackage3 was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for installpackage3/1.0.0: succeeded
+=> added new files:
+lib\installpackage3\.install_info\.arguments
+lib\installpackage3\.install_info\.files
+lib\installpackage3\installpackage3.nupkg
+  version: 1.0.0.0
+lib\installpackage3\installpackage3.nuspec
+lib\installpackage3\tools\chocolateyinstall.ps1
+shared context ends

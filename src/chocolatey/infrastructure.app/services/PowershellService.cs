@@ -389,7 +389,7 @@ namespace chocolatey.infrastructure.app.services
             if (package == null) return;
 
             EnvironmentSettings.update_environment_variables();
-            EnvironmentSettings.set_environment_variables(configuration);
+            EnvironmentSettings.set_environment_variables(configuration, _fileSystem);
 
             Environment.SetEnvironmentVariable("chocolateyPackageName", package.Id);
             Environment.SetEnvironmentVariable("packageName", package.Id);

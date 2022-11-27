@@ -27,7 +27,7 @@ namespace chocolatey.infrastructure.app.configuration
     [XmlRoot("chocolatey")]
     public class ConfigFileSettings
     {
-        [Obsolete("This will be removed in v1 of Chocolatey")]
+        // this might get removed in future versions of choco.
         [XmlElement(ElementName = "cacheLocation")]
         public string CacheLocation { get; set; }
 

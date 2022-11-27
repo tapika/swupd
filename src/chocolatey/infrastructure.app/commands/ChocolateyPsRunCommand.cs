@@ -1,39 +1,23 @@
-﻿// Copyright © 2017 - 2021 Chocolatey Software, Inc
-// Copyright © 2011 - 2017 RealDimensions Software, LLC
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// 
-// You may obtain a copy of the License at
-// 
-// 	http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using chocolatey.infrastructure.app.attributes;
+using chocolatey.infrastructure.commandline;
+using chocolatey.infrastructure.app.configuration;
+using chocolatey.infrastructure.commands;
+using chocolatey.infrastructure.logging;
+using chocolatey.infrastructure.app.services;
+using chocolatey.infrastructure.filesystem;
 
 namespace chocolatey.infrastructure.app.commands
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using attributes;
-    using commandline;
-    using configuration;
-    using infrastructure.commands;
-    using logging;
-    using NLog;
-    using results;
-    using services;
-
     [CommandFor("psrun", "runs ps-script for local packages")]
     public class ChocolateyPsRunCommand : ICommand
     {
         private readonly IChocolateyPackageService _packageService;
         private readonly IPowershellService _powershellService;
+        private readonly IFileSystem _fileSystem;
 
         public enum ExecuteStep
         { 
@@ -45,10 +29,12 @@ namespace chocolatey.infrastructure.app.commands
             before_modify
         }
 
-        public ChocolateyPsRunCommand(IChocolateyPackageService packageService, IPowershellService powershellService)
+        public ChocolateyPsRunCommand(IChocolateyPackageService packageService, IPowershellService powershellService, 
+            IFileSystem fileSystem)
         {
             _packageService = packageService;
             _powershellService = powershellService;
+            _fileSystem = fileSystem;
         }
 
         public virtual void configure_argument_parser(OptionSet optionSet, ChocolateyConfiguration configuration)
@@ -57,6 +43,9 @@ namespace chocolatey.infrastructure.app.commands
                  .Add("s=|step=",
                      "Operation to execute, one of: install/i(default), before_modify/bm, uninstall/u",
                       option => configuration.PsRunCommand.step = option)
+                 .Add("keeptemp",
+                     $"Keep temporary files in %TEMP%\\{builders.ConfigurationBuilder.chocoTempFolderName}\\{PSRunTempFolder}",
+                      option => configuration.PsRunCommand.keeptemp = option != null)
                  .Add("pre|prerelease",
                      "Prerelease - Include Prereleases? Defaults to false.",
                      option => configuration.Prerelease = option != null)
@@ -142,6 +131,8 @@ Normal:
             _packageService.list_noop(configuration);
         }
 
+        public const string PSRunTempFolder = "psrun";
+
         public virtual void run(ChocolateyConfiguration config)
         {
             config.QuietOutput = true;
@@ -177,6 +168,15 @@ Normal:
                     break;
             }
 
+            bool keeptemp = config.PsRunCommand.keeptemp;
+
+            if (keeptemp)
+            {
+                InstallContext.Instance.PowerShellTempLocation = Path.Combine(InstallContext.Instance.CacheLocation, PSRunTempFolder);
+            }
+
+            var powershellTemp = InstallContext.Instance.PowerShellTempLocation;
+
             LogService.console.Info($"- Package '{pkgResult.Package.Id}': executing {operation}...");
             switch (operation)
             {
@@ -195,6 +195,11 @@ Normal:
             if (config.Features.UseEnhancedExitCodes && packageResults.Count == 0 && Environment.ExitCode == 0)
             {
                 Environment.ExitCode = 2;
+            }
+
+            if (!keeptemp)
+            { 
+                _fileSystem.delete_directory_if_exists(powershellTemp, true);
             }
         }
 

@@ -5,6 +5,10 @@ PsRun Command
 config: Input='pkg',PsRunCommand.step='1'
 validation failure: No packages found: 'pkg'
 
+> psrun --keeptemp pkg
+config: Input='pkg',PsRunCommand.keeptemp='True'
+validation failure: No packages found: 'pkg'
+
 > psrun --pre pkg
 config: Input='pkg',Prerelease='True'
 validation failure: No packages found: 'pkg'
