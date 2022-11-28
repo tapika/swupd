@@ -40,6 +40,7 @@ namespace chocolatey.infrastructure.app.services
     using chocolatey.infrastructure.app.utility;
     using System.Text.RegularExpressions;
     using NuGet.Packages;
+    using System.Threading;
 
     //todo - this monolith is too large. Refactor once test coverage is up.
 
@@ -411,7 +412,7 @@ folder.");
                 config.PackageNames
                                 ));
 
-            var tempInstallsLocation = _fileSystem.combine_paths(_fileSystem.get_temp_path(), ApplicationParameters.Name, "TempInstalls_" + DateTime.Now.ToString("yyyyMMdd_HHmmss_ffff"));
+            var tempInstallsLocation = InstallContext.Instance.GetThreadTempFolderName("choco_noop");
             _fileSystem.create_directory_if_not_exists(tempInstallsLocation);
 
             var installLocation = ApplicationParameters.PackagesLocation;
@@ -482,6 +483,9 @@ folder.");
                 addUninstallHandler: true);
 
             var originalConfig = config;
+
+            // Must be set before packageManager.FindLocalPackage & NugetList.find_package
+            OptimizedZipPackage.NuGetThreadScratchDirectory = InstallContext.Instance.GetThreadTempFolderName("NuGetScratch");
 
             foreach (string packageName in packageNames.or_empty_list_if_null())
             {
@@ -632,6 +636,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 }
             }
 
+            OptimizedZipPackage.NuGetScratchFileSystem.DeleteDirectory(null, true);
             return packageInstalls;
         }
 
@@ -695,6 +700,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
             config.IgnoreDependencies = configIgnoreDependencies;
 
             var originalConfig = config;
+
+            OptimizedZipPackage.NuGetThreadScratchDirectory = InstallContext.Instance.GetThreadTempFolderName("NuGetScratch");
 
             foreach (string packageName in config.PackageNames.Split(new[] { ApplicationParameters.PackageNamesSeparator }, StringSplitOptions.RemoveEmptyEntries).or_empty_list_if_null())
             {
@@ -957,6 +964,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 }
             }
 
+            OptimizedZipPackage.NuGetScratchFileSystem.DeleteDirectory(null, true);
             return packageInstalls;
         }
 
@@ -1453,6 +1461,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
             var originalConfig = config;
 
+            OptimizedZipPackage.NuGetThreadScratchDirectory = InstallContext.Instance.GetThreadTempFolderName("NuGetScratch");
+
             foreach (string packageName in config.PackageNames.Split(new[] { ApplicationParameters.PackageNamesSeparator }, StringSplitOptions.RemoveEmptyEntries).or_empty_list_if_null())
             {
                 // reset config each time through
@@ -1592,6 +1602,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 }
             }
 
+            OptimizedZipPackage.NuGetScratchFileSystem.DeleteDirectory(null, true);
             return packageUninstalls;
         }
 

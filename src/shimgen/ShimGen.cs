@@ -19,6 +19,7 @@ namespace ConsoleApplication
         public bool gui;
         public bool help;
         public bool debug;
+        public string temp;
         public string net = "netcoreapp3.1";
     }
 
@@ -39,6 +40,7 @@ $@"Usage: shimget -output=<.exe path> -path=<in .exe path> [optional arguments]
         -path <path>        - path of input executable
         -iconpath <path>    - path of executable where to get icon file
         -net <.net version> - one of: netcoreapp3.1, net5.0, net6.0, net48
+        -temp <path>        - temporary directory for compilation temp (if not specified %TEMP%\shimgen_<process id> will be used
 
     Argument can be shorted by one letter, e.g. -h, -o, -p ...
 ");
@@ -76,10 +78,16 @@ $@"Usage: shimget -output=<.exe path> -path=<in .exe path> [optional arguments]
             targetExePath = makeRelative(targetExePath, Path.GetDirectoryName(outputPath));
 
             string asmDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string dir = Path.Combine(asmDir, "shim");
 
-            string csproj = Path.Combine(dir, "shim.csproj");
-            string bindir = Path.Combine(dir, "bin");
+            string tempDir = cmdArgs.temp;
+            if (string.IsNullOrEmpty(tempDir))
+            {
+                tempDir = Path.Combine(Environment.GetEnvironmentVariable("TEMP"), $"shimgen_{Process.GetCurrentProcess().Id}");
+            }
+
+            string dotnetTempDir = Path.Combine(tempDir, "temp");
+            string csproj = Path.Combine(tempDir, "shim.csproj");
+            string bindir = Path.Combine(tempDir, "bin");
             if (!Directory.Exists(bindir))
                 Directory.CreateDirectory(bindir);
 
@@ -109,7 +117,7 @@ $@"Usage: shimget -output=<.exe path> -path=<in .exe path> [optional arguments]
                     try
                     {
                         // See https://stackoverflow.com/a/74411477/2338477
-                        string iconPath = Path.Combine(dir, "app.ico");
+                        string iconPath = Path.Combine(tempDir, "app.ico");
                         if (File.Exists(iconPath)) File.Delete(iconPath);
 
                         MultiIcon multiIcon = new MultiIcon();
@@ -131,7 +139,7 @@ $@"Usage: shimget -output=<.exe path> -path=<in .exe path> [optional arguments]
                         }
                     }
                 }
-                string toShimDir = @"..\";
+                string toShimDir = asmDir + Path.DirectorySeparatorChar;
                 if (hasIcon)
                 {
                     xml.WriteElementString("ApplicationIcon", "app.ico");
@@ -158,7 +166,7 @@ $@"Usage: shimget -output=<.exe path> -path=<in .exe path> [optional arguments]
                 xml.WriteEndElement();
             }
 
-            using (StreamWriter text = new StreamWriter(Path.Combine(dir, "shim.cs")))
+            using (StreamWriter text = new StreamWriter(Path.Combine(tempDir, "shim.cs")))
             {
                 text.WriteLine(
 $@"using System;
@@ -178,7 +186,7 @@ class Program
 	");
             }
 
-            Environment.CurrentDirectory = dir;
+            Environment.CurrentDirectory = tempDir;
 
             if (File.Exists(outputPath)) File.Delete(outputPath);
 
@@ -189,6 +197,9 @@ class Program
                 return;
             }
 
+            //dotnet build generates a lot of temporary files, we will clean them up by redirecting temp directory
+            Environment.SetEnvironmentVariable("TEMP", dotnetTempDir);
+            Environment.SetEnvironmentVariable("TMP", dotnetTempDir);
             runDotNet(dotnetPath, "build shim.csproj --verbosity quiet --nologo -consoleLoggerParameters:NoSummary");
 
             // We could run a publish here, but it uses subfolder. Easier just to copy whatever we have.
@@ -213,7 +224,14 @@ class Program
 
             if (!cmdArgs.debug)
             {
-                Directory.Delete(dir, true);
+                try
+                {
+                    Directory.Delete(tempDir, true);
+                }
+                catch (IOException)
+                { 
+                    //maybe running in parallel with dotnet command - cannot delete directory sometimes
+                }
             }
         }
 

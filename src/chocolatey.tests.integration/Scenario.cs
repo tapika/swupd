@@ -177,7 +177,6 @@ namespace chocolatey.tests.integration
             config.OutputDirectory = null;
             config.Features.StopOnFirstPackageFailure = false;
             config.Features.UseShimGenService = false;
-            config.Features.RemovePackageInformationOnUninstall = true;
             config.UpgradeCommand.PackageNamesToSkip = string.Empty;
             config.AllowDowngrade = false;
             config.Features.FailOnStandardError = false;

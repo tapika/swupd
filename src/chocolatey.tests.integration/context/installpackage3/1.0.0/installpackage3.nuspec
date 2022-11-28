@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>installpackage3</id>
+    <version>1.0.0</version>
+    <title>Install package 3</title>
+    <authors>Publisher</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>test package</description>
+    <tags>installpackage admin</tags>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

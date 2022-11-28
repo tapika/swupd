@@ -165,6 +165,11 @@ public class ShimTemplate
                         return proc.ExitCode;
                     }
                 }
+                else
+                {
+                    // Don't start for second time.
+                    return 0;
+                }
             }
             catch (Win32Exception wex)
             {

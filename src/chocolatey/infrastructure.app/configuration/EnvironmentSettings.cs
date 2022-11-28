@@ -63,7 +63,7 @@ namespace chocolatey.infrastructure.app.configuration
             Environment.SetEnvironmentVariable("chocolateyProxyBypassOnLocal", null);
         }
 
-        public static void set_environment_variables(ChocolateyConfiguration config)
+        public static void set_environment_variables(ChocolateyConfiguration config, filesystem.IFileSystem fileSystem = null)
         {
             reset_environment_variables(config);
 
@@ -83,8 +83,20 @@ namespace chocolatey.infrastructure.app.configuration
             Environment.SetEnvironmentVariable("IS_REMOTEDESKTOP", config.Information.IsUserRemoteDesktop ? "true" : "false");
             Environment.SetEnvironmentVariable("IS_REMOTE", config.Information.IsUserRemote ? "true" : "false");
             Environment.SetEnvironmentVariable("IS_PROCESSELEVATED", config.Information.IsProcessElevated ? "true" : "false");
-            Environment.SetEnvironmentVariable("TEMP", config.CacheLocation);
-            Environment.SetEnvironmentVariable("TMP", config.CacheLocation);
+            string cacheLocation;
+
+            if (fileSystem != null)
+            {
+                cacheLocation = InstallContext.Instance.PowerShellTempLocation;
+                fileSystem.create_directory_if_not_exists(cacheLocation);
+            }
+            else
+            { 
+                cacheLocation = config.CacheLocation;
+            }
+
+            Environment.SetEnvironmentVariable("TEMP", cacheLocation);
+            Environment.SetEnvironmentVariable("TMP", cacheLocation);
 
             if (config.Debug) Environment.SetEnvironmentVariable("ChocolateyEnvironmentDebug", "true");
             if (config.Verbose) Environment.SetEnvironmentVariable("ChocolateyEnvironmentVerbose", "true");

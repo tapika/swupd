@@ -158,7 +158,9 @@
         public static List<string> GetFileListing(string path, string shimDir = null)
         {
             var list = Directory.GetFiles(path, "*", SearchOption.AllDirectories).ToList();
-            list.Sort(StringComparer.InvariantCultureIgnoreCase);
+            // If we want to be portable accross all .net's - better use Ordinal sorting method, see
+            // https://forum.stimulsoft.com/viewtopic.php?t=59248
+            list.Sort(StringComparer.OrdinalIgnoreCase);
 
             if (shimDir == null)
             {
@@ -175,6 +177,13 @@
 
         public List<string> addedFiles;
         public List<string> removedFiles;
+
+        /// <summary>
+        /// Locked file path to exclude from test results. On windows 10 - locked file will be deleted
+        /// after folder rename, but on older windows that file will remain in file system.
+        /// We need to exclude that as a result.
+        /// </summary>
+        public string lockedFilePath;
 
         /// <summary>
         /// Last configuration used for installation
@@ -335,7 +344,23 @@
             {
                 if (!listBeforeUpdate.Contains(file))
                 {
-                    addedFiles.Add(file.Substring(rootDir.Length + 1));
+                    bool addfile = true;
+                    string relativePath = file.Substring(rootDir.Length + 1);
+
+                    if (lockedFilePath != null)
+                    {
+                        var pparts1 = relativePath.Split(Path.DirectorySeparatorChar);
+                        if (pparts1.First() == InstallContext.BackupFolderName)
+                        { 
+                            var pparts2 = lockedFilePath.Substring(rootDir.Length + 1).Split(Path.DirectorySeparatorChar);
+                            addfile = Path.Combine(pparts1.Skip(1).ToArray()) != Path.Combine(pparts2.Skip(1).ToArray());
+                        }
+                    }
+
+                    if (addfile)
+                    { 
+                        addedFiles.Add(relativePath);
+                    }
                 }
             }
 
@@ -686,6 +711,12 @@
                             tester.LogInstallEntries(true, packageId);
                             tester.DeleteInstallEntries(packageId);
                         }
+                    }
+                    break;
+
+                case ChocoTestContext.installpackage3:
+                    {
+                        Install("installpackage3", "1.0.0", ChocoTestContext.pack_installpackage3_1_0_0, true);
                     }
                     break;
 

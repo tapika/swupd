@@ -1,0 +1,4 @@
+> psrun install -s install -keeptemp
+- Package 'installpackage3': executing install...
+tempFile.txt contents: 'Hello temp'
+end of test

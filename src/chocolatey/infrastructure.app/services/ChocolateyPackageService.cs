@@ -579,6 +579,8 @@ package '{0}' - stopping further execution".format_with(packageResult.Name));
 
             get_environment_before(config, allowLogging: true);
 
+            var powershellTemp = InstallContext.Instance.PowerShellTempLocation;
+
             try
             {
                 foreach (var packageConfig in set_config_from_package_names_and_packages_config(config, packageInstalls).or_empty_list_if_null())
@@ -604,6 +606,8 @@ package '{0}' - stopping further execution".format_with(packageResult.Name));
                 {
                     Environment.ExitCode = 1;
                 }
+
+                _fileSystem.delete_directory_if_exists(powershellTemp, true);
             }
 
             return packageInstalls;
@@ -765,6 +769,7 @@ Would have determined packages that are out of date based on what is
             }
 
             var packageUpgrades = new ConcurrentDictionary<string, PackageResult>();
+            var powershellTemp = InstallContext.Instance.PowerShellTempLocation;
 
             try
             {
@@ -791,6 +796,8 @@ Would have determined packages that are out of date based on what is
                 {
                     Environment.ExitCode = 1;
                 }
+
+                _fileSystem.delete_directory_if_exists(powershellTemp, true);
             }
 
             return packageUpgrades;
@@ -830,6 +837,7 @@ Would have determined packages that are out of date based on what is
             }
 
             var packageUninstalls = new ConcurrentDictionary<string, PackageResult>();
+            var powershellTemp = InstallContext.Instance.PowerShellTempLocation;
 
             try
             {
@@ -886,6 +894,8 @@ If a package is failing because it is a dependency of another package
  only be used as a last resort.
  ");
                 }
+
+                _fileSystem.delete_directory_if_exists(powershellTemp, true);
             }
 
             return packageUninstalls;
@@ -1022,7 +1032,7 @@ package '{0}' - stopping further execution".format_with(packageResult.Name));
 
         private void uninstall_cleanup(ChocolateyConfiguration config, PackageResult packageResult)
         {
-            if (config.Features.RemovePackageInformationOnUninstall) _packageInfoService.remove_package_information(packageResult.Package);
+            _packageInfoService.remove_package_information(packageResult.Package);
 
             ensure_bad_package_path_is_clean(config, packageResult);
             remove_rollback_if_exists(packageResult);

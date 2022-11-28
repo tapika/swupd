@@ -188,7 +188,18 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public string CommandName { get; set; }
 
         // configuration set variables
-        public string CacheLocation { get; set; }
+        public string CacheLocation
+        { 
+            get
+            {
+                return InstallContext.Instance.CacheLocation;
+            }
+        
+            set
+            {
+                InstallContext.Instance.CacheLocation = value;
+            }
+        }
         public bool ContainsLegacyPackageInstalls { get; set; }
         public int CommandExecutionTimeoutSeconds { get; set; }
         public int WebRequestTimeoutSeconds { get; set; }
@@ -396,7 +407,6 @@ NOTE: Hiding sensitive configuration data! Please double and triple
         public bool UseRememberedArgumentsForUpgrades { get; set; }
         public bool IgnoreUnfoundPackagesOnUpgradeOutdated { get; set; }
         public bool SkipPackageUpgradesWhenNotInstalled { get; set; }
-        public bool RemovePackageInformationOnUninstall { get; set; }
         public bool ExitOnRebootDetected { get; set; }
         public bool LogValidationResultsOnWarnings { get; set; }
         public bool UsePackageRepositoryOptimizations { get; set; }
@@ -474,6 +484,7 @@ NOTE: Hiding sensitive configuration data! Please double and triple
     public sealed class PsRunCommandConfiguration
     {
         public string step { get; set; } = "install";
+        public bool keeptemp { get; set; }
     }
 
 

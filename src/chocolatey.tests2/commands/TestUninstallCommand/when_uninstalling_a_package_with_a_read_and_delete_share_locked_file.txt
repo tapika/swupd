@@ -19,8 +19,7 @@ installpackage 1.0.0 Uninstalled
 Chocolatey uninstalled 1/1 packages. 
  See the log for details (logs\chocolatey.log).
 => uninstall result for installpackage/1.0.0: succeeded
-=> added new files:
-lib-bkp\installpackage\tools\chocolateyinstall.ps1
+=> folder was not updated
 => removed files:
 lib\installpackage\.install_info\.arguments
 lib\installpackage\.install_info\.files

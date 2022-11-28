@@ -174,19 +174,7 @@ namespace chocolatey.infrastructure.app.builders
 
         private static void set_config_items(ChocolateyConfiguration config, ConfigFileSettings configFileSettings, IFileSystem fileSystem)
         {
-            config.CacheLocation = Environment.ExpandEnvironmentVariables(set_config_item(ApplicationParameters.ConfigSettings.CacheLocation, configFileSettings, string.IsNullOrWhiteSpace(configFileSettings.CacheLocation) ? string.Empty : configFileSettings.CacheLocation, "Cache location if not TEMP folder. Replaces `$env:TEMP` value for choco.exe process. It is highly recommended this be set to make Chocolatey more deterministic in cleanup."));
-            if (string.IsNullOrWhiteSpace(config.CacheLocation)) {
-                config.CacheLocation = fileSystem.get_temp_path(); // System.Environment.GetEnvironmentVariable("TEMP");
-                // TEMP gets set in EnvironmentSettings, so it may already have
-                // chocolatey in the path when it installs the next package from
-                // the API.
-                if(!String.Equals(fileSystem.get_directory_info_for(config.CacheLocation).Name, "chocolatey", StringComparison.OrdinalIgnoreCase)) {
-                    config.CacheLocation = fileSystem.combine_paths(fileSystem.get_temp_path(), "chocolatey");
-                }
-            }
-
-            // if it is still empty, use temp in the Chocolatey install directory.
-            if (string.IsNullOrWhiteSpace(config.CacheLocation)) config.CacheLocation = fileSystem.combine_paths(ApplicationParameters.InstallLocation, "temp");
+            ReconfigureCacheLocation(config, configFileSettings);
 
             var commandExecutionTimeoutSeconds = 0;
             var commandExecutionTimeout = set_config_item(ApplicationParameters.ConfigSettings.CommandExecutionTimeoutSeconds, configFileSettings, string.IsNullOrWhiteSpace(configFileSettings.CommandExecutionTimeoutSeconds.to_string()) ? ApplicationParameters.DefaultWaitForExitInSeconds.to_string() : configFileSettings.CommandExecutionTimeoutSeconds.to_string(), "Default timeout for command execution. '0' for infinite (starting in 0.10.4).");
@@ -220,6 +208,38 @@ namespace chocolatey.infrastructure.app.builders
             config.Proxy.BypassList = set_config_item(ApplicationParameters.ConfigSettings.ProxyBypassList, configFileSettings, string.Empty, "Optional proxy bypass list. Comma separated. Available in 0.10.4+.");
             config.Proxy.BypassOnLocal = set_config_item(ApplicationParameters.ConfigSettings.ProxyBypassOnLocal, configFileSettings, "true", "Bypass proxy for local connections. Available in 0.10.4+.").is_equal_to(bool.TrueString);
             config.UpgradeCommand.PackageNamesToSkip = set_config_item(ApplicationParameters.ConfigSettings.UpgradeAllExceptions, configFileSettings, string.Empty, "A comma-separated list of package names that should not be upgraded when running `choco upgrade all'. Defaults to empty. Available in 0.10.14+.");
+        }
+
+        public const string chocoTempFolderName = "choco";     // official choco uses "chocolatey". Renamed just to avoid the conflicts with official choco.
+
+        /// <summary>
+        /// Reconfigures cache location
+        /// </summary>
+        /// <param name="config">configuration where to set CacheLocation</param>
+        /// <param name="configFileSettings">chocolatey.config. If not specified - then not used either</param>
+        public static void ReconfigureCacheLocation(ChocolateyConfiguration config, ConfigFileSettings configFileSettings = null)
+        {
+            string configCacheLocationValue = null;
+
+            if (configFileSettings != null)
+            {
+                configCacheLocationValue = set_config_item(ApplicationParameters.ConfigSettings.CacheLocation, configFileSettings, string.IsNullOrWhiteSpace(configFileSettings.CacheLocation) ? string.Empty : configFileSettings.CacheLocation, "Cache location if not TEMP folder. Replaces `$env:TEMP` value for choco.exe process. It is highly recommended this be set to make Chocolatey more deterministic in cleanup.");
+            }
+
+            string cacheLocation = Environment.ExpandEnvironmentVariables(configCacheLocationValue);
+            if (string.IsNullOrWhiteSpace(cacheLocation))
+            {
+                cacheLocation = System.Environment.GetEnvironmentVariable("TEMP");
+
+                if ( !Path.GetDirectoryName(cacheLocation).is_equal_to(chocoTempFolderName))
+                {
+                    cacheLocation = Path.Combine(cacheLocation, chocoTempFolderName);
+                }
+            }
+
+            // if it is still empty, use temp in the Chocolatey install directory.
+            if (string.IsNullOrWhiteSpace(cacheLocation)) cacheLocation = Path.Combine(InstallContext.Instance.RootLocation, "temp");
+            config.CacheLocation = cacheLocation;
         }
 
         private static string set_config_item(string configName, ConfigFileSettings configFileSettings, string defaultValue, string description, bool forceSettingValue = false)
@@ -269,7 +289,6 @@ namespace chocolatey.infrastructure.app.builders
             config.Features.UseRememberedArgumentsForUpgrades = set_feature_flag(ApplicationParameters.Features.UseRememberedArgumentsForUpgrades, configFileSettings, defaultEnabled: false, description: "Use Remembered Arguments For Upgrades - When running upgrades, use arguments for upgrade that were used for installation ('remembered'). This is helpful when running upgrade for all packages. Available in 0.10.4+. This is considered in preview for 0.10.4 and will be flipped to on by default in a future release.");
             config.Features.IgnoreUnfoundPackagesOnUpgradeOutdated = set_feature_flag(ApplicationParameters.Features.IgnoreUnfoundPackagesOnUpgradeOutdated, configFileSettings, defaultEnabled: false, description: "Ignore Unfound Packages On Upgrade Outdated - When checking outdated or upgrades, if a package is not found against sources specified, don't report the package at all. Available in 0.10.9+.");
             config.Features.SkipPackageUpgradesWhenNotInstalled = set_feature_flag(ApplicationParameters.Features.SkipPackageUpgradesWhenNotInstalled, configFileSettings, defaultEnabled: false, description: "Skip Packages Not Installed During Upgrade - if a package is not installed, do not install it during the upgrade process. Available in 0.10.12+.");
-            config.Features.RemovePackageInformationOnUninstall = set_feature_flag(ApplicationParameters.Features.RemovePackageInformationOnUninstall, configFileSettings, defaultEnabled: true, description: "Remove Stored Package Information On Uninstall - When a package is uninstalled, should the stored package information also be removed?  Available in 0.10.9+.");
             config.Features.LogWithoutColor = set_feature_flag(ApplicationParameters.Features.LogWithoutColor, configFileSettings, defaultEnabled: false, description: "Log without color - Do not show colorization in logging output. Available in 0.10.9+.");
             config.Features.LogValidationResultsOnWarnings = set_feature_flag(ApplicationParameters.Features.LogValidationResultsOnWarnings, configFileSettings, defaultEnabled: true, description: "Log validation results on warnings - Should the validation results be logged if there are warnings? Available in 0.10.12+.");
             config.Features.UsePackageRepositoryOptimizations = set_feature_flag(ApplicationParameters.Features.UsePackageRepositoryOptimizations, configFileSettings, defaultEnabled: true, description: "Use Package Repository Optimizations - Turn on optimizations for reducing bandwidth with repository queries during package install/upgrade/outdated operations. Should generally be left enabled, unless a repository needs to support older methods of query. When disabled, this makes queries similar to the way they were done in Chocolatey v0.10.11 and before. Available in 0.10.14+.");
