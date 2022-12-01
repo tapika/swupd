@@ -5,9 +5,9 @@ namespace NuGet
 {
     public enum WalkerType
     { 
-        Install,
-        Update,
-        Uninstall
+        install,
+        update,
+        uninstall
     }
 
     /// <summary>

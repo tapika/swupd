@@ -141,7 +141,7 @@ namespace NuGet
             bool ignoreWalkInfo = false)
         {
             var installerWalker = GetWalker( new WalkerInfo { 
-                type = WalkerType.Install, 
+                type = WalkerType.install, 
                 ignoreDependencies = ignoreDependencies,
                 allowPrereleaseVersions = allowPrereleaseVersions,
                 ignoreWalkInfo = ignoreWalkInfo,
@@ -168,7 +168,7 @@ namespace NuGet
             }
         }
 
-        protected void Execute(PackageOperation operation)
+        public void Execute(PackageOperation operation)
         {
             bool packageExists = LocalRepository.Exists(operation.Package);
 
@@ -317,7 +317,7 @@ namespace NuGet
         public virtual void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
         {
             Execute(package, GetWalker( new WalkerInfo() { 
-                type = WalkerType.Uninstall, 
+                type = WalkerType.uninstall, 
                 forceRemove = forceRemove,
                 removeDependencies = removeDependencies
             }) );
@@ -462,7 +462,7 @@ namespace NuGet
         public void UpdatePackage(IPackage newPackage, bool updateDependencies, bool allowPrereleaseVersions)
         {
             var upgradeWalker = GetWalker( new WalkerInfo() { 
-                type = WalkerType.Update, 
+                type = WalkerType.update, 
                 updateDependencies = updateDependencies,
                 allowPrereleaseVersions = allowPrereleaseVersions
             });
@@ -474,7 +474,7 @@ namespace NuGet
         {
             switch (walkinfo.type)
             {
-                case WalkerType.Install:
+                case WalkerType.install:
                 {
                     if (WhatIf)
                     {
@@ -496,7 +496,7 @@ namespace NuGet
                     return installerWalker;
                 }
 
-                case WalkerType.Update:
+                case WalkerType.update:
                 {
                     return new UpdateWalker(LocalRepository,
                         SourceRepository,
@@ -508,7 +508,7 @@ namespace NuGet
                         allowPrereleaseVersions: walkinfo.allowPrereleaseVersions);
                 }
 
-                case WalkerType.Uninstall:
+                case WalkerType.uninstall:
                 { 
                     var uninstallWalker = new UninstallWalker(LocalRepository,
                         new DependentsWalker(LocalRepository, targetFramework: null),

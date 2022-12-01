@@ -536,7 +536,7 @@ Version was specified as '{0}'. It is possible that version
 @"
 Please see https://chocolatey.org/docs/troubleshooting for more 
  assistance.");
-                    
+
                     if (ApplicationParameters.runningUnitTesting)
                     {
                         logMessage = $"{packageName} not installed. The package was not found with the source(s) listed.";
@@ -553,7 +553,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 if (string.IsNullOrEmpty(targetDir))
                 {
                     targetDir = InstallContext.Instance.PackagesLocation;
-                }else
+                }
+                else
                 {
                     // properties use "$propertykey$", use '%' to avoid conflicts
                     targetDir = Regex.Replace(targetDir, "%(.*?)%", (m) =>
@@ -605,39 +606,70 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     }
                 }
 
-                try
+                var installWalker = new WalkerInfo
                 {
-                    using (packageManager.SourceRepository.StartOperation(
-                        RepositoryOperationNames.Install,
-                        packageName,
-                        version == null ? null : version.ToString()))
-                    {
-                        packageManager.InstallPackage(availablePackage, ignoreDependencies: config.IgnoreDependencies, allowPrereleaseVersions: config.Prerelease);
-                        //packageManager.InstallPackage(packageName, version, configuration.IgnoreDependencies, configuration.Prerelease);
-                        remove_nuget_cache_for_package(availablePackage);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var message = ex.Message;
-                    var webException = ex as System.Net.WebException;
-                    if (webException != null)
-                    {
-                        var response = webException.Response as HttpWebResponse;
-                        if (response != null && !string.IsNullOrWhiteSpace(response.StatusDescription)) message += " {0}".format_with(response.StatusDescription);
-                    }
+                    type = WalkerType.install,
+                    ignoreDependencies = config.IgnoreDependencies,
+                    allowPrereleaseVersions = config.Prerelease
+                };
 
-                    var logMessage = "{0} not installed. An error occurred during installation:{1} {2}".format_with(packageName, Environment.NewLine, message);
-                    this.Log().Error(ChocolateyLoggers.Important, logMessage);
-                    var errorResult = packageInstalls.GetOrAdd(packageName, new PackageResult(packageName, version.to_string(), null));
-                    errorResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
-                    if (errorResult.ExitCode == 0) errorResult.ExitCode = 1;
-                    if (continueAction != null) continueAction.Invoke(errorResult);
-                }
+                DoOperation(installWalker, packageName, version?.ToString(), availablePackage, packageManager, packageInstalls, continueAction);
             }
 
             OptimizedZipPackage.NuGetScratchFileSystem.DeleteDirectory(null, true);
             return packageInstalls;
+        }
+
+        
+        /// <summary>
+        /// Performs specific nuget operation (install / uninstall / update)
+        /// </summary>
+        /// <param name="walkerInfo">operation to perform</param>
+        void DoOperation( 
+            WalkerInfo walkerInfo, string packageName, string packageVersion, IPackage availablePackage,
+            PackageManagerEx packageManager, ConcurrentDictionary<string, PackageResult> packageInstalls, Action<PackageResult> continueAction
+        )
+        {
+            string opName = walkerInfo.type.ToString();
+            try
+            {
+                using (packageManager.SourceRepository.StartOperation(opName, packageName, packageVersion) )
+                {
+                    var walker = packageManager.GetWalker(walkerInfo);
+                    var operations = walker.ResolveOperations(availablePackage);
+
+                    if (operations.Any())
+                    {
+                        foreach (PackageOperation operation in operations)
+                        {
+                            packageManager.Execute(operation);
+                        }
+                    }
+                    else
+                    {
+                        LogService.console.Info($"{ChocolateyNugetLogger.NuGet}'{availablePackage.Id} {availablePackage.Version}' already {opName}ed.");
+                    }
+
+                    remove_nuget_cache_for_package(availablePackage);
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                var webException = ex as WebException;
+                if (webException != null)
+                {
+                    var response = webException.Response as HttpWebResponse;
+                    if (response != null && !string.IsNullOrWhiteSpace(response.StatusDescription)) message += " {0}".format_with(response.StatusDescription);
+                }
+
+                var logMessage = $"{packageName} not {opName}ed. An error occurred during {opName}ation:\n {message}";
+                this.Log().Error(ChocolateyLoggers.Important, logMessage);
+                var errorResult = packageInstalls.GetOrAdd(packageName, new PackageResult(packageName, packageVersion.to_string(), null));
+                errorResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
+                if (errorResult.ExitCode == 0) errorResult.ExitCode = 1;
+                if (continueAction != null) continueAction.Invoke(errorResult);
+            }
         }
 
         public virtual void remove_rollback_directory_if_exists(string packageName)
