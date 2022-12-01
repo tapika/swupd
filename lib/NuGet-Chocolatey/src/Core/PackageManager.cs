@@ -140,22 +140,14 @@ namespace NuGet
             bool allowPrereleaseVersions,
             bool ignoreWalkInfo = false)
         {
-            if (WhatIf)
-            {
-                // This prevents InstallWalker from downloading the packages
-                ignoreWalkInfo = true;
-            }
+            var installerWalker = GetWalker( new WalkerInfo { 
+                type = WalkerType.Install, 
+                ignoreDependencies = ignoreDependencies,
+                allowPrereleaseVersions = allowPrereleaseVersions,
+                ignoreWalkInfo = ignoreWalkInfo,
+                targetFramework = targetFramework 
+            } );
 
-            var installerWalker = new InstallWalker(
-                LocalRepository, SourceRepository,
-                targetFramework, Logger,
-                ignoreDependencies, allowPrereleaseVersions,
-                DependencyVersion)
-            {
-                DisableWalkInfo = ignoreWalkInfo,
-                CheckDowngrade = CheckDowngrade,
-                SkipPackageTargetCheck = SkipPackageTargetCheck
-            };
             Execute(package, installerWalker);
         }
 
@@ -324,15 +316,11 @@ namespace NuGet
 
         public virtual void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
         {
-            Execute(package, new UninstallWalker(LocalRepository,
-                                                 new DependentsWalker(LocalRepository, targetFramework: null),
-                                                 targetFramework: null,
-                                                 logger: Logger,
-                                                 removeDependencies: removeDependencies,
-                                                 forceRemove: forceRemove)
-                                                 {
-                                                     DisableWalkInfo = WhatIf
-                                                 });
+            Execute(package, GetWalker( new WalkerInfo() { 
+                type = WalkerType.Uninstall, 
+                forceRemove = forceRemove,
+                removeDependencies = removeDependencies
+            }) );
         }
 
         protected virtual void ExecuteUninstall(IPackage package)
@@ -473,16 +461,74 @@ namespace NuGet
 
         public void UpdatePackage(IPackage newPackage, bool updateDependencies, bool allowPrereleaseVersions)
         {
-            Execute(newPackage, new UpdateWalker(LocalRepository,
-                                                SourceRepository,
-                                                new DependentsWalker(LocalRepository, targetFramework: null),
-                                                NullConstraintProvider.Instance,
-                                                targetFramework: null,
-                                                logger: Logger,
-                                                updateDependencies: updateDependencies,
-                                                allowPrereleaseVersions: allowPrereleaseVersions));
+            var upgradeWalker = GetWalker( new WalkerInfo() { 
+                type = WalkerType.Update, 
+                updateDependencies = updateDependencies,
+                allowPrereleaseVersions = allowPrereleaseVersions
+            });
+
+            Execute(newPackage, upgradeWalker);
+        }
+
+        public IPackageOperationResolver GetWalker( WalkerInfo walkinfo )
+        {
+            switch (walkinfo.type)
+            {
+                case WalkerType.Install:
+                {
+                    if (WhatIf)
+                    {
+                        // This prevents InstallWalker from downloading the packages
+                        walkinfo.ignoreWalkInfo = true;
+                    }
+
+                    var installerWalker = new InstallWalker(
+                        LocalRepository, SourceRepository,
+                        walkinfo.targetFramework, Logger,
+                        walkinfo.ignoreDependencies, walkinfo.allowPrereleaseVersions,
+                        DependencyVersion)
+                    {
+                        DisableWalkInfo = walkinfo.ignoreWalkInfo,
+                        CheckDowngrade = CheckDowngrade,
+                        SkipPackageTargetCheck = SkipPackageTargetCheck
+                    };
+
+                    return installerWalker;
+                }
+
+                case WalkerType.Update:
+                {
+                    return new UpdateWalker(LocalRepository,
+                        SourceRepository,
+                        new DependentsWalker(LocalRepository, targetFramework: null),
+                        NullConstraintProvider.Instance,
+                        targetFramework: null,
+                        logger: Logger,
+                        updateDependencies: walkinfo.updateDependencies,
+                        allowPrereleaseVersions: walkinfo.allowPrereleaseVersions);
+                }
+
+                case WalkerType.Uninstall:
+                { 
+                    var uninstallWalker = new UninstallWalker(LocalRepository,
+                        new DependentsWalker(LocalRepository, targetFramework: null),
+                        targetFramework: null,
+                        logger: Logger,
+                        removeDependencies: walkinfo.removeDependencies,
+                        forceRemove: walkinfo.forceRemove)
+                    {
+                        DisableWalkInfo = WhatIf
+                    };
+
+                    return uninstallWalker;
+                }
+            }
+            
+            return null;
         }
 
         public bool CheckDowngrade { get; set; }
     }
+
 }
+

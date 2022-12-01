@@ -1,7 +1,38 @@
 using System;
+using System.Runtime.Versioning;
 
 namespace NuGet
 {
+    public enum WalkerType
+    { 
+        Install,
+        Update,
+        Uninstall
+    }
+
+    /// <summary>
+    /// Parameters for specific walker initialization.
+    /// </summary>
+    public class WalkerInfo
+    {
+        public WalkerType type;
+
+        // for install
+        public bool ignoreDependencies;
+        public bool ignoreWalkInfo = false;
+        public FrameworkName targetFramework = null;
+
+        // for update
+        public bool updateDependencies;
+
+        // for install & update
+        public bool allowPrereleaseVersions;
+
+        // for uninstall
+        public bool forceRemove;
+        public bool removeDependencies;
+    }
+
     public interface IPackageManager
     {
         /// <summary>
@@ -43,5 +74,12 @@ namespace NuGet
         void UpdatePackage(string packageId, IVersionSpec versionSpec, bool updateDependencies, bool allowPrereleaseVersions);
         void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies);
         void UninstallPackage(string packageId, SemanticVersion version, bool forceRemove, bool removeDependencies);
+
+        /// <summary>
+        /// Creates package dependency walker
+        /// </summary>
+        /// <param name="walkerInfo">walker parameters</param>
+        /// <returns>walker</returns>
+        IPackageOperationResolver GetWalker( WalkerInfo walkerInfo );
     }
 }
