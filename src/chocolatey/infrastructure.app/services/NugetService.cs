@@ -647,7 +647,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     }
                     else
                     {
-                        LogService.console.Info($"{ChocolateyNugetLogger.NuGet}'{availablePackage.Id} {availablePackage.Version}' already {opName}ed.");
+                        packageManager.Logger.Log(MessageLevel.Verbose, $"'{availablePackage.GetFullName()}' already installed.");
                     }
 
                     remove_nuget_cache_for_package(availablePackage);
