@@ -627,7 +627,9 @@ Please see https://chocolatey.org/docs/troubleshooting for more
         /// <param name="walkerInfo">operation to perform</param>
         void DoOperation( 
             WalkerInfo walkerInfo, string packageName, string packageVersion, IPackage availablePackage,
-            PackageManagerEx packageManager, ConcurrentDictionary<string, PackageResult> packageInstalls, Action<PackageResult> continueAction
+            PackageManagerEx packageManager, ConcurrentDictionary<string, PackageResult> packageInstalls,
+            Action<PackageResult> continueAction,
+            Action beforeStart = null
         )
         {
             string opName = walkerInfo.type.ToString();
@@ -635,6 +637,11 @@ Please see https://chocolatey.org/docs/troubleshooting for more
             {
                 using (packageManager.SourceRepository.StartOperation(opName, packageName, packageVersion) )
                 {
+                    if (beforeStart != null)
+                    {
+                        beforeStart();
+                    }
+                
                     var walker = packageManager.GetWalker(walkerInfo);
                     var operations = walker.ResolveOperations(availablePackage);
 
@@ -663,7 +670,18 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     if (response != null && !string.IsNullOrWhiteSpace(response.StatusDescription)) message += " {0}".format_with(response.StatusDescription);
                 }
 
-                var logMessage = $"{packageName} not {opName}ed. An error occurred during {opName}ation:\n {message}";
+                string logMessage;
+                switch (walkerInfo.type)
+                {
+                    default: 
+                    case WalkerType.install:    logMessage = "not installed. An error occurred during installation"; break;
+                    case WalkerType.update:     logMessage = "not upgraded. An error occurred during installation";  break;
+                    case WalkerType.uninstall:  logMessage = "not uninstalled. An error occurred during uninstall";  break;
+                }
+                
+                logMessage = $"{packageName} {logMessage}:\n {message}";
+
+                logMessage = InstallContext.NormalizeMessage(logMessage);
                 this.Log().Error(ChocolateyLoggers.Important, logMessage);
                 var errorResult = packageInstalls.GetOrAdd(packageName, new PackageResult(packageName, packageVersion.to_string(), null));
                 errorResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
@@ -939,59 +957,49 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                             packageManager.FileSystem.Root = Path.GetDirectoryName(regp.GetPackageLocation());
                         }
 
-                        try
+                        WalkerInfo walker = new WalkerInfo()
                         {
-                            using (packageManager.SourceRepository.StartOperation(
-                                RepositoryOperationNames.Update,
-                                packageName,
-                                version == null ? null : version.ToString()))
-                            {
-                                if (beforeUpgradeAction != null)
-                                {
-                                    var currentPackageResult = new PackageResult(installedPackage, get_install_directory(config, installedPackage));
-                                    beforeUpgradeAction(currentPackageResult);
-                                }
+                            ignoreDependencies = config.IgnoreDependencies,
+                            allowPrereleaseVersions = config.Prerelease,
+                            updateDependencies = !config.IgnoreDependencies,
+                        };
 
-                                remove_rollback_directory_if_exists(packageName);
-                                ensure_package_files_have_compatible_attributes(config, installedPackage, pkgInfo);
-                                rename_legacy_package_version(config, installedPackage, pkgInfo);
-                                backup_existing_version(config, installedPackage, pkgInfo);
-                                remove_shim_directors(config, installedPackage, pkgInfo);
-                                if (config.Force && (installedPackage.Version == availablePackage.Version))
-                                {
-                                    FaultTolerance.try_catch_with_logging_exception(
-                                        () =>
-                                        {
-                                            _fileSystem.delete_directory_if_exists(_fileSystem.combine_paths(ApplicationParameters.PackagesLocation, installedPackage.Id), recursive: true);
-                                            remove_cache_for_package(config, installedPackage);
-                                        },
-                                        "Error during force upgrade");
-                                    packageManager.InstallPackage(availablePackage, config.IgnoreDependencies, config.Prerelease);
-                                }
-                                else
-                                {
-                                    packageManager.UpdatePackage(availablePackage, updateDependencies: !config.IgnoreDependencies, allowPrereleaseVersions: config.Prerelease);
-                                }
-                                remove_nuget_cache_for_package(availablePackage);
-                            }
-                        }
-                        catch (Exception ex)
+                        if (config.Force && (installedPackage.Version == availablePackage.Version))
                         {
-                            var message = ex.Message;
-                            var webException = ex as System.Net.WebException;
-                            if (webException != null)
+                            walker.type = WalkerType.install;
+                        }
+                        else
+                        { 
+                            walker.type = WalkerType.update;
+                        }
+
+                        Action beforeStart = () =>
+                        {
+                            if (beforeUpgradeAction != null)
                             {
-                                var response = webException.Response as HttpWebResponse;
-                                if (response != null && !string.IsNullOrWhiteSpace(response.StatusDescription)) message += " {0}".format_with(response.StatusDescription);
+                                var currentPackageResult = new PackageResult(installedPackage, get_install_directory(config, installedPackage));
+                                beforeUpgradeAction(currentPackageResult);
                             }
 
-                            var logMessage = "{0} not upgraded. An error occurred during installation:{1} {2}".format_with(packageName, Environment.NewLine, message);
-                            logMessage = InstallContext.NormalizeMessage(logMessage);
-                            this.Log().Error(ChocolateyLoggers.Important, logMessage);
-                            packageResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
-                            if (packageResult.ExitCode == 0) packageResult.ExitCode = 1;
-                            if (continueAction != null) continueAction.Invoke(packageResult);
-                        }
+                            remove_rollback_directory_if_exists(packageName);
+                            ensure_package_files_have_compatible_attributes(config, installedPackage, pkgInfo);
+                            rename_legacy_package_version(config, installedPackage, pkgInfo);
+                            backup_existing_version(config, installedPackage, pkgInfo);
+                            remove_shim_directors(config, installedPackage, pkgInfo);
+                            if (config.Force && (installedPackage.Version == availablePackage.Version))
+                            {
+                                FaultTolerance.try_catch_with_logging_exception(
+                                    () =>
+                                    {
+                                        _fileSystem.delete_directory_if_exists(_fileSystem.combine_paths(ApplicationParameters.PackagesLocation, installedPackage.Id), recursive: true);
+                                        remove_cache_for_package(config, installedPackage);
+                                    },
+                                    "Error during force upgrade");
+                            }
+                        };
+
+                        DoOperation(walker, packageName, version?.ToString(), availablePackage, 
+                            packageManager, packageInstalls, continueAction, beforeStart);
                     }
                 }
             }
