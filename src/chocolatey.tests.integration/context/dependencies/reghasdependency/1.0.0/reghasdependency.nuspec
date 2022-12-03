@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>reghasdependency</id>
+        <version>1.0.0</version>
+        <title>reghasdependency</title>
+        <authors>Publisher</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>test package</description>
+        <dependencies>
+            <dependency id="isdependency" version="1.0.0" />
+            <dependency id="isexactversiondependency" version="[1.1.0]" />
+        </dependencies>
+        <tags-extra>
+          <tag key="InstallLocation" value="%RootLocation%\custominstalldir" />
+          <tag key="AddonsInstallFolder" value="lib" />
+          <tag key="isdependency_InstallFolder" value="plugins" />
+        </tags-extra>
+    </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

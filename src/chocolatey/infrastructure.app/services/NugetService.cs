@@ -548,37 +548,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     continue;
                 }
 
-                // Figure out installation directory.
-                string targetDir = availablePackage.GetInstallLocation();
-                if (string.IsNullOrEmpty(targetDir))
-                {
-                    targetDir = InstallContext.Instance.PackagesLocation;
-                }
-                else
-                {
-                    // properties use "$propertykey$", use '%' to avoid conflicts
-                    targetDir = Regex.Replace(targetDir, "%(.*?)%", (m) =>
-                    {
-                        Environment.SpecialFolder e;
-                        string propKey = m.Groups[1].Value;
-
-                        // Using "%ProgramFiles%\yourcompany" can set install directory to program files
-                        if (Enum.TryParse<Environment.SpecialFolder>(propKey, out e))
-                        {
-                            return Environment.GetFolderPath(e);
-                        }
-
-                        // Using "%RootLocation%\plugins" can set install directory to plugins folder.
-                        var prop = typeof(InstallContext).GetProperty(propKey, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-                        if (prop != null && prop.PropertyType == typeof(string))
-                        {
-                            return (string)prop.GetValue(InstallContext.Instance);
-                        }
-
-                        return m.Value;
-                    });
-                }
-                packageManager.FileSystem.Root = targetDir;
+                ReconfigureInstallDirectory(packageManager, availablePackage, availablePackage);
 
                 if (installedPackage != null && (installedPackage.Version == availablePackage.Version) && config.Force)
                 {
@@ -620,6 +590,71 @@ Please see https://chocolatey.org/docs/troubleshooting for more
             return packageInstalls;
         }
 
+        /// <summary>
+        /// Reconfigures package installation directory.
+        /// 
+        /// Generally 'InstallLocation' tag determines where specific package gets installed - it also determines where
+        /// dependent packages will be installed as well.
+        /// 
+        /// 'AddonsInstallFolder' determines into which folder all application addons (=dependencies) 
+        /// will be installed (from 'InstallLocation' folder).
+        /// 
+        /// Additionally '{package id}_InstallFolder' can enforce specific package location.
+        /// </summary>
+        /// <param name="mainPackage">Main package to be installed (which has dependencies)</param>
+        /// <param name="subpackage">Child package (who's install directory is determined by mainpackage)</param>
+        private static void ReconfigureInstallDirectory(PackageManagerEx packageManager, IPackage mainPackage, IPackage subpackage)
+        {
+            // Figure out installation directory.
+            string targetDir = subpackage.GetInstallLocation();
+            if (string.IsNullOrEmpty(targetDir) && mainPackage != subpackage)
+            {
+                targetDir = mainPackage.GetInstallLocation();
+
+                string addonsDirectory = mainPackage.GetKey($"{subpackage.Id}_InstallFolder");
+                if (string.IsNullOrEmpty(addonsDirectory))
+                { 
+                    addonsDirectory = mainPackage.GetKey("AddonsInstallFolder");
+                }
+
+                if (!string.IsNullOrEmpty(addonsDirectory))
+                {
+                    targetDir = Path.Combine(targetDir, addonsDirectory);
+                }
+            }
+
+            if (string.IsNullOrEmpty(targetDir))
+            {
+                targetDir = InstallContext.Instance.PackagesLocation;
+            }
+            else
+            {
+                // properties use "$propertykey$", use '%' to avoid conflicts
+                targetDir = Regex.Replace(targetDir, "%(.*?)%", (m) =>
+                {
+                    Environment.SpecialFolder e;
+                    string propKey = m.Groups[1].Value;
+
+                    // Using "%ProgramFiles%\yourcompany" can set install directory to program files
+                    if (Enum.TryParse<Environment.SpecialFolder>(propKey, out e))
+                    {
+                        return Environment.GetFolderPath(e);
+                    }
+
+                    // Using "%RootLocation%\plugins" can set install directory to plugins folder.
+                    var prop = typeof(InstallContext).GetProperty(propKey, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                    if (prop != null && prop.PropertyType == typeof(string))
+                    {
+                        return (string)prop.GetValue(InstallContext.Instance);
+                    }
+
+                    return m.Value;
+                });
+            }
+            
+            packageManager.FileSystem.Root = targetDir;
+        }
+
 
         /// <summary>
         /// Performs specific nuget operation (install / uninstall / update)
@@ -659,6 +694,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     {
                         foreach (PackageOperation operation in operations)
                         {
+                            ReconfigureInstallDirectory(packageManager, package, operation.Package);
+                            
                             packageManager.Execute(operation);
                         }
                     }

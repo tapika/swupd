@@ -29,6 +29,7 @@
         protected IChocolateyPackageService Service;
 
         public const string installpackage2_id = "installpackage2";
+        public const string reghasdependency_id = "reghasdependency";
 
         public LogTesting()
         {
@@ -655,6 +656,14 @@
                         ChocoTestContext.pack_isexactversiondependency_1_0_1,
                         ChocoTestContext.pack_isexactversiondependency_1_1_0,
                         ChocoTestContext.pack_isexactversiondependency_2_0_0
+                    );
+                    break;
+
+                case ChocoTestContext.packages_for_reg_dependency_testing:
+                    PrepareMultiPackageFolder(
+                        ChocoTestContext.pack_reghasdependency_1_0_0,
+                        ChocoTestContext.pack_isdependency_1_0_0,
+                        ChocoTestContext.pack_isexactversiondependency_1_1_0
                     );
                     break;
 

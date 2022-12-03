@@ -478,6 +478,26 @@ namespace chocolatey.tests2.commands
             }
         }
 
+        [LogTest]
+        public void when_installing_regpackage_with_dependencies_on_empty()
+        {
+            string packageId = reghasdependency_id;
+
+            using (var tester = new TestRegistry())
+            {
+                tester.DeleteInstallEntries(packageId);
+                tester.LogInstallEntries(false, packageId);
+
+                InstallOnEmpty((conf) =>
+                {
+                    conf.PackageNames = conf.Input = packageId;
+                }, ChocoTestContext.packages_for_reg_dependency_testing);
+
+                tester.LogInstallEntries(true, packageId);
+                tester.DeleteInstallEntries(packageId);
+            }
+        }
+
 
     }
 }

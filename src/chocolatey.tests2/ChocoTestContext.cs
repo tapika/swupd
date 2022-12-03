@@ -36,6 +36,8 @@ namespace chocolatey.tests2
         packages_for_dependency_testing9,
         packages_for_dependency_testing10,
         packages_for_dependency_testing11,
+        
+        packages_for_reg_dependency_testing,
         packages_for_upgrade_testing,
         upgrade_testing_context,
         uninstall_testing_context,
@@ -68,5 +70,8 @@ namespace chocolatey.tests2
         pack_upgradepackage_1_1_0,
         pack_upgradepackage_1_1_1_beta,
         pack_upgradepackage_1_1_1_beta2,
+
+        pack_reghasdependency_1_0_0
     };
 }
+
