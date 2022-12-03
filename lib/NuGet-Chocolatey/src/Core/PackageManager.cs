@@ -285,7 +285,7 @@ namespace NuGet
             UninstallPackage(packageId, version: version, forceRemove: forceRemove, removeDependencies: false);
         }
 
-        public virtual void UninstallPackage(string packageId, SemanticVersion version, bool forceRemove, bool removeDependencies)
+        public IPackage FindLocalPackage(string packageId, SemanticVersion version)
         {
             if (String.IsNullOrEmpty(packageId))
             {
@@ -301,7 +301,13 @@ namespace NuGet
                     NuGetResources.UnknownPackage, packageId));
             }
 
-            UninstallPackage(package, forceRemove, removeDependencies);
+            return package;
+        }
+
+        public virtual void UninstallPackage(string packageId, SemanticVersion version, bool forceRemove, bool removeDependencies)
+        {
+
+            UninstallPackage(FindLocalPackage(packageId, version), forceRemove, removeDependencies);
         }
 
         public void UninstallPackage(IPackage package)

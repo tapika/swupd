@@ -493,7 +493,7 @@ folder.");
                 config = originalConfig.deep_copy();
 
                 //todo: get smarter about realizing multiple versions have been installed before and allowing that
-                IPackage installedPackage = packageManager.FindLocalPackage(packageName);
+                IPackage installedPackage = packageManager.FindAnyLocalPackage(packageName);
 
                 if (installedPackage != null && (version == null || version == installedPackage.Version) && !config.Force)
                 {
@@ -613,37 +613,47 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     allowPrereleaseVersions = config.Prerelease
                 };
 
-                DoOperation(installWalker, packageName, version?.ToString(), availablePackage, packageManager, packageInstalls, continueAction);
+                DoOperation(installWalker, packageName, version, availablePackage, packageManager, packageInstalls, continueAction);
             }
 
             OptimizedZipPackage.NuGetScratchFileSystem.DeleteDirectory(null, true);
             return packageInstalls;
         }
 
-        
+
         /// <summary>
         /// Performs specific nuget operation (install / uninstall / update)
         /// </summary>
         /// <param name="walkerInfo">operation to perform</param>
+        /// <param name="beforeOp">action executed before main nuget package operation</param>
+        /// <param name="afterOp">action executed after main nuget package operation</param>
         void DoOperation( 
-            WalkerInfo walkerInfo, string packageName, string packageVersion, IPackage availablePackage,
-            PackageManagerEx packageManager, ConcurrentDictionary<string, PackageResult> packageInstalls,
+            WalkerInfo walkerInfo, string packageName, SemanticVersion packageVersion, IPackage package,
+            PackageManagerEx packageManager, ConcurrentDictionary<string, PackageResult> packageResults,
             Action<PackageResult> continueAction,
-            Action beforeStart = null
+            Action beforeOp = null,
+            Action afterOp = null
         )
         {
-            string opName = walkerInfo.type.ToString();
+            string packageVersionStr = packageVersion?.ToString();
+
             try
             {
-                using (packageManager.SourceRepository.StartOperation(opName, packageName, packageVersion) )
+                using (packageManager.SourceRepository.StartOperation(walkerInfo.type.ToString(), packageName, packageVersionStr) )
                 {
-                    if (beforeStart != null)
+                    if (beforeOp != null)
                     {
-                        beforeStart();
+                        beforeOp();
                     }
-                
+
+                    if (walkerInfo.type == WalkerType.uninstall)
+                    {
+                        // package could be Registy package, need to find right one which is installed
+                        package = packageManager.FindLocalPackage(package.Id.to_lower(), packageVersion);
+                    }
+
                     var walker = packageManager.GetWalker(walkerInfo);
-                    var operations = walker.ResolveOperations(availablePackage);
+                    var operations = walker.ResolveOperations(package);
 
                     if (operations.Any())
                     {
@@ -654,10 +664,18 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     }
                     else
                     {
-                        packageManager.Logger.Log(MessageLevel.Verbose, $"'{availablePackage.GetFullName()}' already {opName}ed.");
+                        if (walkerInfo.type != WalkerType.uninstall)
+                        { 
+                            packageManager.Logger.Log(MessageLevel.Verbose, $"'{package.GetFullName()}' already installed.");
+                        }
                     }
 
-                    remove_nuget_cache_for_package(availablePackage);
+                    if (afterOp != null)
+                    {
+                        afterOp();
+                    }
+
+                    remove_nuget_cache_for_package(package);
                 }
             }
             catch (Exception ex)
@@ -671,22 +689,37 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 }
 
                 string logMessage;
+                string reportPackageName;
+                PackageResult reportPackageResult;
+
                 switch (walkerInfo.type)
                 {
                     default: 
-                    case WalkerType.install:    logMessage = "not installed. An error occurred during installation"; break;
-                    case WalkerType.update:     logMessage = "not upgraded. An error occurred during installation";  break;
-                    case WalkerType.uninstall:  logMessage = "not uninstalled. An error occurred during uninstall";  break;
+                    case WalkerType.install:
+                        logMessage = "not installed. An error occurred during installation";
+                        reportPackageName = packageName.to_lower();
+                        reportPackageResult = new PackageResult(packageName, packageVersionStr.to_string(), null);
+                        break;
+                    case WalkerType.update:
+                        logMessage = "not upgraded. An error occurred during installation";
+                        reportPackageName = packageName.to_lower();
+                        reportPackageResult = new PackageResult(packageName, packageVersionStr.to_string(), null);
+                        break;
+                    case WalkerType.uninstall:  logMessage = "not uninstalled. An error occurred during uninstall";
+                        reportPackageName = packageName.to_lower() + "." + packageVersion.to_string();
+                        reportPackageResult = new PackageResult(package, _fileSystem.combine_paths(ApplicationParameters.PackagesLocation, package.Id));
+                        break;
                 }
                 
                 logMessage = $"{packageName} {logMessage}:\n {message}";
-
                 logMessage = InstallContext.NormalizeMessage(logMessage);
                 this.Log().Error(ChocolateyLoggers.Important, logMessage);
-                var errorResult = packageInstalls.GetOrAdd(packageName, new PackageResult(packageName, packageVersion.to_string(), null));
-                errorResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
-                if (errorResult.ExitCode == 0) errorResult.ExitCode = 1;
-                if (continueAction != null) continueAction.Invoke(errorResult);
+
+                var result = packageResults.GetOrAdd(reportPackageName, reportPackageResult);
+                result.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
+
+                if (result.ExitCode == 0) result.ExitCode = 1;
+                if (continueAction != null) continueAction.Invoke(result);
             }
         }
 
@@ -758,7 +791,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 // reset config each time through
                 config = originalConfig.deep_copy();
 
-                IPackage installedPackage = packageManager.FindLocalPackage(packageName);
+                IPackage installedPackage = packageManager.FindAnyLocalPackage(packageName);
 
                 if (installedPackage == null)
                 {
@@ -973,7 +1006,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                             walker.type = WalkerType.update;
                         }
 
-                        Action beforeStart = () =>
+                        Action beforeOp = () =>
                         {
                             if (beforeUpgradeAction != null)
                             {
@@ -998,8 +1031,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                             }
                         };
 
-                        DoOperation(walker, packageName, version?.ToString(), availablePackage, 
-                            packageManager, packageInstalls, continueAction, beforeStart);
+                        DoOperation(walker, packageName, version, availablePackage, 
+                            packageManager, packageInstalls, continueAction, beforeOp);
                     }
                 }
             }
@@ -1024,7 +1057,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 // reset config each time through
                 config = originalConfig.deep_copy();
 
-                var installedPackage = packageManager.FindLocalPackage(packageName);
+                var installedPackage = packageManager.FindAnyLocalPackage(packageName);
                 var pkgInfo = _packageInfoService.get_package_information(installedPackage);
                 bool isPinned = pkgInfo.IsPinned;
 
@@ -1424,7 +1457,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     }
 
                     // is this the latest version, have you passed --sxs, or is this a side-by-side install? This is the only way you get through to the continue action.
-                    var latestVersion = packageManager.FindLocalPackage(e.Package.Id);
+                    var latestVersion = packageManager.FindAnyLocalPackage(e.Package.Id);
                     var pkgInfo = _packageInfoService.get_package_information(e.Package);
                     if (latestVersion.Version == pkg.Version || config.AllowMultipleVersions || (pkgInfo != null && pkgInfo.IsSideBySide))
                     {
@@ -1594,44 +1627,47 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                             packageManager.FileSystem.Root = packagesLocation;
                         }
 
-                        try
+                        Action beforeOp = () =>
                         {
-                            using (packageManager.SourceRepository.StartOperation(
-                                RepositoryOperationNames.Install,
-                                packageVersion.Id, packageVersion.Version.to_string())
-                                )
+                            if (beforeUninstallAction != null)
                             {
-                                if (beforeUninstallAction != null)
-                                {
-                                    // guessing this is not added so that it doesn't fail the action if an error is recorded?
-                                    //var currentPackageResult = packageUninstalls.GetOrAdd(packageName, new PackageResult(packageVersion, get_install_directory(config, packageVersion)));
-                                    var currentPackageResult = new PackageResult(packageVersion, get_install_directory(config, packageVersion));
-                                    beforeUninstallAction(currentPackageResult);
-                                }
-                                ensure_package_files_have_compatible_attributes(config, packageVersion, pkgInfo);
-                                rename_legacy_package_version(config, packageVersion, pkgInfo);
-                                remove_rollback_directory_if_exists(packageName);
-                                backup_existing_version(config, packageVersion, pkgInfo);
-                                packageManager.UninstallPackage(packageVersion.Id.to_lower(), forceRemove: config.Force, removeDependencies: config.ForceDependencies, version: packageVersion.Version);
-                                ensure_nupkg_is_removed(packageVersion, pkgInfo);
-                                remove_installation_files(packageVersion, pkgInfo);
-                                remove_cache_for_package(config, packageVersion);
+                                // guessing this is not added so that it doesn't fail the action if an error is recorded?
+                                //var currentPackageResult = packageUninstalls.GetOrAdd(packageName, new PackageResult(packageVersion, get_install_directory(config, packageVersion)));
+                                var currentPackageResult = new PackageResult(packageVersion, get_install_directory(config, packageVersion));
+                                beforeUninstallAction(currentPackageResult);
                             }
-                        }
-                        catch (Exception ex)
+                            ensure_package_files_have_compatible_attributes(config, packageVersion, pkgInfo);
+                            rename_legacy_package_version(config, packageVersion, pkgInfo);
+                            remove_rollback_directory_if_exists(packageName);
+                            backup_existing_version(config, packageVersion, pkgInfo);
+                        };
+
+                        Action afterOp = () =>
                         {
-                            var logMessage = "{0} not uninstalled. An error occurred during uninstall:{1} {2}".format_with(packageName, Environment.NewLine, ex.Message);
-                            logMessage = InstallContext.NormalizeMessage(logMessage);
-                            this.Log().Error(ChocolateyLoggers.Important, logMessage);
-                            var result = packageUninstalls.GetOrAdd(packageVersion.Id.to_lower() + "." + packageVersion.Version.to_string(), new PackageResult(packageVersion, _fileSystem.combine_paths(ApplicationParameters.PackagesLocation, packageVersion.Id)));
-                            result.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
-                            if (result.ExitCode == 0) result.ExitCode = 1;
+                            ensure_nupkg_is_removed(packageVersion, pkgInfo);
+                            remove_installation_files(packageVersion, pkgInfo);
+                        };
+
+                        var walker = new WalkerInfo
+                        {
+                            type = WalkerType.uninstall,
+                            forceRemove = config.Force,
+                            removeDependencies = config.ForceDependencies
+                        };
+
+                        Action<PackageResult> continueUninstallAction = (r) =>
+                        {
                             if (config.Features.StopOnFirstPackageFailure)
                             {
                                 throw new ApplicationException("Stopping further execution as {0} has failed uninstallation".format_with(packageVersion.Id.to_lower()));
                             }
+                        };
+
+                        DoOperation(walker, packageName, packageVersion.Version, packageVersion, packageManager, packageUninstalls,
                             // do not call continueAction - will result in multiple passes
-                        }
+                            continueUninstallAction, 
+                            beforeOp, afterOp);
+
                     }
                     else
                     {

@@ -66,6 +66,7 @@ namespace NuGet
         event EventHandler<PackageOperationEventArgs> PackageUninstalled;
         event EventHandler<PackageOperationEventArgs> PackageUninstalling;
 
+        IPackage FindLocalPackage(string packageId, SemanticVersion version);
         void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions);
         void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions, bool ignoreWalkInfo);
         void InstallPackage(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions);
