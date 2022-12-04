@@ -136,7 +136,7 @@ namespace chocolatey.tests2.infrastructure.app.services
         }
 
         /// <summary>
-        /// Make "frozen" package with specific tags (so it would look like serialized and restored).
+        /// Makes dummy package with specific tags
         /// </summary>
         /// <param name="tags">tags to add to package</param>
         /// <returns>new package</returns>
