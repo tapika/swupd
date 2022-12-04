@@ -1,0 +1,9 @@
+Package 'mainp'         - install dir: 'installdir'
+Package 'childp1'       - install dir: 'installdir\addons'
+Package 'childp2'       - install dir: 'installdir\addons'
+Package 'first.plugin'  - install dir: 'installdir\plugins'
+Package 'second.plugin' - install dir: 'installdir\plugins'
+Package 'third.plugin'  - install dir: 'thirdplugin_special'
+Package 'forth.plugin'  - install dir: 'installdir\forthplugin_special'
+Package 'fifth.plugin2' - install dir: 'installdir\addons'
+end of test

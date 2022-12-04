@@ -14,7 +14,7 @@
         <tags-extra>
           <tag key="InstallLocation" value="%RootLocation%\custominstalldir" />
           <tag key="AddonsInstallFolder" value="lib" />
-          <tag key="isdependency_InstallFolder" value="plugins" />
+          <tag key="isdep*_InstallFolder" value="plugins" />
         </tags-extra>
     </metadata>
   <files>
