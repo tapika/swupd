@@ -202,9 +202,11 @@ namespace NuGet
             return new PackageReferenceRepository(absolutePath, sourceRepository: this);
         }
 
-        internal override IPackage OpenPackage(string path)
+        internal override IPackage OpenPackage(string packageId, string path)
         {
-            if (!FileSystem.FileExists(path))
+            var fs = GetFS(packageId);
+            
+            if (!fs.FileExists(path))
             {
                 return null;
             }
@@ -214,7 +216,7 @@ namespace NuGet
             {
                 try
                 {
-                    return new SharedOptimizedZipPackage(FileSystem, path);
+                    return new SharedOptimizedZipPackage(fs, path);
                 }
                 catch (FileFormatException ex)
                 {

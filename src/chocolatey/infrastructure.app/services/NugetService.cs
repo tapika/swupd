@@ -583,6 +583,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     allowPrereleaseVersions = config.Prerelease
                 };
 
+                SetPathResolver(packageManager, availablePackage, availablePackage);
                 DoOperation(installWalker, packageName, version, availablePackage, packageManager, packageInstalls, continueAction);
             }
 
@@ -605,15 +606,27 @@ Please see https://chocolatey.org/docs/troubleshooting for more
         /// </summary>
         /// <param name="mainPackage">Main package to be installed (which has dependencies)</param>
         /// <param name="subpackage">Child package (who's install directory is determined by mainpackage)</param>
-        public static string GetInstallDirectory(IPackage mainPackage, IPackage subpackage)
+        /// <param name="subpackageId">sub package id as a string if subpackage is not given</param>
+        public static string GetInstallDirectory(IPackage mainPackage, IPackage subpackage, string subpackageId = null)
         {
             // Figure out installation directory.
-            string targetDir = subpackage.GetInstallLocation();
+            string targetDir = subpackage?.GetInstallLocation();
+
+            if (subpackage != null)
+            {
+                subpackageId = subpackage.Id;
+            }
+
+            if (subpackage == null && mainPackage.Id == subpackageId)
+            {
+                subpackage = mainPackage;
+            }
+
             if (string.IsNullOrEmpty(targetDir) && mainPackage != subpackage)
             {
                 targetDir = mainPackage.GetInstallLocation();
 
-                string addonsDirectory = mainPackage.GetKey($"{subpackage.Id}_InstallFolder");
+                string addonsDirectory = mainPackage.GetKey($"{subpackageId}_InstallFolder");
                 const string installFolderSuffix = "_InstallFolder";
 
                 if (string.IsNullOrEmpty(addonsDirectory))
@@ -628,11 +641,11 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
                         if (!key.Contains("*"))
                         {
-                            takeEntry = key == subpackage.Id;
+                            takeEntry = key == subpackageId;
                         } 
                         else
                         {
-                            takeEntry = Regex.IsMatch(subpackage.Id, "^" + Regex.Escape(key).Replace("\\*", ".*") + "$");
+                            takeEntry = Regex.IsMatch(subpackageId, "^" + Regex.Escape(key).Replace("\\*", ".*") + "$");
                         }
 
                         if(takeEntry)
@@ -686,10 +699,73 @@ Please see https://chocolatey.org/docs/troubleshooting for more
             return targetDir;
         }
 
+        /// <summary>
+        /// Set package path resolver - to either one folder when we know which package we will install and into which folder,
+        /// or resolving to multiple paths, when there are multiple packages in questions and they are installed into different folders.
+        /// </summary>
+        /// <param name="mainPackage">mainPackage which controls subpackages</param>
+        /// <param name="mainInstalledPackage">currently installed main package</param>
+        /// <param name="updateSubPackage">update package</param>
+        void SetPathResolver(PackageManagerEx packageManager, IPackage mainPackage, IPackage updateSubPackage, IPackage mainInstalledPackage = null)
+        {
+            bool setMultiPathResolver = updateSubPackage != null && 
+                mainInstalledPackage != null && 
+                mainInstalledPackage.Id == updateSubPackage.Id;
+
+            var packageRepo = (ChocolateyLocalPackageRepository)packageManager.LocalRepository;
+         
+            packageRepo.PackageIdToFilesystem.Clear();
+
+            string mainPackageDir;
+            bool mainPackageIsRegistryPackage;
+
+            if (mainInstalledPackage != null && mainInstalledPackage is RegistryPackage regp)
+            {
+                // Installation can be seen from registry only
+                mainPackageDir = Path.GetDirectoryName(regp.GetPackageLocation());
+                mainPackageIsRegistryPackage = true;
+            }
+            else
+            {
+                // Normal installation
+                mainPackageDir = GetInstallDirectory(mainPackage, updateSubPackage ?? mainPackage);
+                mainPackageIsRegistryPackage = false;
+            }
+
+            if (!setMultiPathResolver)
+            {
+                packageManager.FileSystem.Root = mainPackageDir;
+                packageRepo.GetPackageInstallPath = null;
+            }
+            else
+            {
+                // Multiple packages, each is installed into it's own independent folder.
+                packageManager.FileSystem.Root = mainPackageDir;
+
+                IPackage trueMainPackage = mainPackage;
+                if (mainPackageIsRegistryPackage)
+                {
+                    // We need to get same Tags as in meta-data, registry does not keep this information currently.
+                    trueMainPackage = packageManager.LocalRepository.FindPackagesById(mainPackage.Id).FirstOrDefault();
+                }
+                trueMainPackage ??= mainPackage;
+
+                packageRepo.GetPackageInstallPath = (packageId) =>
+                {
+                    if (packageId == mainPackage.Id)
+                    {
+                        return mainPackageDir;
+                    }
+
+                    return GetInstallDirectory(trueMainPackage, null, packageId);
+                };
+            }
+        }
 
         /// <summary>
         /// Performs specific nuget operation (install / uninstall / update)
         /// </summary>
+        /// <param name="package">available package</param>
         /// <param name="walkerInfo">operation to perform</param>
         /// <param name="beforeOp">action executed before main nuget package operation</param>
         /// <param name="afterOp">action executed after main nuget package operation</param>
@@ -725,8 +801,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     {
                         foreach (PackageOperation operation in operations)
                         {
-                            packageManager.FileSystem.Root = GetInstallDirectory(package, operation.Package);
-                            
+                            SetPathResolver(packageManager, package, operation.Package);
                             packageManager.Execute(operation);
                         }
                     }
@@ -737,6 +812,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                             packageManager.Logger.Log(MessageLevel.Verbose, $"'{package.GetFullName()}' already installed.");
                         }
                     }
+                    
+                    SetPathResolver(packageManager, package, null);
 
                     if (afterOp != null)
                     {
@@ -1053,11 +1130,6 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
                     if (performAction)
                     {
-                        if (installedPackage is RegistryPackage regp)
-                        {
-                            packageManager.FileSystem.Root = Path.GetDirectoryName(regp.GetPackageLocation());
-                        }
-
                         WalkerInfo walker = new WalkerInfo()
                         {
                             ignoreDependencies = config.IgnoreDependencies,
@@ -1099,8 +1171,8 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                             }
                         };
 
-                        DoOperation(walker, packageName, version, availablePackage, 
-                            packageManager, packageInstalls, continueAction, beforeOp);
+                        SetPathResolver(packageManager, availablePackage, availablePackage, installedPackage);
+                        DoOperation(walker, packageName, version, availablePackage, packageManager, packageInstalls, continueAction, beforeOp);
                     }
                 }
             }
@@ -1689,12 +1761,6 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
                     if (performAction)
                     {
-                        if (packageVersion is RegistryPackage regp)
-                        {
-                            string packagesLocation = Path.GetDirectoryName(regp.GetPackageLocation());
-                            packageManager.FileSystem.Root = packagesLocation;
-                        }
-
                         Action beforeOp = () =>
                         {
                             if (beforeUninstallAction != null)
@@ -1731,6 +1797,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                             }
                         };
 
+                        SetPathResolver(packageManager, packageVersion, packageVersion, packageVersion);
                         DoOperation(walker, packageName, packageVersion.Version, packageVersion, packageManager, packageUninstalls,
                             // do not call continueAction - will result in multiple passes
                             continueUninstallAction, 
