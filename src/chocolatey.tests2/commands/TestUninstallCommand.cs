@@ -216,7 +216,7 @@ namespace chocolatey.tests2.commands
 
         }
 
-        [LogTest(true)]
+        [LogTest]
         public void when_uninstalling_regpackage_with_dependencies()
         {
             string packageId = reghasdependency_id;
