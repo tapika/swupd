@@ -15,6 +15,7 @@ namespace chocolatey.tests2
         installupdate,
         installupdate2,
         installpackage3,
+        install_regpackage_with_dependencies,
         isdependency,
         isdependency_hasdependency,
         isdependency_hasdependency_sxs,

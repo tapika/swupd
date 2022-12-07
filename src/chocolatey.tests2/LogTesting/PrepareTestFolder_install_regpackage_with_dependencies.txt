@@ -1,0 +1,79 @@
+Installing the following packages:
+reghasdependency
+By installing you accept licenses for the packages.
+[NuGet] Attempting to resolve dependency 'isdependency (≥ 1.0.0)'.
+[NuGet] Attempting to resolve dependency 'isexactversiondependency (= 1.1.0)'.
+[NuGet] Installing 'isdependency 1.0.0'.
+[NuGet] Successfully installed 'isdependency 1.0.0'.
+
+isdependency v1.0.0
+isdependency package files install completed. Performing other installation steps.
+isdependency 1.0.0 Installed
+ The install of isdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'isexactversiondependency 1.1.0'.
+[NuGet] Successfully installed 'isexactversiondependency 1.1.0'.
+
+isexactversiondependency v1.1.0
+isexactversiondependency package files install completed. Performing other installation steps.
+isexactversiondependency 1.1.0 Installed
+ The install of isexactversiondependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+[NuGet] Installing 'reghasdependency 1.0.0'.
+[NuGet] Successfully installed 'reghasdependency 1.0.0'.
+
+reghasdependency v1.0.0
+reghasdependency package files install completed. Performing other installation steps.
+reghasdependency 1.0.0 Installed
+ The install of reghasdependency was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 3/3 packages. 
+ See the log for details (logs\chocolatey.log).
+=> install result for isdependency/1.0.0: succeeded
+=> install result for isexactversiondependency/1.1.0: succeeded
+=> install result for reghasdependency/1.0.0: succeeded
+=> added new files:
+custominstalldir\lib\isexactversiondependency\.install_info\.arguments
+custominstalldir\lib\isexactversiondependency\.install_info\.files
+custominstalldir\lib\isexactversiondependency\isexactversiondependency.nupkg
+  version: 1.1.0.0
+custominstalldir\lib\isexactversiondependency\isexactversiondependency.nuspec
+custominstalldir\lib\isexactversiondependency\tools\chocolateyinstall.ps1
+custominstalldir\lib\isexactversiondependency\tools\chocolateyuninstall.ps1
+custominstalldir\plugins\isdependency\.install_info\.arguments
+custominstalldir\plugins\isdependency\.install_info\.files
+custominstalldir\plugins\isdependency\isdependency.nupkg
+  version: 1.0.0.0
+custominstalldir\plugins\isdependency\isdependency.nuspec
+custominstalldir\plugins\isdependency\tools\chocolateyinstall.ps1
+custominstalldir\plugins\isdependency\tools\chocolateyuninstall.ps1
+custominstalldir\reghasdependency\.install_info\.arguments
+custominstalldir\reghasdependency\.install_info\.files
+custominstalldir\reghasdependency\reghasdependency.nupkg
+  version: 1.0.0.0
+custominstalldir\reghasdependency\reghasdependency.nuspec
+custominstalldir\reghasdependency\tools\chocolateyinstall.ps1
+custominstalldir\reghasdependency\tools\chocolateyuninstall.ps1
+
+- after operation reghasdependency registry:
+  Hive: LocalMachine
+  KeyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\reghasdependency
+  PackageId: reghasdependency
+  IsPinned: False
+  DisplayName: reghasdependency
+  InstallLocation: custominstalldir\reghasdependency
+  UninstallString: uninstall string: to do
+  HasQuietUninstall: False
+  Publisher: Publisher
+  DisplayVersion: 1.0.0
+  Version: 1.0.0
+  NoRemove: False
+  NoModify: True
+  NoRepair: True
+  EstimatedSize: 3
+
+shared context ends

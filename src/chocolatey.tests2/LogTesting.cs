@@ -723,6 +723,22 @@
                     }
                     break;
 
+                case ChocoTestContext.install_regpackage_with_dependencies:
+                    {
+                        const string packageId = LogTesting.reghasdependency_id;
+
+                        using (var tester = new TestRegistry())
+                        {
+                            tester.DeleteInstallEntries(packageId);
+
+                            Install(packageId, "1.0.0", ChocoTestContext.packages_for_reg_dependency_testing);
+
+                            tester.LogInstallEntries(true, packageId);
+                            tester.DeleteInstallEntries(packageId);
+                        }
+                    }
+                    break;
+
                 case ChocoTestContext.installpackage3:
                     {
                         Install("installpackage3", "1.0.0", ChocoTestContext.pack_installpackage3_1_0_0, true);
