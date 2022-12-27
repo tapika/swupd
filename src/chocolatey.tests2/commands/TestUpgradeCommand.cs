@@ -588,27 +588,27 @@ namespace chocolatey.tests2.commands
         [LogTest]
         public void when_upgrading_regpackage()
         {
+            string packageId = installpackage2_id;
+
             using (var tester = new TestRegistry(false))
             {
                 TestUpgrade(
                     (conf) =>
                     {
-                        conf.PackageNames = conf.Input = installpackage2_id;
+                        conf.PackageNames = conf.Input = packageId;
 
                         tester.Lock();
-                        tester.AddInstallPackage2Entry();
-                        tester.LogInstallEntries(false, installpackage2_id);
+                        tester.AddInstallPackage2Entry(packageId);
+                        tester.LogInstallEntries(false, packageId);
                     },
                     ChocoTestContext.installupdate2,
                     ChocoTestContext.pack_installpackage2_2_3_0
                 );
 
-                tester.LogInstallEntries(true, installpackage2_id);
-                tester.DeleteInstallEntries(installpackage2_id);
+                tester.LogInstallEntries(true, packageId);
+                tester.DeleteInstallEntries(packageId);
             }
         }
-
-
 
     }
 }

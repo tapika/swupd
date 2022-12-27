@@ -65,7 +65,7 @@ namespace NuGet
         public override void AddPackage(IPackage package)
         {
             // If we exceed the package count then clear the cache.
-            var files = GetPackageFiles().ToList();
+            var files = GetPackageFiles(package.Id).ToList();
             if (files.Count >= MaxPackages)
             {
                 // It's expensive to hit the file system to get the last accessed date for files
@@ -144,7 +144,7 @@ namespace NuGet
 
         public void Clear()
         {
-            TryClear(GetPackageFiles().ToList());
+            TryClear(GetPackageFiles(null).ToList());
         }
 
         private void TryClear(IEnumerable<string> files)

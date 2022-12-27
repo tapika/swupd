@@ -3,6 +3,7 @@ using chocolatey.infrastructure.app.configuration;
 using chocolatey.infrastructure.app.domain;
 using chocolatey.infrastructure.app.services;
 using chocolatey.infrastructure.filesystem;
+using chocolatey.infrastructure.logging;
 using logtesting;
 using Moq;
 using NuGet;
@@ -133,5 +134,66 @@ namespace chocolatey.tests2.infrastructure.app.services
                 service.pack_noop(config);
             }
         }
+
+        /// <summary>
+        /// Makes dummy package with specific tags
+        /// </summary>
+        /// <param name="tags">tags to add to package</param>
+        /// <returns>new package</returns>
+        RegistryPackage NewPack(string packageId, params string[] tags)
+        {
+            var p = new RegistryPackage() { Id = packageId };
+
+            p.Tags = "";
+            p.TagsExtra = new List<NuGet.Authoring.Tag>();
+            for (int i = 0; i < tags.Length; i += 2)
+            {
+                p.TagsExtra.Add(new NuGet.Authoring.Tag() { Key = tags[i], Value = tags[i + 1] });
+            }
+
+            return p;
+        }
+
+        [LogTest]
+        public void InstallFolderSelection()
+        {
+            var main = NewPack("mainp",  
+                "InstallLocation", "%RootLocation%\\installdir",
+
+                // Parent package may define general installation directory
+                "AddonsInstallFolder", "addons",
+
+                // Parent package may define multiple child install locations
+                "*.plugin_InstallFolder", "plugins",
+
+                // Parent package may define child install location
+                "forth.plugin_InstallFolder", "forthplugin_special"
+            );
+
+            List<RegistryPackage> packages = new List<RegistryPackage>();
+            packages.Add(main);
+            packages.Add(NewPack("childp1"));
+            packages.Add(NewPack("childp2"));
+            packages.Add(NewPack("first.plugin"));
+            packages.Add(NewPack("second.plugin"));
+            packages.Add(
+                NewPack("third.plugin",
+                    // plugin can override it's install location
+                    "InstallLocation", "%RootLocation%\\thirdplugin_special"
+                )
+            );
+            packages.Add(NewPack("forth.plugin"));
+
+            // does not end with '.plugin' must not match.
+            packages.Add(NewPack("fifth.plugin2"));
+
+            foreach (var p in packages)
+            { 
+                var dir = NugetService.GetInstallDirectory(main, p);
+                string id2 = "'" + p.Id + "'";
+                LogService.console.Info(InstallContext.NormalizeMessage($"Package {id2,-15} - install dir: '{dir}'"));
+            }
+        }
+
     }
 }

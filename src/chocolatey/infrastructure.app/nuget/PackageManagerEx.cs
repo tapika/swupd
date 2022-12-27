@@ -25,7 +25,7 @@ namespace chocolatey.infrastructure.app.nuget
         /// <summary>
         /// Finds locally installed package - either in local repostory or via registry
         /// </summary>
-        public IPackage FindLocalPackage(string packageName)
+        public IPackage FindAnyLocalPackage(string packageName)
         {
             IPackage package = LocalRepository.FindPackage(packageName);
             if (package != null)

@@ -216,6 +216,29 @@ namespace chocolatey.tests2.commands
 
         }
 
+        [LogTest]
+        public void when_uninstalling_regpackage_with_dependencies()
+        {
+            string packageId = reghasdependency_id;
+
+            using (var tester = new TestRegistry(false))
+            {
+                TestUninstall((conf) =>
+                {
+                    conf.PackageNames = conf.Input = packageId;
+                    conf.ForceDependencies = true;
+
+                    tester.Lock();
+                    tester.AddInstallPackage2Entry(packageId);
+                    tester.LogInstallEntries(false, packageId);
+
+                }, ChocoTestContext.install_regpackage_with_dependencies);
+
+                tester.LogInstallEntries(true, packageId);
+                tester.DeleteInstallEntries(packageId);
+            }
+        }
+
     }
 }
 

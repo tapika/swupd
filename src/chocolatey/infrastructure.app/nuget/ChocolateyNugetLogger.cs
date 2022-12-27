@@ -28,27 +28,29 @@ namespace chocolatey.infrastructure.app.nuget
             return FileConflictResolution.OverwriteAll;
         }
 
+        public const string NuGet = "[NuGet] ";
+
         public void Log(MessageLevel level, string message, params object[] args)
         {
             switch (level)
             {
                 case MessageLevel.Debug:
-                    this.Log().Debug("[NuGet] " + message, args);
+                    this.Log().Debug(NuGet + message, args);
                     break;
                 case MessageLevel.Info:
-                    this.Log().Info("[NuGet] " + message, args);
+                    this.Log().Info(NuGet + message, args);
                     break;
                 case MessageLevel.Warning:
-                    this.Log().Warn("[NuGet] " + message, args);
+                    this.Log().Warn(NuGet + message, args);
                     break;
                 case MessageLevel.Error:
-                    this.Log().Error("[NuGet] " + message, args);
+                    this.Log().Error(NuGet + message, args);
                     break;
                 case MessageLevel.Fatal:
-                    this.Log().Fatal("[NuGet] " + message, args);
+                    this.Log().Fatal(NuGet + message, args);
                     break;
                 case MessageLevel.Verbose:
-                    this.Log().Info(ChocolateyLoggers.Verbose, "[NuGet] " + message, args);
+                    this.Log().Info(ChocolateyLoggers.Verbose, NuGet + message, args);
                     break;
             }
         }

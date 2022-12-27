@@ -493,7 +493,7 @@ folder.");
                 config = originalConfig.deep_copy();
 
                 //todo: get smarter about realizing multiple versions have been installed before and allowing that
-                IPackage installedPackage = packageManager.FindLocalPackage(packageName);
+                IPackage installedPackage = packageManager.FindAnyLocalPackage(packageName);
 
                 if (installedPackage != null && (version == null || version == installedPackage.Version) && !config.Force)
                 {
@@ -536,7 +536,7 @@ Version was specified as '{0}'. It is possible that version
 @"
 Please see https://chocolatey.org/docs/troubleshooting for more 
  assistance.");
-                    
+
                     if (ApplicationParameters.runningUnitTesting)
                     {
                         logMessage = $"{packageName} not installed. The package was not found with the source(s) listed.";
@@ -548,36 +548,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     continue;
                 }
 
-                // Figure out installation directory.
-                string targetDir = availablePackage.GetInstallLocation();
-                if (string.IsNullOrEmpty(targetDir))
-                {
-                    targetDir = InstallContext.Instance.PackagesLocation;
-                }else
-                {
-                    // properties use "$propertykey$", use '%' to avoid conflicts
-                    targetDir = Regex.Replace(targetDir, "%(.*?)%", (m) =>
-                    {
-                        Environment.SpecialFolder e;
-                        string propKey = m.Groups[1].Value;
-
-                        // Using "%ProgramFiles%\yourcompany" can set install directory to program files
-                        if (Enum.TryParse<Environment.SpecialFolder>(propKey, out e))
-                        {
-                            return Environment.GetFolderPath(e);
-                        }
-
-                        // Using "%RootLocation%\plugins" can set install directory to plugins folder.
-                        var prop = typeof(InstallContext).GetProperty(propKey, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-                        if (prop != null && prop.PropertyType == typeof(string))
-                        {
-                            return (string)prop.GetValue(InstallContext.Instance);
-                        }
-
-                        return m.Value;
-                    });
-                }
-                packageManager.FileSystem.Root = targetDir;
+                packageManager.FileSystem.Root = GetInstallDirectory(availablePackage, availablePackage);
 
                 if (installedPackage != null && (installedPackage.Version == availablePackage.Version) && config.Force)
                 {
@@ -605,39 +576,296 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     }
                 }
 
-                try
+                var installWalker = new WalkerInfo
                 {
-                    using (packageManager.SourceRepository.StartOperation(
-                        RepositoryOperationNames.Install,
-                        packageName,
-                        version == null ? null : version.ToString()))
-                    {
-                        packageManager.InstallPackage(availablePackage, ignoreDependencies: config.IgnoreDependencies, allowPrereleaseVersions: config.Prerelease);
-                        //packageManager.InstallPackage(packageName, version, configuration.IgnoreDependencies, configuration.Prerelease);
-                        remove_nuget_cache_for_package(availablePackage);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var message = ex.Message;
-                    var webException = ex as System.Net.WebException;
-                    if (webException != null)
-                    {
-                        var response = webException.Response as HttpWebResponse;
-                        if (response != null && !string.IsNullOrWhiteSpace(response.StatusDescription)) message += " {0}".format_with(response.StatusDescription);
-                    }
+                    type = WalkerType.install,
+                    ignoreDependencies = config.IgnoreDependencies,
+                    allowPrereleaseVersions = config.Prerelease
+                };
 
-                    var logMessage = "{0} not installed. An error occurred during installation:{1} {2}".format_with(packageName, Environment.NewLine, message);
-                    this.Log().Error(ChocolateyLoggers.Important, logMessage);
-                    var errorResult = packageInstalls.GetOrAdd(packageName, new PackageResult(packageName, version.to_string(), null));
-                    errorResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
-                    if (errorResult.ExitCode == 0) errorResult.ExitCode = 1;
-                    if (continueAction != null) continueAction.Invoke(errorResult);
-                }
+                SetPathResolver(packageManager, availablePackage, availablePackage);
+                DoOperation(installWalker, packageName, version, availablePackage, packageManager, packageInstalls, continueAction);
             }
 
             OptimizedZipPackage.NuGetScratchFileSystem.DeleteDirectory(null, true);
             return packageInstalls;
+        }
+
+        /// <summary>
+        /// Gets package installation directory.
+        /// 
+        /// Generally 'InstallLocation' tag determines where specific package gets installed - it also determines where
+        /// dependent packages will be installed as well.
+        /// 
+        /// 'AddonsInstallFolder' determines into which folder all application addons (=dependencies) 
+        /// will be installed (from 'InstallLocation' folder).
+        /// 
+        /// Additionally '{selector}_InstallFolder' can enforce specific package location.
+        /// where selection can be just 'package id' or text + asterisk for multiple package id selection.
+        /// You can use '*plugin' to select 'firstplugin' & 'secondplugin' packages.
+        /// </summary>
+        /// <param name="mainPackage">Main package to be installed (which has dependencies)</param>
+        /// <param name="subpackage">Child package (who's install directory is determined by mainpackage)</param>
+        /// <param name="subpackageId">sub package id as a string if subpackage is not given</param>
+        public static string GetInstallDirectory(IPackage mainPackage, IPackage subpackage, string subpackageId = null)
+        {
+            // Figure out installation directory.
+            string targetDir = subpackage?.GetInstallLocation();
+
+            if (subpackage != null)
+            {
+                subpackageId = subpackage.Id;
+            }
+
+            if (subpackage == null && mainPackage.Id == subpackageId)
+            {
+                subpackage = mainPackage;
+            }
+
+            if (string.IsNullOrEmpty(targetDir) && mainPackage != subpackage)
+            {
+                targetDir = mainPackage.GetInstallLocation();
+
+                string addonsDirectory = mainPackage.GetKey($"{subpackageId}_InstallFolder");
+                const string installFolderSuffix = "_InstallFolder";
+
+                if (string.IsNullOrEmpty(addonsDirectory))
+                {
+                    var keyValuePairs = mainPackage.GetKeyValuePairs(x => x.EndsWith(installFolderSuffix));
+
+                    foreach (var kvpair in keyValuePairs)
+                    {
+                        string key = kvpair.Key;
+                        key = key.Substring(0, key.Length - installFolderSuffix.Length);
+                        bool takeEntry = false;
+
+                        if (!key.Contains("*"))
+                        {
+                            takeEntry = key == subpackageId;
+                        } 
+                        else
+                        {
+                            takeEntry = Regex.IsMatch(subpackageId, "^" + Regex.Escape(key).Replace("\\*", ".*") + "$");
+                        }
+
+                        if(takeEntry)
+                        { 
+                            addonsDirectory = kvpair.Value;
+                            break;
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(addonsDirectory))
+                { 
+                    addonsDirectory = mainPackage.GetKey("AddonsInstallFolder");
+                }
+
+                if (!string.IsNullOrEmpty(addonsDirectory))
+                {
+                    targetDir = Path.Combine(targetDir, addonsDirectory);
+                }
+            }
+
+            if (string.IsNullOrEmpty(targetDir))
+            {
+                targetDir = InstallContext.Instance.PackagesLocation;
+            }
+            else
+            {
+                // properties use "$propertykey$", use '%' to avoid conflicts
+                targetDir = Regex.Replace(targetDir, "%(.*?)%", (m) =>
+                {
+                    Environment.SpecialFolder e;
+                    string propKey = m.Groups[1].Value;
+
+                    // Using "%ProgramFiles%\yourcompany" can set install directory to program files
+                    if (Enum.TryParse<Environment.SpecialFolder>(propKey, out e))
+                    {
+                        return Environment.GetFolderPath(e);
+                    }
+
+                    // Using "%RootLocation%\plugins" can set install directory to plugins folder.
+                    var prop = typeof(InstallContext).GetProperty(propKey, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                    if (prop != null && prop.PropertyType == typeof(string))
+                    {
+                        return (string)prop.GetValue(InstallContext.Instance);
+                    }
+
+                    return m.Value;
+                });
+            }
+
+            return targetDir;
+        }
+
+        /// <summary>
+        /// Set package path resolver - to either one folder when we know which package we will install and into which folder,
+        /// or resolving to multiple paths, when there are multiple packages in questions and they are installed into different folders.
+        /// </summary>
+        /// <param name="mainPackage">mainPackage which controls subpackages</param>
+        /// <param name="mainInstalledPackage">currently installed main package</param>
+        /// <param name="updateSubPackage">update package</param>
+        void SetPathResolver(PackageManagerEx packageManager, IPackage mainPackage, IPackage updateSubPackage, IPackage mainInstalledPackage = null)
+        {
+            bool setMultiPathResolver = updateSubPackage != null && 
+                mainInstalledPackage != null && 
+                mainInstalledPackage.Id == updateSubPackage.Id;
+
+            var packageRepo = (ChocolateyLocalPackageRepository)packageManager.LocalRepository;
+         
+            packageRepo.PackageIdToFilesystem.Clear();
+
+            string mainPackageDir;
+            bool mainPackageIsRegistryPackage;
+
+            if (mainInstalledPackage != null && mainInstalledPackage is RegistryPackage regp)
+            {
+                // Installation can be seen from registry only
+                mainPackageDir = Path.GetDirectoryName(regp.GetPackageLocation());
+                mainPackageIsRegistryPackage = true;
+            }
+            else
+            {
+                // Normal installation
+                mainPackageDir = GetInstallDirectory(mainPackage, updateSubPackage ?? mainPackage);
+                mainPackageIsRegistryPackage = false;
+            }
+
+            if (!setMultiPathResolver)
+            {
+                packageManager.FileSystem.Root = mainPackageDir;
+                packageRepo.GetPackageInstallPath = null;
+            }
+            else
+            {
+                // Multiple packages, each is installed into it's own independent folder.
+                packageManager.FileSystem.Root = mainPackageDir;
+
+                IPackage trueMainPackage = mainPackage;
+                if (mainPackageIsRegistryPackage)
+                {
+                    // We need to get same Tags as in meta-data, registry does not keep this information currently.
+                    trueMainPackage = packageManager.LocalRepository.FindPackagesById(mainPackage.Id).FirstOrDefault();
+                }
+                trueMainPackage ??= mainPackage;
+
+                packageRepo.GetPackageInstallPath = (packageId) =>
+                {
+                    if (packageId == mainPackage.Id)
+                    {
+                        return mainPackageDir;
+                    }
+
+                    return GetInstallDirectory(trueMainPackage, null, packageId);
+                };
+            }
+        }
+
+        /// <summary>
+        /// Performs specific nuget operation (install / uninstall / update)
+        /// </summary>
+        /// <param name="package">available package</param>
+        /// <param name="walkerInfo">operation to perform</param>
+        /// <param name="beforeOp">action executed before main nuget package operation</param>
+        /// <param name="afterOp">action executed after main nuget package operation</param>
+        void DoOperation( 
+            WalkerInfo walkerInfo, string packageName, SemanticVersion packageVersion, IPackage package,
+            PackageManagerEx packageManager, ConcurrentDictionary<string, PackageResult> packageResults,
+            Action<PackageResult> continueAction,
+            Action beforeOp = null,
+            Action afterOp = null
+        )
+        {
+            string packageVersionStr = packageVersion?.ToString();
+
+            try
+            {
+                using (packageManager.SourceRepository.StartOperation(walkerInfo.type.ToString(), packageName, packageVersionStr) )
+                {
+                    if (beforeOp != null)
+                    {
+                        beforeOp();
+                    }
+
+                    if (walkerInfo.type == WalkerType.uninstall)
+                    {
+                        // package could be Registy package, need to find right one which is installed
+                        package = packageManager.FindLocalPackage(package.Id.to_lower(), packageVersion);
+                    }
+
+                    var walker = packageManager.GetWalker(walkerInfo);
+                    var operations = walker.ResolveOperations(package);
+
+                    if (operations.Any())
+                    {
+                        foreach (PackageOperation operation in operations)
+                        {
+                            SetPathResolver(packageManager, package, operation.Package);
+                            packageManager.Execute(operation);
+                        }
+                    }
+                    else
+                    {
+                        if (walkerInfo.type != WalkerType.uninstall)
+                        { 
+                            packageManager.Logger.Log(MessageLevel.Verbose, $"'{package.GetFullName()}' already installed.");
+                        }
+                    }
+                    
+                    SetPathResolver(packageManager, package, null);
+
+                    if (afterOp != null)
+                    {
+                        afterOp();
+                    }
+
+                    remove_nuget_cache_for_package(package);
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                var webException = ex as WebException;
+                if (webException != null)
+                {
+                    var response = webException.Response as HttpWebResponse;
+                    if (response != null && !string.IsNullOrWhiteSpace(response.StatusDescription)) message += " {0}".format_with(response.StatusDescription);
+                }
+
+                string logMessage;
+                string reportPackageName;
+                PackageResult reportPackageResult;
+
+                switch (walkerInfo.type)
+                {
+                    default: 
+                    case WalkerType.install:
+                        logMessage = "not installed. An error occurred during installation";
+                        reportPackageName = packageName.to_lower();
+                        reportPackageResult = new PackageResult(packageName, packageVersionStr.to_string(), null);
+                        break;
+                    case WalkerType.update:
+                        logMessage = "not upgraded. An error occurred during installation";
+                        reportPackageName = packageName.to_lower();
+                        reportPackageResult = new PackageResult(packageName, packageVersionStr.to_string(), null);
+                        break;
+                    case WalkerType.uninstall:  logMessage = "not uninstalled. An error occurred during uninstall";
+                        reportPackageName = packageName.to_lower() + "." + packageVersion.to_string();
+                        reportPackageResult = new PackageResult(package, _fileSystem.combine_paths(ApplicationParameters.PackagesLocation, package.Id));
+                        break;
+                }
+                
+                logMessage = $"{packageName} {logMessage}:\n {message}";
+                logMessage = InstallContext.NormalizeMessage(logMessage);
+                this.Log().Error(ChocolateyLoggers.Important, logMessage);
+
+                var result = packageResults.GetOrAdd(reportPackageName, reportPackageResult);
+                result.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
+
+                if (result.ExitCode == 0) result.ExitCode = 1;
+                if (continueAction != null) continueAction.Invoke(result);
+            }
         }
 
         public virtual void remove_rollback_directory_if_exists(string packageName)
@@ -708,7 +936,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 // reset config each time through
                 config = originalConfig.deep_copy();
 
-                IPackage installedPackage = packageManager.FindLocalPackage(packageName);
+                IPackage installedPackage = packageManager.FindAnyLocalPackage(packageName);
 
                 if (installedPackage == null)
                 {
@@ -902,64 +1130,49 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
                     if (performAction)
                     {
-                        if (installedPackage is RegistryPackage regp)
+                        WalkerInfo walker = new WalkerInfo()
                         {
-                            packageManager.FileSystem.Root = Path.GetDirectoryName(regp.GetPackageLocation());
+                            ignoreDependencies = config.IgnoreDependencies,
+                            allowPrereleaseVersions = config.Prerelease,
+                            updateDependencies = !config.IgnoreDependencies,
+                        };
+
+                        if (config.Force && (installedPackage.Version == availablePackage.Version))
+                        {
+                            walker.type = WalkerType.install;
+                        }
+                        else
+                        { 
+                            walker.type = WalkerType.update;
                         }
 
-                        try
+                        Action beforeOp = () =>
                         {
-                            using (packageManager.SourceRepository.StartOperation(
-                                RepositoryOperationNames.Update,
-                                packageName,
-                                version == null ? null : version.ToString()))
+                            if (beforeUpgradeAction != null)
                             {
-                                if (beforeUpgradeAction != null)
-                                {
-                                    var currentPackageResult = new PackageResult(installedPackage, get_install_directory(config, installedPackage));
-                                    beforeUpgradeAction(currentPackageResult);
-                                }
-
-                                remove_rollback_directory_if_exists(packageName);
-                                ensure_package_files_have_compatible_attributes(config, installedPackage, pkgInfo);
-                                rename_legacy_package_version(config, installedPackage, pkgInfo);
-                                backup_existing_version(config, installedPackage, pkgInfo);
-                                remove_shim_directors(config, installedPackage, pkgInfo);
-                                if (config.Force && (installedPackage.Version == availablePackage.Version))
-                                {
-                                    FaultTolerance.try_catch_with_logging_exception(
-                                        () =>
-                                        {
-                                            _fileSystem.delete_directory_if_exists(_fileSystem.combine_paths(ApplicationParameters.PackagesLocation, installedPackage.Id), recursive: true);
-                                            remove_cache_for_package(config, installedPackage);
-                                        },
-                                        "Error during force upgrade");
-                                    packageManager.InstallPackage(availablePackage, config.IgnoreDependencies, config.Prerelease);
-                                }
-                                else
-                                {
-                                    packageManager.UpdatePackage(availablePackage, updateDependencies: !config.IgnoreDependencies, allowPrereleaseVersions: config.Prerelease);
-                                }
-                                remove_nuget_cache_for_package(availablePackage);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            var message = ex.Message;
-                            var webException = ex as System.Net.WebException;
-                            if (webException != null)
-                            {
-                                var response = webException.Response as HttpWebResponse;
-                                if (response != null && !string.IsNullOrWhiteSpace(response.StatusDescription)) message += " {0}".format_with(response.StatusDescription);
+                                var currentPackageResult = new PackageResult(installedPackage, get_install_directory(config, installedPackage));
+                                beforeUpgradeAction(currentPackageResult);
                             }
 
-                            var logMessage = "{0} not upgraded. An error occurred during installation:{1} {2}".format_with(packageName, Environment.NewLine, message);
-                            logMessage = InstallContext.NormalizeMessage(logMessage);
-                            this.Log().Error(ChocolateyLoggers.Important, logMessage);
-                            packageResult.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
-                            if (packageResult.ExitCode == 0) packageResult.ExitCode = 1;
-                            if (continueAction != null) continueAction.Invoke(packageResult);
-                        }
+                            remove_rollback_directory_if_exists(packageName);
+                            ensure_package_files_have_compatible_attributes(config, installedPackage, pkgInfo);
+                            rename_legacy_package_version(config, installedPackage, pkgInfo);
+                            backup_existing_version(config, installedPackage, pkgInfo);
+                            remove_shim_directors(config, installedPackage, pkgInfo);
+                            if (config.Force && (installedPackage.Version == availablePackage.Version))
+                            {
+                                FaultTolerance.try_catch_with_logging_exception(
+                                    () =>
+                                    {
+                                        _fileSystem.delete_directory_if_exists(_fileSystem.combine_paths(ApplicationParameters.PackagesLocation, installedPackage.Id), recursive: true);
+                                        remove_cache_for_package(config, installedPackage);
+                                    },
+                                    "Error during force upgrade");
+                            }
+                        };
+
+                        SetPathResolver(packageManager, availablePackage, availablePackage, installedPackage);
+                        DoOperation(walker, packageName, version, availablePackage, packageManager, packageInstalls, continueAction, beforeOp);
                     }
                 }
             }
@@ -984,7 +1197,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                 // reset config each time through
                 config = originalConfig.deep_copy();
 
-                var installedPackage = packageManager.FindLocalPackage(packageName);
+                var installedPackage = packageManager.FindAnyLocalPackage(packageName);
                 var pkgInfo = _packageInfoService.get_package_information(installedPackage);
                 bool isPinned = pkgInfo.IsPinned;
 
@@ -1384,7 +1597,7 @@ Please see https://chocolatey.org/docs/troubleshooting for more
                     }
 
                     // is this the latest version, have you passed --sxs, or is this a side-by-side install? This is the only way you get through to the continue action.
-                    var latestVersion = packageManager.FindLocalPackage(e.Package.Id);
+                    var latestVersion = packageManager.FindAnyLocalPackage(e.Package.Id);
                     var pkgInfo = _packageInfoService.get_package_information(e.Package);
                     if (latestVersion.Version == pkg.Version || config.AllowMultipleVersions || (pkgInfo != null && pkgInfo.IsSideBySide))
                     {
@@ -1548,50 +1761,48 @@ Please see https://chocolatey.org/docs/troubleshooting for more
 
                     if (performAction)
                     {
-                        if (packageVersion is RegistryPackage regp)
+                        Action beforeOp = () =>
                         {
-                            string packagesLocation = Path.GetDirectoryName(regp.GetPackageLocation());
-                            packageManager.FileSystem.Root = packagesLocation;
-                        }
-
-                        try
-                        {
-                            using (packageManager.SourceRepository.StartOperation(
-                                RepositoryOperationNames.Install,
-                                packageVersion.Id, packageVersion.Version.to_string())
-                                )
+                            if (beforeUninstallAction != null)
                             {
-                                if (beforeUninstallAction != null)
-                                {
-                                    // guessing this is not added so that it doesn't fail the action if an error is recorded?
-                                    //var currentPackageResult = packageUninstalls.GetOrAdd(packageName, new PackageResult(packageVersion, get_install_directory(config, packageVersion)));
-                                    var currentPackageResult = new PackageResult(packageVersion, get_install_directory(config, packageVersion));
-                                    beforeUninstallAction(currentPackageResult);
-                                }
-                                ensure_package_files_have_compatible_attributes(config, packageVersion, pkgInfo);
-                                rename_legacy_package_version(config, packageVersion, pkgInfo);
-                                remove_rollback_directory_if_exists(packageName);
-                                backup_existing_version(config, packageVersion, pkgInfo);
-                                packageManager.UninstallPackage(packageVersion.Id.to_lower(), forceRemove: config.Force, removeDependencies: config.ForceDependencies, version: packageVersion.Version);
-                                ensure_nupkg_is_removed(packageVersion, pkgInfo);
-                                remove_installation_files(packageVersion, pkgInfo);
-                                remove_cache_for_package(config, packageVersion);
+                                // guessing this is not added so that it doesn't fail the action if an error is recorded?
+                                //var currentPackageResult = packageUninstalls.GetOrAdd(packageName, new PackageResult(packageVersion, get_install_directory(config, packageVersion)));
+                                var currentPackageResult = new PackageResult(packageVersion, get_install_directory(config, packageVersion));
+                                beforeUninstallAction(currentPackageResult);
                             }
-                        }
-                        catch (Exception ex)
+                            ensure_package_files_have_compatible_attributes(config, packageVersion, pkgInfo);
+                            rename_legacy_package_version(config, packageVersion, pkgInfo);
+                            remove_rollback_directory_if_exists(packageName);
+                            backup_existing_version(config, packageVersion, pkgInfo);
+                        };
+
+                        Action afterOp = () =>
                         {
-                            var logMessage = "{0} not uninstalled. An error occurred during uninstall:{1} {2}".format_with(packageName, Environment.NewLine, ex.Message);
-                            logMessage = InstallContext.NormalizeMessage(logMessage);
-                            this.Log().Error(ChocolateyLoggers.Important, logMessage);
-                            var result = packageUninstalls.GetOrAdd(packageVersion.Id.to_lower() + "." + packageVersion.Version.to_string(), new PackageResult(packageVersion, _fileSystem.combine_paths(ApplicationParameters.PackagesLocation, packageVersion.Id)));
-                            result.Messages.Add(new ResultMessage(ResultType.Error, logMessage));
-                            if (result.ExitCode == 0) result.ExitCode = 1;
+                            ensure_nupkg_is_removed(packageVersion, pkgInfo);
+                            remove_installation_files(packageVersion, pkgInfo);
+                        };
+
+                        var walker = new WalkerInfo
+                        {
+                            type = WalkerType.uninstall,
+                            forceRemove = config.Force,
+                            removeDependencies = config.ForceDependencies
+                        };
+
+                        Action<PackageResult> continueUninstallAction = (r) =>
+                        {
                             if (config.Features.StopOnFirstPackageFailure)
                             {
                                 throw new ApplicationException("Stopping further execution as {0} has failed uninstallation".format_with(packageVersion.Id.to_lower()));
                             }
+                        };
+
+                        SetPathResolver(packageManager, packageVersion, packageVersion, packageVersion);
+                        DoOperation(walker, packageName, packageVersion.Version, packageVersion, packageManager, packageUninstalls,
                             // do not call continueAction - will result in multiple passes
-                        }
+                            continueUninstallAction, 
+                            beforeOp, afterOp);
+
                     }
                     else
                     {

@@ -74,14 +74,17 @@ namespace chocolatey.tests2
             registryService.set_key_values(appKey, propNames.ToArray());
         }
 
-        public void AddInstallPackage2Entry()
+        public void AddInstallPackage2Entry(  
+            string packageId = "installpackage2", 
+            string installdirectory = "custominstalldir", 
+            string version = "1.0.0" )
         {
             AddInstallEntry(
                 new RegistryApplicationKey()
                 {
-                    PackageId = "installpackage2",
-                    Version = "1.0.0",
-                    InstallLocation = Path.Combine(InstallContext.Instance.RootLocation, "custominstalldir", "installpackage2"),
+                    PackageId = packageId,
+                    Version = version,
+                    InstallLocation = Path.Combine(InstallContext.Instance.RootLocation, installdirectory, packageId),
                     Tags = "test"
                 }
             );

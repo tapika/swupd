@@ -18,7 +18,9 @@
     <bugTrackerUrl>https://github.com/chocolatey/choco/issues</bugTrackerUrl>-->
     <tags>nuget apt-get machine repository chocolatey</tags>
     <tags-extra>
-      <tag key="InstallLocation" value="%CommonApplicationData%\choco" />
+      <tag key="InstallLocation" value="%CommonApplicationData%" />
+      <tag key="AddonsInstallFolder" value="choco\lib" />
+      <tag key="*.extension_InstallFolder" value="choco\extensions" />
     </tags-extra>
     <summary>Chocolatey is the package manager for Windows (like apt-get but for Windows)</summary>
     <description>
@@ -67,7 +69,7 @@ In that mess there is a link to the [PowerShell Chocolatey module reference](htt
 See all - https://docs.chocolatey.org/en-us/choco/release-notes
     </releaseNotes>
     <dependencies>
-      <dependency id="dotnetcore" version="3.1.30" />
+      <dependency id="dotnetcore" version="3.1.31" />
     </dependencies>
   </metadata>
 

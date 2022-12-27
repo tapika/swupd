@@ -29,6 +29,7 @@
         protected IChocolateyPackageService Service;
 
         public const string installpackage2_id = "installpackage2";
+        public const string reghasdependency_id = "reghasdependency";
 
         public LogTesting()
         {
@@ -658,6 +659,14 @@
                     );
                     break;
 
+                case ChocoTestContext.packages_for_reg_dependency_testing:
+                    PrepareMultiPackageFolder(
+                        ChocoTestContext.pack_reghasdependency_1_0_0,
+                        ChocoTestContext.pack_isdependency_1_0_0,
+                        ChocoTestContext.pack_isexactversiondependency_1_1_0
+                    );
+                    break;
+
                 case ChocoTestContext.packages_for_upgrade_testing:
                     PrepareMultiPackageFolder(
                         ChocoTestContext.pack_badpackage_1_0,
@@ -708,6 +717,22 @@
 
                             Install("installpackage2", "1.0.0", ChocoTestContext.pack_installpackage2_1_0_0);
                             
+                            tester.LogInstallEntries(true, packageId);
+                            tester.DeleteInstallEntries(packageId);
+                        }
+                    }
+                    break;
+
+                case ChocoTestContext.install_regpackage_with_dependencies:
+                    {
+                        const string packageId = LogTesting.reghasdependency_id;
+
+                        using (var tester = new TestRegistry())
+                        {
+                            tester.DeleteInstallEntries(packageId);
+
+                            Install(packageId, "1.0.0", ChocoTestContext.packages_for_reg_dependency_testing);
+
                             tester.LogInstallEntries(true, packageId);
                             tester.DeleteInstallEntries(packageId);
                         }

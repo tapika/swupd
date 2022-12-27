@@ -74,6 +74,45 @@ namespace NuGet
             private set;
         }
 
+        /// <summary>
+        /// When packageIdToFilesystem is in use - this must be non-null
+        /// </summary>
+        public Func<string, string> GetPackageInstallPath;
+
+        /// <summary>
+        /// Package id to it's file system.
+        /// </summary>
+        public Dictionary<string, IFileSystem> PackageIdToFilesystem = new Dictionary<string, IFileSystem>();
+
+        
+        /// <summary>
+        /// Gets current file system for specific package id
+        /// </summary>
+        /// <param name="packageId">package id</param>
+        /// <returns>file system</returns>
+        public IFileSystem GetFS(string packageId)
+        {
+            IFileSystem fs;
+
+            if (GetPackageInstallPath != null && packageId != null)
+            {
+                if (!PackageIdToFilesystem.ContainsKey(packageId))
+                {
+                    string dir = GetPackageInstallPath(packageId);
+                    PackageIdToFilesystem[packageId] = new PhysicalFileSystem(dir);
+                }
+
+                fs = PackageIdToFilesystem[packageId];
+            }
+            else
+            {
+                fs = FileSystem;
+            }
+
+            return fs;
+        }
+
+
         public override IQueryable<IPackage> GetPackages()
         {
             return GetPackages(OpenPackage).AsQueryable();
@@ -170,8 +209,8 @@ namespace NuGet
             var packageFileName = PathResolver.GetPackageFileName(packageId, version);
             var manifestFileName = Path.ChangeExtension(packageFileName, Constants.ManifestExtension);
             var filesMatchingFullName = Enumerable.Concat(
-                GetPackageFiles(packageFileName),
-                GetPackageFiles(manifestFileName));
+                GetPackageFiles(packageId,packageFileName),
+                GetPackageFiles(packageId, manifestFileName));
 
             if (version != null && version.Version.Revision < 1)
             {
@@ -190,15 +229,15 @@ namespace NuGet
 
                 // Partial names would result is gathering package with matching major and minor but different build and revision.
                 // Attempt to match the version in the path to the version we're interested in.
-                var partialNameMatches = GetPackageFiles(partialName).Where(path => FileNameMatchesPattern(packageId, version, path));
-                var partialManifestNameMatches = GetPackageFiles(partialManifestName).Where(
+                var partialNameMatches = GetPackageFiles(packageId, partialName).Where(path => FileNameMatchesPattern(packageId, version, path));
+                var partialManifestNameMatches = GetPackageFiles(packageId, partialManifestName).Where(
                     path => FileNameMatchesPattern(packageId, version, path));
                 return Enumerable.Concat(filesMatchingFullName, partialNameMatches).Concat(partialManifestNameMatches);
             }
             return filesMatchingFullName;
         }
 
-        internal IPackage FindPackage(Func<string, IPackage> openPackage, string packageId, SemanticVersion version)
+        internal IPackage FindPackage(Func<string, string, IPackage> openPackage, string packageId, SemanticVersion version)
         {
             var lookupPackageName = new PackageName(packageId, version);
             string packagePath;
@@ -208,19 +247,19 @@ namespace NuGet
                 FileSystem.FileExists(packagePath))
             {
                 // When depending on the cached path, verify the file exists on disk.
-                return GetPackage(openPackage, packagePath);
+                return GetPackage(packageId, openPackage, packagePath);
             }
 
             // Lookup files which start with the name "<Id>." and attempt to match it with all possible version string combinations (e.g. 1.2.0, 1.2.0.0)
             // before opening the package. To avoid creating file name strings, we attempt to specifically match everything after the last path separator
             // which would be the file name and extension.
             return (from path in GetPackageLookupPaths(packageId, version)
-                    let package = GetPackage(openPackage, path)
+                    let package = GetPackage(packageId, openPackage, path)
                     where lookupPackageName.Equals(new PackageName(package.Id, package.Version))
                     select package).FirstOrDefault();
         }
 
-        internal IEnumerable<IPackage> FindPackagesById(Func<string, IPackage> openPackage, string packageId)
+        internal IEnumerable<IPackage> FindPackagesById(Func<string, string, IPackage> openPackage, string packageId)
         {
             Debug.Assert(!String.IsNullOrEmpty(packageId), "The caller has to ensure packageId is never null.");
 
@@ -231,18 +270,18 @@ namespace NuGet
                 GetPackages(
                     openPackage,
                     packageId,
-                    GetPackageFiles(packageId + "*" + Constants.PackageExtension)));
+                    GetPackageFiles(packageId, packageId + "*" + Constants.PackageExtension)));
 
             // then, get packages through nuspec files
             packages.AddRange(
                 GetPackages(
                     openPackage,
                     packageId,
-                    GetPackageFiles(packageId + "*" + Constants.ManifestExtension)));
+                    GetPackageFiles(packageId, packageId + "*" + Constants.ManifestExtension)));
             return packages;
         }
 
-        internal IEnumerable<IPackage> GetPackages(Func<string, IPackage> openPackage,
+        internal IEnumerable<IPackage> GetPackages(Func<string, string, IPackage> openPackage,
             string packageId,
             IEnumerable<string> packagePaths)
         {
@@ -251,7 +290,7 @@ namespace NuGet
                 IPackage package = null;
                 try
                 {
-                    package = GetPackage(openPackage, path);
+                    package = GetPackage(packageId, openPackage, path);
                 }
                 catch (InvalidOperationException)
                 {
@@ -277,14 +316,14 @@ namespace NuGet
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
             Justification = "We want to suppress all errors opening a package")]
-        internal IEnumerable<IPackage> GetPackages(Func<string, IPackage> openPackage)
+        internal IEnumerable<IPackage> GetPackages(Func<string, string, IPackage> openPackage)
         {
-            return GetPackageFiles()
+            return GetPackageFiles(null)
                 .Select(path =>
                 {
                     try
                     {
-                        return GetPackage(openPackage, path);
+                        return GetPackage(null, openPackage, path);
                     }
                     catch
                     {
@@ -294,10 +333,11 @@ namespace NuGet
                 .Where(p => p != null);
         }
 
-        private IPackage GetPackage(Func<string, IPackage> openPackage, string path)
+        private IPackage GetPackage(string packageId, Func<string, string, IPackage> openPackage, string path)
         {
             PackageCacheEntry cacheEntry;
-            DateTimeOffset lastModified = FileSystem.GetLastModified(path);
+            var fs = GetFS(packageId);
+            DateTimeOffset lastModified = fs.GetLastModified(path);
             // If we never cached this file or we did and it's current last modified time is newer
             // create a new entry
             if (!_packageCache.TryGetValue(path, out cacheEntry) ||
@@ -307,7 +347,7 @@ namespace NuGet
                 string packagePath = path;
 
                 // Create the package
-                IPackage package = openPackage(packagePath);
+                IPackage package = openPackage(packageId, packagePath);
 
                 // create a cache entry with the last modified time
                 cacheEntry = new PackageCacheEntry(package, lastModified);
@@ -323,34 +363,38 @@ namespace NuGet
             return cacheEntry.Package;
         }
 
-        internal IEnumerable<string> GetPackageFiles(string filter = null)
+        internal IEnumerable<string> GetPackageFiles(string packageId, string filter = null)
         {
             filter = filter ?? "*" + Constants.PackageExtension;
             Debug.Assert(
                 filter.EndsWith(Constants.PackageExtension, StringComparison.OrdinalIgnoreCase) ||
                 filter.EndsWith(Constants.ManifestExtension, StringComparison.OrdinalIgnoreCase));
 
+            var fs = GetFS(packageId);
+
             // Check for package files one level deep. We use this at package install time
             // to determine the set of installed packages. Installed packages are copied to
             // {id}.{version}\{packagefile}.{extension}.
-            foreach (var dir in FileSystem.GetDirectories(String.Empty))
+            foreach (var dir in fs.GetDirectories(String.Empty))
             {
-                foreach (var path in FileSystem.GetFiles(dir, filter))
+                foreach (var path in fs.GetFiles(dir, filter))
                 {
                     yield return path;
                 }
             }
 
             // Check top level directory
-            foreach (var path in FileSystem.GetFiles(String.Empty, filter))
+            foreach (var path in fs.GetFiles(String.Empty, filter))
             {
                 yield return path;
             }
         }
 
-        internal virtual IPackage OpenPackage(string path)
+        internal virtual IPackage OpenPackage(string packageId, string path)
         {
-            if (!FileSystem.FileExists(path))
+            var fs = GetFS(packageId);
+
+            if (!fs.FileExists(path))
             {
                 return null;
             }
@@ -360,7 +404,7 @@ namespace NuGet
                 OptimizedZipPackage package;
                 try
                 {
-                    package = new OptimizedZipPackage(FileSystem, path);
+                    package = new OptimizedZipPackage(fs, path);
                 }
                 catch (FileFormatException ex)
                 {
@@ -368,15 +412,15 @@ namespace NuGet
                 }
 
                 // Set the last modified date on the package
-                package.Published = FileSystem.GetLastModified(path);
+                package.Published = fs.GetLastModified(path);
 
                 return package;
             }
             else if (Path.GetExtension(path) == Constants.ManifestExtension)
             {
-                if (FileSystem.FileExists(path))
+                if (fs.FileExists(path))
                 {
-                    return new UnzippedPackage(FileSystem, Path.GetFileNameWithoutExtension(path));
+                    return new UnzippedPackage(fs, Path.GetFileNameWithoutExtension(path));
                 }
             }
 

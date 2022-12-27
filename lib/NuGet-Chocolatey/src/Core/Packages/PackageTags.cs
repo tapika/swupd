@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -38,6 +39,48 @@ namespace NuGet.Packages
                 Select(m => Uri.UnescapeDataString(m.Groups[2].Value)).FirstOrDefault();
 
             return value;
+        }
+
+        /// <summary>
+        /// Gets all key value pairs from package
+        /// </summary>
+        /// <param name="pack">package to query</param>
+        /// <returns>Dictionary of items</returns>
+        public static Dictionary<string, string> GetKeyValuePairs(this IPackage pack, Func<string, bool> matcher = null)
+        {
+            Dictionary<string, string> d = new Dictionary<string, string>();
+
+            if (matcher == null)
+            {
+                matcher = (key) => { return true; };
+            }
+
+            if (pack.TagsExtra != null)
+            {
+                foreach (var tag in pack.TagsExtra)
+                {
+                    if (matcher(tag.Key))
+                    {
+                        d[tag.Key] = tag.Value;
+                    }
+                }
+            }
+            else
+            {
+                var lines = pack.Tags.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                var keyValuePairs = lines.
+                    Select(x => reSplitEqual.Match(x)).
+                    Where(m => m.Success && matcher(m.Groups[1].Value)).
+                    Select(m => (m.Groups[1].Value, Uri.UnescapeDataString(m.Groups[2].Value)));
+
+                foreach (var kvPair in keyValuePairs)
+                {
+                    d[kvPair.Item1] = kvPair.Item2;
+                }
+            }
+
+            return d;
         }
 
         public static string GetInstallLocation(this IPackage pack)
